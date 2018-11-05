@@ -1,4 +1,4 @@
-"""sistema URL Configuration
+"""map URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
@@ -14,8 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls import url, include
+from django.conf.urls.static import static
+from .settings import local
+from django.views.generic import TemplateView
+from users import urls as users_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
+    url(r'^users/', include(users_urls)),
+    url(r'^producao/', include('producao.urls', namespace='producao')),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
+    url(r'^api/', include("producao.api.urls", namespace='api')),
 ]
+
+if local.DEBUG:
+    urlpatterns += static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)

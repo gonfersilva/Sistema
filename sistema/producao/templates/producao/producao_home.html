@@ -1,0 +1,45 @@
+{% extends "layout.html "%}
+
+
+
+{% block title %}Produção{% endblock %}
+{% block content %}
+<div class="container size-table">
+    <div class="row">
+        <div class="container">
+            <a href="{% url 'home' %}" class="btn btn-primary" role="button">Voltar</a>
+        </div>  
+        <br>
+        <br>
+        <div class="row">
+            <h1 id="center">Produção</h1>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:bobinagens' %}"><button class="btn btn-primary btn-lg">Bobinagens</button></a></div>    
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:retrabalho_home' %}"><button class="btn btn-primary btn-lg">Retrabalho</button></a></div>       
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:paletes' %}"><button class="btn btn-primary btn-lg">Paletes</button></a></div>    
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:paletes_retrabalho' %}"><button class="btn btn-primary btn-lg">Paletes retrabalho</button></a></div>   
+        </div>
+        
+        
+       
+    
+    
+
+</div>
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "layout.html "%}
+
+{% block title %}Logout | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Tem a certeza que quer sair?</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Logout" class="btn btn-default">
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h3>Volte sempre!</h3>
+            
+        </div>
+
+    </div>
+</div>
+{% endblock %}

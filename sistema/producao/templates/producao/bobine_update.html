@@ -1,0 +1,55 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+{% block title %}Bobine | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="col-md-3"></div>
+    <div class="container col-md-6">
+    <h1>Bobine: {{ object.nome }}</h1>
+    <form method="POST">
+       {% csrf_token %} 
+        <div class="row">
+            <div class="container">
+                <h4>Estado: {{ form.estado }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 container">
+                <h4>Cónico: {{ form.con }}</h4>
+                <h4>Descentrado: {{ form.descen }}</h4>
+                <h4>Presa: {{ form.presa }}</h4>
+                <h4>Diam. Insuficiente: {{ form.diam_insuf }}</h4>
+                <h4>Buracos: {{ form.buraco }}</h4>
+            </div>
+            <div class="col-md-6 container">
+                <h4>Furos: {{ form.furos }}</h4>
+                <h4>Gramagem: {{ form.esp }}</h4>
+                <h4>Troca NW: {{ form.troca_nw }}</h4>
+                <h4>Outros: {{ form.outros }}</h4>
+                
+            </div>
+        </div>
+        <div class="row">
+           <div class="container">
+                <h4>Observações:</h4>
+                <h4>{{ form.obs }}</h4>
+           </div>
+        </div>
+        <div class="row col-md-12">
+            {% if object.palete.estado != "DM"%}
+                <a href="{% url 'producao:bobinestatus'  pk=object.bobinagem.pk %}" class="btn btn-primary pull-left" role="button">Voltar</a>
+
+            {% else %}
+            <a href="{% url 'producao:retrabalho_home' %}" class="btn btn-primary pull-left" role="button">Voltar</a>
+            {% endif %}
+                <input type="submit" class="btn btn-primary pull-right">
+        </div>
+       
+    </form>
+</div>
+<div class="col-md-3"></div>
+</div>
+
+{% endblock %}

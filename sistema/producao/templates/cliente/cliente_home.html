@@ -1,0 +1,52 @@
+{% extends "layout.html "%}
+
+
+
+{% block title %}Bobinagens | {{ block.super }}{% endblock %}
+{% block content %}
+
+<div class="container">
+    <a href="{% url 'producao:planeamento_home' %}"  class="btn btn-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:cliente_create' %}"  class="btn btn-primary pull-right" role="button">Criar cliente</a>
+</div>
+<div class="container">
+    <div class="container col-md-3"></div>
+        <div class="container col-md-6 table-responsive size-table">
+                <h1 id="center">Clientes</h1><br>
+
+                        <table class="table fit">
+                            <thead>
+                                <tr>
+                                    <th id="center">Código cliente</th>
+                                    <th>Cliente</th>
+                                    <th id="center">Diâmetro inferior</th>
+                                    <th id="center">Diâmetro superior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in cliente %}
+                                <tr>
+                                    <td id="center">{{ c.cod }}</td>
+                                    <td>{{ c.nome }}</td>
+                                    <td id="center">{{ c.liminf }}</td>
+                                    <td id="center">{{ c.limsup }}</td>
+                                    <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>     
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+            
+                
+
+            
+            
+        </div>
+    <div class="container col-md-3"></div>
+</div>
+
+
+
+
+
+
+{% endblock %}

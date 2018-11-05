@@ -1,0 +1,112 @@
+#content {
+    margin-top: 70px;
+}
+
+.pt {
+   padding-top: 10px; 
+}
+
+.table td.fit, .table.fit {
+    white-space: nowrap;
+    width: 1%;
+    
+}
+
+.table td.check {
+    text-align: center;
+}
+
+.table th.check {
+    text-align: center;
+}
+
+/* td {
+    text-align: center;
+}
+
+th 
+    text-align: center;
+} */
+
+
+#estado_good {
+    background-color: green;
+    color: white;
+    text-align: center;
+   
+    
+}
+
+
+#estado_rejected {
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+#estado_dm {
+    background-color: orange;
+    color: white;
+    text-align: center;
+}
+
+#estado_ba {
+    background-color:red;
+    color: white;
+    text-align: center;
+}
+
+#estado_lab {
+    background-color: cyan;
+    color: white;
+    text-align: center;
+}
+
+#estado_ind {
+    background-color: blue;
+    color: yellow;
+    text-align: center;
+}
+
+#estado_hold {
+    background-color: #b237cc;
+    color: white;
+    text-align: center;
+}
+
+.bobines {
+    height: 650px;
+}
+
+.size-table {
+    height: 950px;
+}
+.size-table2 {
+    height: 350px;
+}
+
+#center{
+    text-align: center;
+}
+
+#right  {
+    float: right;
+}
+
+#error {
+    color: red;
+}
+
+#white {
+    color: white;
+}
+
+.btn-lg {
+    width: 250px;
+    height: 125px;
+    
+}
+
+.center-text {
+    text-align: center;
+}
+

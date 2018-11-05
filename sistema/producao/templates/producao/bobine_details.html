@@ -1,0 +1,130 @@
+{% extends "layout.html "%}
+
+{% block title %}Bobine {{ bobine.nome }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    
+    <div class="container">
+        <a href="#" class="btn btn-primary" role="button">Voltar</a>      
+
+    </div><br>
+    <h1 id="center">Detalhes</h1>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="conatiner col-md-4"><h1>{{ bobine.nome }}</h1></div>
+            <div class="conatiner col-md-8">
+                {% if bobine.estado == "G" %}
+                    <h1 id="estado_good">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "DM"%}
+                    <h1 id="estado_dm">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "R" %}
+                    <h1 id="estado_rejected">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "LAB" %}
+                    <h1 id="estado_lab">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "BA" %}
+                    <h1 id="estado_ba">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "IND" %}
+                    <h1 id="estado_ind">{{ bobine.estado }}</h1>
+                {% elif bobine.estado == "HOLD" %}
+                    <h1 id="estado_hold">{{ bobine.estado }}</h1>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+                {% if bobine.palete %}
+                <div class="container col-md-6">
+                    <h3>Palete: {{ bobine.palete.nome }}</h3>
+                    {% if bobine.palete.cliente %}
+                    <h3>Cliente: {{ bobine.palete.cliente.nome }}</h3>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                
+                
+            </div>
+        <div class="row">
+            <div class="col-md-6">
+                <br>
+                <br>
+                <h4>Data: {{ bobine.bobinagem.data|date:"d-n-Y" }}</h4>
+                <h4>Inicio: {{ bobine.bobinagem.inico|date:"G:i" }}</h4>
+                <h4>Fim: {{ bobine.bobinagem.fim|date:"G:i" }}</h4>
+                <h4>Duração: {{ bobine.bobinagem.duracao }}</h4>
+                <h4>Comp.(m): {{ bobine.comp_actual }} / {{ bobine.bobinagem.comp }}</h4>
+                <h4>Área(m2): {{ bobine.area }}</h4>
+            </div><br>
+            <br>
+            <div class="col-md-6">
+                {% if bobine.bobinagem.perfil.retrabalho == False %}
+                <h2 id="center">Nonwoven</h2>
+                    <table class="table table-fixed">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Nonwoven Superior</th>
+                                    <th>Nonwoven inferior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Tipo:</th>
+                                    <td>{{ bobine.bobinagem.tiponwsup }}</td>
+                                    <td>{{ bobine.bobinagem.tiponwinf }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lote:</th>
+                                    <td>{{ bobine.bobinagem.lotenwsup }}</td>
+                                    <td>{{ bobine.bobinagem.lotenwinf }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Consumo (m):</th>
+                                    <td>{{ bobine.bobinagem.nwsup }}</td>
+                                    <td>{{ bobine.bobinagem.nwinf }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        
+        {% if bobine.bobinagem.num_emendas > 0 %}
+        <div class="row">
+                <div class="container">
+                        <h3>Bobines originais</h3>
+                        {% if emenda.bobinagem != "" %}
+                            <table class="table fit" id="center">
+                                <tr>
+                                    <th></th>
+                                    <th>Bobine original</th>
+                                    <th>Consumo (m)</th>
+                                    <th>Emenda (m)</th>
+                                </tr>
+                                {% for em in emenda %}
+                                <tr>
+                                    <td>{{ em.num_emenda }}</td>
+                                    <td><a href="{{ em.bobine.get_absolute_url }}">{{ em.bobine }}</a></td>
+                                    <td>{{ em.metros }}</td>
+                                    <td>{{ em.emenda }}</td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                        
+                
+                    </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

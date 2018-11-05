@@ -1,0 +1,58 @@
+{% load bootstrap3 %}
+<div class="container size-table">
+<form method="POST" action="#" onkeypress="return event.keyCode != 13;">
+    <div class="container">
+        <h1 id="center">Retrabalho</h1>
+    <div class="row">
+            <div class="col-md-2"></div>
+            <div class="container col-sm-4">
+                    {% bootstrap_field form.data %}
+                    
+                    
+        
+            </div>
+            <div class="container col-sm-4">
+                {% bootstrap_field form.num_bobinagem %}
+                
+                
+    
+        </div>
+        <div class="col-md-2"></div>
+        
+    </div>
+    <div class="row">
+                <div class="col-md-2"></div>
+        <div class="container col-sm-4">
+                {% bootstrap_field form.perfil %}
+                
+                
+    
+        </div>
+            
+            
+            <div class="container col-sm-4">
+                    {% bootstrap_field form.estado %}
+                    
+                    
+        
+            </div>
+            <div class="col-md-2"></div>
+    </div>
+      
+    <br>
+    <div class="row">  
+        <div class="col-md-2"></div>  
+        <div class="col-md-8">
+            {% csrf_token %}
+            <a href="{% url 'producao:retrabalho_home' %}" class="btn btn-primary pull-left" role="button">Voltar</a>
+            <input type="submit" class="btn btn-primary pull-right" value="Criar">
+        </div>
+        <div class="col-md-2"></div>
+</div>
+    
+</div>
+
+    
+</form>
+</div>
+

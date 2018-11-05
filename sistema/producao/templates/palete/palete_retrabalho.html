@@ -1,0 +1,66 @@
+{% extends "layout.html "%} {% block title %}Paletes para retrabalho | {{ block.super }}{% endblock %} {% block content %}
+<div class="container">
+    <a href="{% url 'producao:producao_home' %}" class="btn btn-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:palete_create' %}" class="btn btn-primary pull-right" role="button">Criar palete</a>
+
+
+</div>
+<div class="container table-responsive">
+    <h1 id="center">Paletes para Retrabalho</h1><br>
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+    <table class="table fit" id="center">
+        <tr>
+            <th>Palete</th>
+            <th>Nº</th>
+            <th>Data</th>
+            <th>Estado</th>
+            <th>Bobines</th>
+            <!-- <th>Core (")</th>
+            <th>Largura</th>
+            <th>Diâmetro (mm)</th> -->
+            <th>Área (m2)</th>
+            <th>Comprimento total (m)</th>
+            <th></th>
+            <th></th>
+
+
+
+
+        </tr>
+        {% for obj in palete %} {% if not obj.num == 0 %}
+        <tr>
+            <td><a href='/producao/palete/{{ obj.id }}'>{{ obj.nome }}</a></td>
+            <td>{{ obj.num }}</td>
+            <td>{{ obj.data_pal|date:"d-n-Y" }}</td>
+
+            {% if obj.estado == "G" %}
+            <td id="estado_good">{{ obj.estado }}</td>
+            {% elif obj.estado == "DM"%}
+            <td id="estado_dm">{{ obj.estado }}</td>
+            {% else %}
+            <td id="estado_rejected">{{ obj.estado }}</td>
+            {% endif %}
+            <td>{{ obj.num_bobines_act }}</td>
+            <!-- <td>{{ obj.core_bobines }}</td>
+            <td>{{ obj.largura_bobines }}</td>
+            <td>{{ obj.diametro }}</td> -->
+            <td>{{ obj.area }}</td>
+            <td>{{ obj.comp_total }}</td>
+
+            <td><a href="{% url 'producao:palete_delete' pk=obj.pk %}" class="btn btn-primary">Apagar</a></td>
+
+
+
+        </tr>
+        {% endif %} {% endfor %}
+    </table>
+</div>
+<div class="col-md-2"></div>
+
+
+
+
+</div>
+
+{% endblock %}

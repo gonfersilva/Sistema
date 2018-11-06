@@ -323,19 +323,24 @@ def perfil_delete(request, pk):
 def bobinagem_delete(request, pk):
     obj = get_object_or_404(Bobinagem, pk=pk)
     bobine = Bobine.objects.filter(bobinagem=obj)
-    
-    
     if request.method == "POST":
-        try:
-            emenda = Emenda.objects.filter(bobinagem=obj)
-        except:
-            obj.delete()
-            if obj.perfil.retrabalho == False:
-                return redirect('producao:bobinagens')
-            else:
-                return redirect('producao:retrabalho_home')
+        # try:
+        #     emenda = Emenda.objects.filter(bobinagem=obj)
+        # except Emenda.DoesNotExist:
+        #     obj.delete()
+        #     if obj.perfil.retrabalho == False:
+        #         return redirect('producao:bobinagens')
+        #     else:
+        #         return redirect('producao:retrabalho_home')
 
-        if emenda:
+        # obj.delete()
+        # if obj.perfil.retrabalho == False:
+        #     return redirect('producao:bobinagens')
+        # else:
+        #     return redirect('producao:retrabalho_home')
+
+        if Emenda.objects.filter(bobinagem=obj).exists():
+            emenda = Emenda.objects.filter(bobinagem=obj)
             for e in emenda:
                 e.bobine.comp_actual += e.metros
                 e.delete()
@@ -344,6 +349,13 @@ def bobinagem_delete(request, pk):
                 return redirect('producao:bobinagens')
             else:
                 return redirect('producao:retrabalho_home')
+        else:
+            obj.delete()
+            if obj.perfil.retrabalho == False:
+                return redirect('producao:bobinagens')
+            else:
+                return redirect('producao:retrabalho_home')
+        
             
     context = {
         "object": obj,
@@ -716,7 +728,7 @@ def relatorio_diario(request):
 
    
 
-    template_name = 'producao/relatorio_diario_linha.html'
+    template_name = 'relatorio/relatorio_diario_linha.html'
     context = {     
         "bobinagem": bobinagem,
         "area_g":area_g,
@@ -728,5 +740,75 @@ def relatorio_diario(request):
 
         
     }
+
+    return render(request, template_name, context)
+
+def relatorio_consumos(request):
+    inicio_data = request.GET.get("id")
+    fim_data = request.GET.get("fd")
+    inicio_hora = request.GET.get("fd")
+    fim_hora = request.GET.get("fd")
+      
+    bobinagem = []
+    c_sup_total = 0
+    c_inf_total = 0
+    c_sup = 0
+    c_inf = 0
+           
+    if inicio_data and fim_data:
+        bobinagem = Bobinagem.objects.filter(data__range=(inicio_data, fim_data))
+        
+        for bob in bobinagem:
+            if bob.perfil.retrabalho == False:
+                c_sup = bob.nwsup
+                c_inf = bob.nwinf
+                c_sup_total += c_sup
+                c_inf_total += c_inf
+
+    template_name = 'relatorio/relatorio_consumos.html'
+    context = {     
+        "bobinagem": bobinagem,
+        "c_sup_total": c_sup_total,
+        "c_inf_total": c_inf_total,
+             
+    }
+
+    return render(request, template_name, context)
+
+def relatorio_paletes(request):
+    inicio_data = request.GET.get("id")
+    fim_data = request.GET.get("fd")
+    inicio_hora = request.GET.get("fd")
+    fim_hora = request.GET.get("fd")
+      
+    palete = []
+    num_paletes = 0
+    area_total = 0
+    
+           
+    if inicio_data and fim_data:
+        palete = Palete.objects.filter(data_pal__range=(inicio_data, fim_data), estado='G')
+        
+        for p in palete:
+            area_total += p.area
+            num_paletes += 1
+
+
+
+    template_name = 'relatorio/relatorio_paletes.html'
+    context = {     
+        "palete": palete,
+        "num_paletes": num_paletes,
+        "area_total": area_total,
+        
+             
+    }
+
+    return render(request, template_name, context)
+
+
+def relatorio_home(request):
+    template_name = 'relatorio/relatorio_home.html'
+    context = {}
 
     return render(request, template_name, context)

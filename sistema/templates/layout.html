@@ -64,6 +64,13 @@
             </div> {% endcomment %}
             
           </li>
+          <li>
+            <a class="btn btn-secondary" href="{% url 'producao:relatorio_home' %}" role="button">
+              Dados de produção
+            </a>
+            
+            
+          </li>
           
           {% comment %} <li><a href="{% url 'report:report' %}">Report</a></li> {% endcomment %}
           <li><a href="#">{{ user.first_name }} {{ user.last_name }}</a></li>

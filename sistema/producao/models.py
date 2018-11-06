@@ -146,7 +146,7 @@ class Palete(models.Model):
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     cliente         = models.ForeignKey(Cliente, on_delete=models.PROTECT,verbose_name="Cliente", null=True, blank=True)
     timestamp       = models.DateTimeField(auto_now_add=True)
-    data_pal        = models.DateField(auto_now=False, auto_now_add=False, default=datetime.date.today)
+    data_pal        = models.DateField(auto_now=False, auto_now_add=False, default=datetime.date.today, verbose_name="Data da Palete" )
     nome            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Palete")
     num             = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Palete nº")
     estado          = models.CharField(max_length=2, choices=STATUSP, default='G', verbose_name="Estado")
@@ -161,13 +161,14 @@ class Palete(models.Model):
     peso_bruto      = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso bruto")
     peso_palete     = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso palete")
     peso_liquido    = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso liqudo")
+    retrabalhada    = models.BooleanField(default=False, verbose_name="Retrabalhada")
     
     def __str__(self):
         return self.nome
 
     class Meta:
         verbose_name_plural = "Paletes"
-        ordering = ['-nome']  
+        ordering = ['-num']  
 
 class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
@@ -353,20 +354,36 @@ def palete_nome(sender, instance, **kwargs):
                 instance.nome = 'DM%s-%s' % (num + 1, ano)
 
         elif instance.estado == 'G':
-             palete = Palete.objects.filter(estado='G')
-             num = 0
-             for p in palete:
-                if p.num > num:
-                     num = p.num
-             instance.num = num + 1   
-             if num + 1 < 10:    
-                instance.nome = 'P000%s-%s' % (num + 1, ano)  
-             elif num + 1 < 100:
-                instance.nome = 'P00%s-%s' % (num + 1, ano)
-             elif num + 1 < 1000:
-                instance.nome = 'P0%s-%s' % (num + 1, ano)
-             else: 
-                instance.nome = 'P%s-%s' % (num + 1, ano)
+            if instance.retrabalhada == False: 
+                palete = Palete.objects.filter(estado='G')
+                num = 0
+                for p in palete:
+                    if p.num > num:
+                        num = p.num
+                instance.num = num + 1   
+                if num + 1 < 10:    
+                    instance.nome = 'P000%s-%s' % (num + 1, ano)  
+                elif num + 1 < 100:
+                    instance.nome = 'P00%s-%s' % (num + 1, ano)
+                elif num + 1 < 1000:
+                    instance.nome = 'P0%s-%s' % (num + 1, ano)
+                else: 
+                    instance.nome = 'P%s-%s' % (num + 1, ano)
+            else:
+                palete = Palete.objects.filter(estado='G')
+                num = 0
+                for p in palete:
+                    if p.num > num:
+                        num = p.num
+                instance.num = num + 1   
+                if num + 1 < 10:    
+                    instance.nome = 'R000%s-%s' % (num + 1, ano)  
+                elif num + 1 < 100:
+                    instance.nome = 'R00%s-%s' % (num + 1, ano)
+                elif num + 1 < 1000:
+                    instance.nome = 'R0%s-%s' % (num + 1, ano)
+                else: 
+                    instance.nome = 'R%s-%s' % (num + 1, ano)
                 
              
 

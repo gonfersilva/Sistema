@@ -38,6 +38,9 @@ urlpatterns = [
     url(r'^clientes/$', cliente_home, name='clientes'),
     url(r'^clientes/create/$', ClienteCreateView.as_view(), name='cliente_create'),
     url(r'^relatorio/linha/$', relatorio_diario, name='relatorio_diario'),
+    url(r'^relatorio/$', relatorio_home, name='relatorio_home'),
+    url(r'^relatorio/consumos/$', relatorio_consumos, name='relatorio_consumos'),
+    url(r'^relatorio/paletes/$', relatorio_paletes, name='relatorio_paletes'),
        
     
     

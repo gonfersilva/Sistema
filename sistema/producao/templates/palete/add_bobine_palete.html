@@ -82,6 +82,7 @@
                         {% if palete.num_bobines_act == palete.num_bobines %}
                         <div class="row">
                             <div class="col">
+                                
                                 <h1 class="alert-success">Palete completa!<a href="{% url 'producao:paletes' %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
                                 
                                 
@@ -91,7 +92,7 @@
                     {% else %}
                         <div class="row">
                             <div class="col">
-                                <h1 class="alert-success"><a href="{% url 'producao:paletes' %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
+                                <h1 class="alert-success"><a href="{% url 'producao:paletes_retrabalho' %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
                                     
                                     
                             </div>

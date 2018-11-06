@@ -45,7 +45,7 @@ class PaleteCreateForm(ModelForm):
     
     class Meta:
        model = Palete
-       fields =['cliente', 'estado', 'num_bobines', 'largura_bobines', 'diametro', 'core_bobines']
+       fields =['cliente', 'data_pal', 'estado', 'num_bobines', 'largura_bobines', 'diametro', 'core_bobines', 'retrabalhada']
 
 class ClienteCreateForm(ModelForm):
     

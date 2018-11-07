@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, re
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm
-from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente
+from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -586,6 +586,8 @@ class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
     model = Bobinagem
     fields = ['inico', 'fim', 'diam']
     template_name = 'retrabalho/retrabalho_finalizar.html'
+    success_url = '/producao/etiqueta/retrabalho/{id}/'
+   
 
 
 @login_required
@@ -812,3 +814,34 @@ def relatorio_home(request):
     context = {}
 
     return render(request, template_name, context)
+
+def etiqueta_retrabalho(request, pk):
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    bobine = Bobine.objects.filter(bobinagem=bobinagem)
+
+    if EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem).exists():
+        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+    else:
+        for b in bobine:
+            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=bobinagem.perfil.produto, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp, area=b.area)
+            if Emenda.objects.filter(bobinagem=bobinagem).exists():
+                emenda = Emenda.objects.filter(bobinagem=bobinagem)
+                for e in emenda:
+                    if e.num_emenda == 1:
+                        e_r.bobine_original_1 = e.bobine.nome
+                        e_r.emenda1 = e.emenda
+                        e_r.metros1 = e.metros
+                    elif e.num_emenda == 2:
+                        e_r.bobine_original_2 = e.bobine.nome
+                        e_r.emenda2 = e.emenda
+                        e_r.metros2 = e.metros
+                    elif e.num_emenda == 3:
+                        e_r.bobine_original_3 = e.bobine.nome
+                        e_r.emenda3 = e.emenda
+                        e_r.metros3 = e.metros
+
+                e_r.save()
+
+        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+
+

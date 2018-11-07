@@ -251,7 +251,31 @@ class Emenda(models.Model):
 
 # class Aging(models.Model):
 #     pass
+
+class EtiquetaRetrabalho(models.Model):
+    bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
+    bobine = models.CharField(verbose_name="Bobine", max_length=200)
+    data = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today,verbose_name="Data")
+    produto = models.CharField(verbose_name="Produto", max_length=200)
+    largura_bobinagem = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura da bobinagem")
+    diam = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro")
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
+    comp_total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área")
+    bobine_original_1 = models.CharField(verbose_name="Bobine1", max_length=200,  null=True, blank=True)
+    bobine_original_2 = models.CharField(verbose_name="Bobine2", max_length=200,  null=True, blank=True)
+    bobine_original_3 = models.CharField(verbose_name="Bobine3", max_length=200,  null=True, blank=True)
+    emenda1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 1")
+    metros1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 1")
+    emenda2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 2")
+    metros2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 2")
+    emenda3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 3")
+    metros3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 3")
     
+    def __str__(self):
+        return self.bobine
+       
+
 
 def bobinagem_nome(sender, instance, **kwargs):
     if not instance.nome:
@@ -551,7 +575,6 @@ post_save.connect(perfil_larguras, sender=Perfil)
 pre_save.connect(bobinagem_nome, sender=Bobinagem)
 pre_save.connect(desperdicio, sender=Bobinagem)
 post_save.connect(create_bobine, sender=Bobinagem)
-post_save.connect(comp_area_bobine_retrabalho, sender=Bobinagem)
 # post_save.connect(area_status, sender=Bobinagem)
 pre_save.connect(tempo_duracao, sender=Bobinagem)
 pre_save.connect(palete_nome, sender=Palete)
@@ -560,5 +583,6 @@ pre_save.connect(comp_bobine, sender=Bobine)
 pre_save.connect(area_bobine, sender=Bobine)
 pre_save.connect(area_palete, sender=Palete)
 post_save.connect(update_areas, sender=Bobine)
+post_save.connect(comp_area_bobine_retrabalho, sender=Bobinagem)
 
 

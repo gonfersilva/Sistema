@@ -38,7 +38,8 @@ class CreatePerfil(LoginRequiredMixin, CreateView):
 class BobinagemCreateView(LoginRequiredMixin, CreateView):
     form_class = BobinagemCreateForm
     template_name = 'producao/bobinagem_create.html'
-    success_url = "/producao/bobinagem/"
+    # success_url = "/producao/bobinagem/"K
+    success_url = '/producao/etiqueta/retrabalho/{id}/'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -841,7 +842,19 @@ def etiqueta_retrabalho(request, pk):
                         e_r.metros3 = e.metros
 
                 e_r.save()
+        if bobinagem.perfil.retrabalho == True:
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)
+        else:
+            return redirect('producao:bobinagens')
 
-        return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
-
+def etiqueta_palete(request, pk):
+    palete = Palete.objects.get(pk=pk)
+    bobine = Bobine.objects.filter(palete=palete)
+    if EtiquetaPalete.objects.filter(palete=palete).exists():
+        return redirect('producao:paletes')
+    else:
+        e_p = EtiquetaPalete.objects.create(palete=palete)
+        for b in bobine:
+            cont_b = 0
+            pass

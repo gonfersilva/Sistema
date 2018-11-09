@@ -83,7 +83,7 @@
                         <div class="row">
                             <div class="col">
                                 
-                                <h1 class="alert-success">Palete completa!<a href="{% url 'producao:paletes' %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
+                                <h1 class="alert-success">Palete completa!{% if not etiqueta == True %}<a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a>{% endif %}</h1>
                                 
                                 
                             </div>
@@ -92,7 +92,7 @@
                     {% else %}
                         <div class="row">
                             <div class="col">
-                                <h1 class="alert-success"><a href="{% url 'producao:paletes_retrabalho' %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
+                                <h1 class="alert-success"><a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Fechar palete</button></a></h1>
                                     
                                     
                             </div>
@@ -137,8 +137,9 @@
                                     
                                     <td>{{ bob.bobinagem.perfil.core }}</td>
                                     <td>{{ bob.area }}</td>
-                                    
+                                    {% if not etiqueta == True %}
                                     <td><a href="{% url 'producao:paletebobine' operation='remove' pk_bobine=bob.pk pk_palete=palete.pk %}"><button type="button" class="btn btn-danger">Remove</button></a></td>
+                                    {% endif %}
                                    
                                           
                                 </tr>

@@ -42,5 +42,6 @@ urlpatterns = [
     url(r'^relatorio/consumos/$', relatorio_consumos, name='relatorio_consumos'),
     url(r'^relatorio/paletes/$', relatorio_paletes, name='relatorio_paletes'),
     url(r'^etiqueta/retrabalho/(?P<pk>\d+)/$', etiqueta_retrabalho, name='etiqueta_retrabalho'),
+    url(r'^etiqueta/palete/(?P<pk>\d+)/$', etiqueta_palete, name='etiqueta_palete'),
       
 ]

@@ -280,8 +280,8 @@ class EtiquetaPalete(models.Model):
     palete_nome = models.CharField(verbose_name="Palete nome", max_length=200)
     produto = models.CharField(verbose_name="Produto", max_length=200)
     largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
-    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo")
-    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo")
+    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo",null=True, blank=True)
+    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
     cliente = models.CharField(verbose_name="Cliente", max_length=200)
     bobine1 = models.CharField(verbose_name="Bobine nº 1", max_length=200, null=True, blank=True)
     bobine2 = models.CharField(verbose_name="Bobine nº 2", max_length=200, null=True, blank=True)
@@ -344,6 +344,8 @@ class EtiquetaPalete(models.Model):
     bobine59 = models.CharField(verbose_name="Bobine nº 59", max_length=200, null=True, blank=True)
     bobine60 = models.CharField(verbose_name="Bobine nº 60", max_length=200, null=True, blank=True)
     
+    def __str__(self):
+        return self.palete_nome
        
 
 

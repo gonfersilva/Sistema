@@ -859,7 +859,7 @@ def etiqueta_palete(request, pk):
     d_min = 0
     d_max = 0
     cont = 1
-    bob = [0] * 60
+    bob = [None] * 60
     
 
     if EtiquetaPalete.objects.filter(palete=palete).exists():
@@ -869,7 +869,7 @@ def etiqueta_palete(request, pk):
         
         for b in bobine:
             d = b.bobinagem.diam
-            print(d)
+            
             if d_max == 0:
                 d_max = d
             elif d > d_max:
@@ -949,8 +949,5 @@ def etiqueta_palete(request, pk):
         e_p.diam_min = d_min
         e_p.diam_max = d_max
         e_p.save()
-        print(bobine)
-        print(d_max)
-        print(d_min)
-        
+                
     return redirect('producao:addbobinepalete', pk=palete.pk)

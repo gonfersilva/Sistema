@@ -13,6 +13,28 @@
     </div>
       <div class="row">  
         <h1 id="center">Bobinagens Linha 1</h1><br>
+        <div class="container" id="center">
+            <span class="step-links">
+                {% if bobinagem.has_previous %}
+                    <a href="?page=1" class="btn btn-primary">&laquo; Primeiro</a>
+                    <a href="?page={{ bobinagem.previous_page_number }}" class="btn btn-primary">&laquo; Anterior</a>
+                {% endif %}
+        
+                <span class="current">
+                    
+                      {{ bobinagem.number }}/{{ bobinagem.paginator.num_pages }}
+                    
+                </span>
+        
+                {% if bobinagem.has_next %}
+                    <a href="?page={{ bobinagem.next_page_number }}" class="btn btn-primary">Próximo &raquo;</a>
+                    <a href="?page={{ bobinagem.paginator.num_pages }}" class="btn btn-primary">Último &raquo;</a>
+                {% endif %}
+            </span>
+            <br>
+            <br>
+            
+        </div>
         <div class="col-md-12 table-responsive size-table">
                 
                 <div class="col-md-12 ">
@@ -119,12 +141,12 @@
                     </table>
                     
                 </div>
-       
+                
                 </div>
                 
             </div>
 
-    
+            
     
 </div>
 

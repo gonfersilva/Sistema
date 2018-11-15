@@ -1,5 +1,5 @@
 from django import template
-from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm
+from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm
 from producao.models import Perfil, Bobinagem, Emenda
 
 register = template.Library()
@@ -40,3 +40,8 @@ def final_form(self):
 def cliente_form(self):
     form = ClienteCreateForm()
     return {'form': form }
+
+@register.inclusion_tag('producao/bobine_update_form.html')
+def bobine_update_form(self):
+    form = UpdateBobineForm(instance=self.instance)
+    return {'form': form, "instance": self.instance}

@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm
+from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,7 @@ from django.contrib import messages
 from time import gmtime, strftime
 import datetime
 from .funcs import *
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 
 @login_required
@@ -38,23 +39,54 @@ class CreatePerfil(LoginRequiredMixin, CreateView):
 class BobinagemCreateView(LoginRequiredMixin, CreateView):
     form_class = BobinagemCreateForm
     template_name = 'producao/bobinagem_create.html'
-    # success_url = "/producao/bobinagem/"K
+    # success_url = "/producao/bobinagem/"
     success_url = '/producao/etiqueta/retrabalho/{id}/'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+@login_required
+def create_bobinagem(request):
     
-class PerfilListView(LoginRequiredMixin, ListView):
-    model = Perfil
+    template_name = 'producao/bobinagem_create.html'
+    form = BobinagemCreateForm(request.POST or None)
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+            areas(instance.pk)
+        
+        return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
+
+    context =  {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+
+
+def perfil_list(request):
+    perfil = Perfil.objects.all()
+    paginator = Paginator(perfil, 15)
+    page = request.GET.get('page')
     template_name = 'perfil/perfil_home.html'
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        return context
-    
+    try:
+        perfil = paginator.page(page)
+    except PageNotAnInteger:
+        perfil = paginator.page(1)
+    except EmptyPage:
+        perfil = paginator.page(paginator.num_pages)
+
+    context = {
+        "perfil": perfil,
+    }
+    return render (request, template_name, context)
+
 
 @login_required
 def perfil_detail(request, pk):
@@ -69,24 +101,33 @@ def perfil_detail(request, pk):
 
 
    
-class BobinagemListView(LoginRequiredMixin, ListView):
-    model = Bobinagem
-    template_name = 'producao/bobinagem_home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        return context
+# class BobinagemListView(LoginRequiredMixin, ListView):
+#     model = Bobinagem
+#     template_name = 'producao/bobinagem_home.html'
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['now'] = timezone.now()
+#         return context
 
 def bobinagem_list(request):
     bobinagem = Bobinagem.objects.all()
+    paginator = Paginator(bobinagem, 15)
+    page = request.GET.get('page')
+    template_name = 'producao/bobinagem_home.html'
     bobine = Bobine.objects.all()
 
-    template_name = 'producao/bobinagem_home.html'
+    try:
+        bobinagem = paginator.page(page)
+    except PageNotAnInteger:
+        bobinagem = paginator.page(1)
+    except EmptyPage:
+        bobinagem = paginator.page(paginator.num_pages)
 
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
+        
     }
     return render (request, template_name, context)
 
@@ -110,17 +151,42 @@ class LarguraUpdate(LoginRequiredMixin, UpdateView):
     fields = ['largura']
     template_name = 'perfil/largura_update.html'
 
-class BobineUpdate(LoginRequiredMixin, UpdateView):
-    model = Bobine
-    fields = [ 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'buraco', 'obs']
-    template_name = 'producao/bobine_update.html'
+# class BobineUpdate(LoginRequiredMixin, UpdateView):
+#     model = Bobine
+#     fields = [ 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'buraco', 'obs']
+#     template_name = 'producao/bobine_update.html'
     
-    def get_success_url(self):
-         bobinagem = self.object.bobinagem
-         return reverse('producao:bobinestatus', kwargs={'pk': bobinagem.id})
+#     def get_success_url(self):
+#          bobinagem = self.object.bobinagem
+#          return reverse('producao:bobinestatus', kwargs={'pk': bobinagem.id})
+
+       
+    
 
     
-     
+def update_bobine(request, pk=None):
+
+    instance = get_object_or_404(Bobine, pk=pk)
+    template_name = 'producao/bobine_update.html'
+    estado_anterior = instance.estado
+    form = UpdateBobineForm(request.POST or None, instance=instance)
+    context = {
+        "form": form,
+        "instance": instance,
+        "title": instance.nome
+        
+    }
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        update_areas_bobine(instance.pk, estado_anterior)
+        return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
+   
+
+    return render(request, template_name, context)
+
+
+
 
 class BobinagemUpdate(LoginRequiredMixin, UpdateView):
     model = Bobinagem
@@ -128,14 +194,32 @@ class BobinagemUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'producao/bobinagem_update.html'
     
     
-class PaleteListView(LoginRequiredMixin, ListView):
-    model = Palete
+# class PaleteListView(LoginRequiredMixin, ListView):
+#     model = Palete
+#     template_name = 'palete/palete_home.html'
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['now'] = timezone.now()
+#         return context
+
+def pelete_list(request):
+    palete = Palete.objects.all()
+    paginator = Paginator(palete, 15)
+    page = request.GET.get('page')
     template_name = 'palete/palete_home.html'
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        return context
+    try:
+        palete = paginator.page(page)
+    except PageNotAnInteger:
+        palete = paginator.page(1)
+    except EmptyPage:
+        palete = paginator.page(paginator.num_pages)
+
+    context = {
+        "palete": palete,
+    }
+    return render (request, template_name, context)
 
 
 class PaleteCreateView(LoginRequiredMixin, CreateView):
@@ -207,7 +291,7 @@ class ClienteCreateView(LoginRequiredMixin, CreateView):
      template_name = 'cliente/cliente_create.html'
      success_url = "/producao/clientes/"
     
-     
+   
 
     
 # @login_required
@@ -432,11 +516,22 @@ def status_bobinagem(request, operation, pk):
 @login_required
 def palete_retrabalho(request):
     palete = Palete.objects.filter(estado='DM')
+    paginator = Paginator(palete, 15)
+    page = request.GET.get('page')
     template_name = 'palete/palete_retrabalho.html'
+    
+    try:
+        palete = paginator.page(page)
+    except PageNotAnInteger:
+        palete = paginator.page(1)
+    except EmptyPage:
+        palete = paginator.page(paginator.num_pages)
+
     context = {
-        "palete":palete
+        "palete": palete,
     }
-    return render(request, template_name, context)
+    return render (request, template_name, context)
+
 
 @login_required
 def palete_create_retrabalho(request):
@@ -450,6 +545,15 @@ def retrabalho_home(request):
     bobine = Bobine.objects.all()
     bobinagem = Bobinagem.objects.all()
     template_name = 'retrabalho/retrabalho_home.html'
+    paginator = Paginator(bobinagem, 15)
+    page = request.GET.get('page')
+
+    try:
+        bobinagem = paginator.page(page)
+    except PageNotAnInteger:
+        bobinagem = paginator.page(1)
+    except EmptyPage:
+        bobinagem = paginator.page(paginator.num_pages)
 
     context = {
         "palete": palete,
@@ -502,8 +606,8 @@ def retrabalho_filter(request, pk):
                         emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=2)
                         emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
                         emenda.save()
+
                 bobinagem.num_emendas += 1 
-                bobinagem.save()
                 data = bobinagem.data
                 data = data.strftime('%Y%m%d')
                 map(int, data)
@@ -666,6 +770,7 @@ def emenda_delete(request, pk):
     }
     return render(request, template_name, context)
 
+@login_required
 def cliente_home(request):
     cliente = Cliente.objects.all()
 
@@ -676,20 +781,21 @@ def cliente_home(request):
     return render(request, template_name, context)
 
 
-
+@login_required
 def producao_home(request):
     template_name = 'producao/producao_home.html'
     context = {}
 
     return render(request, template_name, context)
 
+@login_required
 def planeamento_home(request):
     template_name = 'producao/planeamento_home.html'
     context = {}
 
     return render(request, template_name, context)
 
-
+@login_required
 def bobine_details(request, pk):
      bobine = get_object_or_404(Bobine, pk=pk)
      
@@ -702,7 +808,7 @@ def bobine_details(request, pk):
      }
      return render(request, template_name, context)
 
-
+@login_required
 def relatorio_diario(request):
     inicio_data = request.GET.get("id")
     fim_data = request.GET.get("fd")
@@ -751,6 +857,7 @@ def relatorio_diario(request):
 
     return render(request, template_name, context)
 
+@login_required
 def relatorio_consumos(request):
     inicio_data = request.GET.get("id")
     fim_data = request.GET.get("fd")
@@ -783,6 +890,7 @@ def relatorio_consumos(request):
 
     return render(request, template_name, context)
 
+@login_required
 def relatorio_paletes(request):
     inicio_data = request.GET.get("id")
     fim_data = request.GET.get("fd")
@@ -814,13 +922,14 @@ def relatorio_paletes(request):
 
     return render(request, template_name, context)
 
-
+@login_required
 def relatorio_home(request):
     template_name = 'relatorio/relatorio_home.html'
     context = {}
 
     return render(request, template_name, context)
 
+@login_required
 def etiqueta_retrabalho(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobine = Bobine.objects.filter(bobinagem=bobinagem)
@@ -852,7 +961,7 @@ def etiqueta_retrabalho(request, pk):
         else:
             return redirect('producao:bobinagens')
 
-
+@login_required
 def etiqueta_palete(request, pk):
     palete = Palete.objects.get(pk=pk)
     bobine = Bobine.objects.filter(palete=palete)
@@ -951,3 +1060,8 @@ def etiqueta_palete(request, pk):
         e_p.save()
                 
     return redirect('producao:addbobinepalete', pk=palete.pk)
+
+@login_required
+def error_500(request):
+    data = {}
+    return render(request, 'error/error_500.html', data)

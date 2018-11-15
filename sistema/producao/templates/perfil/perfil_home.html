@@ -11,6 +11,28 @@
 <div class="container table-responsive size-table">
     
     <h1 id="center">Perfis</h1></br>
+    <div class="container" id="center">
+            <span class="step-links">
+                {% if perfil.has_previous %}
+                    <a href="?page=1" class="btn btn-primary">&laquo; Primeiro</a>
+                    <a href="?page={{ perfil.previous_page_number }}" class="btn btn-primary">&laquo; Anterior</a>
+                {% endif %}
+        
+                <span class="current">
+                    
+                      {{ perfil.number }}/{{ perfil.paginator.num_pages }}
+                    
+                </span>
+        
+                {% if palete.has_next %}
+                    <a href="?page={{ perfil.next_page_number }}" class="btn btn-primary">Próximo &raquo;</a>
+                    <a href="?page={{ perfil.paginator.num_pages }}" class="btn btn-primary">Último &raquo;</a>
+                {% endif %}
+            </span>
+            <br>
+            <br>
+            
+        </div>
     <div class="row">
         <div class="col-md-12">
             <table class="table">
@@ -28,7 +50,7 @@
                     <td>Velocidade</td>
                     <td>Produção</td> -->
                 </tr>
-                {% for obj in object_list %}
+                {% for obj in perfil %}
                 <tr>
                     <td><a href='{{ obj.get_absolute_url }}'>{{ obj.nome }}</a></td>
                     <td>{{ obj.produto }}</td>

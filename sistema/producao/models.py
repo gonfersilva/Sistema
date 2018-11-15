@@ -360,7 +360,7 @@ def bobinagem_nome(sender, instance, **kwargs):
                 instance.nome = '3%s-0%s' % (data[1:], instance.num_bobinagem)
 
             else:
-                instance.nome = '3%s-0%s' % (data[1:], instance.num_bobinagem)
+                instance.nome = '3%s-%s' % (data[1:], instance.num_bobinagem)
         elif instance.perfil.retrabalho == True and instance.num_emendas == 0:
             if instance.num_bobinagem < 10:
                 instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
@@ -547,61 +547,12 @@ def comp_area_bobine_retrabalho(sender, instance, **kwargs):
         b.area = b.comp_actual * b.largura.largura
         b.save()
 
-    
-# def bobine_nome(pk):
-#     bobinagem = Bobinagem.objects.get(pk=pk)
-#     bobine = Bobine.objects.filter(bobinagem=bobinagem)
-#     for b in bobine:
-#         if b.largura.num_bobine < 10:
-#             b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
-#         else:
-#             b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
-#         b.save()
+def comp_bobine_retrabalho(sender, instance, **kwargs):
+    emenda = Emenda.objects.get(pk=instance.pk)
+    bobine = emenda.bobine
+    bobine.comp_actual -= emenda.metros
+    bobine.save()
 
-# def area_status(sender, instance, **kwargs):
-#     bobine = Bobine.objects.filter(bobinagem=instance)
-#     area_g = 0
-#     area_dm = 0
-#     area_r = 0
-#     area_ind = 0
-#     area_ba = 0
-#     for b in bobine:
-#         if b.estado == 'G':
-#             area_g += b.area
-#         elif b.estado == 'DM':
-#             area_dm += b.area
-#         elif b.estado == 'R':
-#             area_r += b.area
-#         elif b.estado == 'IND':
-#             area_ind += b.area
-#         elif b.estado == 'BA':
-#             area_ba += b.area
-#         else: 
-#             instance.area_g = area_g
-#             instance.area_dm= area_dm
-#             instance.area_r = area_r
-#             instance.area_ind = area_ind
-#             instance.area_ba = area_ba
-#             instance.save()
-            
-
-#     instance.area_g = area_g
-#     instance.area_dm= area_dm
-#     instance.area_r = area_r
-#     instance.area_ind = area_ind
-#     instance.area_ba = area_ba
-#     instance.save()
-
-
-# def area_good(pk):
-#     bobinagem = Bobinagem.objects.get(pk=pk)
-#     bobine_g = Bobine.objects.filter(bobinagem=bobinagem, estado='G')
-#     area_g = 0
-#     for b_g in bobine_g:
-#         area_g = b_g.area
-    
-#     bobinagem.area_g = area_g
-#     bobinagem.save()
 
 def update_areas(sender, instance, **kwargs):
     post_save.disconnect(update_areas, sender=sender)
@@ -643,6 +594,7 @@ def update_areas(sender, instance, **kwargs):
 
 
 
+
 post_save.connect(perfil_larguras, sender=Perfil)
 pre_save.connect(bobinagem_nome, sender=Bobinagem)
 pre_save.connect(desperdicio, sender=Bobinagem)
@@ -656,5 +608,6 @@ pre_save.connect(area_bobine, sender=Bobine)
 pre_save.connect(area_palete, sender=Palete)
 post_save.connect(update_areas, sender=Bobine)
 post_save.connect(comp_area_bobine_retrabalho, sender=Bobinagem)
+# post_save.connect(comp_bobine_retrabalho, sender=Emenda)
 
 

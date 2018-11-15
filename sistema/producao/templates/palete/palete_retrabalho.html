@@ -7,6 +7,28 @@
 </div>
 <div class="container table-responsive">
     <h1 id="center">Paletes para Retrabalho</h1><br>
+    <div class="container" id="center">
+            <span class="step-links">
+                {% if palete.has_previous %}
+                    <a href="?page=1" class="btn btn-primary">&laquo; Primeiro</a>
+                    <a href="?page={{ palete.previous_page_number }}" class="btn btn-primary">&laquo; Anterior</a>
+                {% endif %}
+        
+                <span class="current">
+                    
+                      {{ palete.number }}/{{ palete.paginator.num_pages }}
+                    
+                </span>
+        
+                {% if palete.has_next %}
+                    <a href="?page={{ palete.next_page_number }}" class="btn btn-primary">Próximo &raquo;</a>
+                    <a href="?page={{ palete.paginator.num_pages }}" class="btn btn-primary">Último &raquo;</a>
+                {% endif %}
+            </span>
+            <br>
+            <br>
+            
+        </div>
     <div class="col-md-2"></div>
     <div class="col-md-8">
     <table class="table fit" id="center">

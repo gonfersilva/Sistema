@@ -11,27 +11,28 @@
 </div>
 <div class="container">
         <h1 id="center">Bobinagens retrabalhadas</h1><br>
-{% comment %} <div class="container table-responsive col-sm-6">
-
-    <h2>Paletes para retrabalho</h2>
-    <table class="table fit">
-            <tr>
+        <div class="container" id="center">
+                <span class="step-links">
+                    {% if bobinagem.has_previous %}
+                        <a href="?page=1" class="btn btn-primary">&laquo; Primeiro</a>
+                        <a href="?page={{ bobinagem.previous_page_number }}" class="btn btn-primary">&laquo; Anterior</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        
+                          {{ bobinagem.number }}/{{ bobinagem.paginator.num_pages }}
+                        
+                    </span>
+            
+                    {% if bobinagem.has_next %}
+                        <a href="?page={{ bobinagem.next_page_number }}" class="btn btn-primary">Próximo &raquo;</a>
+                        <a href="?page={{ bobinagem.paginator.num_pages }}" class="btn btn-primary">Último &raquo;</a>
+                    {% endif %}
+                </span>
+                <br>
+                <br>
                 
-                <th>Palete</th>
-                
-                           
-                
-            </tr>
-            {% for p in palete %}
-            {% if p.num != 0 %}
-            <tr>
-                <td><a href="#"></a>{{ p.nome }}</a></td>
-               
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </table>
-    </div>    {% endcomment %}
+            </div>
     <div class="container table-responsive">
         
         <table class="table fit">

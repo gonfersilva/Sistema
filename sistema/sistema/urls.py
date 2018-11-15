@@ -19,6 +19,8 @@ from django.conf.urls.static import static
 from .settings import local
 from django.views.generic import TemplateView
 from users import urls as users_urls
+from producao import views as producao_views
+from django.conf.urls import handler500
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -30,3 +32,5 @@ urlpatterns = [
 
 if local.DEBUG:
     urlpatterns += static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)
+
+handler500 = producao_views.error_500

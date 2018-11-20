@@ -133,4 +133,107 @@ def update_areas_bobine(pk, estado):
 
         
     
+def bobinagem_create(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    if not instance.nome:
+        data = instance.data
+        data = data.strftime('%Y%m%d')
+        map(int, data)
+        if instance.perfil.retrabalho == True and instance.num_emendas > 0:
+            if instance.num_bobinagem < 10:
+                # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
+                instance.nome = '3%s-0%s' % (data[1:], instance.num_bobinagem)
 
+            else:
+                instance.nome = '3%s-%s' % (data[1:], instance.num_bobinagem)
+        elif instance.perfil.retrabalho == True and instance.num_emendas == 0:
+            if instance.num_bobinagem < 10:
+                instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
+            else:
+                instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
+        else:
+            if instance.num_bobinagem < 10:
+                instance.nome = '%s-0%s' % (data, instance.num_bobinagem)
+            else:
+                instance.nome = '%s-%s' % (data, instance.num_bobinagem)
+     
+    instance.save()
+    create_bobine(instance.pk)  
+    tempo_duracao(instance.pk)
+    desperdicio(instance.pk)  
+    area_bobinagem(instance.pk)    
+
+def create_bobine(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    num = 1
+    for i in range(instance.perfil.num_bobines):
+        lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
+        bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
+        if not bob:
+            bob = Bobine.objects.create(bobinagem=instance, largura=lar)
+            if num < 10:
+                bob.nome = '%s-0%s' % (instance.nome, num)
+            else:
+                bob.nome = '%s-%s' % (instance.nome, num)
+            if bob.bobinagem.estado == 'R':
+                bob.estado = 'R'    
+            elif bob.bobinagem.estado == 'DM':
+                bob.estado = 'DM'
+            elif bob.bobinagem.estado == 'G':
+                bob.estado = 'G'
+            elif bob.bobinagem.estado == 'BA':
+                bob.estado = 'BA'
+            elif bob.bobinagem.estado == 'IND':
+                bob.estado = 'IND'
+            else:
+                bob.estado = 'LAB'
+            bob.save() 
+            area_bobine(bob.pk)
+        num += 1
+  
+    
+def tempo_duracao(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    if instance.inico or instance.fim:
+        if not instance.duracao:
+            fim = instance.fim
+            fim = fim.strftime('%H:%M')
+            inico = instance.inico
+            inico = inico.strftime('%H:%M')
+            (hf, mf) = fim.split(':')
+            (hi, mi) = inico.split(':')
+            if hf < hi: 
+                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+            else:
+                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
+            
+            result_str = strftime("%H:%M", gmtime(result))
+            instance.duracao = result_str
+            instance.save()
+
+def area_bobinagem(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    largura = instance.perfil.largura_bobinagem / 1000
+    instance.area = instance.comp_cli * largura
+    instance.save()
+
+def desperdicio(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    if instance.comp_par > 0:
+        desp = instance.comp - instance.comp_par
+        x = instance.comp_par * Decimal('0.05')
+        if desp <= x:
+            instance.comp_cli = instance.comp
+        else:        
+            instance.comp_cli = instance.comp_par * Decimal('1.05')
+            instance.desper = (instance.comp - instance.comp_cli) / 1000 * instance.perfil.largura_bobinagem
+    elif instance.comp_par == 0:
+        instance.comp_cli = instance.comp
+        instance.desper = 0
+    instance.save()
+
+def area_bobine(pk):
+    instance = Bobine.objects.get(pk=pk)
+    largura = instance.largura.largura / 1000
+    instance.area = largura * instance.comp_actual
+    instance.save()

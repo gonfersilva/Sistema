@@ -95,7 +95,7 @@ class Bobinagem(models.Model):
     comp_cli = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento Cliente", default=0)
     desper = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Desperdício", default=0)
     diam = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro", null=True, blank=True)
-    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área")
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área", null=True, blank=True)
     inico = models.TimeField(auto_now_add=False, auto_now=False, verbose_name="Início", null=True, blank=True)
     fim = models.TimeField(auto_now_add=False, auto_now=False, verbose_name="Fim", null=True, blank=True)
     duracao = models.CharField(max_length=200, null=True, blank=True, verbose_name="Duração")
@@ -179,7 +179,7 @@ class Bobine(models.Model):
     palete = models.ForeignKey(Palete, on_delete=models.SET_NULL, null=True, blank=True)   
     posicao_palete = models.PositiveIntegerField(verbose_name="Posição", default=0)
     estado = models.CharField(max_length=4, choices=STATUSP, default='G', verbose_name="Estado")
-    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área bobine")
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área bobine", null=True, blank=True)
     con = models.BooleanField(default=False,verbose_name="Cónica")
     descen = models.BooleanField(default=False,verbose_name="Descentrada")
     presa = models.BooleanField(default=False,verbose_name="Presa")
@@ -349,57 +349,57 @@ class EtiquetaPalete(models.Model):
        
 
 
-def bobinagem_nome(sender, instance, **kwargs):
-    if not instance.nome:
-        data = instance.data
-        data = data.strftime('%Y%m%d')
-        map(int, data)
-        if instance.perfil.retrabalho == True and instance.num_emendas > 0:
-            if instance.num_bobinagem < 10:
-                # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
-                instance.nome = '3%s-0%s' % (data[1:], instance.num_bobinagem)
+# def bobinagem_nome(sender, instance, **kwargs):
+#     if not instance.nome:
+#         data = instance.data
+#         data = data.strftime('%Y%m%d')
+#         map(int, data)
+#         if instance.perfil.retrabalho == True and instance.num_emendas > 0:
+#             if instance.num_bobinagem < 10:
+#                 # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
+#                 instance.nome = '3%s-0%s' % (data[1:], instance.num_bobinagem)
 
-            else:
-                instance.nome = '3%s-%s' % (data[1:], instance.num_bobinagem)
-        elif instance.perfil.retrabalho == True and instance.num_emendas == 0:
-            if instance.num_bobinagem < 10:
-                instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
-            else:
-                instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
-        else:
-            if instance.num_bobinagem < 10:
-                instance.nome = '%s-0%s' % (data, instance.num_bobinagem)
-            else:
-                instance.nome = '%s-%s' % (data, instance.num_bobinagem)
+#             else:
+#                 instance.nome = '3%s-%s' % (data[1:], instance.num_bobinagem)
+#         elif instance.perfil.retrabalho == True and instance.num_emendas == 0:
+#             if instance.num_bobinagem < 10:
+#                 instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
+#             else:
+#                 instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
+#         else:
+#             if instance.num_bobinagem < 10:
+#                 instance.nome = '%s-0%s' % (data, instance.num_bobinagem)
+#             else:
+#                 instance.nome = '%s-%s' % (data, instance.num_bobinagem)
             
                  
         
 
-def create_bobine(sender, instance, **kwargs):
-    num = 1
-    for i in range(instance.perfil.num_bobines):
-        lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
-        bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
-        if not bob:
-            bob = Bobine.objects.create(bobinagem=instance, largura=lar)
-            if num < 10:
-                bob.nome = '%s-0%s' % (instance.nome, num)
-            else:
-                bob.nome = '%s-%s' % (instance.nome, num)
-            if bob.bobinagem.estado == 'R':
-                bob.estado = 'R'
-            elif bob.bobinagem.estado == 'DM':
-                bob.estado = 'DM'
-            elif bob.bobinagem.estado == 'G':
-                bob.estado = 'G'
-            elif bob.bobinagem.estado == 'BA':
-                bob.estado = 'BA'
-            elif bob.bobinagem.estado == 'IND':
-                bob.estado = 'IND'
-            else:
-                bob.estado = 'LAB'
-            bob.save() 
-        num += 1
+# def create_bobine(sender, instance, **kwargs):
+#     num = 1
+#     for i in range(instance.perfil.num_bobines):
+#         lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
+#         bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
+#         if not bob:
+#             bob = Bobine.objects.create(bobinagem=instance, largura=lar)
+#             if num < 10:
+#                 bob.nome = '%s-0%s' % (instance.nome, num)
+#             else:
+#                 bob.nome = '%s-%s' % (instance.nome, num)
+#             if bob.bobinagem.estado == 'R':
+#                 bob.estado = 'R'
+#             elif bob.bobinagem.estado == 'DM':
+#                 bob.estado = 'DM'
+#             elif bob.bobinagem.estado == 'G':
+#                 bob.estado = 'G'
+#             elif bob.bobinagem.estado == 'BA':
+#                 bob.estado = 'BA'
+#             elif bob.bobinagem.estado == 'IND':
+#                 bob.estado = 'IND'
+#             else:
+#                 bob.estado = 'LAB'
+#             bob.save() 
+#         num += 1
     
     
 
@@ -407,22 +407,22 @@ def create_bobine(sender, instance, **kwargs):
 
 
 
-def tempo_duracao(sender, instance, **kwargs):
-    if instance.inico or instance.fim:
-        if not instance.duracao:
-            fim = instance.fim
-            fim = fim.strftime('%H:%M')
-            inico = instance.inico
-            inico = inico.strftime('%H:%M')
-            (hf, mf) = fim.split(':')
-            (hi, mi) = inico.split(':')
-            if hf < hi: 
-                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
-            else:
-                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
+# def tempo_duracao(sender, instance, **kwargs):
+#     if instance.inico or instance.fim:
+#         if not instance.duracao:
+#             fim = instance.fim
+#             fim = fim.strftime('%H:%M')
+#             inico = instance.inico
+#             inico = inico.strftime('%H:%M')
+#             (hf, mf) = fim.split(':')
+#             (hi, mi) = inico.split(':')
+#             if hf < hi: 
+#                 result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+#             else:
+#                 result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
             
-            result_str = strftime("%H:%M", gmtime(result))
-            instance.duracao = result_str
+#             result_str = strftime("%H:%M", gmtime(result))
+#             instance.duracao = result_str
 
 
 def palete_nome(sender, instance, **kwargs):
@@ -484,13 +484,13 @@ def palete_nome(sender, instance, **kwargs):
              
 
 
-def area_bobinagem(sender, instance, **kwargs):
-    largura = instance.perfil.largura_bobinagem / 1000
-    instance.area = instance.comp_cli * largura
+# def area_bobinagem(sender, instance, **kwargs):
+#     largura = instance.perfil.largura_bobinagem / 1000
+#     instance.area = instance.comp_cli * largura
     
-def area_bobine(sender, instance, **kwargs):
-    largura = instance.largura.largura / 1000
-    instance.area = largura * instance.comp_actual
+# def area_bobine(sender, instance, **kwargs):
+#     largura = instance.largura.largura / 1000
+#     instance.area = largura * instance.comp_actual
     
 def area_palete(sender, instance, **kwargs):
     bobine = Bobine.objects.filter(palete=instance.pk)
@@ -525,89 +525,89 @@ def comp_bobine(sender, instance, **kwargs):
 #             instance.emenda = x + emenda.emenda
         
    
-def desperdicio(sender, instance, **kwargs):
-    if instance.comp_par > 0:
-        desp = instance.comp - instance.comp_par
-        x = instance.comp_par * Decimal('0.05')
-        if desp <= x:
-            instance.comp_cli = instance.comp
-        else:        
-            instance.comp_cli = instance.comp_par * Decimal('1.05')
-            instance.desper = (instance.comp - instance.comp_cli) / 1000 * instance.perfil.largura_bobinagem
-    elif instance.comp_par == 0:
-        instance.comp_cli = instance.comp
-        instance.desper = 0
+# def desperdicio(sender, instance, **kwargs):
+#     if instance.comp_par > 0:
+#         desp = instance.comp - instance.comp_par
+#         x = instance.comp_par * Decimal('0.05')
+#         if desp <= x:
+#             instance.comp_cli = instance.comp
+#         else:        
+#             instance.comp_cli = instance.comp_par * Decimal('1.05')
+#             instance.desper = (instance.comp - instance.comp_cli) / 1000 * instance.perfil.largura_bobinagem
+#     elif instance.comp_par == 0:
+#         instance.comp_cli = instance.comp
+#         instance.desper = 0
    
       
 
-def comp_area_bobine_retrabalho(sender, instance, **kwargs):
-    bobine = Bobine.objects.filter(bobinagem=instance)
-    for b in bobine:
-        b.comp_actual = instance.comp
-        b.area = b.comp_actual * b.largura.largura
-        b.save()
+# def comp_area_bobine_retrabalho(sender, instance, **kwargs):
+#     bobine = Bobine.objects.filter(bobinagem=instance)
+#     for b in bobine:
+#         b.comp_actual = instance.comp
+#         b.area = b.comp_actual * b.largura.largura
+#         b.save()
 
-def comp_bobine_retrabalho(sender, instance, **kwargs):
-    emenda = Emenda.objects.get(pk=instance.pk)
-    bobine = emenda.bobine
-    bobine.comp_actual -= emenda.metros
-    bobine.save()
+# def comp_bobine_retrabalho(sender, instance, **kwargs):
+#     emenda = Emenda.objects.get(pk=instance.pk)
+#     bobine = emenda.bobine
+#     bobine.comp_actual -= emenda.metros
+#     bobine.save()
 
 
-def update_areas(sender, instance, **kwargs):
-    post_save.disconnect(update_areas, sender=sender)
-    bobine = Bobine.objects.get(pk=instance.pk)
-    bobinagem = Bobinagem.objects.get(pk=bobine.bobinagem.pk)
-    bobines = Bobine.objects.filter(bobinagem=bobinagem)
-    area_g = 0
-    area_dm = 0
-    area_r = 0
-    area_ind = 0
-    area_ba = 0
+# def update_areas(sender, instance, **kwargs):
+#     post_save.disconnect(update_areas, sender=sender)
+#     bobine = Bobine.objects.get(pk=instance.pk)
+#     bobinagem = Bobinagem.objects.get(pk=bobine.bobinagem.pk)
+#     bobines = Bobine.objects.filter(bobinagem=bobinagem)
+#     area_g = 0
+#     area_dm = 0
+#     area_r = 0
+#     area_ind = 0
+#     area_ba = 0
     
-    for b in bobines:
-         estado = b.estado
+#     for b in bobines:
+#          estado = b.estado
 
-         if estado == 'G':
-             area_g += b.area
+#          if estado == 'G':
+#              area_g += b.area
         
-         elif estado == 'R':
-            area_r += b.area
+#          elif estado == 'R':
+#             area_r += b.area
         
-         elif estado == 'DM':
-             area_dm += b.area
+#          elif estado == 'DM':
+#              area_dm += b.area
 
-         elif estado == 'IND':
-             area_ind += b.area
+#          elif estado == 'IND':
+#              area_ind += b.area
 
-         elif estado == 'BA':
-             area_ba += b.area
+#          elif estado == 'BA':
+#              area_ba += b.area
     
-    bobinagem.area_g = area_g
-    bobinagem.area_r = area_r
-    bobinagem.area_dm = area_dm
-    bobinagem.area_ind = area_ind
-    bobinagem.area_ba = area_ba
-    bobinagem.save()
+#     bobinagem.area_g = area_g
+#     bobinagem.area_r = area_r
+#     bobinagem.area_dm = area_dm
+#     bobinagem.area_ind = area_ind
+#     bobinagem.area_ba = area_ba
+#     bobinagem.save()
 
-    post_save.connect(update_areas, sender=sender)
+#     post_save.connect(update_areas, sender=sender)
 
 
 
 
 post_save.connect(perfil_larguras, sender=Perfil)
-pre_save.connect(bobinagem_nome, sender=Bobinagem)
-pre_save.connect(desperdicio, sender=Bobinagem)
-post_save.connect(create_bobine, sender=Bobinagem)
+# pre_save.connect(bobinagem_nome, sender=Bobinagem)
+# pre_save.connect(desperdicio, sender=Bobinagem)
+# post_save.connect(create_bobine, sender=Bobinagem)
 # post_save.connect(area_status, sender=Bobinagem)
-pre_save.connect(tempo_duracao, sender=Bobinagem)
+# pre_save.connect(tempo_duracao, sender=Bobinagem)
 pre_save.connect(palete_nome, sender=Palete)
-pre_save.connect(area_bobinagem, sender=Bobinagem)
+# pre_save.connect(area_bobinagem, sender=Bobinagem)
 pre_save.connect(comp_bobine, sender=Bobine)
-pre_save.connect(area_bobine, sender=Bobine)
+# pre_save.connect(area_bobine, sender=Bobine)
 pre_save.connect(area_palete, sender=Palete)
-post_save.connect(update_areas, sender=Bobine)
-post_save.connect(comp_area_bobine_retrabalho, sender=Bobinagem)
+# post_save.connect(update_areas, sender=Bobine)
+# post_save.connect(comp_area_bobine_retrabalho, sender=Bobinagem)
 # post_save.connect(comp_bobine_retrabalho, sender=Emenda)
 
 

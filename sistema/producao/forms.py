@@ -69,14 +69,15 @@ class BobineStatus(ModelForm):
 #         fields = ['tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim']
 
 class EmendasCreateForm(ModelForm):
-    
+    #  bobine = forms.CharField(label='Bobine original')
+
      class Meta:
         model = Emenda
         fields = [ 'bobine', 'metros', 'num_emenda', 'emenda'] 
 
-     def __init__(self, *args, **kwargs):
-         super(EmendasCreateForm, self).__init__(*args, **kwargs)
-         self.fields['bobine'].queryset = Bobine.objects.filter(estado='DM')
+    #  def __init__(self, *args, **kwargs):
+    #      super(EmendasCreateForm, self).__init__(*args, **kwargs)
+    #      self.fields['bobine'].queryset = Bobine.objects.filter(estado='DM')
 
     
 

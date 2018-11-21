@@ -158,10 +158,13 @@ def bobinagem_create(pk):
                 instance.nome = '%s-%s' % (data, instance.num_bobinagem)
      
     instance.save()
-    create_bobine(instance.pk)  
+    desperdicio(instance.pk) 
     tempo_duracao(instance.pk)
-    desperdicio(instance.pk)  
-    area_bobinagem(instance.pk)    
+    area_bobinagem(instance.pk) 
+    create_bobine(instance.pk)  
+    
+     
+       
 
 def create_bobine(pk):
     instance = Bobinagem.objects.get(pk=pk)
@@ -235,5 +238,5 @@ def desperdicio(pk):
 def area_bobine(pk):
     instance = Bobine.objects.get(pk=pk)
     largura = instance.largura.largura / 1000
-    instance.area = largura * instance.comp_actual
+    instance.area = largura * instance.bobinagem.comp_cli
     instance.save()

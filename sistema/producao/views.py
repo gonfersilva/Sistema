@@ -975,7 +975,7 @@ def etiqueta_palete(request, pk):
     d_min = 0
     d_max = 0
     cont = 1
-    bob = [None] * 60
+    bob = [0] * 60
     
 
     if EtiquetaPalete.objects.filter(palete=palete).exists():

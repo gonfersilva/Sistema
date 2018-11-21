@@ -1000,9 +1000,11 @@ def etiqueta_palete(request, pk):
                 # string = "bobine"
                 # string = string + str(cont)
                 # print(string)
+                print(cont)
                 bob[cont - 1] = b.nome
                 cont += 1
-        
+                print(cont)
+
         e_p.bobine1 = bob[0]
         e_p.bobine2 = bob[1]
         e_p.bobine3 = bob[2]

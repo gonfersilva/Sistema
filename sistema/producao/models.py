@@ -174,7 +174,7 @@ class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     largura =  models.ForeignKey(Largura, on_delete=models.PROTECT,  null=True, blank=True, verbose_name="Largura")
-    comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0)
+    comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0, null=True, blank=True)
     nome = models.CharField(verbose_name="Bobine", max_length=200, null=True, blank=True, default="")
     palete = models.ForeignKey(Palete, on_delete=models.SET_NULL, null=True, blank=True)   
     posicao_palete = models.PositiveIntegerField(verbose_name="Posição", default=0)

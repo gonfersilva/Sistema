@@ -974,7 +974,7 @@ def etiqueta_palete(request, pk):
     bobine = Bobine.objects.filter(palete=palete)
     d_min = 0
     d_max = 0
-    cont = 0
+    c = 0
     bob = [None] * 60
     
 
@@ -996,14 +996,15 @@ def etiqueta_palete(request, pk):
                 d_min = d
             elif d < d_min:
                 d_min = d 
-            if b.posicao_palete == cont + 1:
+            
+            if b.posicao_palete == c + 1:
                 # string = "bobine"
                 # string = string + str(cont)
                 # print(string)
-                print(cont)
-                bob[cont] = b.nome
-                cont += 1
-                print(cont)
+                print(c)
+                bob[c] = b.nome
+                c += 1
+                print(c)
 
         e_p.bobine1 = bob[0]
         e_p.bobine2 = bob[1]

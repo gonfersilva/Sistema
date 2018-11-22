@@ -224,6 +224,13 @@ def create_palete(request):
         instance = form.save(commit=False)
         instance.user = request.user
         instance.save()
+        
+        if EtiquetaPalete.objects.filter(palete=instance).exists():
+            return redirect('producao:addbobinepalete', pk=instance.pk)
+        else:
+            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
+            e_p.cliente = instance.cliente.nome 
+            e_p.save()
                 
         return redirect('producao:addbobinepalete', pk=instance.pk)
 
@@ -243,16 +250,15 @@ def add_bobine_palete(request, pk):
     palete = Palete.objects.get(pk=pk)
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
-    etiqueta = False
-    if EtiquetaPalete.objects.filter(palete=palete).exists():
-        etiqueta = True
+    e_p = EtiquetaPalete.objects.get(palete=palete)
+   
     
     
     
     context = {"palete": palete, 
                "bobine": bobine,
                "bobinagem": bobinagem,
-               "etiqueta": etiqueta,
+               "e_p": e_p,
                 }
     return render(request, template_name, context)
 
@@ -369,6 +375,7 @@ def picagem(request, pk):
                 else:
                      if (bobine.bobinagem.diam == palete.diametro or palete.cliente.limsup >= bobine.bobinagem.diam >= palete.cliente.liminf) and bobine.bobinagem.perfil.core == palete.core_bobines and bobine.largura.largura == palete.largura_bobines:
                          Bobine.add_bobine(palete.pk, bobine.pk)
+                         etiqueta_add_bobine(palete.pk, bobine.pk)
                          return redirect('producao:addbobinepalete', pk=palete.pk)
                      else:
                          messages.error(request, 'A bobine selecionada está fora de especificações.')
@@ -377,6 +384,7 @@ def picagem(request, pk):
                          return redirect('producao:addbobinepalete', pk=palete.pk)
             elif bobine.estado == 'DM' and bobine.largura.largura == palete.largura_bobines and palete.estado == 'DM':
                   Bobine.add_bobine(palete.pk, bobine.pk)
+                  etiqueta_add_bobine(palete.pk, bobine.pk)
                   return redirect('producao:addbobinepalete', pk=palete.pk) 
             else:
                 messages.error(request, 'A bobine selecionada está fora de especificações.')
@@ -465,8 +473,10 @@ def bobinagem_delete(request, pk):
 def palete_delete(request, pk):
     obj = get_object_or_404(Palete, pk=pk)
     bobine = Bobine.objects.filter(palete=obj)
+    e_p = EtiquetaPalete.objects.get(palete=obj)
     if request.method == "POST":
         obj.delete()
+        e_p.delete()
         return redirect('producao:paletes')
             
     context = {
@@ -972,210 +982,29 @@ def etiqueta_retrabalho(request, pk):
 def etiqueta_palete(request, pk):
     palete = Palete.objects.get(pk=pk)
     bobine = Bobine.objects.filter(palete=palete)
+    e_p = EtiquetaPalete.objects.get(palete=palete)
     d_min = 0
     d_max = 0
-    c = 0
-    bob = [None] * 60
+    e_p.produto = bobine[0].bobinagem.perfil.produto
     
-
-    if EtiquetaPalete.objects.filter(palete=palete).exists():
-        return redirect('producao:addbobinepalete', pk=palete.pk)
-    else:
-        e_p = EtiquetaPalete.objects.create(palete=palete, palete_nome=palete.nome, produto=bobine[0].bobinagem.perfil.produto, largura_bobine=palete.largura_bobines)
-        if palete.estado != 'DM':
-            e_p.cliente = palete.cliente.nome
-
-        
-        for b in bobine:
-            d = b.bobinagem.diam
-            if d_max == 0:
-                d_max = d
-            elif d > d_max:
-                d_max = d
-            elif d_min == 0:
-                d_min = d
-            elif d < d_min:
-                d_min = d 
-            
-            if b.posicao_palete == c + 1:
-                # string = "bobine"
-                # string = string + str(cont)
-                # print(string)
-                print(c)
-                bob[c] = b.nome
-                c += 1
-                print(c)
-
-        e_p.bobine1 = bob[0]
-        e_p.bobine2 = bob[1]
-        e_p.bobine3 = bob[2]
-        e_p.bobine4 = bob[3]
-        e_p.bobine5 = bob[4]
-        e_p.bobine6 = bob[5]
-        e_p.bobine7 = bob[6]
-        e_p.bobine8 = bob[7]
-        e_p.bobine9 = bob[8]
-        e_p.bobine10 = bob[9]
-        e_p.bobine11 = bob[10]
-        e_p.bobine12 = bob[11]
-        e_p.bobine13 = bob[12]
-        e_p.bobine14 = bob[13]
-        e_p.bobine15 = bob[14]
-        e_p.bobine16 = bob[15]
-        e_p.bobine17 = bob[16]
-        e_p.bobine18 = bob[17]
-        e_p.bobine19 = bob[18]
-        e_p.bobine20 = bob[19]
-        e_p.bobine21 = bob[20]
-        e_p.bobine22 = bob[21]
-        e_p.bobine23 = bob[22]
-        e_p.bobine24 = bob[23]
-        e_p.bobine25 = bob[24]
-        e_p.bobine26 = bob[25]
-        e_p.bobine27 = bob[26]
-        e_p.bobine28 = bob[27]
-        e_p.bobine29 = bob[28]
-        e_p.bobine30 = bob[29]
-        e_p.bobine31 = bob[30]
-        e_p.bobine32 = bob[31]
-        e_p.bobine33 = bob[32]
-        e_p.bobine34 = bob[33]
-        e_p.bobine35 = bob[34]
-        e_p.bobine36 = bob[35]
-        e_p.bobine37 = bob[36]
-        e_p.bobine38 = bob[37]
-        e_p.bobine39 = bob[38]
-        e_p.bobine40 = bob[39]
-        e_p.bobine41 = bob[40]
-        e_p.bobine42 = bob[41]
-        e_p.bobine43 = bob[42]
-        e_p.bobine44 = bob[43]
-        e_p.bobine45 = bob[44]
-        e_p.bobine46 = bob[45]
-        e_p.bobine47 = bob[46]
-        e_p.bobine48 = bob[47]
-        e_p.bobine49 = bob[48]
-        e_p.bobine50 = bob[49]
-        e_p.bobine51 = bob[50]
-        e_p.bobine52 = bob[51]
-        e_p.bobine53 = bob[52]
-        e_p.bobine54 = bob[53]
-        e_p.bobine55 = bob[54]
-        e_p.bobine56 = bob[55]
-        e_p.bobine57 = bob[56]
-        e_p.bobine58 = bob[57]
-        e_p.bobine59 = bob[58]
-        e_p.bobine60 = bob[59]
-        
+    for b in bobine:
+        d = b.bobinagem.diam
+        if d_max == 0:
+            d_max = d
+        elif d > d_max:
+            d_max = d
+        elif d_min == 0:
+            d_min = d
+        elif d < d_min:
+            d_min = d 
+                
         e_p.diam_min = d_min
         e_p.diam_max = d_max
         e_p.save()
                 
     return redirect('producao:addbobinepalete', pk=palete.pk)
 
-def etiqueta_palete_alternative(request, pk):
-    palete = Palete.objects.get(pk=pk)
-    bobine = Bobine.objects.filter(palete=palete)
-    d_min = 0
-    d_max = 0
-    c = 0
-    bob = [None] * 60
-    
 
-    if EtiquetaPalete.objects.filter(palete=palete).exists():
-        return redirect('producao:addbobinepalete', pk=palete.pk)
-    else:
-        e_p = EtiquetaPalete.objects.create(palete=palete, palete_nome=palete.nome, produto=bobine[0].bobinagem.perfil.produto, largura_bobine=palete.largura_bobines)
-        if palete.estado != 'DM':
-            e_p.cliente = palete.cliente.nome
-
-        
-        for b in bobine:
-            d = b.bobinagem.diam
-            if d_max == 0:
-                d_max = d
-            elif d > d_max:
-                d_max = d
-            elif d_min == 0:
-                d_min = d
-            elif d < d_min:
-                d_min = d 
-            
-            if b.posicao_palete == c + 1:
-                # string = "bobine"
-                # string = string + str(cont)
-                # print(string)
-                print(c)
-                bob[c] = b.nome
-                c += 1
-                print(c)
-
-        e_p.bobine1 = bob[0]
-        e_p.bobine2 = bob[1]
-        e_p.bobine3 = bob[2]
-        e_p.bobine4 = bob[3]
-        e_p.bobine5 = bob[4]
-        e_p.bobine6 = bob[5]
-        e_p.bobine7 = bob[6]
-        e_p.bobine8 = bob[7]
-        e_p.bobine9 = bob[8]
-        e_p.bobine10 = bob[9]
-        e_p.bobine11 = bob[10]
-        e_p.bobine12 = bob[11]
-        e_p.bobine13 = bob[12]
-        e_p.bobine14 = bob[13]
-        e_p.bobine15 = bob[14]
-        e_p.bobine16 = bob[15]
-        e_p.bobine17 = bob[16]
-        e_p.bobine18 = bob[17]
-        e_p.bobine19 = bob[18]
-        e_p.bobine20 = bob[19]
-        e_p.bobine21 = bob[20]
-        e_p.bobine22 = bob[21]
-        e_p.bobine23 = bob[22]
-        e_p.bobine24 = bob[23]
-        e_p.bobine25 = bob[24]
-        e_p.bobine26 = bob[25]
-        e_p.bobine27 = bob[26]
-        e_p.bobine28 = bob[27]
-        e_p.bobine29 = bob[28]
-        e_p.bobine30 = bob[29]
-        e_p.bobine31 = bob[30]
-        e_p.bobine32 = bob[31]
-        e_p.bobine33 = bob[32]
-        e_p.bobine34 = bob[33]
-        e_p.bobine35 = bob[34]
-        e_p.bobine36 = bob[35]
-        e_p.bobine37 = bob[36]
-        e_p.bobine38 = bob[37]
-        e_p.bobine39 = bob[38]
-        e_p.bobine40 = bob[39]
-        e_p.bobine41 = bob[40]
-        e_p.bobine42 = bob[41]
-        e_p.bobine43 = bob[42]
-        e_p.bobine44 = bob[43]
-        e_p.bobine45 = bob[44]
-        e_p.bobine46 = bob[45]
-        e_p.bobine47 = bob[46]
-        e_p.bobine48 = bob[47]
-        e_p.bobine49 = bob[48]
-        e_p.bobine50 = bob[49]
-        e_p.bobine51 = bob[50]
-        e_p.bobine52 = bob[51]
-        e_p.bobine53 = bob[52]
-        e_p.bobine54 = bob[53]
-        e_p.bobine55 = bob[54]
-        e_p.bobine56 = bob[55]
-        e_p.bobine57 = bob[56]
-        e_p.bobine58 = bob[57]
-        e_p.bobine59 = bob[58]
-        e_p.bobine60 = bob[59]
-        
-        e_p.diam_min = d_min
-        e_p.diam_max = d_max
-        e_p.save()
-                
-    return redirect('producao:addbobinepalete', pk=palete.pk)
 
 @login_required
 def error_500(request):

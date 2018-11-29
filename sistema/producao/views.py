@@ -113,17 +113,17 @@ def perfil_detail(request, pk):
 
 def bobinagem_list(request):
     bobinagem = Bobinagem.objects.all()
-    # paginator = Paginator(bobinagem, 20)
-    # page = request.GET.get('page')
+    paginator = Paginator(bobinagem, 15)
+    page = request.GET.get('page')
     template_name = 'producao/bobinagem_home.html'
     bobine = Bobine.objects.all()
 
-    # try:
-    #     bobinagem = paginator.page(page)
-    # except PageNotAnInteger:
-    #     bobinagem = paginator.page(1)
-    # except EmptyPage:
-    #     bobinagem = paginator.page(paginator.num_pages)
+    try:
+        bobinagem = paginator.page(page)
+    except PageNotAnInteger:
+        bobinagem = paginator.page(1)
+    except EmptyPage:
+        bobinagem = paginator.page(paginator.num_pages)
 
     context = {
         "bobinagem": bobinagem,

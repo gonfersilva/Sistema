@@ -159,7 +159,8 @@ def bobinagem_create(pk):
      
     instance.save()
     desperdicio(instance.pk) 
-    tempo_duracao(instance.pk)
+    if not instance.perfil.retrabalho == True:
+        tempo_duracao(instance.pk)
     area_bobinagem(instance.pk) 
     create_bobine(instance.pk)  
     
@@ -179,7 +180,7 @@ def create_bobine(pk):
             else:
                 bob.nome = '%s-%s' % (instance.nome, num)
             if bob.bobinagem.estado == 'R':
-                bob.estado = 'R'    
+                bob.estado = 'R'   
             elif bob.bobinagem.estado == 'DM':
                 bob.estado = 'DM'
             elif bob.bobinagem.estado == 'G':
@@ -295,7 +296,7 @@ def etiqueta_add_bobine(pk_palete, pk_bobine):
         e_p.bobine22 = bob[22]
     elif e_p.bobine23 == None or posicao == 23: 
         e_p.bobine23 = bob[23]
-    elif e_p.bobine24== None or posicao == 24: 
+    elif e_p.bobine24 == None or posicao == 24: 
         e_p.bobine24 = bob[24]
     elif e_p.bobine25 == None or posicao == 25: 
         e_p.bobine25 = bob[25]

@@ -11,8 +11,9 @@
 <div class="container">
     <div class="row">
         <h1>Bobinagem: {{ bobinagem.nome }}</h1>
+        <br>
         <div class="container">
-            <form method="GET" action='' >{% csrf_token %}
+            <form method="GET" action=''>{% csrf_token %}
                     <input type="text" name='l' placeholder="Largura" autofocus/>
                     <input type="submit" class="btn btn-success" value="Pesquisar"/>
             </form>
@@ -63,7 +64,8 @@
                                <th>Bobine</th>
                                <th>Estado</th>
                                <th>Largura</th>
-                               <th>Comp. actual/Comp. Inicial </th>                               
+                               <th>Comp. actual</th>    
+                               <th>Comp. Inicial </th>                              
                                <th>Produto</th>
                                <th>Motivo</th>
                                <th>Observações</th>
@@ -78,12 +80,28 @@
                 </table>
                 
     </div>
+    <br>
+    
+    
     <div class="row">
-        {% if bobinagem.num_emendas != 3%}
+        {% if bobinagem.num_emendas != 3 %}
+            <h2>Bobines Originais</h2>
+            <br></br>
             <div class="container table-responsive col-md-5">
-                
-                {% emendas_form form %}
-                <br>
+                <form method="POST" action="{% url 'producao:picagem_retrabalho_add' pk=bobinagem.pk %}">{% csrf_token %}
+                    <div class="row">
+                            <div class="container col-sm-6">
+                                <input id="bobine_original" type="text" name="b" placeholder="Bobine Original"/>
+                            </div>
+                            <div class="container col-sm-6">
+                                <input type="number" name="m" placeholder="Metros Consumidos"/>
+                            </div>
+                    </div>
+                    <br>
+                    <div class="container col-sm-12">
+                            <input id="myBtn" type="submit" class="btn btn-primary pull-right" value="Adicionar bobine">
+                    </div>
+                </form>
                 {% if messages %}
                 <ul class="messages">
                   {% for message in messages %}
@@ -91,6 +109,8 @@
                   {% endfor %}
                 </ul>
               {% endif %}
+                <br>
+                
                         
             </div>
             {% endif %}
@@ -116,8 +136,11 @@
                                 <td>{{ e.bobine }}</td>
                                 <td>{{ e.metros }}</td>
                                 <td>{{ e.emenda }}</td>
-                                <td><a href="{% url 'producao:emenda_delete' pk=e.pk %}" class="btn btn-primary" role="button">Apagar</a></td>
-
+                                {% if e.bobine.recycle == False  %}
+                                <td><a href="{% url 'producao:emenda_delete' pk=e.pk %}" class="btn btn-primary" role="button">Remover</a></td>
+                                <td><a href="{% url 'producao:destruir_bobine' pk_bobine=e.bobine.pk pk_bobinagem=bobinagem.pk %}" class="btn btn-danger glyphicon glyphicon-trash" role="button"></a></td>
+                                    
+                                {% endif %}
                                 
                             </tr>
                             {% endfor %}
@@ -147,7 +170,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
    
-    
+   
+
     $('.palete-bobine').click(function() {
         
         var this_= $(this)
@@ -158,9 +182,13 @@
             dataType: "json",
             success: function (data){
                 $("#jsonresp").empty()
+                if(!data || data.length === 0) {
+                    return;
+                }
                 var data_length = data.length
                 
                 for ( i = 0; i < data_length; i++){
+                
                     var causa = ""
                     if (data[i].con == true) {
                         var causa = "Cónico"
@@ -186,12 +214,62 @@
                     if (data[i].outros == true) {
                         var causa = causa + " Outros"
                     } 
-
-                    $("#jsonresp").append(
-                        "<tr><td><a id='bobine'>" + data[i].nome + "</a></td><td id='estado_dm'>" + data[i].estado + "</td><td>" + data[i].largura.largura + "</td><td>" + data[i].comp_actual + "  /  " + data[i].bobinagem.comp +  
-                            "</td><td>" + data[i].largura.perfil.produto + "</td><td>" + causa + "</td><td>" + data[i].obs + "</td><td>" + data[i].bobinagem.obs + "</td></tr>")
                     
+                        var a=$(document.createElement("a")).addClass('bobine').text(data[i].nome),
+                            td1=$(document.createElement("td"));
+                        var td2=$(document.createElement("td")).addClass('estado_dm');
+                        var td3=$(document.createElement("td"));
+                        var td4=$(document.createElement("td"));
+                        var td5=$(document.createElement("td"));
+                        var td6=$(document.createElement("td"));
+                        var td7=$(document.createElement("td"));
+                        var td8=$(document.createElement("td"));
+                        var td9=$(document.createElement("td"));
+                        var td10=$(document.createElement("td"));
+                        var td11=$(document.createElement("td"));
+                        var id1=data[i].id
+                        var id2=data[i].bobinagem.id
+                        //  var a2=$(document.createElement("a")).attr("href", "/producao/retrabalho/filter/" + id1 + "/" + id2);
+                        //  var button1=$(document.createElement("button")).addClass('btn btn-danger glyphicon glyphicon-trash');
+                        //  a2.append(button1);
+
+                        //  td11.append(a2)
+                        td1.append(a);
+                        td2.text(data[i].estado);
+                        td3.text(data[i].largura.largura );
+                        td4.text(data[i].comp_actual);
+                        td5.text(data[i].bobinagem.comp);
+                        td6.text(data[i].largura.perfil.produto);
+                        td7.text(causa);
+                        td8.text(data[i].obs);
+                        td9.text(data[i].bobinagem.obs);
+                        td10.text(data[i].bobinagem.comp);
+                        
+                        var tr=$(document.createElement("tr"));
+
+                        
+                        tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9);
+                    
+                
+                    /*$("#jsonresp").append(
+                        "<tr><td><a class='bobine'>" + data[i].nome + "</a></td><td id='estado_dm'>" + data[i].estado + "</td><td>" + data[i].largura.largura + "</td><td>" + data[i].comp_actual + "  /  " + data[i].bobinagem.comp +  
+                            "</td><td>" + data[i].largura.perfil.produto + "</td><td>" + causa + "</td><td>" + data[i].obs + "</td><td>" + data[i].bobinagem.obs + "</td></tr>")*/
+                    
+                    $("#jsonresp").append(tr);
+                    
+                    a.click(function () {
+                        $('#bobine_original').val($(this).text());
+                    
+                    });
+                    
+                    //  button1.click(function(){
+                                    
+                    //     var url = td11.attr("href")                      
+                        
+                    //     $(location).attr('href', url);   
+                    //  })
                 }
+                
                 $("#palete").empty()
                 $("#palete").append(
                     "<h2>" + data[0].palete.nome + "</h2>"
@@ -206,6 +284,7 @@
         })
     })
 
+    
     
 
 

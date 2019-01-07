@@ -119,6 +119,7 @@ class Bobinagem(models.Model):
     class Meta:
         verbose_name_plural = "Bobinagens"
         ordering = ['-data', '-fim', '-nome']
+        get_latest_by = ['data', 'fim']
 
     def get_absolute_url(self):
         return f"/producao/bobinagem/{self.id}"
@@ -157,7 +158,7 @@ class Palete(models.Model):
     num_bobines     = models.IntegerField(verbose_name="Bobines total")
     num_bobines_act = models.IntegerField(default=0) 
     largura_bobines = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Largura das bobines")
-    diametro        = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Diâmetro das bobines")
+    diametro        = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Diâmetro das bobines", null=True, blank=True)
     core_bobines    = models.CharField(max_length=1, choices=CORE, verbose_name="Core das bobines")
     peso_bruto      = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso bruto")
     peso_palete     = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso palete")
@@ -174,7 +175,7 @@ class Palete(models.Model):
 class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
-    largura =  models.ForeignKey(Largura, on_delete=models.PROTECT,  null=True, blank=True, verbose_name="Largura")
+    largura = models.ForeignKey(Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
     comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0, null=True, blank=True)
     nome = models.CharField(verbose_name="Bobine", max_length=200, null=True, blank=True, default="")
     palete = models.ForeignKey(Palete, on_delete=models.SET_NULL, null=True, blank=True)   
@@ -191,6 +192,7 @@ class Bobine(models.Model):
     outros = models.BooleanField(default=False,verbose_name="Outros")
     buraco = models.BooleanField(default=False,verbose_name="Buracos")    
     obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="" )
+    recycle = models.BooleanField(default=False,verbose_name="Reciclada")    
 
     def __str__(self):
         if self.largura.num_bobine < 10:

@@ -1,6 +1,6 @@
 from django import template
-from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm
-from producao.models import Perfil, Bobinagem, Emenda
+from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines
+from producao.models import Perfil, Bobinagem, Emenda, Palete
 
 register = template.Library()
 
@@ -45,3 +45,19 @@ def cliente_form(self):
 def bobine_update_form(self):
     form = UpdateBobineForm(instance=self.instance)
     return {'form': form, "instance": self.instance}
+
+
+@register.inclusion_tag('retrabalho/palete_retrabalho_form.html')
+def palete_retrabalho_form(self):
+    form = PaleteRetrabalhoForm()
+    return {'form': form }
+
+# @register.inclusion_tag('palete/ordenar_bobines_form.html')
+# def ordenar_bobines_form(self):
+#     form = OrdenarBobines()
+#     return {'form': form }
+    
+@register.inclusion_tag('producao/classificacao_bobines_form.html')
+def classificacao_bobines(self):
+    form = ClassificacaoBobines(instance=self.bobinagem)
+    return {'form': form, "instance": self.bobinagem}

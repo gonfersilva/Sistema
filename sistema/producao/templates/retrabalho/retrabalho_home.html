@@ -39,7 +39,7 @@
                 <tr>
                     <th>Bobinagem</th>
                     <th>Data</th>
-                    <th>Estado</th>
+                    <!-- <th>Estado</th> -->
                     <th id="center">Nº de bobines originais</th>
                     <th id="center">Core (")</th>
                     <th id="center">Nº de Bobines</th>
@@ -54,7 +54,7 @@
                     
                     <td><a href='{{ b.get_absolute_url }}'>{{ b.nome }}</a></td>
                     <td>{{ b.data|date:"d-n-Y"  }}</td>
-                    <td id="estado_good">{{ b.estado  }}</td>
+                    <!-- <td id="estado_good">{{ b.estado  }}</td> -->
                     <td id="center">{{ b.num_emendas }}</td>
                     <td id="center">{{ b.perfil.core }}</td>
                     <td id="center">{{ b.perfil.num_bobines }}</td>

@@ -1,11 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy, resolve
-from django.forms import formset_factory
+from django.forms.models import modelformset_factory
 from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm
+from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -16,10 +16,10 @@ from time import gmtime, strftime
 import datetime
 from .funcs import *
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-
+from django.db.models import Q
 
 # @login_required
-# def perfil_create(request):
+# def perfil_create(request):3
 #     template_name = 'perfil/perfil_create.html'
 #     context = {}
  
@@ -50,6 +50,8 @@ def create_bobinagem(request):
     template_name = 'producao/bobinagem_create.html'
     form = BobinagemCreateForm(request.POST or None)
     
+    # form = BobinagemCreateForm(initial=num)
+    
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -62,7 +64,7 @@ def create_bobinagem(request):
         
         return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
 
-    context =  {
+    context = {
         "form": form
     }
 
@@ -112,11 +114,17 @@ def perfil_detail(request, pk):
 #         return context
 
 def bobinagem_list(request):
-    bobinagem = Bobinagem.objects.all()
-    paginator = Paginator(bobinagem, 15)
+    bobinagem = Bobinagem.objects.all()[:16]
+    s = request.GET.get("s")
+    print(s)
+    if s:
+        bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
+
+    paginator = Paginator(bobinagem, 17)
     page = request.GET.get('page')
     template_name = 'producao/bobinagem_home.html'
     bobine = Bobine.objects.all()
+  
 
     try:
         bobinagem = paginator.page(page)
@@ -190,6 +198,7 @@ class BobinagemUpdate(LoginRequiredMixin, UpdateView):
 @login_required
 def pelete_list(request):
     palete = Palete.objects.all()
+    e_p = EtiquetaPalete.objects.all()
     paginator = Paginator(palete, 15)
     page = request.GET.get('page')
     template_name = 'palete/palete_home.html'
@@ -203,6 +212,7 @@ def pelete_list(request):
 
     context = {
         "palete": palete,
+        "e_p": e_p
     }
     return render (request, template_name, context)
 
@@ -223,42 +233,105 @@ def create_palete(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
+        instance.estado = 'G'
         instance.save()
         
         if EtiquetaPalete.objects.filter(palete=instance).exists():
             return redirect('producao:addbobinepalete', pk=instance.pk)
         else:
             e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
-            e_p.cliente = instance.cliente.nome 
+            e_p.cliente = instance.cliente.nome
             e_p.save()
                 
         return redirect('producao:addbobinepalete', pk=instance.pk)
 
-    context =  {
+    context = {
         "form": form
     }
 
     return render(request, template_name, context)
+
+
+
+def ordenar_bobines_op(request, pk, operation):
+    bobine = Bobine.objects.get(pk=pk)
+    palete = Palete.objects.get(pk=bobine.palete.pk)
+    pos = bobine.posicao_palete
+    # pos_up = 0
+    # pos_down = 0
+    # bobine_up = 0
+    # bobine_down = 0
+
+    if Bobine.objects.filter(posicao_palete=pos-1, palete=palete).exists():
+        bobine_up = Bobine.objects.get(posicao_palete=pos-1, palete=palete)
+        pos_up = bobine_up.posicao_palete
+    
+    if Bobine.objects.filter(posicao_palete=pos+1, palete=palete).exists():
+        bobine_down = Bobine.objects.get(posicao_palete=pos+1, palete=palete)
+        pos_down = bobine_down.posicao_palete
+   
+    
+    if operation == 'up':
+        bobine.posicao_palete = pos - 1
+        bobine_up.posicao_palete =  pos_up + 1
+        bobine.save()
+        bobine_up.save()
+    elif operation == 'down':
+        bobine.posicao_palete = pos + 1
+        bobine_down.posicao_palete = pos_down - 1
+        bobine.save()
+        bobine_down.save()
+        
+
+    return redirect('producao:addbobinepalete', pk=palete.pk)
+    
     
 
 def create_palete_retrabalho(request):
-    pass
+    
+    form = PaleteRetrabalhoForm(request.POST or None)
+    template_name = "retrabalho/palete_retrabalho_create.html"
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.retrabalho = True
+        instance.estado = 'DM'
+        instance.save()
+
+        if EtiquetaPalete.objects.filter(palete=instance).exists():
+            return redirect('producao:addbobinepalete', pk=instance.pk)
+        else:
+            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
+            e_p.save()
+            return redirect('producao:addbobinepalete', pk=instance.pk)
+                
+        return redirect('producao:addbobinepalete', pk=instance.pk)
+
+        
+    context = {
+        "form": form, 
+        }
+    return render(request, template_name, context)
+
 
 @login_required
 def add_bobine_palete(request, pk):
-    template_name='palete/add_bobine_palete.html'
+    template_name = 'palete/add_bobine_palete.html'
     palete = Palete.objects.get(pk=pk)
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
+    bobines = Bobine.objects.filter(palete=palete)
     e_p = EtiquetaPalete.objects.get(palete=palete)
-   
-    
-    
-    
+    ultima_pos = 0
+    for b in bobines:
+        ultima_pos += 1
+     
     context = {"palete": palete, 
                "bobine": bobine,
                "bobinagem": bobinagem,
                "e_p": e_p,
+               "ultima_pos": ultima_pos,
                 }
     return render(request, template_name, context)
 
@@ -290,13 +363,12 @@ class RetrabalhoCreateView(LoginRequiredMixin, CreateView):
 
 @login_required
 def create_bobinagem_retrabalho(request):
-    
     template_name = 'retrabalho/retrabalho_create.html'
     form = RetrabalhoCreateForm(request.POST or None)
-    
+        
     if form.is_valid():
         data = form['data'].value()
-        num_bobinagem = int(form['num_bobinagem'].value())
+        num_bobinagem = int(form['num_bobinagem'].value())        
         perfil_pk = int(form['perfil'].value())
         perfil = Perfil.objects.get(pk=perfil_pk)
         print(data)
@@ -304,7 +376,7 @@ def create_bobinagem_retrabalho(request):
         # print(perfil_pk)
         # print(perfil)
         if Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem).exists():
-            bobinagem =  Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
+            bobinagem = Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
             for b in bobinagem:
                 if b.perfil.retrabalho == True:
                    messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
@@ -312,6 +384,7 @@ def create_bobinagem_retrabalho(request):
                     instance = form.save(commit=False)
                     instance.user = request.user
                     instance.save()
+                    bobinagem_create(instance.pk)
                     if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                         areas(instance.pk)
                 
@@ -320,58 +393,111 @@ def create_bobinagem_retrabalho(request):
             instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
+            bobinagem_create(instance.pk)
             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                 areas(instance.pk)
         
             return redirect('producao:retrabalho_filter', pk=instance.pk)
 
-    context =  {
+    context = {
         "form": form
     }
 
     return render(request, template_name, context)
 
 @login_required
-def retrabalho_bobinagem(request):
-     
-    template_name = 'retrabalho/retrabalho_create.html'
-    form = RetrabalhoCreateForm(request.POST or None)
+def picagem_retrabalho(request, pk):
+    
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    palete = Palete.objects.filter(estado="DM")
+    bobine = Bobine.objects.all()
+    emenda = Emenda.objects.filter(bobinagem=pk)
 
-    if form.is_valid():
-        data = form['data'].value()
-        num_bobinagem = int(form['num_bobinagem'].value())
-        perfil_pk = int(form['perfil'].value())
-        perfil = Perfil.objects.get(pk=perfil_pk)
-
-        if Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem).exists():
-            bobinagem =  Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
-            for b in bobinagem:
-                if b.perfil.retrabalho == True:
-                   messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
-                elif not Bobinagem.objects.filter(nome=b.nome).exists():     
-                    instance = form.save(commit=False)
-                    instance.user = request.user
-                    instance.save()
-                    if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                        areas(instance.pk)
-                
-                    return redirect('producao:retrabalho_filter', pk=instance.pk)     
-        else:
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                areas(instance.pk)
+    q_largura = request.GET.get("l")
+   
+    if q_largura:
+        palete = palete.filter(largura_bobines__gte=q_largura)
         
-            return redirect('producao:retrabalho_filter', pk=instance.pk)
-
-    context =  {
-        "form": form
+    template_name = 'retrabalho/retrabalho_inicio.html'
+    context = {
+        
+        "palete": palete,
+        "bobine": bobine,
+        "bobinagem": bobinagem,
+        "emenda": emenda
+        
     }
 
     return render(request, template_name, context)
 
-        
+@login_required
+def picagem_retrabalho_add(request, pk):
+    
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    
+    q_bobine = request.POST.get('b')
+    q_metros = int(request.POST.get('m'))
+    # else:
+    #     messages.error(request, 'Por favor introduza a bobine desejada e os metros a retrabalhar.')
+    #     return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
+    
+
+    try:
+        bobine = Bobine.objects.get(nome=q_bobine)
+    except:
+        messages.error(request, 'A bobine selecionada não existe.')
+        return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
+
+    
+    if bobine:
+        if bobine.estado != 'DM':
+            messages.error(request, 'O estado da bobine selecionada não permite efectuar esta operação.')
+        elif q_metros > bobine.comp_actual:
+            messages.error(request, 'A bobine selecionada não tem comprimento suficiente para efectuar esta operação.')
+        else:
+            emenda = Emenda.objects.create(bobinagem=bobinagem, bobine=bobine, metros=q_metros)
+            bobine.comp_actual -= emenda.metros
+            bobine.save()
+            emenda.num_emenda = bobinagem.num_emendas + 1
+            emenda.save()
+            emenda_num = emenda.num_emenda
+            if emenda_num == 0:
+                emenda.emenda = 0
+                emenda.save()
+            elif emenda_num > 0:
+                if emenda_num == 1:
+                    emenda.emenda = emenda.metros
+                    emenda.save()
+                elif emenda_num == 2:
+                    emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=1)
+                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                    emenda.save()
+                elif emenda_num == 3:
+                    emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=2)
+                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                    emenda.save()
+            
+            bobinagem.num_emendas += 1 
+            data = bobinagem.data
+            data = data.strftime('%Y%m%d')
+            map(int, data)
+            if bobinagem.perfil.retrabalho == True and bobinagem.num_emendas > 1:
+                if bobinagem.num_bobinagem < 10:
+                    bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                    bobinagem_pk = bobinagem.pk
+                    bobine_nome(bobinagem_pk)
+                else:
+                    bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
+            elif bobinagem.perfil.retrabalho == True and bobinagem.num_emendas == 0:
+                if bobinagem.num_bobinagem < 10:
+                    bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                else:
+                    bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
+            
+            bobinagem.comp = bobinagem.comp + q_metros
+            bobinagem.save()
+
+        return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
 
 
 
@@ -416,7 +542,7 @@ def picagem(request, pk):
                 else:
                      if (bobine.bobinagem.diam == palete.diametro or palete.cliente.limsup >= bobine.bobinagem.diam >= palete.cliente.liminf) and bobine.bobinagem.perfil.core == palete.core_bobines and bobine.largura.largura == palete.largura_bobines:
                          Bobine.add_bobine(palete.pk, bobine.pk)
-                         etiqueta_add_bobine(palete.pk, bobine.pk)
+                        #  etiqueta_add_bobine(palete.pk, bobine.pk)
                          return redirect('producao:addbobinepalete', pk=palete.pk)
                      else:
                          messages.error(request, 'A bobine selecionada está fora de especificações.')
@@ -425,7 +551,7 @@ def picagem(request, pk):
                          return redirect('producao:addbobinepalete', pk=palete.pk)
             elif bobine.estado == 'DM' and bobine.largura.largura == palete.largura_bobines and palete.estado == 'DM':
                   Bobine.add_bobine(palete.pk, bobine.pk)
-                  etiqueta_add_bobine(palete.pk, bobine.pk)
+                #   etiqueta_add_bobine(palete.pk, bobine.pk)
                   return redirect('producao:addbobinepalete', pk=palete.pk) 
             else:
                 messages.error(request, 'A bobine selecionada está fora de especificações.')
@@ -438,11 +564,23 @@ def picagem(request, pk):
         return redirect('producao:addbobinepalete', pk=palete.pk)        
             
 
+@login_required
+def reabrir_palete(request, pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    etiqueta = EtiquetaPalete.objects.get(palete=palete)
+
+    etiqueta.produto = ""
+    etiqueta.diam_max = 0
+    etiqueta.diam_min = 0
+    etiqueta.save()
     
+
+    return redirect('producao:addbobinepalete', pk=palete.pk)
+
    
 @login_required
 def add_bobine_palete_erro(request, pk, e):
-    template_name='palete/add_bobine_erro.html'
+    template_name = 'palete/add_bobine_erro.html'
     palete = Palete.objects.get(pk=pk)
     
     erro = e
@@ -518,8 +656,10 @@ def palete_delete(request, pk):
     if request.method == "POST":
         obj.delete()
         e_p.delete()
-        return redirect('producao:paletes')
-            
+        if obj.estado == 'G':
+            return redirect('producao:paletes')
+        else:
+            return redirect('producao:paletes_retrabalho')    
     context = {
         "object": obj,
         "bobine": bobine
@@ -734,13 +874,73 @@ def bobine_nome(pk):
 def comprimento_bobine_original(pk):
     pass
 
-def finalizar_retrabalho(request, pk):
+# def finalizar_retrabalho(request, pk):
+#     bobinagem = get_object_or_404(Bobinagem, pk=pk)
+#     form = BobinagemCreateForm(request.POST or None, instance=bobinagem)
+#     if form.is_valid():
+#         bobinagem = form.save(commit=False)
+#         bobinagem.save()
+#         return redirect('producao:retrabalho_home')
+
+#     template_name = 'retrabalho/retrabalho_finalizar.html'
+#     context = {
+#         "bobinagem": bobinagem,
+#         "form": form
+#     }
+
+#     return render(request, template_name, context)
+
+class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
+    model = Bobinagem
+    fields = ['fim', 'diam']
+    template_name = 'retrabalho/retrabalho_finalizar.html'
+    success_url = '/producao/etiqueta/retrabalho/{id}/'
+
+    def form_valid(self, form):
+        # bobinagem = Bobinagem.objects.get(pk=self.kwargs['pk'])
+        b = form.save(commit=False)
+
+
+
+        fim = b.fim
+        fim = fim.strftime('%H:%M')
+        inico = b.inico
+        inico = inico.strftime('%H:%M')
+        (hf, mf) = fim.split(':')
+        (hi, mi) = inico.split(':')
+        if hf < hi: 
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+        else:
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
+        
+        result_str = strftime("%H:%M", gmtime(result))
+        b.duracao = result_str
+
+        b.comp_cli = b.comp
+        bobine = Bobine.objects.filter(bobinagem=b.pk)
+        for bob in bobine:
+            largura = bob.largura.largura
+            bob.comp_actual = b.comp_cli
+            largura = b.perfil.largura_bobinagem / 1000
+            bob.area = largura * b.comp_cli
+            cont = 0
+            cont += largura
+            bob.save()
+
+        b.area = b.comp_cli * cont
+
+        b.save()
+            
+        return super(BobinagemRetrabalhoFinalizar, self).form_valid(form)
+   
+def finalizar_retarbalho(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     form = BobinagemCreateForm(request.POST or None, instance=bobinagem)
     if form.is_valid():
         bobinagem = form.save(commit=False)
         bobinagem.save()
-        return redirect('producao:retrabalho_home')
+        # tempo_duracao(bobinagem.pk)
+        return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)
 
     template_name = 'retrabalho/retrabalho_finalizar.html'
     context = {
@@ -749,13 +949,6 @@ def finalizar_retrabalho(request, pk):
     }
 
     return render(request, template_name, context)
-
-class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
-    model = Bobinagem
-    fields = ['inico', 'fim', 'diam']
-    template_name = 'retrabalho/retrabalho_finalizar.html'
-    success_url = '/producao/etiqueta/retrabalho/{id}/'
-   
 
 
 @login_required
@@ -880,12 +1073,7 @@ def relatorio_diario(request):
     area_dm = 0
     area_ind = 0
     area_ba = 0
-
-   
-
-    
-    
-   
+  
     if inicio_data and fim_data:
          bobinagem = Bobinagem.objects.filter(data__range=(inicio_data, fim_data))
          for bob in bobinagem:
@@ -895,11 +1083,6 @@ def relatorio_diario(request):
              area_ind += bob.area_ind
              area_ba += bob.area_ba
 
-    
-        
-
-   
-
     template_name = 'relatorio/relatorio_diario_linha.html'
     context = {     
         "bobinagem": bobinagem,
@@ -908,9 +1091,7 @@ def relatorio_diario(request):
         "area_r":area_r,
         "area_ba":area_ba,
         "area_ind":area_ind,
-        
-
-        
+              
     }
 
     return render(request, template_name, context)
@@ -1027,8 +1208,11 @@ def etiqueta_palete(request, pk):
     d_min = 0
     d_max = 0
     e_p.produto = bobine[0].bobinagem.perfil.produto
+    bobines = [None] * 61
     
     for b in bobine:
+        pos = b.posicao_palete
+        bobines[pos] = b.nome
         d = b.bobinagem.diam
         if d_max == 0:
             d_max = d
@@ -1038,10 +1222,70 @@ def etiqueta_palete(request, pk):
             d_min = d
         elif d < d_min:
             d_min = d 
-                
-        e_p.diam_min = d_min
-        e_p.diam_max = d_max
-        e_p.save()
+
+    e_p.bobine1 = bobines[1]
+    e_p.bobine2 = bobines[2]
+    e_p.bobine3 = bobines[3]
+    e_p.bobine4 = bobines[4]
+    e_p.bobine5 = bobines[5]
+    e_p.bobine6 = bobines[6]
+    e_p.bobine7 = bobines[7]
+    e_p.bobine8 = bobines[8]
+    e_p.bobine9 = bobines[9]
+    e_p.bobine10 = bobines[10]
+    e_p.bobine11 = bobines[11]
+    e_p.bobine12 = bobines[12]
+    e_p.bobine13 = bobines[13]
+    e_p.bobine14 = bobines[14]
+    e_p.bobine15 = bobines[15]
+    e_p.bobine16 = bobines[16]
+    e_p.bobine17 = bobines[17]
+    e_p.bobine18 = bobines[18]
+    e_p.bobine19 = bobines[19]
+    e_p.bobine20 = bobines[20]
+    e_p.bobine21 = bobines[21]
+    e_p.bobine22 = bobines[22]
+    e_p.bobine23 = bobines[23]
+    e_p.bobine24 = bobines[24]
+    e_p.bobine25 = bobines[25]
+    e_p.bobine26 = bobines[26]
+    e_p.bobine27 = bobines[27]
+    e_p.bobine28 = bobines[28]
+    e_p.bobine29 = bobines[29]
+    e_p.bobine30 = bobines[30]
+    e_p.bobine31 = bobines[31]
+    e_p.bobine32 = bobines[32]
+    e_p.bobine33 = bobines[33]
+    e_p.bobine34 = bobines[34]
+    e_p.bobine35 = bobines[35]
+    e_p.bobine36 = bobines[36]
+    e_p.bobine37 = bobines[37]
+    e_p.bobine38 = bobines[38]
+    e_p.bobine39 = bobines[39]
+    e_p.bobine40 = bobines[40]
+    e_p.bobine41 = bobines[41]
+    e_p.bobine42 = bobines[42]
+    e_p.bobine43 = bobines[43]
+    e_p.bobine44 = bobines[44]
+    e_p.bobine45 = bobines[45]
+    e_p.bobine46 = bobines[46]
+    e_p.bobine47 = bobines[47]
+    e_p.bobine48 = bobines[48]
+    e_p.bobine49 = bobines[49]
+    e_p.bobine50 = bobines[50]
+    e_p.bobine51 = bobines[51]
+    e_p.bobine52 = bobines[52]
+    e_p.bobine53 = bobines[53]
+    e_p.bobine54 = bobines[54]
+    e_p.bobine55 = bobines[55]
+    e_p.bobine56 = bobines[56]
+    e_p.bobine57 = bobines[57]
+    e_p.bobine58 = bobines[58]
+    e_p.bobine59 = bobines[59]
+    e_p.bobine60 = bobines[60]
+    e_p.diam_min = d_min
+    e_p.diam_max = d_max
+    e_p.save()
                 
     return redirect('producao:addbobinepalete', pk=palete.pk)
 
@@ -1051,3 +1295,91 @@ def etiqueta_palete(request, pk):
 def error_500(request):
     data = {}
     return render(request, 'error/error_500.html', data)
+
+@login_required
+def ordenar_bobines(request, pk):
+    template_name = "palete/ordenar_bobines_formset.html"
+    OrdenarBobinesFormSet = modelformset_factory(Bobine, form=OrdenarBobines, extra=0)
+    palete = Palete.objects.get(pk=pk)
+    bobines = Bobine.objects.filter(palete=palete)
+    formset = OrdenarBobinesFormSet(request.POST or None, queryset=bobines)
+    if formset.is_valid():
+        bobs = formset.save(commit=False)
+        for bob in bobs:
+            bob.save()
+
+    context = {
+        "formset": formset,
+        "bobines":bobines
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def c_bobines(request, pk):
+    template_name = "producao/classificacao_bobines_formset.html"
+    ClassificacaoBobinesFormSet = modelformset_factory(Bobine, form=ClassificacaoBobines, extra=0)
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    formset = ClassificacaoBobinesFormSet(request.POST or None, queryset=bobines)
+    if formset.is_valid():
+        bobs = formset.save(commit=False)
+        for bob in bobs:
+            bob.save()
+    
+    context = {
+        "formset": formset,
+        "bobines": bobines, 
+        "bobinagem": bobinagem
+        
+    }
+
+    return render(request, template_name, context)
+
+
+
+@login_required
+def retrabalho(request):
+    template_name = 'retrabalho/retrabalho_formset.html'
+    RetrabalhoFormSet = modelformset_factory(Emenda, form=RetrabalhoForm, extra=3)
+    formset = RetrabalhoFormSet(request.POST or None)
+
+    
+
+    for f in formset:
+        bobine = f['bobine'].value()
+        print(bobine)
+        bobine = Bobine.objects.get(nome=bobine)
+        f.bobine = bobine.id
+
+
+        print(f.bobine)
+        
+
+    
+   
+    if formset.is_valid():
+        retrabalho = formset.save(commit=False)
+        for r in retrabalho:
+            r.save()
+
+
+    context = {
+        "formset": formset,
+             
+    }
+
+    return render(request, template_name, context)
+
+def destruir_bobine(request, pk_bobinagem, pk_bobine):
+    bobine = Bobine.objects.get(pk=pk_bobine)
+    bobinagem = Bobinagem.objects.get(pk=pk_bobinagem)
+
+    margem_min = bobine.bobinagem.comp_cli * Decimal('0.20')
+    print(margem_min)
+    if bobine.comp_actual < margem_min:
+        bobine.recycle = True
+        bobine.save()
+        return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
+    else:
+        return redirect('producao:retrabalho_filter', pk=bobinagem.pk)

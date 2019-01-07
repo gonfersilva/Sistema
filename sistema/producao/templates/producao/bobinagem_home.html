@@ -35,9 +35,16 @@
             <br>
             
         </div>
+        
         <div class="col-md-12 table-responsive size-table">
-                
+            
                 <div class="col-md-12 ">
+                        <form method="GET" action=''>{% csrf_token %}
+                                <input type="text" name="s" placeholder="Bobine / Data" autofocus>
+                                
+                                <input type="submit" class="btn btn-success" value="Pesquisar">
+                            </form>
+                            
                 <table class="table fit">
                     <thead>
                         <tr>

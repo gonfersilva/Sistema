@@ -7,7 +7,9 @@
         <h2 id="center">{{ instance.nome }}</h2><br>
     <div class="row">
             <div class="container col-sm-4">
+                    {% if not instance.palete or instance.estado == 'LAB' %}
                     {% bootstrap_field form.estado %}
+                    {% endif %}
                     
                     
         

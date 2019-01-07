@@ -49,6 +49,12 @@ th
     text-align: center;
 }
 
+.estado_dm {
+    background-color: orange;
+    color: white;
+    text-align: center;
+}
+
 #estado_ba {
     background-color:red;
     color: white;
@@ -111,5 +117,9 @@ th
 
 .center-text {
     text-align: center;
+}
+
+.estado_boot_class {
+    width: 100px;
 }
 

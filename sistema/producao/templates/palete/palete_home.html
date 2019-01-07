@@ -51,32 +51,34 @@
 
 
         </tr>
-        {% for obj in palete %} {% if not obj.num == 0 and not obj.estado == 'DM' %}
-        <tr>
-            <td><a href='/producao/palete/{{ obj.id }}'>{{ obj.nome }}</a></td>
-            <td>{{ obj.num }}</td>
-            <td>{{ obj.data_pal|date:"d-n-Y" }}</td>
+        {% for obj in palete %}
+            {% if not obj.num == 0 and not obj.estado == 'DM' %}
+            <tr>
+                <td><a href='/producao/palete/{{ obj.id }}'>{{ obj.nome }}</a></td>
+                <td>{{ obj.num }}</td>
+                <td>{{ obj.data_pal|date:"d-n-Y" }}</td>
 
-            {% if obj.estado == "G" %}
-            <td id="estado_good">{{ obj.estado }}</td>
-            {% elif obj.estado == "DM"%}
-            <td id="estado_dm">{{ obj.estado }}</td>
-            {% else %}
-            <td id="estado_rejected">{{ obj.estado }}</td>
+                {% if obj.estado == "G" %}
+                <td id="estado_good">{{ obj.estado }}</td>
+                {% elif obj.estado == "DM"%}
+                <td id="estado_dm">{{ obj.estado }}</td>
+                {% else %}
+                <td id="estado_rejected">{{ obj.estado }}</td>
+                {% endif %}
+                <td>{{ obj.num_bobines_act }} / {{ obj.num_bobines }}</td>
+                <td>{{ obj.core_bobines }}</td>
+                <td>{{ obj.largura_bobines }}</td>
+                <td>{% for eti in e_p %}{% if eti.palete == obj %}{{ eti.diam_min }} / {{ eti.diam_max }}{% endif %}{% endfor %}</td>
+                <td>{{ obj.area }}</td>
+                <td>{{ obj.comp_total }}</td>
+
+                <td><a href="{% url 'producao:palete_delete' pk=obj.pk %}" class="btn btn-primary">Apagar</a></td>
+
+
+
+            </tr>
             {% endif %}
-            <td>{{ obj.num_bobines_act }} / {{ obj.num_bobines }}</td>
-            <td>{{ obj.core_bobines }}</td>
-            <td>{{ obj.largura_bobines }}</td>
-            <td>{{ obj.diametro }}</td>
-            <td>{{ obj.area }}</td>
-            <td>{{ obj.comp_total }}</td>
-
-            <td><a href="{% url 'producao:palete_delete' pk=obj.pk %}" class="btn btn-primary">Apagar</a></td>
-
-
-
-        </tr>
-        {% endif %} {% endfor %}
+        {% endfor %}
     </table>
 
 </div>

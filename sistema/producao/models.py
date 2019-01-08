@@ -43,7 +43,7 @@ class Perfil(models.Model):
 class Largura(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
-    largura = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    largura = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Larguras"

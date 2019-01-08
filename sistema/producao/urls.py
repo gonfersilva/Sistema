@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^perfil/update/(?P<pk>\d+)/', LarguraUpdate.as_view(), name='perfil_update_largura'),
     url(r'^perfil/create/$', CreatePerfil.as_view(), name='perfil_create'),
     url(r'^bobinagem/$', bobinagem_list, name='bobinagens'),
+    url(r'^bobinagem/historico/$', bobinagem_historico, name='bobinagem_historico'),
     url(r'^bobinagem/create/$', create_bobinagem, name='bobinagem_create'),
     url(r'^bobinagem/(?P<pk>\d+)/$', bobinagem_status, name='bobinestatus'),
     url(r'^bobinagem/update/(?P<pk>\d+)/', BobinagemUpdate.as_view(), name='bobinagemupdate'),

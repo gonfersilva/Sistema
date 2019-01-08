@@ -6,15 +6,15 @@
 <div class="container size-table">
     <div class="row">
         <div class="container">
-            <a href="{% url 'producao:producao_home' %}" class="btn btn-primary" role="button">Voltar</a>
+            <a href="{% url 'producao:bobinagens' %}" class="btn btn-primary" role="button">Voltar</a>
             
-            <a href="{% url 'producao:bobinagem_create' %}"  class="btn btn-primary pull-right" role="button">Criar bobinagem</a>
-            <a href="{% url 'producao:bobinagem_historico' %}"  class="btn btn-primary pull-right" role="button">Histórico bobinagens</a>
+            <!-- <a href="{% url 'producao:bobinagem_create' %}"  class="btn btn-primary pull-right" role="button">Criar bobinagem</a>
+            <a href="#"  class="btn btn-primary pull-right" role="button">Histórico bobinagens</a> -->
         </div>
     </div>
       <div class="row">  
         <h1 id="center">Bobinagens Linha 1</h1>
-        <h2 id="center">{{ now.day }} - {{ now.month}} - {{ now.year }} </h2><br>
+        <!-- <h2 id="center">{{ now.day }} - {{ now.month}} - {{ now.year }} </h2><br> -->
         <div class="container" id="center">
             <span class="step-links">
                 {% if bobinagem.has_previous %}
@@ -41,11 +41,11 @@
         <div class="col-md-12 table-responsive size-table">
             
                 <div class="col-md-12 ">
-                        <!-- <form method="GET" action=''>{% csrf_token %}
+                        <form method="GET" action=''>{% csrf_token %}
                                 <input type="text" name="s" placeholder="Bobine / Data" autofocus>
                                 
                                 <input type="submit" class="btn btn-success" value="Pesquisar">
-                            </form> -->
+                            </form>
                             
                 <table class="table fit">
                     <thead>

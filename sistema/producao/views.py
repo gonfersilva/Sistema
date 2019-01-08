@@ -114,9 +114,10 @@ def perfil_detail(request, pk):
 #         return context
 
 def bobinagem_list(request):
-    bobinagem = Bobinagem.objects.all()
+    now = datetime.datetime.now()
+    bobinagem = Bobinagem.objects.filter(data=now)
     s = request.GET.get("s")
-    print(s)
+    
     if s:
         bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
 
@@ -136,9 +137,39 @@ def bobinagem_list(request):
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
+        "now": now
         
     }
     return render (request, template_name, context)
+
+def bobinagem_historico(request):
+    bobinagem = Bobinagem.objects.all()
+    s = request.GET.get("s")
+    if s:
+        bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
+
+    # paginator = Paginator(bobinagem, 17)
+    # page = request.GET.get('page')
+    template_name = 'producao/bobinagem_all.html'
+    bobine = Bobine.objects.all()
+  
+
+    # try:
+    #     bobinagem = paginator.page(page)
+    # except PageNotAnInteger:
+    #     bobinagem = paginator.page(1)
+    # except EmptyPage:
+    #     bobinagem = paginator.page(paginator.num_pages)
+
+    context = {
+        "bobinagem": bobinagem,
+        "bobine": bobine,
+        
+        
+    }
+    return render (request, template_name, context)
+
+
 
 @login_required
 def bobinagem_status(request, pk):

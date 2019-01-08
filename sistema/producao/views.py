@@ -74,16 +74,16 @@ def create_bobinagem(request):
 
 def perfil_list(request):
     perfil = Perfil.objects.all()
-    paginator = Paginator(perfil, 15)
-    page = request.GET.get('page')
+    # paginator = Paginator(perfil, 15)
+    # page = request.GET.get('page')
     template_name = 'perfil/perfil_home.html'
     
-    try:
-        perfil = paginator.page(page)
-    except PageNotAnInteger:
-        perfil = paginator.page(1)
-    except EmptyPage:
-        perfil = paginator.page(paginator.num_pages)
+    # try:
+    #     perfil = paginator.page(page)
+    # except PageNotAnInteger:
+    #     perfil = paginator.page(1)
+    # except EmptyPage:
+    #     perfil = paginator.page(paginator.num_pages)
 
     context = {
         "perfil": perfil,

@@ -170,7 +170,7 @@ class Palete(models.Model):
 
     class Meta:
         verbose_name_plural = "Paletes"
-        ordering = ['-num']  
+        ordering = ['-data_pal','-num']  
 
 class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))

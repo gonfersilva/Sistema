@@ -14,6 +14,7 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib import messages
 from time import gmtime, strftime
 import datetime
+import time
 from .funcs import *
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
@@ -147,6 +148,7 @@ def bobinagem_historico(request):
     s = request.GET.get("s")
     if s:
         bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
+        
 
     paginator = Paginator(bobinagem, 17)
     page = request.GET.get('page')

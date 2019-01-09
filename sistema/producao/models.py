@@ -382,11 +382,12 @@ def palete_nome(sender, instance, **kwargs):
 
         elif instance.estado == 'G':
             if instance.retrabalhada == False: 
-                palete = Palete.objects.filter(estado='G')
+                palete = Palete.objects.filter(estado='G', data_pal__gte='2019-01-01')
                 num = 0
                 for p in palete:
                     if p.num > num:
                         num = p.num
+                       
                 instance.num = num + 1   
                 if num + 1 < 10:    
                     instance.nome = 'P000%s-%s' % (num + 1, ano)  

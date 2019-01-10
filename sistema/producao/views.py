@@ -232,16 +232,16 @@ class BobinagemUpdate(LoginRequiredMixin, UpdateView):
 def pelete_list(request):
     palete = Palete.objects.all()
     e_p = EtiquetaPalete.objects.all()
-    paginator = Paginator(palete, 15)
-    page = request.GET.get('page')
+    # paginator = Paginator(palete, 15)
+    # page = request.GET.get('page')
     template_name = 'palete/palete_home.html'
     
-    try:
-        palete = paginator.page(page)
-    except PageNotAnInteger:
-        palete = paginator.page(1)
-    except EmptyPage:
-        palete = paginator.page(paginator.num_pages)
+    # try:
+    #     palete = paginator.page(page)
+    # except PageNotAnInteger:
+    #     palete = paginator.page(1)
+    # except EmptyPage:
+    #     palete = paginator.page(paginator.num_pages)
 
     context = {
         "palete": palete,

@@ -566,7 +566,7 @@ def picagem(request, pk):
                 # return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                 return redirect('producao:addbobinepalete', pk=palete.pk)
         else:
-            if bobine.estado == 'G' or bobine.estado == 'LAB':
+            if (bobine.estado == 'G' or bobine.estado == 'LAB') and palete.estado != 'DM':
                 if palete.num_bobines_act == palete.num_bobines:
                     messages.error(request, 'A palete já se encontra completa.')
                     #  erro = 3
@@ -582,7 +582,7 @@ def picagem(request, pk):
                         #  erro = 1
                         #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                          return redirect('producao:addbobinepalete', pk=palete.pk)
-            elif bobine.estado == 'DM' and bobine.largura.largura == palete.largura_bobines and palete.estado == 'DM':
+            elif (bobine.estado == 'DM' or bobine.estado == 'G' or bobine.estado == 'IND') and palete.estado == 'DM':
                   Bobine.add_bobine(palete.pk, bobine.pk)
                 #   etiqueta_add_bobine(palete.pk, bobine.pk)
                   return redirect('producao:addbobinepalete', pk=palete.pk) 

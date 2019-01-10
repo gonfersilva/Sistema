@@ -582,7 +582,7 @@ def picagem(request, pk):
                         #  erro = 1
                         #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                          return redirect('producao:addbobinepalete', pk=palete.pk)
-            elif (bobine.estado == 'DM' or bobine.estado == 'G' or bobine.estado == 'IND' or bobine.estado == 'HOLD')) and palete.estado == 'DM':
+            elif (bobine.estado == 'DM' or bobine.estado == 'G' or bobine.estado == 'IND' or bobine.estado == 'HOLD') and palete.estado == 'DM':
                   Bobine.add_bobine(palete.pk, bobine.pk)
                 #   etiqueta_add_bobine(palete.pk, bobine.pk)
                   return redirect('producao:addbobinepalete', pk=palete.pk) 

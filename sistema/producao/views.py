@@ -663,13 +663,13 @@ def bobinagem_delete(request, pk):
                 e.delete()
             obj.delete()
             if obj.perfil.retrabalho == False:
-                return redirect('producao:bobinagens')
+                return redirect('producao:bobinagem_list_all')
             else:
                 return redirect('producao:retrabalho_home')
         else:
             obj.delete()
             if obj.perfil.retrabalho == False:
-                return redirect('producao:bobinagens')
+                return redirect('producao:bobinagem_list_all')
             else:
                 return redirect('producao:retrabalho_home')
         

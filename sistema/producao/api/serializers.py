@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem
 
-class BobinagemListSerializer(ModelSerializer):
+class BobinagemSerializer(ModelSerializer):
     class Meta:
         model = Bobinagem
         fields = "__all__"
@@ -31,12 +31,13 @@ class PaleteDetailSerializer(ModelSerializer):
         ]
 
 class PerfilSerializer(ModelSerializer):
-    
-    
+       
     class Meta:
         model = Perfil
         fields = [
             'produto',
+            'core',
+            'retrabalho'
                        
         ]
 
@@ -48,12 +49,13 @@ class LarguraSerializer(ModelSerializer):
             'perfil',
             'num_bobine',
             'largura',
+            
         ]
             
 
 class BobineSerializer(ModelSerializer):
     largura = LarguraSerializer()
-    bobinagem = BobinagemListSerializer()
+    bobinagem = BobinagemSerializer()
     palete = PaleteDetailSerializer()
        
     class Meta:
@@ -82,7 +84,7 @@ class BobineSerializer(ModelSerializer):
 
 class EmendaSerializer(ModelSerializer):
     bobine = BobineSerializer()
-    bobinagem = BobinagemListSerializer()
+    bobinagem = BobinagemSerializer()
     class Meta:
         model = Emenda
         fields = [
@@ -105,4 +107,24 @@ class EmendaCreateSerializer(ModelSerializer):
             "emenda", 
             "metros", 
             
+        ]
+
+class BobinagemListSerializer(ModelSerializer):
+    perfil = PerfilSerializer()
+    
+    class Meta:
+        model = Bobinagem
+        fields = [
+            "id",
+            "nome",
+            "perfil",
+            "data",
+            "inico",
+            "fim",
+            "duracao",
+            "comp",
+            "comp_par",
+            "comp_cli",
+            "area",
+            "estado"
         ]

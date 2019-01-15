@@ -2,8 +2,8 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
-from producao.models import Palete, Bobine, Emenda
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, EmendaSerializer, EmendaCreateSerializer
+from producao.models import Palete, Bobine, Emenda, Bobinagem
+from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(ListAPIView):
@@ -35,3 +35,7 @@ class EmendaListAPIView(LoginRequiredMixin, ListAPIView):
 class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
     queryset = Emenda.objects.all()
     serializer_class = EmendaCreateSerializer
+
+class BobinagemListAPIView(ListAPIView):
+    queryset = Bobinagem.objects.all().order_by('-data', '-fim')
+    serializer_class = BobinagemListSerializer

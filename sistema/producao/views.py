@@ -741,7 +741,7 @@ def status_bobinagem(request, operation, pk):
 
        
             
-    return redirect('producao:bobinagens')
+    return redirect('producao:bobinagem_list_all')
 
 
 @login_required
@@ -1231,7 +1231,7 @@ def etiqueta_retrabalho(request, pk):
         if bobinagem.perfil.retrabalho == True:
             return redirect('producao:bobinestatus', pk=bobinagem.pk)
         else:
-            return redirect('producao:bobinagens')
+            return redirect('producao:bobinagem_list_all')
 
 @login_required
 def etiqueta_palete(request, pk):
@@ -1416,3 +1416,21 @@ def destruir_bobine(request, pk_bobinagem, pk_bobine):
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
     else:
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
+
+
+
+
+@login_required
+def bobinagem_list_all(request):
+    
+    bobinagem = Bobinagem.objects.all()
+   
+        
+    template_name = 'producao/bobinagem_list_all.html'
+    context = {
+               
+        "bobinagem": bobinagem,
+              
+    }
+
+    return render(request, template_name, context)

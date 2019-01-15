@@ -37,5 +37,5 @@ class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
     serializer_class = EmendaCreateSerializer
 
 class BobinagemListAPIView(ListAPIView):
-    queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:100]
+    queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:50]
     serializer_class = BobinagemListSerializer

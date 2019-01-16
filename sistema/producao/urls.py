@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^bobine/(?P<pk>\d+)/', update_bobine, name='bobineupdate'),
     url(r'^bobine/details/(?P<pk>\d+)/', bobine_details, name='bobine_details'),
     url(r'^palete/$', pelete_list, name='paletes'),
+    url(r'^paletelist/$', palete_list_all, name='palete_list_all'),
     url(r'^palete/retrabalho/$', palete_retrabalho, name='paletes_retrabalho'),
     url(r'^palete/create/$', create_palete, name='palete_create'),
     url(r'^palete/createretrabalho/$', create_palete_retrabalho, name='palete_create_retrabalho'),

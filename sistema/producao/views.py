@@ -1434,3 +1434,19 @@ def bobinagem_list_all(request):
     }
 
     return render(request, template_name, context)
+
+
+@login_required
+def palete_list_all(request):
+    
+    palete = Palete.objects.all()
+   
+        
+    template_name = 'palete/palete_list_all.html'
+    context = {
+               
+        "palete": palete,
+              
+    }
+
+    return render(request, template_name, context)

@@ -9,14 +9,7 @@ class BobinagemSerializer(ModelSerializer):
 class PaleteListSerializer(ModelSerializer):
     class Meta:
         model = Palete
-        fields = [
-            'id',
-            'nome',
-            'estado',
-            'comp_total',
-            'num_bobines',
-            'largura_bobines',
-        ]
+        fields = "__all__"
 
 class PaleteDetailSerializer(ModelSerializer):
     class Meta:

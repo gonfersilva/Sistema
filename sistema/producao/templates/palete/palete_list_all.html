@@ -5,12 +5,12 @@
 <div class="container">
         <a href="{% url 'producao:producao_home' %}" class="btn btn-primary" role="button">Voltar</a>
         
-        <a href="{% url 'producao:bobinagem_create' %}"  class="btn btn-primary pull-right" role="button">Criar bobinagem</a>
+        <a href="{% url 'producao:palete_create' %}"  class="btn btn-primary pull-right" role="button">Criar palete</a>
         
     </div>
-<h1 id="center">Bobinagens Linha 1</h1><br>
+<h1 id="center">Paletes</h1><br>
 <div class="container">
-    <input id="myInput" type="text" placeholder="Bobinagem" onkeyup="searchBobinagem()" autofocus/>
+    <input id="myInput" type="text" placeholder="Palete" onkeyup="searchPalete()" autofocus/>
         
     
 </div>
@@ -19,16 +19,16 @@
 <table class="table fit" id="myTable">
     <thead>
         <tr>
-            <th>Bobinagem</th>
+            <th>Palete</th>
+            <th>Nº</th>
             <th>Data</th>
-            <th>Inicio</th>
-            <th>Fim</th>    
-            <th>Duração </th>                              
-            <th>Core</th>
-            <th>Comp(m)</th>
-            <th>Comp. Emenda(m)</th>
-            <th>Comp. Cliente(m)</th>
-            <th>Area(m2)</th> 
+            <th>Estado</th>    
+            <th>Bobines</th>                              
+            <th>Core(")</th>
+            <th>Largura(mm)</th>
+            <th>Diâmetro(mm)</th>
+            <th>Comprimento()</th>
+            <th>Área(m2)</th> 
 
         </tr>
     </thead>
@@ -51,7 +51,7 @@ $(window).load(function() {
     $.ajax({ 
         type: "GET",
         dataType: "json",
-        url: "/api/bobinagem/",
+        url: "/api/palete/",
         success: function(data){        
             if(!data || data.length === 0) {
                     return;
@@ -59,18 +59,15 @@ $(window).load(function() {
             var data_length = data.length
             for ( i = 0; i < data_length; i++){
                 
-                if (data[i].perfil.retrabalho == false){
-
-                    var link = "/producao/bobinagem/" + data[i].id
-                    var link_ap = "/producao/bobinagem/ap/" + data[i].id
-                    var link_dm = "/producao/bobinagem/dm/" + data[i].id
-                    var link_rej = "/producao/bobinagem/rej/" + data[i].id
-                    var link_del = "/producao/bobinagem/delete/" + data[i].id
+                if (data[i].estado == 'G'){
+                    var link = "/producao/palete/" + data[i].id
+                    var link_del = "/producao/palete/delete/" + data[i].id
+                    
                     
                     var a1=$(document.createElement("a")).text(data[i].nome).attr('href', link), td1=$(document.createElement("td"));
                     var td2=$(document.createElement("td"))
                     var td3=$(document.createElement("td")).attr('id', "center")
-                    var td4=$(document.createElement("td")).attr('id', "center")
+                    var td4=$(document.createElement("td")).attr('id', "estado_good")
                     var td5=$(document.createElement("td")).attr('id', "center")
                     var td6=$(document.createElement("td")).attr('id', "center")
                     var td7=$(document.createElement("td")).attr('id', "center")
@@ -78,33 +75,33 @@ $(window).load(function() {
                     var td9=$(document.createElement("td")).attr('id', "center")
                     var td10=$(document.createElement("td")).attr('id', "center")
                     var td11=$(document.createElement("a"))
-                    var td12=$(document.createElement("a"))
-                    var td13=$(document.createElement("a"))
-                    var td14=$(document.createElement("a"))
+                    
                                        
 
                     td1.append(a1);
-                    td2.text(data[i].data);
-                    td3.text(data[i].inico);
-                    td4.text(data[i].fim);
-                    td5.text(data[i].duracao);
-                    td6.text(data[i].perfil.core);
-                    td7.text(data[i].comp);
-                    td8.text(data[i].comp_par);
-                    td9.text(data[i].comp_cli);
-                    td10.text(data[i].area);
-                    if (data[i].estado == "LAB"){
-                        td11.addClass('btn btn-success').text("Aceitar").attr('href', link_ap);
-                        td12.addClass('btn btn-warning').text("DM").attr('href', link_dm);
-                        td13.addClass('btn btn-danger').text("Rejeitar").attr('href', link_rej);
-                        }
-                    td14.addClass('btn btn-danger glyphicon glyphicon-trash').attr('href', link_del);
+                    td2.text(data[i].num);
+                    td3.text(data[i].data_pal);
+                    td4.text(data[i].estado);
+                    td5.text(data[i].num_bobines_act + " / " + data[i].num_bobines);
+                    td6.text(data[i].core_bobines);
+                    td7.text(data[i].largura_bobines);
+                    if (data[i].diametro == null){
+                        td8.text(0);
+                    }else{
+                        td8.text(data[i].diametro);
+                    }
+                    
+                        
+                    td9.text(data[i].area);
+                    td10.text(data[i].comp_total);
+                     
+                    td11.addClass('btn btn-danger glyphicon glyphicon-trash').attr('href', link_del);
 
                     var tr=$(document.createElement("tr"));
-                    tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11).append(td12).append(td13).append(td14);
+                    tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11);
                     
-                    
-                }
+                }    
+               
 
                 
                 a1.click(function () {
@@ -116,11 +113,11 @@ $(window).load(function() {
         }
     }); 
 });
-function searchBobinagem() {
+function searchPalete() {
   // Declare variables 
   var input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("myInput");
-  filter = input.value;
+  filter = input.value.toUpperCase();
   table = document.getElementById("myTable");
   tr = table.getElementsByTagName("tr");
 

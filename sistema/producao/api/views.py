@@ -7,7 +7,7 @@ from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(ListAPIView):
-    queryset = Palete.objects.all().order_by('-num')
+    queryset = Palete.objects.all().order_by('-data_pal', '-num')
     serializer_class = PaleteListSerializer
 
 

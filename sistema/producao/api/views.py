@@ -7,7 +7,7 @@ from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(ListAPIView):
-    queryset = Palete.objects.all().order_by('-num')[:50]
+    queryset = Palete.objects.all().order_by('-num')
     serializer_class = PaleteListSerializer
 
 
@@ -37,5 +37,5 @@ class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
     serializer_class = EmendaCreateSerializer
 
 class BobinagemListAPIView(ListAPIView):
-    queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:50]
+    queryset = Bobinagem.objects.all().order_by('-data', '-fim')
     serializer_class = BobinagemListSerializer

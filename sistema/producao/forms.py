@@ -15,7 +15,7 @@ class LarguraForm(ModelForm):
 
     class Meta:
        model = Largura
-       fields =[ 'largura' ]
+       fields = [ 'largura', 'designacao_prod' ]
 
 
 class BobinagemCreateForm(ModelForm):

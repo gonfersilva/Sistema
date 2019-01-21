@@ -44,6 +44,7 @@ class Largura(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    designacao_prod = models.CharField(verbose_name="Designação produto", max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Larguras"

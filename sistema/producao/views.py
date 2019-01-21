@@ -190,7 +190,7 @@ def bobinagem_status(request, pk):
 
 class LarguraUpdate(LoginRequiredMixin, UpdateView):
     model = Largura
-    fields = ['largura']
+    fields = ['largura', 'designacao_prod']
     template_name = 'perfil/largura_update.html'
 
 def update_bobine(request, pk=None):

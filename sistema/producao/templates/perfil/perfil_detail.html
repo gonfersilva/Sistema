@@ -43,19 +43,35 @@
         <div class="row">
             <div class="col-md-12 table-responsive">
                 <table class="table">
+                    
                     <tr>
+                        <th>Bobine</td>
                         {% for lar in largura %}
                             <th id="center">{{ lar.num_bobine }}</th>
                         {% endfor%}
                     </tr>
                     <tr>
+                        <th>Largura</td>
                         {% for lar in largura %}
                             {% if not lar.largura == None%}
                             <td id="center">{{ lar.largura }}</td>
+                            
                             {% else %}
                             <td></td>
                             {% endif %}
                         {% endfor%}
+                    </tr>
+                    <tr>
+                            <th>Produto</td>
+                            {% for lar in largura %}
+                            {% if not lar.largura == None %}
+                            <td id="center">{{ lar.designacao_prod }}</td>
+                            
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        {% endfor%}
+                        
                     </tr>
                     <tr>
                         {% for lar in largura %}

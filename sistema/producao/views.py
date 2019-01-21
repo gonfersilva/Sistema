@@ -1210,7 +1210,7 @@ def etiqueta_retrabalho(request, pk):
         return redirect('producao:bobinestatus', pk=bobinagem.pk)
     else:
         for b in bobine:
-            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=bobinagem.perfil.produto, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area)
+            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area)
             if Emenda.objects.filter(bobinagem=bobinagem).exists():
                 emenda = Emenda.objects.filter(bobinagem=bobinagem)
                 for e in emenda:

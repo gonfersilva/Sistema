@@ -64,16 +64,17 @@
                     <tr>
                             <th>Produto</td>
                             {% for lar in largura %}
-                            {% if not lar.largura == None %}
-                            <td id="center">{{ lar.designacao_prod }}</td>
-                            
-                            {% else %}
-                            <td></td>
+                                {% if not lar.largura == None %}
+                                <td id="center">{{ lar.designacao_prod }}</td>
+                                
+                                {% else %}
+                                <td></td>
                             {% endif %}
                         {% endfor%}
                         
                     </tr>
                     <tr>
+                        <td></td>
                         {% for lar in largura %}
                             <td id="center"><a type="submit" href="{% url 'producao:perfil_update_largura' lar.pk %}" class="btn btn-primary">Alterar</a></td>
                         {% endfor%}

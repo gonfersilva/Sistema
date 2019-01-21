@@ -58,7 +58,7 @@ class Largura(models.Model):
 
 def perfil_larguras(sender, instance, **kwargs):
     for i in range(instance.num_bobines):
-        lar = Largura.objects.create(perfil=instance, num_bobine=i+1)
+        lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
         lar.save()
 
 # class Nonwoven(models.Model):

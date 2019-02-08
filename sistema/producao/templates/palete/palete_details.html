@@ -237,7 +237,7 @@ $(document).ready(function(){
                                                             valid[num-1] = false
                                                             list_bobines[num-1] = Number(bobine_data.id) 
                                                                                                 
-                                                        }else if(bobine_data.largura.largura == palete.largura_bobines && bobine_data.bobinagem.perfil.core == palete.core_bobines && Number(palete.cliente.liminf) <= Number(bobine_data.bobinagem.diam) <= Number(palete.cliente.limsup)){
+                                                        }else if(bobine_data.largura.largura == palete.largura_bobines && bobine_data.bobinagem.perfil.core == palete.core_bobines && Number(bobine_data.bobinagem.diam) <= Number(palete.cliente.limsup)){
                                                             valid[num-1] = true
                                                             list_bobines[num-1] = Number(bobine_data.id)
                                                             

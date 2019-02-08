@@ -83,13 +83,14 @@
                     </ul>
                     {% endif %}
                 </ul>
-                    {% if palete.estado != 'DM' %}
+                <h1 class="alert-success"><a href="{% url 'producao:palete_rabrir' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Refazer Palete</button></a></h1>
+                    <!-- {% if palete.estado != 'DM' %}
                         {% if palete.num_bobines_act == palete.num_bobines %}
                         <div class="row">
                             <div class="col">
                                 
-                                <h1 class="alert-success">Palete fechada!</h1>
-                                <!-- {% if e_p.produto == "" %}<a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Gerar etiqueta</button></a>{% else %}<a href="{% url 'producao:reabrir_palete' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Reabrir Palete</button></a>{% endif %} -->
+                                <h1 class="alert-success">Palete fechada!<a href="{% url 'producao:reabrir_palete' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Reabrir Palete</button></a></h1>
+                                {% if e_p.produto == "" %}<a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Gerar etiqueta</button></a>{% else %}<a href="{% url 'producao:reabrir_palete' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Reabrir Palete</button></a>{% endif %}
                                 
                             </div>
                         </div>
@@ -104,7 +105,7 @@
                         </div>
                         
                         
-                    {% endif %}
+                    {% endif %} -->
 
                     <table class="table table-responsive">
                             <tr>

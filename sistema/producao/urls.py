@@ -55,5 +55,7 @@ urlpatterns = [
     url(r'^palete/(?P<pk>\d+)/(?P<operation>.+)/$', ordenar_bobines_op, name='ordenar_bobines_op'),
     url(r'^bobinagem/(?P<pk>\d+)/classificacao/$', c_bobines, name='classificacao_bobines'),
     url(r'^palete/validate/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/$', palete_confirmation, name='palete_confirmation'),
+    url(r'^palete/reabrir/(?P<pk>\d+)/$', palete_rabrir, name='palete_rabrir'),
+
     
 ]

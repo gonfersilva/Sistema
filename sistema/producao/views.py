@@ -1586,3 +1586,16 @@ def palete_confirmation(request, pk, id_bobines):
     
     return redirect('producao:addbobinepalete', pk=palete.pk)
     
+@login_required
+def palete_rabrir(request, pk):
+    palete = Palete.objects.get(pk=pk)
+    bobines = Bobine.objects.filter(palete=palete)
+    palete.num_bobines_act = 0
+    
+    palete.save()
+
+    for b in bobines:
+        b.palete = None
+        b.save()
+
+    return redirect('producao:palete_details', pk=palete.pk)

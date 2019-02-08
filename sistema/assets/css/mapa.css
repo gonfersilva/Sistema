@@ -123,3 +123,17 @@ th
     width: 100px;
 }
 
+.popup-picagem-bobines{
+    visibility: hidden;
+    position:absolute;
+    background:#ffffff;
+    
+    width:50%;
+    height:50%;
+    left:25%;
+}
+
+.popup-picagem-bobines.active{
+    visibility: visible;
+}
+

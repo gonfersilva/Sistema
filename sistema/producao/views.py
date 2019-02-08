@@ -270,13 +270,13 @@ def create_palete(request):
         instance.save()
         
         if EtiquetaPalete.objects.filter(palete=instance).exists():
-            return redirect('producao:addbobinepalete', pk=instance.pk)
+            return redirect('producao:palete_details', pk=instance.pk)
         else:
             e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
             e_p.cliente = instance.cliente.nome
             e_p.save()
                 
-        return redirect('producao:addbobinepalete', pk=instance.pk)
+        return redirect('producao:palete_details', pk=instance.pk)
 
     context = {
         "form": form
@@ -355,7 +355,7 @@ def add_bobine_palete(request, pk):
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
     bobines = Bobine.objects.filter(palete=palete)
-    e_p = EtiquetaPalete.objects.get(palete=palete)
+    # e_p = EtiquetaPalete.objects.get(palete=palete)
     ultima_pos = 0
     for b in bobines:
         ultima_pos += 1
@@ -363,7 +363,7 @@ def add_bobine_palete(request, pk):
     context = {"palete": palete, 
                "bobine": bobine,
                "bobinagem": bobinagem,
-               "e_p": e_p,
+            #    "e_p": e_p,
                "ultima_pos": ultima_pos,
                 }
     return render(request, template_name, context)
@@ -1450,3 +1450,139 @@ def palete_list_all(request):
     }
 
     return render(request, template_name, context)
+
+@login_required
+def palete_details(request, pk):
+    palete = Palete.objects.get(pk=pk)
+
+    template_name = 'palete/palete_details.html'
+
+
+    context = {
+        "palete":palete,
+    }
+
+    return render(request, template_name, context)
+
+
+
+@login_required
+def palete_confirmation(request, pk, id_bobines):
+    palete = Palete.objects.get(pk=pk)
+    e_p = EtiquetaPalete.objects.get(palete=palete)
+    bobines = id_bobines
+    num = 1
+    comp = 0
+    area = 0
+    bobines_array = bobines.split("-")
+    del bobines_array[-1]
+    for x in bobines_array:
+        id_b = int(x)
+        bobine = Bobine.objects.get(pk=id_b)
+        bobine.palete = palete
+        bobine.posicao_palete = num
+        comp += bobine.comp_actual
+        area += bobine.area
+        bobine.save()
+        num += 1
+        
+    palete.num_bobines_act = num - 1
+    palete.area = area
+    palete.comp_total = comp
+    palete.save()
+
+    
+        
+    d_min = 0
+    d_max = 0
+    
+    b = int(bobines_array[0])
+    bobine_produto = Bobine.objects.get(pk=b)
+    e_p.produto = bobine_produto.bobinagem.perfil.produto
+    bobine_posicao = [None] * 61
+    
+    for x in bobines_array:
+        id_b = int(x)
+        bobine = Bobine.objects.get(pk=id_b)
+        pos = bobine.posicao_palete
+        bobine_posicao[pos] = bobine.nome
+        d = bobine.bobinagem.diam
+        if d_max == 0:
+            d_max = d
+        elif d > d_max:
+            d_max = d
+        elif d_min == 0:
+            d_min = d
+        elif d < d_min:
+            d_min = d 
+
+    e_p.bobine1 = bobine_posicao[1]
+    e_p.bobine2 = bobine_posicao[2]
+    e_p.bobine3 = bobine_posicao[3]
+    e_p.bobine4 = bobine_posicao[4]
+    e_p.bobine5 = bobine_posicao[5]
+    e_p.bobine6 = bobine_posicao[6]
+    e_p.bobine7 = bobine_posicao[7]
+    e_p.bobine8 = bobine_posicao[8]
+    e_p.bobine9 = bobine_posicao[9]
+    e_p.bobine10 = bobine_posicao[10]
+    e_p.bobine11 = bobine_posicao[11]
+    e_p.bobine12 = bobine_posicao[12]
+    e_p.bobine13 = bobine_posicao[13]
+    e_p.bobine14 = bobine_posicao[14]
+    e_p.bobine15 = bobine_posicao[15]
+    e_p.bobine16 = bobine_posicao[16]
+    e_p.bobine17 = bobine_posicao[17]
+    e_p.bobine18 = bobine_posicao[18]
+    e_p.bobine19 = bobine_posicao[19]
+    e_p.bobine20 = bobine_posicao[20]
+    e_p.bobine21 = bobine_posicao[21]
+    e_p.bobine22 = bobine_posicao[22]
+    e_p.bobine23 = bobine_posicao[23]
+    e_p.bobine24 = bobine_posicao[24]
+    e_p.bobine25 = bobine_posicao[25]
+    e_p.bobine26 = bobine_posicao[26]
+    e_p.bobine27 = bobine_posicao[27]
+    e_p.bobine28 = bobine_posicao[28]
+    e_p.bobine29 = bobine_posicao[29]
+    e_p.bobine30 = bobine_posicao[30]
+    e_p.bobine31 = bobine_posicao[31]
+    e_p.bobine32 = bobine_posicao[32]
+    e_p.bobine33 = bobine_posicao[33]
+    e_p.bobine34 = bobine_posicao[34]
+    e_p.bobine35 = bobine_posicao[35]
+    e_p.bobine36 = bobine_posicao[36]
+    e_p.bobine37 = bobine_posicao[37]
+    e_p.bobine38 = bobine_posicao[38]
+    e_p.bobine39 = bobine_posicao[39]
+    e_p.bobine40 = bobine_posicao[40]
+    e_p.bobine41 = bobine_posicao[41]
+    e_p.bobine42 = bobine_posicao[42]
+    e_p.bobine43 = bobine_posicao[43]
+    e_p.bobine44 = bobine_posicao[44]
+    e_p.bobine45 = bobine_posicao[45]
+    e_p.bobine46 = bobine_posicao[46]
+    e_p.bobine47 = bobine_posicao[47]
+    e_p.bobine48 = bobine_posicao[48]
+    e_p.bobine49 = bobine_posicao[49]
+    e_p.bobine50 = bobine_posicao[50]
+    e_p.bobine51 = bobine_posicao[51]
+    e_p.bobine52 = bobine_posicao[52]
+    e_p.bobine53 = bobine_posicao[53]
+    e_p.bobine54 = bobine_posicao[54]
+    e_p.bobine55 = bobine_posicao[55]
+    e_p.bobine56 = bobine_posicao[56]
+    e_p.bobine57 = bobine_posicao[57]
+    e_p.bobine58 = bobine_posicao[58]
+    e_p.bobine59 = bobine_posicao[59]
+    e_p.bobine60 = bobine_posicao[60]
+    e_p.diam_min = d_min
+    e_p.diam_max = d_max
+    e_p.save()
+                
+    
+
+
+    
+    return redirect('producao:addbobinepalete', pk=palete.pk)
+    

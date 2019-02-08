@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^palete/delete/(?P<pk>\d+)/$', palete_delete, name='palete_delete'),
     url(r'^palete/(?P<pk>\d+)/(?P<e>\d+)/$', add_bobine_palete_erro, name='addbobinepaleteerro'),
     url(r'^palete/(?P<pk>\d+)/picagem/$', picagem, name='picagem'),
+    url(r'^palete/details/(?P<pk>\d+)/$', palete_details, name='palete_details'),
     url(r'^palete/(?P<operation>.+)/(?P<pk_bobine>\d+)/(?P<pk_palete>\d+)/$', palete_change, name='paletebobine'),
     url(r'^retrabalho/$', retrabalho_home, name='retrabalho_home'),
     url(r'^retrabalho/retrabalhar/$', retrabalho, name='retrabalho'),
@@ -53,5 +54,6 @@ urlpatterns = [
     url(r'^palete/(?P<pk>\d+)/ordenar/$', ordenar_bobines, name='ordenar_bobines'),
     url(r'^palete/(?P<pk>\d+)/(?P<operation>.+)/$', ordenar_bobines_op, name='ordenar_bobines_op'),
     url(r'^bobinagem/(?P<pk>\d+)/classificacao/$', c_bobines, name='classificacao_bobines'),
+    url(r'^palete/validate/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/$', palete_confirmation, name='palete_confirmation'),
     
 ]

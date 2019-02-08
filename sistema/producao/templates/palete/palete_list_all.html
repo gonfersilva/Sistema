@@ -1,5 +1,5 @@
 {% extends "layout.html "%} 
-{% block title %}Bobinagens | {{ block.super }}{% endblock %}
+{% block title %}Paletes | {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -59,7 +59,7 @@ $(window).load(function() {
             var data_length = data.length
             for ( i = 0; i < data_length; i++){
                 
-                if (data[i].estado == 'G'){
+                if (data[i].estado == 'G' && data[i].num != 0){
                     var link = "/producao/palete/" + data[i].id
                     var link_del = "/producao/palete/delete/" + data[i].id
                     

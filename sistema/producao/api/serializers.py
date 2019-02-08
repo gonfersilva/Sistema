@@ -1,27 +1,6 @@
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
-from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem
+from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem, Cliente
 
-class BobinagemSerializer(ModelSerializer):
-    class Meta:
-        model = Bobinagem
-        fields = "__all__"
-        
-class PaleteListSerializer(ModelSerializer):
-    class Meta:
-        model = Palete
-        fields = "__all__"
-
-class PaleteDetailSerializer(ModelSerializer):
-    class Meta:
-        model = Palete
-        fields = [
-            'id',
-            'nome',
-            'estado',
-            'comp_total',
-            'num_bobines',
-            'largura_bobines',
-        ]
 
 class PerfilSerializer(ModelSerializer):
        
@@ -33,6 +12,38 @@ class PerfilSerializer(ModelSerializer):
             'retrabalho'
                        
         ]
+        
+class BobinagemSerializer(ModelSerializer):
+    perfil = PerfilSerializer()
+    class Meta:
+        model = Bobinagem
+        fields = "__all__"
+        
+class PaleteListSerializer(ModelSerializer):
+    class Meta:
+        model = Palete
+        fields = "__all__"
+
+class ClienteSerializer(ModelSerializer):
+    class Meta:
+        model = Cliente
+        fields = "__all__"
+
+class PaleteDetailSerializer(ModelSerializer):
+    cliente = ClienteSerializer()
+    class Meta:
+        model = Palete
+        fields = [
+            'id',
+            'nome',
+            'estado',
+            'comp_total',
+            'num_bobines',
+            'largura_bobines',
+            'cliente',
+            'core_bobines'
+        ]
+
 
 class LarguraSerializer(ModelSerializer):
     perfil = PerfilSerializer()
@@ -50,6 +61,7 @@ class BobineSerializer(ModelSerializer):
     largura = LarguraSerializer()
     bobinagem = BobinagemSerializer()
     palete = PaleteDetailSerializer()
+    
        
     class Meta:
         model = Bobine
@@ -120,4 +132,14 @@ class BobinagemListSerializer(ModelSerializer):
             "comp_cli",
             "area",
             "estado"
+        ]
+
+class BobineListAllSerializer(ModelSerializer):
+
+    class Meta:
+        model = Bobine
+        fields = [
+            "id",
+            "nome",
+            "palete"
         ]

@@ -130,7 +130,7 @@ $(document).ready(function(){
 
     $('#btn-bobine').click(function() { 
         var input_value = $('#bobine-input').val();
-        
+        $('#bobine-input').val('')
         $.ajax({
             type:"GET",
             dataType: "json",
@@ -149,7 +149,7 @@ $(document).ready(function(){
                         if(palete.num_bobines > num){     
                             for (i = 0; i < data_length; i++){
                                 if (bobine[i].nome === input_value){
-                                $('#bobine-input').val('')
+                                
                                 var id_bobine = bobine[i].id
                                 $.ajax({
                                     type: "GET",

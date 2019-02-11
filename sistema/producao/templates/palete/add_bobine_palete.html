@@ -151,6 +151,8 @@
                                     <td id="estado_ba">{{ bob.estado }}</td>
                                     {% elif  bob.estado == "IND"%}
                                     <td id="estado_ind">{{ bob.estado }}</td>
+                                    {% elif  bob.estado == "HOLD"%}
+                                    <td id="estado_hold">{{ bob.estado }}</td>
                                     {% else %}
                                         <td id="estado_lab">{{ bob.estado }}</td>
                                     {% endif %}

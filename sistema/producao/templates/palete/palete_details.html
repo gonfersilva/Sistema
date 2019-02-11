@@ -212,46 +212,45 @@ $(document).ready(function(){
                                             $("#bobines-palete").append(tr);
                                             
                                             
-                                            $.ajax({
-                                                type:"GET",
-                                                dataType: "json",
-                                                url: "/api/palete/" + id,
-                                                success: function(palete){
-                                                            
-                                                    $("#num_bobine").text("Bobines: " + num + " / " + palete.num_bobines);
-                                                    $("#area_palete").text("Área total: "  + area_total + " m2");
-                                                    $("#comp_palete").text("Comprimento total: " + comp_total + " m");
-                                                    // alert(bobine_data.palete)
-                                                    // alert(palete.id)
-                                                    // alert(palete.cliente.limsup)
-                                                    // alert(bobine_data.bobinagem.diam)
-                                                    // alert(palete.cliente.liminf)
-                                                    // alert(bobine_data.bobinagem.perfil.core)
-                                                    // alert(palete.core_bobines)
-                                                    // alert(bobine_data.largura.largura)
-                                                    // alert(palete.largura_bobines)
-                                                    // alert(bobine_data.id)
+                                            // $.ajax({
+                                            //     type:"GET",
+                                            //     dataType: "json",
+                                            //     url: "/api/palete/" + id,
+                                            //     success: function(palete){
+                                                    
+                                            $("#num_bobine").text("Bobines: " + num + " / " + palete.num_bobines);
+                                            $("#area_palete").text("Área total: "  + area_total + " m2");
+                                            $("#comp_palete").text("Comprimento total: " + comp_total + " m");
+                                            // alert(bobine_data.palete)
+                                            // alert(palete.id)
+                                            // alert(palete.cliente.limsup)
+                                            // alert(bobine_data.bobinagem.diam)
+                                            // alert(palete.cliente.liminf)
+                                            // alert(bobine_data.bobinagem.perfil.core)
+                                            // alert(palete.core_bobines)
+                                            // alert(bobine_data.largura.largura)
+                                            // alert(palete.largura_bobines)
+                                            // alert(bobine_data.id)
 
-                                                    if (num <= palete.num_bobines){
-                                                        if (bobine_data.palete != null){
-                                                            valid[num-1] = false
-                                                            list_bobines[num-1] = Number(bobine_data.id) 
-                                                                                                
-                                                        }else if(bobine_data.largura.largura == palete.largura_bobines && bobine_data.bobinagem.perfil.core == palete.core_bobines && Number(bobine_data.bobinagem.diam) <= Number(palete.cliente.limsup)){
-                                                            valid[num-1] = true
-                                                            list_bobines[num-1] = Number(bobine_data.id)
-                                                            
-                                                                                            
-                                                        }else{
-                                                            valid[num-1] = false
-                                                            list_bobines[num-1] = Number(bobine_data.id)    
-                                                            }
+                                            if (num <= palete.num_bobines){
+                                                if (bobine_data.palete != null){
+                                                    valid[num-1] = false
+                                                    list_bobines[num-1] = Number(bobine_data.id) 
+                                                                                        
+                                                }else if(bobine_data.largura.largura == palete.largura_bobines && bobine_data.bobinagem.perfil.core == palete.core_bobines && Number(bobine_data.bobinagem.diam) <= Number(palete.cliente.limsup)){
+                                                    valid[num-1] = true
+                                                    list_bobines[num-1] = Number(bobine_data.id)
+                                                    
+                                                    
+                                                                                    
+                                                }else{
+                                                    valid[num-1] = false
+                                                    list_bobines[num-1] = Number(bobine_data.id)    
                                                     }
+                                            }
                                                     
                                                     
                                                     
-                                                }
-                                            })
                                             
                                             
                                            
@@ -328,40 +327,41 @@ $(document).ready(function(){
         var lb = list_bobines.length
         var validation = 0
         var cont = 0
-
-        for(i = 0; i < v; i++){
-
-            if (valid[i] == true){
-                validation = true
-            }else{
-                validation = false
-                break;
-            }
-        }
-        for(i = 0; i < lb; i++ ){
-            for(j = i; j < lb; j++){
-                if(i != j && list_bobines[i] == list_bobines[j]){
-                    validation = false
-                }
-            }
-        }
-                    
         $.ajax({
             type:"GET",
             dataType: "json",
             url: "/api/palete/" + id,
-            success: function(palete){
-                if(validation == true){
-                    url_id = "/producao/palete/validate/" + palete.id + "/"
-                    for (i = 0; i < lb; i++){
-                        url_id += list_bobines[i] + "-"
-                    }
-                    // alert(url_id)
-                    window.location.href = url_id;
-                }else{alert("A palete contém erros. Por favor verifique bobines picadas.")}
+            success: function(palete){ 
 
-            }
-        })
+                for(i = 0; i < v; i++){
+
+                    if (valid[i] == true){
+                        validation = true
+                    }else{
+                        validation = false
+                        break;
+                    }
+                }
+                for(i = 0; i < lb; i++ ){
+                    for(j = i; j < lb; j++){
+                        if(i != j && list_bobines[i] == list_bobines[j]){
+                            validation = false
+                        }
+                    }
+                }
+                            
+                
+                        if(validation == true){
+                            url_id = "/producao/palete/validate/" + palete.id + "/"
+                            for (i = 0; i < lb; i++){
+                                url_id += list_bobines[i] + "-"
+                            }
+                            // alert(url_id)
+                            window.location.href = url_id;
+                        }else{alert("A palete contém erros. Por favor verifique bobines picadas.")}
+
+                    }
+                })
 
 
 

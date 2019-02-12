@@ -1589,6 +1589,7 @@ def palete_confirmation(request, pk, id_bobines):
 @login_required
 def palete_rabrir(request, pk):
     palete = Palete.objects.get(pk=pk)
+    
     bobines = Bobine.objects.filter(palete=palete)
     e_p = EtiquetaPalete.objects.get(palete=palete)
     e_p.diam_min = 0  

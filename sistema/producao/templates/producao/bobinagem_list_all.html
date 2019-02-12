@@ -102,24 +102,24 @@ $(window).load(function() {
                     var tr=$(document.createElement("tr"));
                     var tr_total = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11).append(td12).append(td13).append(td14);
                     
-                    $.ajax({
-                        type: "GET",
-                        dataType: "json",
-                        url: "/api/bobinagem/" + data[i].id,
-                        success: function(bobines){  
-                            var bobines_length = bobines.length
+                    // $.ajax({
+                    //     type: "GET",
+                    //     dataType: "json",
+                    //     url: "/api/bobinagem/" + data[i].id,
+                    //     success: function(bobines){  
+                    //         var bobines_length = bobines.length
                             
-                            for (i=0; i < bobines_length; i++){
-                                var td = $(document.createElement("td")).attr('id', "center")
+                    //         for (i=0; i < bobines_length; i++){
+                    //             var td = $(document.createElement("td")).attr('id', "center")
                                 
-                                td.attr("src", './sistema/assets/img/black_stripe.jpeg')
-                                tr_total.append(td)
+                    //             td.attr("src", './sistema/assets/img/black_stripe.jpeg')
+                    //             tr_total.append(td)
                                 
                                 
-                            }
+                    //         }
 
-                        } 
-                    })
+                    //     } 
+                    // })
                    
                     
 

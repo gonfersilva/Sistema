@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
 from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer,ClienteSerializer
+from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
@@ -51,3 +51,11 @@ class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
 class BobinagemListAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:100]
     serializer_class = BobinagemListSerializer
+
+class BobinesBobinagemAPIView(LoginRequiredMixin, APIView):
+    
+    def get(self, request, pk, format=None):
+        bobinagem = Bobinagem.objects.get(pk=pk)
+        bobine = Bobine.objects.filter(bobinagem=bobinagem)
+        serializer = BobinagemBobinesSerializer(bobine, many=True)
+        return Response(serializer.data)

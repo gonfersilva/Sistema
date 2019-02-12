@@ -117,6 +117,7 @@ class EmendaCreateSerializer(ModelSerializer):
 class BobinagemListSerializer(ModelSerializer):
     perfil = PerfilSerializer()
     
+    
     class Meta:
         model = Bobinagem
         fields = [
@@ -143,3 +144,12 @@ class BobineListAllSerializer(ModelSerializer):
             "nome",
             "palete"
         ]
+
+class BobinagemBobinesSerializer(ModelSerializer):
+    class Meta:
+        model = Bobine
+        fields = [
+
+            "estado"
+        ]
+        

@@ -1590,10 +1590,14 @@ def palete_confirmation(request, pk, id_bobines):
 def palete_rabrir(request, pk):
     palete = Palete.objects.get(pk=pk)
     bobines = Bobine.objects.filter(palete=palete)
+    e_p = EtiquetaPalete.objects.get(palete=palete)
+    e_p.diam_min = 0  
+    e_p.diam_max = 0  
+    
     palete.num_bobines_act = 0
     
     palete.save()
-
+    e_p.save()
     for b in bobines:
         b.palete = None
         b.save()

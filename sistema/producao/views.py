@@ -1507,14 +1507,18 @@ def palete_confirmation(request, pk, id_bobines):
         pos = bobine.posicao_palete
         bobine_posicao[pos] = bobine.nome
         d = bobine.bobinagem.diam
-        if d_max == 0:
-            d_max = d
-        elif d > d_max:
-            d_max = d
-        elif d_min == 0:
+        
+        if d_min == 0 and d_max == 0: 
             d_min = d
-        elif d < d_min:
-            d_min = d 
+            d_max = d
+        elif d <= d_min:
+            d_min = d
+        elif d >= d_max:
+            d_max = d
+        
+
+
+               
 
     e_p.bobine1 = bobine_posicao[1]
     e_p.bobine2 = bobine_posicao[2]

@@ -48,6 +48,8 @@
 <script>
 
 $(window).load(function() {
+    diam_min = 0
+    diam_max = 0
     $.ajax({ 
         type: "GET",
         dataType: "json",
@@ -85,12 +87,22 @@ $(window).load(function() {
                     td5.text(data[i].num_bobines_act + " / " + data[i].num_bobines);
                     td6.text(data[i].core_bobines);
                     td7.text(data[i].largura_bobines);
-                    if (data[i].diametro == null){
-                        td8.text(0);
-                    }else{
-                        td8.text(data[i].diametro);
-                    }
-                    
+                    // $.ajax({
+                    //     type: "GET",
+                    //     dataType: "json",
+                    //     url: "/api/bobine/" + data[i].id,
+                    //     success: function(bobine){ 
+                    //         if (bobine.bobinagem.diam >= diam_max){
+                    //             diam_max = bobine.bobinagem.diam
+                    //         }else if(bobine.bobinagem.diam <= diam_max && diam_min == 0){
+                    //             diam_min = bobine.bobinagem.diam
+                    //         }else if(bobine.bobinagem.diam <= diam_min){
+                    //             diam_min = bobine.bobinagem.diam
+                    //         }
+                    //         td8.text(diam_min + " / " + diam_max);
+                    //     }    
+                    // })
+                    td8.text(0)                  
                         
                     td9.text(data[i].area);
                     td10.text(data[i].comp_total);

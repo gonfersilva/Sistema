@@ -25,26 +25,28 @@ class BobinagemCreateForm(ModelForm):
        fields = ['data', 'num_bobinagem', 'perfil', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim', 'estado', 'obs']
 
     def __init__(self, *args, **kwargs):
-         num = Bobinagem.objects.latest()
-         num_b = num.num_bobinagem + 1
-         fim = num.fim
-         tiponwsup = num.tiponwsup
-         tiponwinf = num.tiponwinf
-         lotenwsup = num.lotenwsup
-         lotenwinf = num.lotenwinf
-         perfil = num.perfil
-         diam = num.diam
-         super(BobinagemCreateForm, self).__init__(*args, **kwargs)
-         self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=False)
-         self.fields['num_bobinagem'].initial = num_b
-         self.fields['inico'].initial = fim
-         self.fields['tiponwsup'].initial = tiponwsup
-         self.fields['tiponwinf'].initial = tiponwinf
-         self.fields['lotenwsup'].initial = lotenwsup
-         self.fields['lotenwinf'].initial = lotenwinf
-         self.fields['perfil'].initial = perfil
-         self.fields['diam'].initial = diam
-        
+        bobinagem = Bobinagem.objects.filter(perfil__retrabalho=False)
+        num = bobinagem.latest()
+        # num = Bobinagem.objects.latest()
+        num_b = num.num_bobinagem + 1
+        fim = num.fim
+        tiponwsup = num.tiponwsup
+        tiponwinf = num.tiponwinf
+        lotenwsup = num.lotenwsup
+        lotenwinf = num.lotenwinf
+        perfil = num.perfil
+        diam = num.diam
+        super(BobinagemCreateForm, self).__init__(*args, **kwargs)
+        self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=False)
+        self.fields['num_bobinagem'].initial = num_b
+        self.fields['inico'].initial = fim
+        self.fields['tiponwsup'].initial = tiponwsup
+        self.fields['tiponwinf'].initial = tiponwinf
+        self.fields['lotenwsup'].initial = lotenwsup
+        self.fields['lotenwinf'].initial = lotenwinf
+        self.fields['perfil'].initial = perfil
+        self.fields['diam'].initial = diam
+    
         
          
 

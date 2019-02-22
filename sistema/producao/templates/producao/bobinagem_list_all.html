@@ -128,11 +128,13 @@ $(window).load(function() {
                 }
 
                 
-
-                a1.click(function () {
+                if (data[i].perfil.retrabalho == false){
+                    a1.click(function () {
                     window.location = link
                     
-                    }); 
+                    });
+                }
+                 
                 
                 $("#jsonresp").append(tr);
             }

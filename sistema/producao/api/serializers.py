@@ -153,3 +153,67 @@ class BobinagemBobinesSerializer(ModelSerializer):
             "estado"
         ]
         
+class PaleteDmSerializer(ModelSerializer):
+    class Meta:
+        model = Palete
+        fields = [
+            "id",
+            "nome",
+            "num",
+            "data_pal",
+            "estado",
+            "num_bobines_act",
+            "num_bobines",
+            "area",
+            "comp_total",
+            "largura_bobines"
+        ]
+
+class BobinesPaleteDmSerializer(ModelSerializer):
+    bobinagem = BobinagemSerializer()
+    class Meta:
+        model = Bobine
+        fields = [
+            "id",
+            "nome", 
+            "estado",
+            "largura",
+            "bobinagem",
+            "palete"
+
+        ]
+
+class BobinagemCompSerializer(ModelSerializer):
+    class Meta:
+        model = Bobinagem
+        fields = [
+            "comp"
+        ]
+
+class BobinesDmSerializer(ModelSerializer):
+    bobinagem = BobinagemCompSerializer()
+    largura = LarguraSerializer()
+    class Meta:
+        model = Bobine
+        fields = [
+            "id",
+            "nome",
+            "estado",
+            "largura",
+            "comp_actual",
+            "bobinagem"
+
+        ]
+
+class BobinagemCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Bobinagem
+        fields = [
+            "data",
+            "perfil",
+            "inico",
+            "fim",
+            "diam",
+            "num_bobinagem",
+            "obs"
+        ]

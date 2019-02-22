@@ -136,7 +136,7 @@ $(document).ready(function(){
             dataType: "json",
             url: "/api/bobinelist/",
             success: function(bobine){
-                    
+                  
                 if(!bobine || bobine.length === 0) {
                         return;
                         }
@@ -148,7 +148,7 @@ $(document).ready(function(){
                     success: function(palete){   
                         if(palete.num_bobines > num){     
                             for (i = 0; i < data_length; i++){
-                                if (bobine[i].nome === input_value){
+                                if (bobine [i].nome === input_value){
                                 
                                 var id_bobine = bobine[i].id
                                 $.ajax({
@@ -351,14 +351,14 @@ $(document).ready(function(){
                 }
                             
                 
-                        if(validation == true){
-                            url_id = "/producao/palete/validate/" + palete.id + "/"
-                            for (i = 0; i < lb; i++){
-                                url_id += list_bobines[i] + "-"
-                            }
-                            // alert(url_id)
-                            window.location.href = url_id;
-                        }else{alert("A palete contém erros. Por favor verifique bobines picadas.")}
+                    if(validation == true){
+                        url_id = "/producao/palete/validate/" + palete.id + "/"
+                        for (i = 0; i < lb; i++){
+                            url_id += list_bobines[i] + "-"
+                        }
+                        // alert(url_id)
+                        window.location.href = url_id;
+                    }else{alert("A palete contém erros. Por favor verifique bobines picadas.")}
 
                     }
                 })

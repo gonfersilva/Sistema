@@ -366,20 +366,19 @@ def palete_nome(sender, instance, **kwargs):
         # instance.num = pal + 1
         if instance.estado == 'DM':
             palete = Palete.objects.filter(estado='DM')
-            num = 0
+            num = instance.num
             for p in palete:
                 if p.num > num:
                      num = p.num
 
-            instance.num = num + 1
-            if num + 1 < 10:
-                instance.nome = 'DM000%s-%s' % (num + 1, ano)
-            elif num + 1 < 100:
-                instance.nome = 'DM00%s-%s' % (num + 1, ano)
-            elif num + 1 < 1000:
-                instance.nome = 'DM0%s-%s' % (num + 1, ano)
+            if num < 10:
+                instance.nome = 'DM000%s-%s' % (num, ano)
+            elif num < 100:
+                instance.nome = 'DM00%s-%s' % (num, ano)
+            elif num < 1000:
+                instance.nome = 'DM0%s-%s' % (num, ano)
             else:
-                instance.nome = 'DM%s-%s' % (num + 1, ano)
+                instance.nome = 'DM%s-%s' % (num, ano)
 
         elif instance.estado == 'G':
             if instance.retrabalhada == False: 

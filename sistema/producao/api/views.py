@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
 from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer
+from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
@@ -59,3 +59,22 @@ class BobinesBobinagemAPIView(LoginRequiredMixin, APIView):
         bobine = Bobine.objects.filter(bobinagem=bobinagem)
         serializer = BobinagemBobinesSerializer(bobine, many=True)
         return Response(serializer.data)
+
+class PaleteDmAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Palete.objects.filter(estado='DM')
+    serializer_class = PaleteDmSerializer
+    
+class PaleteDmBobinesAPIView(LoginRequiredMixin, APIView):
+    def get(self, request, pk, format=None):
+        palete = Palete.objects.get(pk=pk)
+        bobines = Bobine.objects.filter(palete=palete)
+        serializer = BobinesPaleteDmSerializer(bobines, many=True)
+        return Response(serializer.data)
+
+class BobineListDmAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Bobine.objects.filter(estado='DM')
+    serializer_class = BobinesDmSerializer
+
+class BobinagemCreateDmAPIView(LoginRequiredMixin, CreateAPIView):
+    queryset = Bobinagem.objects.all()
+    serializer_class = BobinagemCreateSerializer

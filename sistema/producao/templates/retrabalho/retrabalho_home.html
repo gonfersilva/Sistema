@@ -4,7 +4,7 @@
 <div class="container">
     <a href="{% url 'producao:producao_home' %}" class="btn btn-primary" role="button">Voltar</a>
     {% comment %} <a  href="#" class="btn btn-primary pull-right" role="button">Retrabalhar</a> {% endcomment %}
-    <a href="{% url 'producao:retrabalho_bobinagem' %}"" class="btn btn-primary pull-right" role="button">Retrabalhar</a>
+    <a href="{% url 'producao:retrabalho_bobinagem' %}" class="btn btn-primary pull-right" role="button">Retrabalhar</a>
     
     
 
@@ -60,7 +60,7 @@
                     <td id="center">{{ b.perfil.num_bobines }}</td>
                     <td id="center">{{ b.comp_cli }}</td>
                     <td id="center">{{ b.area }}</td>
-                    <td id="center"><a href="{% url 'producao:retrabalho_filter' pk=b.pk %}" class="btn btn-primary">Editar</a></td>                         
+                    <td id="center"><a href="{% url 'producao:retrabalho_dm' pk=b.pk %}" class="btn btn-primary">Editar</a></td>                         
                     <td id="center"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}" class="btn btn-danger">Apagar</a></td>     
                 </tr>
                 {% endif %}

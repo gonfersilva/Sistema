@@ -6,7 +6,7 @@
     <h1></h1>
     <form action="." method="POST">{% csrf_token %}
         <h1>De certeza que quer apagar a palete {{ object.nome }}?</h1>
-        <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:paletes' %}" class="btn btn-primary" role="button">Cancelar</a></p>
+        <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:palete_list_all' %}" class="btn btn-primary" role="button">Cancelar</a></p>
     </form>
     
 </div>

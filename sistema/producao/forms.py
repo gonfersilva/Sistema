@@ -78,7 +78,7 @@ class PaleteCreateForm(ModelForm):
     
     class Meta:
        model = Palete
-       fields = ['cliente', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
+       fields = ['cliente', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='G').latest('num')
@@ -86,11 +86,13 @@ class PaleteCreateForm(ModelForm):
         num_bobines = palete.num_bobines
         largura_bobines = palete.largura_bobines
         core_bobines = palete.core_bobines
+        num = palete.num
         super(PaleteCreateForm, self).__init__(*args, **kwargs)      
         self.fields['cliente'].initial = cliente
         self.fields['num_bobines'].initial = num_bobines
         self.fields['largura_bobines'].initial = largura_bobines
         self.fields['core_bobines'].initial = core_bobines
+        self.fields['num'].initial = num + 1
          
 
 class ClienteCreateForm(ModelForm):
@@ -142,17 +144,19 @@ class PaleteRetrabalhoForm(ModelForm):
 
     class Meta:
         model = Palete
-        fields = ['data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
+        fields = ['num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='DM').latest('num')
         num_bobines = palete.num_bobines
         largura_bobines = palete.largura_bobines
         core_bobines = palete.core_bobines
+        num = palete.num
         super(PaleteRetrabalhoForm, self).__init__(*args, **kwargs)      
         self.fields['num_bobines'].initial = num_bobines
         self.fields['largura_bobines'].initial = largura_bobines
         self.fields['core_bobines'].initial = core_bobines
+        self.fields['num'].initial = num + 1
 
     
 class OrdenarBobines(ModelForm):

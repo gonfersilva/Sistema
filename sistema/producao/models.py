@@ -40,11 +40,24 @@ class Perfil(models.Model):
     def get_absolute_url(self):
         return f"{self.id}"
 
+class Artigo(models.Model):
+    cod = models.CharField(verbose_name="Cód. Artigo", max_length=50, unique=True)
+    des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
+    tipo = models.CharField(verbose_name="Tipo", max_length=50) 
+
+    class Meta:
+        verbose_name_plural = "Artigos"
+        ordering = ['cod']
+
+    def __str__(self):
+        return 'Artigo: %s / Código: %s / Tipo: %s' % (self.des, self.cod, self.tipo)
+
 class Largura(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     designacao_prod = models.CharField(verbose_name="Designação produto", max_length=200, null=True, blank=True)
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Larguras"
@@ -60,6 +73,8 @@ def perfil_larguras(sender, instance, **kwargs):
     for i in range(instance.num_bobines):
         lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
         lar.save()
+
+
 
 # class Nonwoven(models.Model):
 

@@ -1483,6 +1483,13 @@ def palete_confirmation(request, pk, id_bobines):
         area += bobine.area
         bobine.save()
         num += 1
+        if bobine.bobinagem.perfil.retrabalho == True:
+            p = palete.nome
+            p_split = p.split("")
+            p_split[0] = 'R'
+            palete.save()
+           
+
         
     palete.num_bobines_act = num - 1
     palete.area = area

@@ -767,16 +767,8 @@ def retrabalho_home(request):
     bobine = Bobine.objects.all()
     bobinagem = Bobinagem.objects.all()
     template_name = 'retrabalho/retrabalho_home.html'
-    paginator = Paginator(bobinagem, 20)
-    page = request.GET.get('page')
-
-    try:
-        bobinagem = paginator.page(page)
-    except PageNotAnInteger:
-        bobinagem = paginator.page(1)
-    except EmptyPage:
-        bobinagem = paginator.page(paginator.num_pages)
-
+    
+  
     context = {
         "palete": palete,
         "bobine": bobine,

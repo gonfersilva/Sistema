@@ -78,3 +78,7 @@ class BobineListDmAPIView(LoginRequiredMixin, ListAPIView):
 class BobinagemCreateDmAPIView(LoginRequiredMixin, CreateAPIView):
     queryset = Bobinagem.objects.all()
     serializer_class = BobinagemCreateSerializer
+
+class BobinagemListDmAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Bobinagem.objects.filter(perfil__retrabalho=True)
+    serializer_class = BobinagemListSerializer

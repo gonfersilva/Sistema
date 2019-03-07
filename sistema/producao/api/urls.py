@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from producao.api.views import PaleteListAPIView, BobineListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
+from producao.api.views import PaleteListAPIView, BobineListDmAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
 
 app_name="producao" 
 
@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^palete/dm/(?P<pk>\d+)$', PaleteDmBobinesAPIView.as_view(), name='paletes_dm_bobines'),
     url(r'^bobine/dm/$', BobineListDmAPIView.as_view(), name='bobines-dm'),
     url(r'^bobinagem/dm/$', BobinagemCreateDmAPIView.as_view(), name='bobineagem-create-dm'),
+    url(r'^bobinagem/list/dm/$', BobinagemListDmAPIView.as_view(), name='bobinagem-list-dm'),
+
     
     
     

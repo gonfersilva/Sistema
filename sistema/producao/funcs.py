@@ -373,3 +373,71 @@ def etiqueta_add_bobine(pk_palete, pk_bobine):
     
     e_p.save()
 
+def palete_nome(pk):
+    instance = Palete.objects.get(pk=pk)
+    if not instance.nome:
+        ano = instance.data_pal
+        ano = ano.strftime('%Y')
+        # pal = Palete.objects.latest('num')
+        # pal = pal.num
+        # instance.num = pal + 1
+        if instance.estado == 'DM':
+            # palete = Palete.objects.filter(estado='DM', data_pal__gte='2019-01-01')
+            num = instance.num
+            # for p in palete:
+            #     if p.num > num:
+            #          num = p.num
+
+            if num < 10:
+                instance.nome = 'DM000%s-%s' % (num, ano)
+            elif num < 100:
+                instance.nome = 'DM00%s-%s' % (num, ano)
+            elif num < 1000:
+                instance.nome = 'DM0%s-%s' % (num, ano)
+            else:
+                instance.nome = 'DM%s-%s' % (num, ano)
+            instance.save()
+
+        elif instance.estado == 'G':
+            if instance.retrabalhada == False: 
+                # palete = Palete.objects.filter(estado='G', data_pal__gte='2019-01-01')
+                # num = 0
+                # for p in palete:
+                #     if p.num > num:
+                #         num = p.num
+                       
+                num = instance.num
+                if num < 10:    
+                    instance.nome = 'P000%s-%s' % (num, ano)  
+                elif num < 100:
+                    instance.nome = 'P00%s-%s' % (num, ano)
+                elif num < 1000:
+                    instance.nome = 'P0%s-%s' % (num, ano)
+                else: 
+                    instance.nome = 'P%s-%s' % (num, ano)
+
+                instance.save()
+
+        
+        if EtiquetaPalete.objects.filter(palete=instance).exists():
+            return redirect('producao:palete_details', pk=instance.pk)
+        else:
+            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
+            e_p.cliente = instance.cliente.nome
+            e_p.save()
+                
+            # else:
+            #     palete = Palete.objects.filter(estado='G')
+            #     num = 0
+            #     for p in palete:
+            #         if p.num > num:
+            #             num = p.num
+            #     instance.num = num + 1   
+            #     if num + 1 < 10:    
+            #         instance.nome = 'R000%s-%s' % (num + 1, ano)  
+            #     elif num + 1 < 100:
+            #         instance.nome = 'R00%s-%s' % (num + 1, ano)
+            #     elif num + 1 < 1000:
+            #         instance.nome = 'R0%s-%s' % (num + 1, ano)
+            #     else: 
+            #         instance.nome = 'R%s-%s' % (num + 1, ano)

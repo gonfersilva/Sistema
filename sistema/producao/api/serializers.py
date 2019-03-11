@@ -8,6 +8,7 @@ class PerfilSerializer(ModelSerializer):
         model = Perfil
         fields = [
             'produto',
+            'num_bobines',
             'core',
             'retrabalho'
                        
@@ -123,6 +124,7 @@ class BobinagemListSerializer(ModelSerializer):
         fields = [
             "id",
             "nome",
+            "num_emendas",
             "perfil",
             "data",
             "inico",

@@ -63,7 +63,7 @@ th
 
 #estado_lab {
     background-color: cyan;
-    color: white;
+    color: black;
     text-align: center;
 }
 
@@ -75,7 +75,7 @@ th
 
 #estado_hold {
     background-color: #b237cc;
-    color: white;
+    color:black;
     text-align: center;
 }
 

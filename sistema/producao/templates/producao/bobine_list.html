@@ -119,6 +119,12 @@
         <h2 id="estado_lab">{{ bobinagem.estado }}</h2>
     {% endif %} -->
         <h3 id="center">Bobines</h3><br>
+        <div class="container">
+            <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='ap' %}" class="btn btn-success" role="button">Apovar</a>
+            <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='dm' %}" class="btn btn-warning" role="button">DM</a>
+            <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='rej' %}" class="btn btn-danger" role="button">Rejeitar</a>
+            <p>Os estados acima apenas serão atribuidos ás bobines que estejam em <strong id="estado_lab">LAB</strong> ou <strong id="estado_hold">HOLD</strong>.</p>
+        </div>
       <table class="table table-fixed">
           <thead>
             <tr>
@@ -232,7 +238,7 @@
             
         </div>
         {% endif %}
-        {% if bobinagem.num_emendas > 0 %}
+        {% if bobinagem.perfil.retrabalho == True %}
         <div class="container">
                 <h3>Bobines originais</h3>
                 {% if emenda.bobinagem != "" %}

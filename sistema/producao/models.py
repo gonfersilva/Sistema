@@ -372,61 +372,61 @@ class EtiquetaPalete(models.Model):
        
 
 
-def palete_nome(sender, instance, **kwargs):
-    if not instance.nome:
-        ano = instance.data_pal
-        ano = ano.strftime('%Y')
-        # pal = Palete.objects.latest('num')
-        # pal = pal.num
-        # instance.num = pal + 1
-        if instance.estado == 'DM':
-            palete = Palete.objects.filter(estado='DM')
-            num = instance.num
-            for p in palete:
-                if p.num > num:
-                     num = p.num
+# def palete_nome(sender, instance, **kwargs):
+    # if not instance.nome:
+    #     ano = instance.data_pal
+    #     ano = ano.strftime('%Y')
+    #     # pal = Palete.objects.latest('num')
+    #     # pal = pal.num
+    #     # instance.num = pal + 1
+    #     if instance.estado == 'DM':
+    #         palete = Palete.objects.filter(estado='DM')
+    #         num = instance.num
+    #         for p in palete:
+    #             if p.num > num:
+    #                  num = p.num
 
-            if num < 10:
-                instance.nome = 'DM000%s-%s' % (num, ano)
-            elif num < 100:
-                instance.nome = 'DM00%s-%s' % (num, ano)
-            elif num < 1000:
-                instance.nome = 'DM0%s-%s' % (num, ano)
-            else:
-                instance.nome = 'DM%s-%s' % (num, ano)
+    #         if num < 10:
+    #             instance.nome = 'DM000%s-%s' % (num, ano)
+    #         elif num < 100:
+    #             instance.nome = 'DM00%s-%s' % (num, ano)
+    #         elif num < 1000:
+    #             instance.nome = 'DM0%s-%s' % (num, ano)
+    #         else:
+    #             instance.nome = 'DM%s-%s' % (num, ano)
 
-        elif instance.estado == 'G':
-            if instance.retrabalhada == False: 
-                palete = Palete.objects.filter(estado='G', data_pal__gte='2019-01-01')
-                num = 0
-                for p in palete:
-                    if p.num > num:
-                        num = p.num
+    #     elif instance.estado == 'G':
+    #         if instance.retrabalhada == False: 
+    #             palete = Palete.objects.filter(estado='G', data_pal__gte='2019-01-01')
+    #             num = 0
+    #             for p in palete:
+    #                 if p.num > num:
+    #                     num = p.num
                        
-                instance.num = num + 1   
-                if num + 1 < 10:    
-                    instance.nome = 'P000%s-%s' % (num + 1, ano)  
-                elif num + 1 < 100:
-                    instance.nome = 'P00%s-%s' % (num + 1, ano)
-                elif num + 1 < 1000:
-                    instance.nome = 'P0%s-%s' % (num + 1, ano)
-                else: 
-                    instance.nome = 'P%s-%s' % (num + 1, ano)
-            else:
-                palete = Palete.objects.filter(estado='G')
-                num = 0
-                for p in palete:
-                    if p.num > num:
-                        num = p.num
-                instance.num = num + 1   
-                if num + 1 < 10:    
-                    instance.nome = 'R000%s-%s' % (num + 1, ano)  
-                elif num + 1 < 100:
-                    instance.nome = 'R00%s-%s' % (num + 1, ano)
-                elif num + 1 < 1000:
-                    instance.nome = 'R0%s-%s' % (num + 1, ano)
-                else: 
-                    instance.nome = 'R%s-%s' % (num + 1, ano)
+    #             instance.num = num + 1   
+    #             if num + 1 < 10:    
+    #                 instance.nome = 'P000%s-%s' % (num + 1, ano)  
+    #             elif num + 1 < 100:
+    #                 instance.nome = 'P00%s-%s' % (num + 1, ano)
+    #             elif num + 1 < 1000:
+    #                 instance.nome = 'P0%s-%s' % (num + 1, ano)
+    #             else: 
+    #                 instance.nome = 'P%s-%s' % (num + 1, ano)
+    #         else:
+    #             palete = Palete.objects.filter(estado='G')
+    #             num = 0
+    #             for p in palete:
+    #                 if p.num > num:
+    #                     num = p.num
+    #             instance.num = num + 1   
+    #             if num + 1 < 10:    
+    #                 instance.nome = 'R000%s-%s' % (num + 1, ano)  
+    #             elif num + 1 < 100:
+    #                 instance.nome = 'R00%s-%s' % (num + 1, ano)
+    #             elif num + 1 < 1000:
+    #                 instance.nome = 'R0%s-%s' % (num + 1, ano)
+    #             else: 
+    #                 instance.nome = 'R%s-%s' % (num + 1, ano)
                 
              
    
@@ -449,7 +449,7 @@ def area_palete(sender, instance, **kwargs):
 
 post_save.connect(perfil_larguras, sender=Perfil)
 
-pre_save.connect(palete_nome, sender=Palete)
+# pre_save.connect(palete_nome, sender=Palete)
 
 pre_save.connect(area_palete, sender=Palete)
 

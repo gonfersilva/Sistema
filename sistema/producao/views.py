@@ -268,13 +268,7 @@ def create_palete(request):
         instance.user = request.user
         instance.estado = 'G'
         instance.save()
-        
-        if EtiquetaPalete.objects.filter(palete=instance).exists():
-            return redirect('producao:palete_details', pk=instance.pk)
-        else:
-            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
-            e_p.cliente = instance.cliente.nome
-            e_p.save()
+        palete_nome(instance.pk)
                 
         return redirect('producao:palete_details', pk=instance.pk)
 
@@ -331,6 +325,8 @@ def create_palete_retrabalho(request):
         instance.retrabalho = True
         instance.estado = 'DM'
         instance.save()
+        palete_nome(instance.pk)
+        palete_area(instance.pk)
 
         if EtiquetaPalete.objects.filter(palete=instance).exists():
             return redirect('producao:addbobinepalete', pk=instance.pk)
@@ -709,7 +705,7 @@ def status_bobinagem(request, operation, pk):
         for i in range(bobinagem.perfil.num_bobines):
             largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
-            if bobine.estado == 'LAB':
+            if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'G'
                 bobine.save()
             num += 1
@@ -721,7 +717,7 @@ def status_bobinagem(request, operation, pk):
         for i in range(bobinagem.perfil.num_bobines):
             largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
-            if bobine.estado == 'LAB':
+            if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'R'
                 bobine.save()
             num += 1
@@ -733,15 +729,27 @@ def status_bobinagem(request, operation, pk):
         for i in range(bobinagem.perfil.num_bobines):
             largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
-            if bobine.estado == 'LAB':
+            if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'DM'
+                bobine.save()
+            num += 1
+        areas(pk)
+    elif operation == 'hold':
+        bobinagem.estado = 'hold'
+        bobinagem.save()
+        num = 1
+        for i in range(bobinagem.perfil.num_bobines):
+            largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
+            bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
+            if bobine.estado == 'LAB':
+                bobine.estado = 'HOLD'
                 bobine.save()
             num += 1
         areas(pk)
 
        
             
-    return redirect('producao:bobinagem_list_all')
+    return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
 
 @login_required
@@ -1475,11 +1483,11 @@ def palete_confirmation(request, pk, id_bobines):
         area += bobine.area
         bobine.save()
         num += 1
-        if bobine.bobinagem.perfil.retrabalho == True:
-            p = palete.nome
-            p_split = p.split("")
-            p_split[0] = 'R'
-            palete.save()
+        # if bobine.bobinagem.perfil.retrabalho == True:
+        #     p = palete.nome
+        #     p_split = p.split("")
+        #     p_split[0] = 'R'
+        #     palete.save()
            
 
         
@@ -1495,7 +1503,7 @@ def palete_confirmation(request, pk, id_bobines):
     
     b = int(bobines_array[0])
     bobine_produto = Bobine.objects.get(pk=b)
-    e_p.produto = bobine_produto.bobinagem.perfil.produto
+    e_p.produto = bobine_produto.largura.designacao_prod
     bobine_posicao = [None] * 61
     
     for x in bobines_array:
@@ -1577,11 +1585,26 @@ def palete_confirmation(request, pk, id_bobines):
     e_p.diam_min = d_min
     e_p.diam_max = d_max
     e_p.save()
-                
-    
 
-
-    
+    for x in bobines_array:
+        id_b = int(x)
+        bobine = Bobine.objects.get(pk=id_b)
+        if bobine.bobinagem.perfil.retrabalho == True:
+            e_p.palete_nome == 'teste'
+            ano = palete.data_pal
+            ano = ano.strftime('%Y')
+            num = palete.num
+            if num < 10:    
+                palete.nome = 'R000%s-%s' % (num, ano)  
+            elif num < 100:
+                palete.nome = 'R00%s-%s' % (num, ano)
+            elif num < 1000: 
+                palete.nome = 'R0%s-%s' % (num, ano)
+            else: 
+                palete.nome = 'R%s-%s' % (num, ano)
+            palete.save()
+            break
+          
     return redirect('producao:addbobinepalete', pk=palete.pk)
     
 @login_required
@@ -1732,6 +1755,9 @@ def validate_palete_dm(request, pk, id_bobines):
     e_p.diam_min = d_min
     e_p.diam_max = d_max
     e_p.save()
+
+    
+
        
     return redirect('producao:addbobinepalete', pk=palete.pk)
 

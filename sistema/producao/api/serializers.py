@@ -19,15 +19,16 @@ class BobinagemSerializer(ModelSerializer):
     class Meta:
         model = Bobinagem
         fields = "__all__"
-        
-class PaleteListSerializer(ModelSerializer):
-    class Meta:
-        model = Palete
-        fields = "__all__"
 
 class ClienteSerializer(ModelSerializer):
     class Meta:
         model = Cliente
+        fields = "__all__"
+
+class PaleteListSerializer(ModelSerializer):
+    cliente = ClienteSerializer()
+    class Meta:
+        model = Palete
         fields = "__all__"
 
 class PaleteDetailSerializer(ModelSerializer):

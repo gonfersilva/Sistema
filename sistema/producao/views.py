@@ -390,8 +390,52 @@ class RetrabalhoCreateView(LoginRequiredMixin, CreateView):
          form.instance.user = self.request.user
          return super().form_valid(form)
 
+# @login_required
+# def create_bobinagem_retrabalho(request):
+#     template_name = 'retrabalho/retrabalho_create.html'
+#     form = RetrabalhoCreateForm(request.POST or None)
+        
+#     if form.is_valid():
+#         data = form['data'].value()
+#         num_bobinagem = int(form['num_bobinagem'].value())        
+#         perfil_pk = int(form['perfil'].value())
+#         perfil = Perfil.objects.get(pk=perfil_pk)
+#         print(data)
+#         print(num_bobinagem)
+#         # print(perfil_pk)
+#         # print(perfil)
+#         if Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem).exists():
+#             bobinagem = Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
+#             for b in bobinagem:
+#                 if b.perfil.retrabalho == True:
+#                     messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
+#                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
+#                     instance = form.save(commit=False)
+#                     instance.user = request.user
+#                     instance.save()
+#                     bobinagem_create(instance.pk)
+#                     if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+#                         areas(instance.pk)
+                
+#                     return redirect('producao:retrabalho_dm', pk=instance.pk)     
+#         else:
+#             instance = form.save(commit=False)
+#             instance.user = request.user
+#             instance.save()
+#             bobinagem_create(instance.pk)
+#             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+#                 areas(instance.pk)
+        
+#             return redirect('producao:retrabalho_dm', pk=instance.pk)
+
+#     context = {
+#         "form": form
+#     }
+
+#     return render(request, template_name, context)
+
 @login_required
-def create_bobinagem_retrabalho(request):
+def create_bobinagem_retrabalho_teste(request):
     template_name = 'retrabalho/retrabalho_create.html'
     form = RetrabalhoCreateForm(request.POST or None)
         
@@ -433,6 +477,7 @@ def create_bobinagem_retrabalho(request):
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def picagem_retrabalho(request, pk):

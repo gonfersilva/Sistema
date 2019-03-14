@@ -59,7 +59,7 @@ urlpatterns = [
     url(r'^palete/dm/(?P<pk>\d+)/$', picagem_palete_dm, name='picagem_palete_dm'),
     url(r'^palete/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/$', validate_palete_dm, name='validate_palete_dm'),
     url(r'^retrabalho/dm/(?P<pk>\d+)/$', retrabalho_dm, name='retrabalho_dm'),
-    url(r'^retrabalho/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/(?P<metros>[\w\-]+)/$', validate_bobinagem_dm, name='validate_bobinagem_dm'),
+    url(r'^retrabalho/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/(?P<metros>[\w\-]+)/(?P<recycle>[\w\-]+)/$', validate_bobinagem_dm, name='validate_bobinagem_dm'),
     
     
 ]

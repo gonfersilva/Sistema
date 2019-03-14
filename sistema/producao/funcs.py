@@ -423,7 +423,8 @@ def palete_nome(pk):
             return redirect('producao:palete_details', pk=instance.pk)
         else:
             e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
-            e_p.cliente = instance.cliente.nome
+            if instance.retrabalhada == False:
+                e_p.cliente = instance.cliente.nome
             e_p.save()
                 
             # else:

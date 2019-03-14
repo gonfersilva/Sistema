@@ -322,11 +322,11 @@ def create_palete_retrabalho(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
-        instance.retrabalho = True
+        instance.retrabalhada = True
         instance.estado = 'DM'
         instance.save()
         palete_nome(instance.pk)
-        palete_area(instance.pk)
+        # palete_area(instance.pk)
 
         if EtiquetaPalete.objects.filter(palete=instance).exists():
             return redirect('producao:addbobinepalete', pk=instance.pk)
@@ -1777,18 +1777,21 @@ def retrabalho_dm(request, pk):
     return render(request, template_name, context)
 
 @login_required
-def validate_bobinagem_dm(request, pk, id_bobines, metros):
+def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
 
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     
     bobines_originais = id_bobines
     metros_bobines = metros
+    recycle_bobines = recycle
     comp_total = 0
     emendas = 0
     cont = 0
+    recycle_value = 0
     bobines_array = bobines_originais.split("--")
     metros_array = metros_bobines.split("-")
+    recycle_array = recycle_bobines.split("-")  
     bobines_length = len(bobines_array)
     
 
@@ -1798,11 +1801,15 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros):
         comp_actual -= Decimal(metros_array[cont])
         bobine.comp_actual = comp_actual
         comp_total += Decimal(metros_array[cont])
+        bobine.recycle = recycle_array[recycle_value].capitalize() 
         bobine.save()
+        recycle_value += 1 
         cont += 1
         emendas += 1
         emenda = Emenda.objects.create(bobinagem=bobinagem, bobine=bobine, metros=Decimal(metros_array[cont-1]), emenda=comp_total, num_emenda=cont)
         emenda.save()
+
+      
 
     bobinagem.num_emendas = emendas - 1
     bobinagem.comp = comp_total

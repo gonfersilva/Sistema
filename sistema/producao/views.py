@@ -408,7 +408,7 @@ def create_bobinagem_retrabalho(request):
             bobinagem = Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
             for b in bobinagem:
                 if b.perfil.retrabalho == True:
-                   messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
+                    messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
                     instance = form.save(commit=False)
                     instance.user = request.user

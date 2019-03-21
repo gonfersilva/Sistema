@@ -67,6 +67,11 @@ def update_areas_bobine(pk, estado):
         elif estado_actual == 'BA':
             bobinagem.area_g -= bobine.area
             bobinagem.area_ba += bobine.area
+        elif estado_actual == 'LAB':
+            bobinagem.area_g -= bobine.area
+        elif estado_actual == 'HOLD':
+            bobinagem.area_g -= bobine.area
+            
     elif estado_anterior == 'DM':
         if estado_actual == 'G':
             bobinagem.area_dm -= bobine.area
@@ -80,6 +85,13 @@ def update_areas_bobine(pk, estado):
         elif estado_actual == 'BA':
             bobinagem.area_dm -= bobine.area
             bobinagem.area_ba += bobine.area
+        elif estado_actual == 'LAB':
+            bobinagem.area_dm -= bobine.area
+            
+        elif estado_actual == 'HOLD':
+            bobinagem.area_dm -= bobine.area
+            
+
     elif estado_anterior == 'R':
         if estado_actual == 'G':
             bobinagem.area_r -= bobine.area
@@ -93,6 +105,13 @@ def update_areas_bobine(pk, estado):
         elif estado_actual == 'BA':
             bobinagem.area_r -= bobine.area
             bobinagem.area_ba += bobine.area
+        elif estado_actual == 'LAB':
+            bobinagem.area_r -= bobine.area
+            
+        elif estado_actual == 'HOLD':
+            bobinagem.area_r -= bobine.area
+            
+
     elif estado_anterior == 'IND':
         if estado_actual == 'G':
             bobinagem.area_ind -= bobine.area
@@ -106,6 +125,12 @@ def update_areas_bobine(pk, estado):
         elif estado_actual == 'BA':
             bobinagem.area_ind -= bobine.area
             bobinagem.area_ba += bobine.area
+        elif estado_actual == 'LAB':
+            bobinagem.area_ind -= bobine.area
+            
+        elif estado_actual == 'HOLD':
+            bobinagem.area_ind -= bobine.area
+            
     elif estado_anterior == 'BA':
         if estado_actual == 'G':
             bobinagem.area_ba -= bobine.area
@@ -119,17 +144,15 @@ def update_areas_bobine(pk, estado):
         elif estado_actual == 'IND':
             bobinagem.area_ba -= bobine.area
             bobinagem.area_ind += bobine.area
-    elif estado_actual == 'HOLD' or estado_actual == 'LAB':
-        if estado_anterior == 'G':
-            bobinagem.area_g += bobine.area
-        elif estado_anterior == 'DM':
-            bobinagem.area_dm += bobine.area
-        elif estado_anterior == 'R':
-            bobinagem.area_r += bobine.area
-        elif estado_anterior == 'IND':
-            bobinagem.area_ind += bobine.area
+        elif estado_actual == 'LAB':
+            bobinagem.area_ba -= bobine.area
+            
+        elif estado_actual == 'HOLD':
+            bobinagem.area_ba -= bobine.area
+            
+    
         
-    bobinagem.save()     
+    bobinagem.save()    
 
         
     

@@ -400,10 +400,6 @@ def create_bobinagem_retrabalho(request):
         num_bobinagem = int(form['num_bobinagem'].value())        
         perfil_pk = int(form['perfil'].value())
         perfil = Perfil.objects.get(pk=perfil_pk)
-        print(data)
-        print(num_bobinagem)
-        # print(perfil_pk)
-        # print(perfil)
         if Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem).exists():
             bobinagem = Bobinagem.objects.filter(data=data, num_bobinagem=num_bobinagem)
             for b in bobinagem:
@@ -1844,9 +1840,47 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
                 bobinagem_pk = bobinagem.pk
                 bobine_nome(bobinagem_pk)
                 bobinagem.save()
-        
     
-
     
     return redirect('producao:finalizar_retrabalho', pk=bobinagem.pk)
     
+    def refazer_bobinagem_dm(request, pk):
+        bobinagem = Bobinagem.objects.get(pk=pk)
+        bobines = Bobines.objects.filter(bobinagem=bobinagem)
+        emendas = Emenda.objects.filter(bobinagem=bobinagem)
+
+        data = bobinagem.data
+        data = data.strftime('%Y%m%d')
+
+        if bobinagem.num_bobinagem < 10:
+            bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+        else:
+            bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
+        bobinagem.save()
+        num = 1
+        for b in bobines:
+            if num < 10:
+                b.nome = '%s-0%s' % (bobinagem.nome, num)
+            else:
+                b.nome = '%s-%s' % (bobinagem.nome, num)
+            num += 1
+            b.area = 0
+            b.comp_actual = 0 
+
+        for e in emendas:
+            bobine_original = Bobine.objects.get(pk=e.bobine.pk)
+            bobine_original.comp_actual += e.metros
+            e.delete() 
+
+        return redirect('producao:retrabalho_dm', pk=bobinagem.pk)
+        
+    def delete_bobinagem_dm(request, pk):
+        bobinagem = Bobinagem.objects.get(pk=pk)
+        bobines = Bobines.objects.filter(bobinagem=bobinagem)
+        emendas = Emenda.objects.filter(bobinagem=bobinagem)
+
+        for b in bobines:
+            b.delete()
+
+        bobinagem.delete()
+

@@ -23,10 +23,10 @@ def areas(pk):
             area_dm += b.area
 
         elif estado == 'IND':
-            area_dm += b.area
+            area_ind += b.area
 
         elif estado == 'BA':
-            area_dm += b.area
+            area_ba += b.area
     
     bobinagem.area_g = area_g
     bobinagem.area_r = area_r
@@ -129,7 +129,7 @@ def update_areas_bobine(pk, estado):
         elif estado_anterior == 'IND':
             bobinagem.area_ind += bobine.area
         
-    bobinagem.save()       
+    bobinagem.save()     
 
         
     

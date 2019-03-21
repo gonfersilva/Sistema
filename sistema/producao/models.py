@@ -91,7 +91,7 @@ def perfil_larguras(sender, instance, **kwargs):
 
 
 class Bobinagem(models.Model):
-    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'))
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD','HOLD'))
     TIPONW = (('Suominen 25 gsm','Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP','Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE','BCN 70%PP/30%PE'), ('Sandler','Sandler'), ('PEGAS BICO 17gsm','PEGAS BICO 17gsm'), ('Suominen','Suominen'), ('BCN','BCN'), ('ORMA','ORMA'), ('PEGAS 22','PEGAS 22'), ('SAWASOFT','SAWASOFT'), ('SAWABOND','SAWABOND'), ('Teksis','Teksis'), ('Union','Union'),('Radici','Radici'),('Fitesa','Fitesa'),('ALBIS','ALBIS'))
     user = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     perfil = models.ForeignKey(Perfil, on_delete=models.PROTECT,verbose_name="Perfil")
@@ -103,7 +103,7 @@ class Bobinagem(models.Model):
     comp = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento Final", default=0)
     tiponwsup = models.CharField(max_length=40, choices=TIPONW, default='', verbose_name="Tipo Nonwoven Superior", null=True, blank=True)
     tiponwinf = models.CharField(max_length=40, choices=TIPONW, default='', verbose_name="Tipo Nonwoven Inferior", null=True, blank=True)
-    estado = models.CharField(max_length=3, choices=STATUSP, default='LAB', verbose_name="Estado")
+    estado = models.CharField(max_length=4, choices=STATUSP, default='LAB', verbose_name="Estado")
     lotenwsup = models.CharField(verbose_name="Lote Nonwoven Superior", max_length=200, unique=False, null=True, blank=True,)
     lotenwinf = models.CharField(verbose_name="Lote Nonwoven Inferior", max_length=200, unique=False, null=True, blank=True,)
     nwsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Consumo Nonwoven Superior", null=True, blank=True)

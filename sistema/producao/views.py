@@ -1968,24 +1968,24 @@ def carga_create(request):
         if num_carga < 10:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON00" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON00" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON00" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON00" + num_carga + "-" + str(encomenda.cliente.abv)
         elif num_carga < 100:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON0" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON0" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON0" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON0" + num_carga + "-" + str(encomenda.cliente.abv)
         elif num_carga < 1000:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON" + num_carga + "-" + str(enc.cliente.abv)
+                carga = prf + "-CON" + num_carga + "-" + str(encomenda.cliente.abv)
 
         for c in cargas:
             if c.carga == carga:

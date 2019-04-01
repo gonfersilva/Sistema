@@ -400,9 +400,7 @@ def create_bobinagem_retrabalho(request):
         perfil_pk = instance.perfil.pk
         num_bobinagem = instance.num_bobinagem
 
-        # data = form['data'].value()
-        # num_bobinagem = int(form['num_bobinagem'].value())        
-        # perfil_pk = int(form['perfil'].value())
+        
         perfil = Perfil.objects.get(pk=perfil_pk)
         if Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem).exists():
             bobinagem = Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem)
@@ -410,7 +408,7 @@ def create_bobinagem_retrabalho(request):
                 if b.perfil.retrabalho == True:
                     messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
-                    # instance = form.save(commit=False)
+                    
                     instance.user = request.user
                     instance.save()
                     bobinagem_create_retrabalho(instance.pk)
@@ -419,7 +417,7 @@ def create_bobinagem_retrabalho(request):
                 
                     return redirect('producao:retrabalho_dm', pk=instance.pk)     
         else:
-            # instance = form.save(commit=False)
+            
             instance.user = request.user
             instance.save()
             bobinagem_create_retrabalho(instance.pk)

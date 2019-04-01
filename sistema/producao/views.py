@@ -408,21 +408,19 @@ def create_bobinagem_retrabalho(request):
                 if b.perfil.retrabalho == True:
                     messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
-                    
                     instance.user = request.user
                     instance.save()
                     bobinagem_create_retrabalho(instance.pk)
-                    if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                        areas(instance.pk)
+                    # if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                    #     areas(instance.pk)
                 
                     return redirect('producao:retrabalho_dm', pk=instance.pk)     
         else:
-            
             instance.user = request.user
             instance.save()
             bobinagem_create_retrabalho(instance.pk)
-            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                areas(instance.pk)
+            # if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+            #     areas(instance.pk)
         
             return redirect('producao:retrabalho_dm', pk=instance.pk)
 

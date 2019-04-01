@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container">
     <a href="{% url 'producao:producao_home' %}" class="btn btn-primary" role="button">Voltar</a>
-    {% comment %} <a  href="#" class="btn btn-primary pull-right" role="button">Retrabalhar</a> {% endcomment %}
-    <a href="{% url 'producao:retrabalho_bobinagem' %}" class="btn btn-primary pull-right" role="button">Retrabalhar</a>
+    
+    <a href="{% url 'producao:create_bobinagem_retrabalho' %}" class="btn btn-primary pull-right" role="button">Retrabalhar</a>
  </div>
  <h1 id="center">Bobinagens retrabalhadas</h1><br>
  <div class="container">

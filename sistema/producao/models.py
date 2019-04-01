@@ -144,6 +144,7 @@ class Cliente(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     cod = models.PositiveIntegerField(verbose_name="Código de cliente", unique=True)
     nome = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nome")
+    abv = models.CharField(max_length=3, unique=True, null=True, blank=True, verbose_name="Abreviatura")
     limsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Superior")
     liminf = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Inferior")
 
@@ -198,7 +199,7 @@ class Carga(models.Model):
 
     class Meta:
         verbose_name_plural = "Cargas"
-        ordering = ['-data', '-carga']
+        ordering = ['-carga', '-data']
 
 
 class Palete(models.Model):

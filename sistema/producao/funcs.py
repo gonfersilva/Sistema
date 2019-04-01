@@ -207,7 +207,7 @@ def bobinagem_create_retrabalho(pk):
     instance.save()
     area_bobinagem(instance.pk) 
     create_bobine(instance.pk)   
-    
+      
      
        
 

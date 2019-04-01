@@ -92,7 +92,7 @@ class ClienteCreateForm(ModelForm):
     
     class Meta:
        model = Cliente
-       fields = ['cod', 'nome', 'limsup', 'liminf']
+       fields = ['cod', 'nome', 'abv', 'limsup', 'liminf']
 
     
 

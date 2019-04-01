@@ -399,8 +399,6 @@ def create_bobinagem_retrabalho(request):
         instance = form.save(commit=False)
         perfil_pk = instance.perfil.pk
         num_bobinagem = instance.num_bobinagem
-
-        
         perfil = Perfil.objects.get(pk=perfil_pk)
         if Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem).exists():
             bobinagem = Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem)
@@ -410,18 +408,20 @@ def create_bobinagem_retrabalho(request):
                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
                     instance.user = request.user
                     instance.save()
-                    bobinagem_create_retrabalho(instance.pk)
+                    
                     if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                         areas(instance.pk)
-                
+                    
+                    bobinagem_create_retrabalho(instance.pk)
                     return redirect('producao:retrabalho_dm', pk=instance.pk)     
         else:
             instance.user = request.user
             instance.save()
-            bobinagem_create_retrabalho(instance.pk)
+            
             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                 areas(instance.pk)
-        
+            
+            bobinagem_create_retrabalho(instance.pk)
             return redirect('producao:retrabalho_dm', pk=instance.pk)
 
     context = {
@@ -1968,24 +1968,24 @@ def carga_create(request):
         if num_carga < 10:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = "CON00" + num_carga + "-" +  prf
+                carga = prf + "-CON00" + num_carga + "-" + enc.cliente.abv
             else:
                 num_carga = str(num_carga)
-                carga = "CAM00" + num_carga + "-" +  prf
+                carga = prf + "-CON00" + num_carga + "-" + enc.cliente.abv
         elif num_carga < 100:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = "CON0" + num_carga + "-" +  prf
+                carga = prf + "-CON0" + num_carga + "-" + enc.cliente.abv
             else:
                 num_carga = str(num_carga)
-                carga = "CAM0" + num_carga + "-" +  prf
+                carga = prf + "-CON0" + num_carga + "-" + enc.cliente.abv
         elif num_carga < 1000:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = "CON" + num_carga + "-" +  prf
+                carga = prf + "-CON" + num_carga + "-" + enc.cliente.abv
             else:
                 num_carga = str(num_carga)
-                carga = "CAM" + num_carga + "-" +  prf
+                carga = prf + "-CON" + num_carga + "-" + enc.cliente.abv
 
         for c in cargas:
             if c.carga == carga:

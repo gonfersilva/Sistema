@@ -61,19 +61,9 @@ class RetrabalhoCreateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         
-        # bobinagem_all = Bobinagem.objects.all()
-        # for b in bobinagem_all:
-        #     if b.perfil.retrabalho == True:
-        #         bobinagem = b
-
-        # num_l = bobinagem.num_bobinagem + 1
-        # perfil_l = bobinagem.perfil
-
-
         super(RetrabalhoCreateForm, self).__init__(*args, **kwargs)
         self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=True)
-        # self.fields['num_bobinagem'].initial = num_l
-        # self.fields['perfil'].initial = perfil_l
+        
 
 
 

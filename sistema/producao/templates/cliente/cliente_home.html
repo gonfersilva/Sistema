@@ -18,6 +18,7 @@
                             <thead>
                                 <tr>
                                     <th id="center">Código cliente</th>
+                                    <th id="center">Abv.</th>
                                     <th>Cliente</th>
                                     <th id="center">Diâmetro inferior</th>
                                     <th id="center">Diâmetro superior</th>
@@ -27,6 +28,7 @@
                                 {% for c in cliente %}
                                 <tr>
                                     <td id="center">{{ c.cod }}</td>
+                                    <td id="center">{{ c.abv }}</td>
                                     <td>{{ c.nome }}</td>
                                     <td id="center">{{ c.liminf }}</td>
                                     <td id="center">{{ c.limsup }}</td>

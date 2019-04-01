@@ -199,7 +199,7 @@ class Carga(models.Model):
 
     class Meta:
         verbose_name_plural = "Cargas"
-        ordering = ['-carga', '-data']
+        ordering = ['carga', '-data']
 
 
 class Palete(models.Model):

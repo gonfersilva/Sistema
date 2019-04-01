@@ -200,7 +200,6 @@ def bobinagem_create_retrabalho(pk):
         data = data.strftime('%Y%m%d')
         map(int, data)
         if instance.num_bobinagem < 10:
-            # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
             instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
         else:
             instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)

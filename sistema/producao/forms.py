@@ -60,7 +60,6 @@ class RetrabalhoCreateForm(ModelForm):
         fields = ['data', 'num_bobinagem', 'perfil', 'inico']
 
     def __init__(self, *args, **kwargs):
-        
         super(RetrabalhoCreateForm, self).__init__(*args, **kwargs)
         self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=True)
         

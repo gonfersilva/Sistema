@@ -410,17 +410,39 @@ def create_bobinagem_retrabalho(request):
                 elif not Bobinagem.objects.filter(nome=b.nome).exists():     
                     instance.user = request.user
                     instance.save()
-                    bobinagem_create_retrabalho(instance.pk)
-                    # if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                    #     areas(instance.pk)
+                    data = instance.data
+                    data = data.strftime('%Y%m%d')
+                    map(int, data)
+                    if instance.num_bobinagem < 10:
+                        instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
+                    else:
+                        instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
+                    instance.save()
+                    area_bobinagem(instance.pk) 
+                    create_bobine(instance.pk)  
+                    # bobinagem_create_retrabalho(instance.pk)
+                    if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                        areas(instance.pk)
                 
                     return redirect('producao:retrabalho_dm', pk=instance.pk)     
         else:
             instance.user = request.user
             instance.save()
-            bobinagem_create_retrabalho(instance.pk)
-            # if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-            #     areas(instance.pk)
+            # bobinagem_create_retrabalho(instance.pk)
+           
+            data = instance.data
+            data = data.strftime('%Y%m%d')
+            map(int, data)
+            if instance.num_bobinagem < 10:
+                instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
+            else:
+                instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
+            instance.save()
+            area_bobinagem(instance.pk) 
+            create_bobine(instance.pk)  
+
+            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                areas(instance.pk)
         
             return redirect('producao:retrabalho_dm', pk=instance.pk)
 

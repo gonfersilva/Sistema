@@ -413,7 +413,7 @@ def create_bobinagem_retrabalho(request):
                     # instance = form.save(commit=False)
                     instance.user = request.user
                     instance.save()
-                    bobinagem_create(instance.pk)
+                    bobinagem_create_retrabalho(instance.pk)
                     if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                         areas(instance.pk)
                 
@@ -422,7 +422,7 @@ def create_bobinagem_retrabalho(request):
             # instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
-            bobinagem_create(instance.pk)
+            bobinagem_create_retrabalho(instance.pk)
             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                 areas(instance.pk)
         

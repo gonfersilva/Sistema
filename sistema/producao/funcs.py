@@ -191,7 +191,23 @@ def bobinagem_create(pk):
     if not instance.perfil.retrabalho == True:
         tempo_duracao(instance.pk)
     area_bobinagem(instance.pk) 
-    create_bobine(instance.pk)  
+    create_bobine(instance.pk) 
+
+def bobinagem_create_retrabalho(pk):
+    instance = Bobinagem.objects.get(pk=pk)
+    if not instance.nome:
+        data = instance.data
+        data = data.strftime('%Y%m%d')
+        map(int, data)
+        if instance.num_bobinagem < 10:
+            # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
+            instance.nome = '4%s-0%s' % (data[1:], instance.num_bobinagem)
+        else:
+            instance.nome = '4%s-%s' % (data[1:], instance.num_bobinagem)
+        
+    instance.save()
+    area_bobinagem(instance.pk) 
+    create_bobine(instance.pk)   
     
      
        

@@ -1,5 +1,5 @@
 from django import template
-from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines
+from producao.forms import PerfilCreateForm, BobinagemCreateForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
 from producao.models import Perfil, Bobinagem, Emenda, Palete
 
 register = template.Library()
@@ -61,3 +61,28 @@ def palete_retrabalho_form(self):
 def classificacao_bobines(self):
     form = ClassificacaoBobines(instance=self.bobinagem)
     return {'form': form, "instance": self.bobinagem}
+
+@register.inclusion_tag('encomenda/encomenda_form.html')
+def encomenda_form(self):
+    form = EncomendaCreateForm()
+    return {'form': form}
+
+@register.inclusion_tag('carga/carga_create_form.html')
+def carga_form(self):
+    form = CargaCreateForm()
+    return {'form': form}
+
+@register.inclusion_tag('palete/palete_selecao_form.html')
+def palete_selecao_form(self):
+    form = SelecaoPaleteForm()
+    return {'form': form}
+
+@register.inclusion_tag('palete/palete_pesagem_form.html')
+def palete_pesagem_form(self):
+    form = PaletePesagemForm(instance=self.instance)
+    return {'form': form, "instance": self.instance}
+
+@register.inclusion_tag('stock/stock_add_carga_form.html')
+def stock_add_carga_form(self):
+    form = AddPalateStockForm(instance=self.instance)
+    return {'form': form, "instance": self.instance}

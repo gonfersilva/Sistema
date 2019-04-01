@@ -1,0 +1,28 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+
+
+{% block title %}Palete pesagem | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="container">
+        <a href="{% url 'producao:palete_selecao' %}" class="btn btn-primary pull-left" role="button">Voltar</a>
+    </div>
+    <div class="container">
+        <h1 id="center">{{ instance.nome }}</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+                {% palete_pesagem_form form %}
+            
+            
+            
+        </div>
+        <div class="col-md-6">
+            
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

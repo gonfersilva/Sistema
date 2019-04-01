@@ -2,8 +2,8 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
-from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, BobineSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
+from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente, Encomenda, Carga
+from .serializers import PaleteListSerializer, PaleteDetailSerializer, CargaListSerializer, PaletesCargaSerializer, CargasEncomendaSerializer, CargaDetailSerializer, BobineSerializer, EncomendaListSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
@@ -82,3 +82,35 @@ class BobinagemCreateDmAPIView(LoginRequiredMixin, CreateAPIView):
 class BobinagemListDmAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Bobinagem.objects.filter(perfil__retrabalho=True)
     serializer_class = BobinagemListSerializer
+
+class EncomendaListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Encomenda.objects.filter()
+    serializer_class = EncomendaListSerializer
+
+class CargaListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Carga.objects.filter()
+    serializer_class = CargaListSerializer
+
+class CargaDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
+    queryset = Carga.objects.all()
+    serializer_class = CargaDetailSerializer
+
+class EncomendaCargaAPIView(LoginRequiredMixin, APIView):
+    def get(self, request, pk, format=None):
+        enc = Encomenda.objects.get(pk=pk)
+        cargas = Carga.objects.filter(enc=enc)
+        serializer = CargasEncomendaSerializer(cargas, many=True)
+        return Response(serializer.data)
+
+class CargaPaletesAPIView(LoginRequiredMixin, APIView):
+    def get(self, request, pk, format=None):
+        carga = Carga.objects.get(pk=pk)
+        paletes = Palete.objects.filter(carga=carga)
+        serializer = PaletesCargaSerializer(paletes, many=True)
+        return Response(serializer.data)
+
+class StockListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Palete.objects.filter(stock=True)
+    serializer_class = PaleteListSerializer
+    
+   

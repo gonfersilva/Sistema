@@ -4,11 +4,17 @@ def areas(pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobine = Bobine.objects.filter(bobinagem=bobinagem)
 
-    area_g = bobinagem.area_g
-    area_r = bobinagem.area_r
-    area_dm = bobinagem.area_dm
-    area_ind = bobinagem.area_ind
-    area_ba = bobinagem.area_ba
+    # area_g = bobinagem.area_g
+    # area_r = bobinagem.area_r
+    # area_dm = bobinagem.area_dm
+    # area_ind = bobinagem.area_ind
+    # area_ba = bobinagem.area_ba
+
+    area_g = 0
+    area_r = 0
+    area_dm = 0
+    area_ind = 0
+    area_ba = 0
 
     for b in bobine:
         estado = b.estado

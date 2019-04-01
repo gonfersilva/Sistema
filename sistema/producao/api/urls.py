@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from producao.api.views import PaleteListAPIView, BobineListDmAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
+from producao.api.views import PaleteListAPIView, CargaListAPIView, CargaPaletesAPIView, StockListAPIView, BobineListDmAPIView, CargaDetailAPIView, EncomendaCargaAPIView, CargaDetailSerializer, EncomendaListAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
 
 app_name="producao" 
 
@@ -21,7 +21,13 @@ urlpatterns = [
     url(r'^bobine/dm/$', BobineListDmAPIView.as_view(), name='bobines-dm'),
     url(r'^bobinagem/dm/$', BobinagemCreateDmAPIView.as_view(), name='bobineagem-create-dm'),
     url(r'^bobinagem/list/dm/$', BobinagemListDmAPIView.as_view(), name='bobinagem-list-dm'),
-
+    url(r'^encomenda/$', EncomendaListAPIView.as_view(), name='encomenda-list'),
+    url(r'^encomenda/(?P<pk>\d+)/$', EncomendaCargaAPIView.as_view(), name='encomenda-cargas-list'),
+    url(r'^carga/$', CargaListAPIView.as_view(), name='carga-list'),
+    url(r'^carga/(?P<pk>\d+)/$', CargaDetailAPIView.as_view(), name='carga-detail'),
+    url(r'^carga/paletes/(?P<pk>\d+)/$', CargaPaletesAPIView.as_view(), name='carga-paletes-list'),
+    url(r'^stock/$', StockListAPIView.as_view(), name='stock-list'),
+    
     
     
     

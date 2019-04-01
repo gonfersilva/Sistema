@@ -1,0 +1,165 @@
+{% extends "layout.html "%}
+
+{% block title %}Carga {{ carga.carga }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    
+    <div class="container">
+        <a href="{% url 'producao:carga_list' %}"class="btn btn-primary" role="button">Voltar</a>      
+
+    </div><br>
+    <h1>Detalhes: {{ carga.carga }}</h1>
+    <p id="carga_id" data-catid="{{ carga.id }}" hidden>{{ carga.id }}</p> 
+    <br>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="container col-sm-4">
+                <table>
+                    <tr>
+                       <th>Carga:</th>
+                       <td id="right">{{ carga.carga }}</td>
+                    </tr>
+                   
+                    <tr>
+                        <th>Encomenda:</th>
+                        <td id="right">{{ carga.enc.eef }}</td>
+                    </tr>
+                    <tr>
+                        <th>Proforma:</th>
+                        <td id="right">{{ carga.enc.prf }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cliente:</th>
+                        <td id="right">{{ carga.enc.cliente.nome }}</td>
+                    </tr>
+                   
+                         
+                    
+                </table>
+            </div>
+            <div class="container col-sm-4">
+                <table>
+                    <tr>
+                       <th>Nº:</th>
+                       <td id="right">{{ carga.num_carga}}</td>
+                    </tr>
+                   
+                    <tr>
+                        <th>Data:</th>
+                        <td id="right">{{ carga.data|date:"d-n-Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tipo:</th>
+                        <td id="right">{{ carga.tipo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nº de Paletes:</th>
+                        <td id="right">{{ carga.num_paletes_actual }} / {{ carga.num_paletes }}</td>
+                    </tr>
+                       
+                         
+                    
+                </table>
+            </div>
+            <div class="container col-sm-4">
+                    <table>
+                        <tr>
+                           <th>Área total(m2): </th>
+                           <td id="right">{{ carga.sqm }}</td>
+                        </tr>
+                        <tr>
+                            <th>Comprimento total(m): </th>
+                            <td id="right">{{ carga.metros }}</td>
+                        </tr>
+                    
+                        
+                        
+                           
+                             
+                        
+                    </table>
+                </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <div class="container table-responsive size-table">
+        <h3>Paletes</h3>
+        <table class="table fit" id="myTable">
+            <thead>
+                <tr>
+                    <th>Palete</th>
+                    <th>Data</th>
+                    <th>Core(")</th>
+                    <th>Largura(mm)</th>
+                    <th>Cliente</th>
+                    <th>Área(m2)</th>    
+                    <th>Comprimento(m)</th>                              
+                </tr>
+            </thead>
+            <tbody id="paletes-list">
+                
+            </tbody>
+            
+        </table>
+    
+</div>
+</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(window).load(function() {
+
+var id = $("#carga_id").attr("data-catid");
+
+$.ajax({ 
+    type: "GET",
+    dataType: "json",
+    url: "/api/carga/paletes/" + id,
+    success: function(paletes){ 
+
+        if(!paletes || paletes.length === 0) {
+                return;
+            }
+        var paletes_length = paletes.length
+        for (i=0; i < paletes_length; i++ ){
+        
+            var a1=$(document.createElement("a")).text(paletes[i].nome), td1=$(document.createElement("td"));
+            var td2=$(document.createElement("td"))
+            var td3=$(document.createElement("td")).attr('id', "center")
+            var td4=$(document.createElement("td")).attr('id', "center")
+            var td5=$(document.createElement("td")).attr('id', "center")
+            var td6=$(document.createElement("td")).attr('id', "center")
+            var td7=$(document.createElement("td")).attr('id', "center")
+
+            td1.append(a1);
+            td2.text(paletes[i].data_pal);
+            td3.text(paletes[i].core_bobines);
+            td4.text(paletes[i].largura_bobines);
+            td5.text(paletes[i].cliente.nome);
+            td6.text(paletes[i].area);
+            td7.text(paletes[i].comp_total);
+
+            var tr=$(document.createElement("tr"));
+            var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
+
+            $("#paletes-list").append(tr);
+
+                
+            }
+    
+    }   
+})
+})
+
+
+</script>
+    
+{% endblock %}

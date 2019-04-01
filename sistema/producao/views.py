@@ -5,8 +5,8 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm
-from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho
+from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -1843,44 +1843,310 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
     
     
     return redirect('producao:finalizar_retrabalho', pk=bobinagem.pk)
-    
-    def refazer_bobinagem_dm(request, pk):
-        bobinagem = Bobinagem.objects.get(pk=pk)
-        bobines = Bobines.objects.filter(bobinagem=bobinagem)
-        emendas = Emenda.objects.filter(bobinagem=bobinagem)
 
-        data = bobinagem.data
-        data = data.strftime('%Y%m%d')
+@login_required   
+def refazer_bobinagem_dm(request, pk):
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    bobines = Bobines.objects.filter(bobinagem=bobinagem)
+    emendas = Emenda.objects.filter(bobinagem=bobinagem)
 
-        if bobinagem.num_bobinagem < 10:
-            bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+    data = bobinagem.data
+    data = data.strftime('%Y%m%d')
+
+    if bobinagem.num_bobinagem < 10:
+        bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+    else:
+        bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
+    bobinagem.save()
+    num = 1
+    for b in bobines:
+        if num < 10:
+            b.nome = '%s-0%s' % (bobinagem.nome, num)
         else:
-            bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
-        bobinagem.save()
-        num = 1
-        for b in bobines:
-            if num < 10:
-                b.nome = '%s-0%s' % (bobinagem.nome, num)
-            else:
-                b.nome = '%s-%s' % (bobinagem.nome, num)
-            num += 1
-            b.area = 0
-            b.comp_actual = 0 
+            b.nome = '%s-%s' % (bobinagem.nome, num)
+        num += 1
+        b.area = 0
+        b.comp_actual = 0 
 
-        for e in emendas:
-            bobine_original = Bobine.objects.get(pk=e.bobine.pk)
-            bobine_original.comp_actual += e.metros
-            e.delete() 
+    for e in emendas:
+        bobine_original = Bobine.objects.get(pk=e.bobine.pk)
+        bobine_original.comp_actual += e.metros
+        e.delete() 
 
-        return redirect('producao:retrabalho_dm', pk=bobinagem.pk)
+    return redirect('producao:retrabalho_dm', pk=bobinagem.pk)
+
+@login_required       
+def delete_bobinagem_dm(request, pk):
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    bobines = Bobines.objects.filter(bobinagem=bobinagem)
+    emendas = Emenda.objects.filter(bobinagem=bobinagem)
+
+    for b in bobines:
+        b.delete()
+
+    bobinagem.delete()
+    pass
+
+@login_required
+def encomenda_list(request):
+    enc = Encomenda.objects.all()
+
+    template_name = 'encomenda/encomenda_list.html'
+
+    context = {
+        'enc': enc,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def encomenda_create(request):
+
+    template_name = 'encomenda/encomenda_create.html'
+    form = EncomendaCreateForm(request.POST or None)
         
-    def delete_bobinagem_dm(request, pk):
-        bobinagem = Bobinagem.objects.get(pk=pk)
-        bobines = Bobines.objects.filter(bobinagem=bobinagem)
-        emendas = Emenda.objects.filter(bobinagem=bobinagem)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+                    
+        
+        return redirect('producao:encomenda_list')
 
-        for b in bobines:
-            b.delete()
+    context = {
+        "form": form
+    }
 
-        bobinagem.delete()
+    return render(request, template_name, context)
 
+
+@login_required
+def encomenda_detail(request, pk):
+    enc = get_object_or_404(Encomenda, pk=pk)
+
+    template_name = 'encomenda/encomenda_detail.html'
+
+    context = {
+        "enc": enc
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def carga_list(request):
+    carga = Carga.objects.all()
+
+    template_name = 'carga/carga_list.html'
+
+    context = {
+        'carga': carga,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def carga_create(request):
+
+    template_name = 'carga/carga_create.html'
+    form = CargaCreateForm(request.POST or None)
+        
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.sqm = 0
+        num_carga = form.cleaned_data['num_carga']
+        tipo = form.cleaned_data['tipo']
+        enc = str(form.cleaned_data['enc'])
+        encomenda = get_object_or_404(Encomenda, eef=enc)
+        cargas = Carga.objects.all()
+        prf = encomenda.prf
+        if num_carga > encomenda.num_cargas:
+            return redirect('producao:carga_create')
+
+        if num_carga < 10:
+            if tipo == "CONTENTOR":
+                num_carga = str(num_carga)
+                carga = "CON00" + num_carga + "-" +  prf
+            else:
+                num_carga = str(num_carga)
+                carga = "CAM00" + num_carga + "-" +  prf
+        elif num_carga < 100:
+            if tipo == "CONTENTOR":
+                num_carga = str(num_carga)
+                carga = "CON0" + num_carga + "-" +  prf
+            else:
+                num_carga = str(num_carga)
+                carga = "CAM0" + num_carga + "-" +  prf
+        elif num_carga < 1000:
+            if tipo == "CONTENTOR":
+                num_carga = str(num_carga)
+                carga = "CON" + num_carga + "-" +  prf
+            else:
+                num_carga = str(num_carga)
+                carga = "CAM" + num_carga + "-" +  prf
+
+        for c in cargas:
+            if c.carga == carga:
+                return redirect('producao:carga_create')
+        
+          
+
+        instance.carga = carga    
+        instance.save()
+
+        encomenda.num_cargas_actual += 1
+        if (encomenda.num_cargas_actual == encomenda.num_cargas):
+            encomenda.estado = 'F'
+        encomenda.save()
+
+        
+        
+        return redirect('producao:carga_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def carga_detail(request, pk):
+    carga = get_object_or_404(Carga, pk=pk)
+    template_name = 'carga/carga_detail.html'
+    context = {
+        "carga": carga
+    }
+
+    return render(request, template_name, context)
+
+    pass
+
+@login_required
+def carga_edit(request, pk):
+    pass
+
+
+@login_required
+def armazem_home(request):
+    template_name = 'producao/armazem_home.html'
+    context = {}
+
+    return render(request, template_name, context)
+
+@login_required
+def palete_selecao(request):
+    template_name = 'palete/palete_selecao.html'
+    form = SelecaoPaleteForm(request.POST or None)
+    
+    if request.method == 'POST':
+        form = SelecaoPaleteForm(request.POST or None)
+        if form.is_valid:
+            palete_nome = form['palete'].value()
+            palete = get_object_or_404(Palete, nome=palete_nome)
+            return redirect('producao:palete_pesagem', pk=palete.pk)
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def palete_pesagem(request, pk=None):
+    instance = get_object_or_404(Palete, pk=pk)
+    template_name = 'palete/palete_pesagem.html'
+
+    form = PaletePesagemForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        carga_nome = str(form.cleaned_data['carga'])
+        if Carga.objects.filter(carga=carga_nome).exists():
+            carga = get_object_or_404(Carga, carga=carga_nome)
+            if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
+                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                carga.sqm += instance.area
+                carga.metros += instance.comp_total
+                carga.num_paletes_actual += 1
+                if carga.num_paletes == carga.num_paletes_actual:
+                    carga.estado = 'C'
+                carga.save()
+                instance.save()
+            else:
+                return redirect('producao:palete_pesagem', pk=instance.pk)
+
+        elif instance.stock == True:
+            instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+            instance.save()
+        else:
+            return redirect('producao:palete_pesagem', pk=instance.pk)
+       
+
+        
+        
+        return redirect('producao:palete_details_armazem', pk=instance.pk)
+
+    context = {
+        "form": form,
+        "instance": instance,
+        
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def palete_details_armazem(request, pk):
+
+    palete = get_object_or_404(Palete, pk=pk)
+    template_name = 'palete/palete_details_armazem.html'
+
+
+    context = {
+        "palete": palete,
+        
+        
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def stock_list(request):
+
+    paletes = Palete.objects.filter(stock=True)
+
+    template_name = 'stock/stock_list.html'
+
+    context = {
+        'paletes': paletes,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def stock_add_to_carga(request, pk=None):
+    instance = get_object_or_404(Palete, pk=pk)
+    template_name = 'stock/stock_add_carga.html'
+
+    form = AddPalateStockForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.stock = False
+        carga = Carga.objects.get(carga=instance.carga)
+        carga.num_paletes_actual += 1
+        carga.sqm += instance.area
+        carga.metros += instance.comp_total
+        if carga.num_paletes_actual == carga.num_paletes:
+            carga.estado = 'C'
+        carga.save()
+        instance.save()
+        
+        return redirect('producao:palete_details_armazem', pk=instance.pk)
+
+    context = {
+        "form": form,
+        "instance": instance,
+    }
+
+    return render(request, template_name, context)

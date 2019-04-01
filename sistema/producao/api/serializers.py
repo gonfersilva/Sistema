@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
-from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem, Cliente
+from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem, Cliente, Encomenda, Carga, Encomenda
 
 
 class PerfilSerializer(ModelSerializer):
@@ -232,3 +232,46 @@ class BobinagemCreateSerializer(ModelSerializer):
             "num_bobinagem",
             "obs"
         ]
+
+class EncomendaListSerializer(ModelSerializer):
+    cliente = ClienteSerializer()
+    class Meta:
+        model = Encomenda
+        fields = [
+            "id",
+            "cliente",
+            "data",
+            "eef",
+            "prf",
+            "sqm",
+            "estado",
+            "num_cargas",
+            "num_cargas_actual",
+
+
+        ]
+
+
+class CargaListSerializer(ModelSerializer):
+    enc = EncomendaListSerializer()
+    class Meta:
+        model = Carga
+        fields = "__all__"
+
+class CargaDetailSerializer(ModelSerializer):
+    class Meta:
+        model = Carga
+        fields = "__all__"
+
+class CargasEncomendaSerializer(ModelSerializer):
+    enc = EncomendaListSerializer()
+    class Meta:
+        model = Carga
+        fields ="__all__"
+
+class PaletesCargaSerializer(ModelSerializer):
+    carga = CargaListSerializer()
+    cliente = ClienteSerializer()
+    class Meta:
+        model = Palete
+        fields = "__all__"

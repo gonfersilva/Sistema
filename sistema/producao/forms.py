@@ -1,7 +1,9 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 import datetime, time
 from django import forms
+from django.core.exceptions import ValidationError
+
 
 class PerfilCreateForm(ModelForm):
     
@@ -181,4 +183,71 @@ class RetrabalhoForm(ModelForm):
     class Meta:
         model = Emenda
         fields = ['bobine', 'metros']
+
+class EncomendaCreateForm(forms.ModelForm):
+        
+    class Meta:
+        model = Encomenda
+        fields = ['cliente', 'data', 'eef', 'prf', 'sqm', 'num_cargas']
+
+    def __init__(self, *args, **kwargs):
+        encomenda = Encomenda.objects.all().latest('id')
+        prf = encomenda.prf
+        eef = encomenda.eef
+        cliente = encomenda.cliente
+        num_cargas = encomenda.num_cargas
+        sqm = encomenda.sqm
+        
+        super(EncomendaCreateForm, self).__init__(*args, **kwargs) 
+           
+        self.fields['eef'].initial = eef
+        self.fields['prf'].initial = prf
+        self.fields['cliente'].initial = cliente
+        self.fields['num_cargas'].initial = num_cargas
+        self.fields['sqm'].initial = sqm
+
+
+
+class CargaCreateForm(forms.ModelForm):
+    class Meta:
+        model = Carga
+        fields = ['enc', 'data', 'num_carga', 'num_paletes', 'tipo']
+    
+    def __init__(self, *args, **kwargs):
+        carga = Carga.objects.all().latest('id')
+        enc = carga.enc
+        num_carga = carga.num_carga + 1
+        num_paletes = carga.num_paletes
+        tipo = carga.tipo
+        super(CargaCreateForm, self).__init__(*args, **kwargs)     
+        self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')  
+        self.fields['enc'].initial = enc
+        self.fields['num_carga'].initial = num_carga
+        self.fields['num_paletes'].initial = num_paletes
+        self.fields['tipo'].initial = tipo
+        
+
+
+class SelecaoPaleteForm(forms.Form):
+    palete = forms.CharField(max_length=10)
+
+    # def clean(self):
+    #     cleaned_data = super(SelecaoPaleteForm, self).clean()
+    #     palete = cleaned_data.get('palete')
+        
+    
+class PaletePesagemForm(ModelForm):
+    class Meta:
+        model = Palete
+        fields = [ 'carga', 'stock', 'peso_bruto', 'peso_palete']
+
+class AddPalateStockForm(ModelForm):
+    class Meta:
+        model = Palete
+        fields = [ 'carga' ]
+
+    def __init__(self, *args, **kwargs):
+        # carga = Carga.objects.filter(estado='I')
+        super(AddPalateStockForm, self).__init__(*args, **kwargs)
+        self.fields['carga'].queryset = Carga.objects.filter(estado='I')
         

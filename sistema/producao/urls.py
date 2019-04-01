@@ -60,6 +60,18 @@ urlpatterns = [
     url(r'^palete/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/$', validate_palete_dm, name='validate_palete_dm'),
     url(r'^retrabalho/dm/(?P<pk>\d+)/$', retrabalho_dm, name='retrabalho_dm'),
     url(r'^retrabalho/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/(?P<metros>[\w\-]+)/(?P<recycle>[\w\-]+)/$', validate_bobinagem_dm, name='validate_bobinagem_dm'),
-    
+    url(r'^encomenda/$', encomenda_list, name='encomenda_list'),
+    url(r'^encomenda/create/$', encomenda_create, name='encomenda_create'),
+    url(r'^encomenda/(?P<pk>\d+)/', encomenda_detail, name='encomenda_detail'),
+    url(r'^carga/$', carga_list, name='carga_list'),
+    url(r'^carga/detail/(?P<pk>\d+)/$', carga_detail, name='carga_detail'),
+    url(r'^carga/create/$', carga_create, name='carga_create'),
+    url(r'^armazem/$', armazem_home, name='armazem_home'),
+    url(r'^palete/selecao/$', palete_selecao, name='palete_selecao'),
+    url(r'^palete/pesagem/(?P<pk>\d+)/$', palete_pesagem, name='palete_pesagem'),
+    url(r'^palete/armazem/(?P<pk>\d+)/$', palete_details_armazem, name='palete_details_armazem'),
+    url(r'^stock/$', stock_list, name='stock_list'),
+    url(r'^stock/palete/add/(?P<pk>\d+)/$', stock_add_to_carga, name='stock_add_to_carga'),
+      
     
 ]

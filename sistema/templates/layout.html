@@ -42,12 +42,16 @@
             <a class="btn btn-secondary" href="{% url 'producao:planeamento_home' %}">
               Planeamento
             </a>
-            {% comment %} <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'producao:perfil' %}">Perfis bobinagem</a><br>
-                <a class="dropdown-item" href="{% url 'producao:clientes' %}">Clientes</a>
-              
-                
-            </div> {% endcomment %}
+           
+            {% endif %}
+            
+          </li>
+          <li>
+            {% if user.is_staff %}
+            <a class="btn btn-secondary" href="{% url 'producao:armazem_home' %}">
+              Armazém
+            </a>
+           
             {% endif %}
             
           </li>
@@ -55,13 +59,7 @@
             <a class="btn btn-secondary" href="{% url 'producao:producao_home' %}" role="button">
               Produção
             </a>
-            {% comment %} <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'producao:bobinagens' %}">Bobinagens</a><br>
-                <a class="dropdown-item" href="{% url 'producao:paletes' %}">Paletes</a><br>  
-               <a class="dropdown-item" href="{% url 'producao:retrabalho_home' %}">Retrabalho</a><br>
-                                        
-                
-            </div> {% endcomment %}
+          
             
           </li>
           <!-- <li>

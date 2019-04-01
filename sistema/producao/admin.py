@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga
 from django.contrib import admin
 
 
@@ -10,6 +10,8 @@ admin.site.register(Emenda)
 admin.site.register(Cliente)
 admin.site.register(EtiquetaRetrabalho)
 admin.site.register(EtiquetaPalete)
+admin.site.register(Encomenda)
+admin.site.register(Carga)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']

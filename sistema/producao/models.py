@@ -156,13 +156,59 @@ class Cliente(models.Model):
 
 # class PerfilPalete(models.Model):
 #     pass
+class Encomenda(models.Model):
+    STATUS = (('A', 'A'), ('F', 'F'))
+    user                = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    cliente             = models.ForeignKey(Cliente, on_delete=models.PROTECT,verbose_name="Cliente")
+    timestamp           = models.DateTimeField(auto_now_add=True)
+    data                = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today, verbose_name="Data")
+    eef                 = models.CharField(max_length=17, unique=True, verbose_name="Encomenda")
+    prf                 = models.CharField(max_length=15, unique=True, verbose_name="Proforma")
+    sqm                 = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Metros quadrados")
+    estado              = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado")
+    num_cargas_actual   = models.IntegerField(default=0) 
+    num_cargas          = models.IntegerField(default=0) 
+
+    def __str__(self):
+        return self.eef
+
+    class Meta:
+        verbose_name_plural = "Encomendas"
+        ordering = ['-data', '-eef']
+
+    
+class Carga(models.Model):
+    STATUS = (('I', 'I'), ('C', 'C'))
+    TIPO = (('CONTENTOR','CONTENTOR'), ('CAMIÃO','CAMIÃO'))
+    user                = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    enc                 = models.ForeignKey(Encomenda, on_delete=models.PROTECT, verbose_name="Encomenda")
+    timestamp           = models.DateTimeField(auto_now_add=True)
+    data                = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today, verbose_name="Data")
+    carga               = models.CharField(max_length=200, unique=True, verbose_name="Carga")
+    num_carga           = models.IntegerField(default=0, verbose_name="Carga nº")
+    num_paletes         = models.IntegerField(default=0, verbose_name="Número de paletes total")
+    num_paletes_actual  = models.IntegerField(default=0, verbose_name="Número de paletes actual")
+    estado              = models.CharField(max_length=1, choices=STATUS, default='I', verbose_name="Estado")
+    sqm                 = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Metros quadrados")
+    metros              = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Metros lineares", default=0)
+    tipo                = models.CharField(max_length=9, choices=TIPO, default='CONTENTOR', verbose_name="Tipo de Carga")
+
+    def __str__(self):
+        return self.carga
+
+    class Meta:
+        verbose_name_plural = "Cargas"
+        ordering = ['-data', '-carga']
 
 
 class Palete(models.Model):
     CORE = (('3', '3'),('6', '6'))
     STATUSP = (('G', 'G'), ('DM', 'DM'))
+    PESOP = (('8' , '8 Kg'), ('13' , '13 Kg'))
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     cliente         = models.ForeignKey(Cliente, on_delete=models.PROTECT,verbose_name="Cliente", null=True, blank=True)
+    carga           = models.ForeignKey(Carga, on_delete=models.PROTECT, verbose_name="Carga", null=True, blank=True)
+    stock           = models.BooleanField(default=False, verbose_name="Stock")
     timestamp       = models.DateTimeField(auto_now_add=True)
     data_pal        = models.DateField(auto_now=False, auto_now_add=False, default=datetime.date.today, verbose_name="Data da Palete" )
     nome            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Palete")
@@ -177,7 +223,7 @@ class Palete(models.Model):
     diametro        = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Diâmetro das bobines", null=True, blank=True)
     core_bobines    = models.CharField(max_length=1, choices=CORE, verbose_name="Core das bobines")
     peso_bruto      = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso bruto")
-    peso_palete     = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso palete")
+    peso_palete     = models.CharField(max_length=5, choices=PESOP, null=True, blank=True, verbose_name="Peso palete")
     peso_liquido    = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso liqudo")
     retrabalhada    = models.BooleanField(default=False, verbose_name="Retrabalhada")
     
@@ -207,14 +253,11 @@ class Bobine(models.Model):
     troca_nw = models.BooleanField(default=False,verbose_name="Troca NW")
     outros = models.BooleanField(default=False,verbose_name="Outros")
     buraco = models.BooleanField(default=False,verbose_name="Buracos")    
-    obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="" )
+    obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="")
     recycle = models.BooleanField(default=False,verbose_name="Reciclada")    
 
     def __str__(self):
-        if self.largura.num_bobine < 10:
-            return '%s-0%s' % (self.bobinagem, self.largura.num_bobine)
-        else:
-            return '%s-%s' % (self.bobinagem, self.largura.num_bobine)
+        return self.nome
     
     class Meta:
         verbose_name_plural = "Bobines"

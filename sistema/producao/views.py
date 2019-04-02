@@ -397,32 +397,22 @@ def create_bobinagem_retrabalho(request):
         
     if form.is_valid():
         instance = form.save(commit=False)
-        perfil_pk = instance.perfil.pk
-        num_bobinagem = instance.num_bobinagem
-        perfil = Perfil.objects.get(pk=perfil_pk)
-        if Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem).exists():
-            bobinagem = Bobinagem.objects.filter(data=instance.data, num_bobinagem=num_bobinagem)
-            for b in bobinagem:
-                if b.perfil.retrabalho == True:
-                    messages.error(request, 'A bobinagem que deseja criar já existe. Verifique o nº da bobinagem.')     
-                elif not Bobinagem.objects.filter(nome=b.nome).exists():     
-                    instance.user = request.user
-                    instance.save()
-                    
-                    if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                        areas(instance.pk)
-                    
-                    bobinagem_create_retrabalho(instance.pk)
-                    return redirect('producao:retrabalho_dm', pk=instance.pk)     
+        
+        bobinagem_nome = bobinagem_retrabalho_nome(instance.data, instance.num_bobinagem)
+
+        if Bobinagem.objects.filter(nome=bobinagem_nome[0]).exists() or Bobinagem.objects.filter(nome=bobinagem_nome[1]).exists():
+            messages.error(request, 'A bobinagem que deseja criar já existe. por favor verifique o numero da bobinagem.')
         else:
             instance.user = request.user
+            instance.nome = bobinagem_nome[0]
             instance.save()
+            area_bobinagem(instance.pk) 
+            create_bobine(instance.pk) 
+            return redirect('producao:retrabalho_dm', pk=instance.pk)       
+   
             
-            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                areas(instance.pk)
             
-            bobinagem_create_retrabalho(instance.pk)
-            return redirect('producao:retrabalho_dm', pk=instance.pk)
+        
 
     context = {
         "form": form

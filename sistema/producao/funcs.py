@@ -486,3 +486,15 @@ def palete_nome(pk):
             #         instance.nome = 'R0%s-%s' % (num + 1, ano)
             #     else: 
             #         instance.nome = 'R%s-%s' % (num + 1, ano)
+
+def bobinagem_retrabalho_nome(data, num_bobinagem):
+    data = data.strftime('%Y%m%d')
+    map(int, data)
+    if num_bobinagem < 10:
+        nome_s_emendas = '4%s-0%s' % (data[1:], num_bobinagem)
+        nome_c_emendas = '3%s-0%s' % (data[1:], num_bobinagem)
+    else:
+        nome_s_emendas = '4%s-%s' % (data[1:], num_bobinagem)
+        nome_c_emendas = '3%s-%s' % (data[1:], num_bobinagem)
+
+    return (nome_s_emendas, nome_c_emendas)

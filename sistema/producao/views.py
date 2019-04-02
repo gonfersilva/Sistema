@@ -1577,19 +1577,25 @@ def palete_confirmation(request, pk, id_bobines):
         id_b = int(x)
         bobine = Bobine.objects.get(pk=id_b)
         if bobine.bobinagem.perfil.retrabalho == True:
-            e_p.palete_nome == 'teste'
+            
             ano = palete.data_pal
             ano = ano.strftime('%Y')
             num = palete.num
             if num < 10:    
                 palete.nome = 'R000%s-%s' % (num, ano)  
+                e_p.palete_nome = palete.nome
             elif num < 100:
                 palete.nome = 'R00%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
             elif num < 1000: 
                 palete.nome = 'R0%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
             else: 
                 palete.nome = 'R%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
+            
             palete.save()
+            e_p.save()
             break
           
     return redirect('producao:addbobinepalete', pk=palete.pk)

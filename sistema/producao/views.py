@@ -1842,7 +1842,7 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
 @login_required   
 def refazer_bobinagem_dm(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
-    bobines = Bobines.objects.filter(bobinagem=bobinagem)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
     emendas = Emenda.objects.filter(bobinagem=bobinagem)
 
     data = bobinagem.data
@@ -1862,10 +1862,14 @@ def refazer_bobinagem_dm(request, pk):
         num += 1
         b.area = 0
         b.comp_actual = 0 
+        b.save()
 
     for e in emendas:
         bobine_original = Bobine.objects.get(pk=e.bobine.pk)
         bobine_original.comp_actual += e.metros
+        if bobine_original.recycle == True:
+            bobine_original.recycle = False
+        bobine_original.save()
         e.delete() 
 
     return redirect('producao:retrabalho_dm', pk=bobinagem.pk)

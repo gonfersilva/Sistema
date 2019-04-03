@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^retrabalho/dm/(?P<pk>\d+)/$', retrabalho_dm, name='retrabalho_dm'),
     url(r'^retrabalho/validate/dm/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/(?P<metros>[\w\-]+)/(?P<recycle>[\w\-]+)/$', validate_bobinagem_dm, name='validate_bobinagem_dm'),
     url(r'^retrabalho/filter/finalizar/(?P<pk>\d+)/$', BobinagemRetrabalhoFinalizar.as_view(), name='finalizar_retrabalho'),
+    url(r'^retrabalho/refazer/(?P<pk>\d+)/$', refazer_bobinagem_dm, name='refazer_bobinagem_dm'),    
     url(r'^clientes/$', cliente_home, name='clientes'),
     url(r'^clientes/create/$', ClienteCreateView.as_view(), name='cliente_create'),
     url(r'^relatorio/linha/$', relatorio_diario, name='relatorio_diario'),

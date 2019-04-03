@@ -68,51 +68,14 @@
     <div class="row">
             <div class="col container table-responsive ml-2">
                     
-                    <!-- <form method="POST" action="{% url 'producao:picagem' pk=palete.pk %}" >{% csrf_token %}
-                        <input id="myInput" type="text" name="q" placeholder="Bobine" autofocus/>
-                        <input id="myBtn" type="submit" class="btn btn-success"/>
-                    </form> -->
-                    <br>
-                    <br>
-                    
-                    {% if messages %}
-                    <ul class="messages">
-                    {% for message in messages %}
-                    <li class="{{ message.tags }}" id="error">{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                    {% endif %}
-                </ul>
+                   
+                   
                 <h1 class="alert-success"><a href="{% url 'producao:palete_rabrir' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Refazer Palete</button></a></h1>
-                    <!-- {% if palete.estado != 'DM' %}
-                        {% if palete.num_bobines_act == palete.num_bobines %}
-                        <div class="row">
-                            <div class="col">
-                                
-                                <h1 class="alert-success">Palete fechada!<a href="{% url 'producao:reabrir_palete' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Reabrir Palete</button></a></h1>
-                                {% if e_p.produto == "" %}<a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Gerar etiqueta</button></a>{% else %}<a href="{% url 'producao:reabrir_palete' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Reabrir Palete</button></a>{% endif %}
-                                
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="row">
-                            <div class="col">
-                                <h1 class="alert-success"><a href="{% url 'producao:etiqueta_palete' pk=palete.pk %}"><button type="button" class="btn btn-success pull-right">Gerar etiqueta</button></a></h1>
-                                    
-                                    
-                            </div>
-                        </div>
-                        
-                        
-                    {% endif %} -->
+                    
 
                     <table class="table table-responsive">
                             <tr>
-                                {% if e_p.produto == ""%}
-                                <th></th>
-                                <th></th>
-                                {% endif %} 
+                                
                                 <th>Bobine nº</th>
                                 <th>Bobine</th>
                                 <th>Estado</th>
@@ -126,18 +89,7 @@
                                 {% if bob.palete.pk == palete.pk  %}
                                 
                                 <tr>
-                                    {% if e_p.produto == ""%}
-                                        {% if bob.posicao_palete > 1 %}
-                                        <td><a href="{% url 'producao:ordenar_bobines_op' operation='up' pk=bob.pk %}"><button type="button" class="glyphicon glyphicon-arrow-up btn-success"></button></a></td>
-                                        {% else %}
-                                        <td></td>
-                                        {% endif %}
-                                        {% if bob.posicao_palete < ultima_pos %}
-                                        <td></ultima_pos><a href="{% url 'producao:ordenar_bobines_op' operation='down' pk=bob.pk %}"><button type="button" class="glyphicon glyphicon-arrow-down btn-danger"></button></a></td>
-                                        {% else %}
-                                        <td></td>
-                                        {% endif %}
-                                    {% endif %}  
+                                  
                                     
                                     <td>{{ bob.posicao_palete }}</td>
                                     <td><a href="{{ bob.get_absolute_url }}">{{ bob.nome }} </a></td>
@@ -164,14 +116,7 @@
                                     
                                     <td>{{ bob.bobinagem.perfil.core }}</td>
                                     <td>{{ bob.area }}</td>
-                                    <!-- {% if e_p.produto == "" or bob.palete.estado == 'DM' %}
-                                    <td>
-                                        
-                                        {% if not bob.posicao_palete < ultima_pos %}
-                                        <a href="{% url 'producao:paletebobine' operation='remove' pk_bobine=bob.pk pk_palete=palete.pk %}"><button type="button" class="btn btn-danger">Remove</button></a>
-                                        {% endif %}
-                                    </td>
-                                    {% endif %} -->
+                                   
                                    
                                           
                                 </tr>

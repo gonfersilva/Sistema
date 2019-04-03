@@ -354,16 +354,12 @@ def add_bobine_palete(request, pk):
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
     bobines = Bobine.objects.filter(palete=palete)
-    # e_p = EtiquetaPalete.objects.get(palete=palete)
-    ultima_pos = 0
-    for b in bobines:
-        ultima_pos += 1
-     
+         
     context = {"palete": palete, 
                "bobine": bobine,
                "bobinagem": bobinagem,
-            #    "e_p": e_p,
-               "ultima_pos": ultima_pos,
+            
+               
                 }
     return render(request, template_name, context)
 

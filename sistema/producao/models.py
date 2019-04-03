@@ -220,9 +220,9 @@ class Palete(models.Model):
     lote            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nº Lote")
     num_bobines     = models.IntegerField(verbose_name="Bobines total")
     num_bobines_act = models.IntegerField(default=0) 
-    largura_bobines = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Largura das bobines")
+    largura_bobines = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Largura das bobines", null=True, blank=True)
     diametro        = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Diâmetro das bobines", null=True, blank=True)
-    core_bobines    = models.CharField(max_length=1, choices=CORE, verbose_name="Core das bobines")
+    core_bobines    = models.CharField(max_length=1, choices=CORE, default='3', verbose_name="Core das bobines")
     peso_bruto      = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso bruto")
     peso_palete     = models.CharField(max_length=5, choices=PESOP, null=True, blank=True, verbose_name="Peso palete")
     peso_liquido    = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso liqudo")
@@ -493,9 +493,10 @@ def area_palete(sender, instance, **kwargs):
 
 post_save.connect(perfil_larguras, sender=Perfil)
 
-# pre_save.connect(palete_nome, sender=Palete)
+
 
 pre_save.connect(area_palete, sender=Palete)
+
 
 
 

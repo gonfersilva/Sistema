@@ -324,9 +324,12 @@ def create_palete_retrabalho(request):
         instance.user = request.user
         instance.retrabalhada = True
         instance.estado = 'DM'
+        instance.num_bobines = 0
+        instance.num_bobines_act = 0
+        instance.largura_bobines = 0
         instance.save()
         palete_nome(instance.pk)
-        # palete_area(instance.pk)
+        
 
         if EtiquetaPalete.objects.filter(palete=instance).exists():
             return redirect('producao:addbobinepalete', pk=instance.pk)
@@ -623,26 +626,17 @@ def perfil_delete(request, pk):
 def bobinagem_delete(request, pk):
     obj = get_object_or_404(Bobinagem, pk=pk)
     bobine = Bobine.objects.filter(bobinagem=obj)
+    template_name = "producao/bobinagem_delete.html"
+    emenda = Emenda.objects.filter(bobinagem=obj)
     if request.method == "POST":
-        # try:
-        #     emenda = Emenda.objects.filter(bobinagem=obj)
-        # except Emenda.DoesNotExist:
-        #     obj.delete()
-        #     if obj.perfil.retrabalho == False:
-        #         return redirect('producao:bobinagens')
-        #     else:
-        #         return redirect('producao:retrabalho_home')
-
-        # obj.delete()
-        # if obj.perfil.retrabalho == False:
-        #     return redirect('producao:bobinagens')
-        # else:
-        #     return redirect('producao:retrabalho_home')
-
-        if Emenda.objects.filter(bobinagem=obj).exists():
-            emenda = Emenda.objects.filter(bobinagem=obj)
+        if obj.perfil.retrabalho == True:
+            # emenda = Emenda.objects.filter(bobinagem=obj)
             for e in emenda:
-                e.bobine.comp_actual += e.metros
+                bobine = Bobine.objects.get(pk=e.bobine.pk)
+                bobine.comp_actual += e.metros
+                if bobine.recycle == True:
+                    bobine.recycle = False
+                bobine.save()
                 e.delete()
             obj.delete()
             if obj.perfil.retrabalho == False:
@@ -655,13 +649,14 @@ def bobinagem_delete(request, pk):
                 return redirect('producao:bobinagem_list_all')
             else:
                 return redirect('producao:retrabalho_home')
-        
+
             
     context = {
         "object": obj,
-        "bobine": bobine
+        "bobine": bobine,
+        "emenda": emenda
     }
-    return render(request, "producao/bobinagem_delete.html", context)
+    return render(request, template_name, context)
 
 
 @login_required
@@ -1652,11 +1647,15 @@ def validate_palete_dm(request, pk, id_bobines):
         bobine.palete = palete
         bobine.posicao_palete = num
         comp += bobine.comp_actual
+        
+            
         area += bobine.area
         bobine.save()
         num += 1
-        
+    
     palete.num_bobines_act = num - 1
+    if palete.retrabalhada == True:
+        palete.num_bobines = palete.num_bobines_act
     palete.area = area
     palete.comp_total = comp
     palete.save()

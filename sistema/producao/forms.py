@@ -60,8 +60,17 @@ class RetrabalhoCreateForm(ModelForm):
         fields = ['data', 'num_bobinagem', 'perfil', 'inico']
 
     def __init__(self, *args, **kwargs):
+        bobinagem = Bobinagem.objects.filter(perfil__retrabalho=True)
+        num = bobinagem.latest()
+        num_b = num.num_bobinagem + 1
+        perfil = num.perfil
+        fim = num.fim
+
         super(RetrabalhoCreateForm, self).__init__(*args, **kwargs)
         self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=True)
+        self.fields['num_bobinagem'].initial = num_b
+        self.fields['perfil'].initial = perfil
+        self.fields['inico'].initial = fim
         
 
 
@@ -137,18 +146,13 @@ class PaleteRetrabalhoForm(ModelForm):
 
     class Meta:
         model = Palete
-        fields = ['num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
+        fields = ['num', 'data_pal']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='DM').latest('num')
-        num_bobines = palete.num_bobines
-        largura_bobines = palete.largura_bobines
-        core_bobines = palete.core_bobines
         num = palete.num
         super(PaleteRetrabalhoForm, self).__init__(*args, **kwargs)      
-        self.fields['num_bobines'].initial = num_bobines
-        self.fields['largura_bobines'].initial = largura_bobines
-        self.fields['core_bobines'].initial = core_bobines
+        
         self.fields['num'].initial = num + 1
 
     

@@ -422,16 +422,9 @@ def palete_nome(pk):
     if not instance.nome:
         ano = instance.data_pal
         ano = ano.strftime('%Y')
-        # pal = Palete.objects.latest('num')
-        # pal = pal.num
-        # instance.num = pal + 1
         if instance.estado == 'DM':
-            # palete = Palete.objects.filter(estado='DM', data_pal__gte='2019-01-01')
             num = instance.num
-            # for p in palete:
-            #     if p.num > num:
-            #          num = p.num
-
+            
             if num < 10:
                 instance.nome = 'DM000%s-%s' % (num, ano)
             elif num < 100:
@@ -466,27 +459,14 @@ def palete_nome(pk):
         if EtiquetaPalete.objects.filter(palete=instance).exists():
             return redirect('producao:palete_details', pk=instance.pk)
         else:
-            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
             if instance.retrabalhada == False:
+                e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
                 e_p.cliente = instance.cliente.nome
+            else:
+               e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
             e_p.save()
-                
-            # else:
-            #     palete = Palete.objects.filter(estado='G')
-            #     num = 0
-            #     for p in palete:
-            #         if p.num > num:
-            #             num = p.num
-            #     instance.num = num + 1   
-            #     if num + 1 < 10:    
-            #         instance.nome = 'R000%s-%s' % (num + 1, ano)  
-            #     elif num + 1 < 100:
-            #         instance.nome = 'R00%s-%s' % (num + 1, ano)
-            #     elif num + 1 < 1000:
-            #         instance.nome = 'R0%s-%s' % (num + 1, ano)
-            #     else: 
-            #         instance.nome = 'R%s-%s' % (num + 1, ano)
-
+               
+            
 def bobinagem_retrabalho_nome(data, num_bobinagem):
     data = data.strftime('%Y%m%d')
     map(int, data)

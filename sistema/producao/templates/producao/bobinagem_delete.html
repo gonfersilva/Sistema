@@ -19,11 +19,14 @@
             <p id="estado_rejected">{{ bob.nome }}</p>
         {% endif %}
         {% endfor %}
+        
         <h1>Têm a certeza que quer apagar a bobinagem {{ object.nome }}?</h1>
         
         <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:bobinagem_list_all' %}" class="btn btn-primary" role="button">Cancelar</a></p>
-       
-        
+        <!-- {% for e in emenda %}
+            {{ e.bobinagem }}
+        {% endfor%}
+         -->
         
     </form>
     

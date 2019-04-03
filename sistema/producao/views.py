@@ -332,13 +332,13 @@ def create_palete_retrabalho(request):
         
 
         if EtiquetaPalete.objects.filter(palete=instance).exists():
-            return redirect('producao:addbobinepalete', pk=instance.pk)
+            return redirect('producao:picagem_palete_dm', pk=instance.pk)
         else:
             e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
             e_p.save()
-            return redirect('producao:addbobinepalete', pk=instance.pk)
+            return redirect('producao:picagem_palete_dm', pk=instance.pk)
                 
-        return redirect('producao:addbobinepalete', pk=instance.pk)
+        return redirect('producao:picagem_palete_dm', pk=instance.pk)
 
         
     context = {

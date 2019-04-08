@@ -16,6 +16,7 @@
     <div class="container">
         {% if palete.estado != 'DM'%}
         <div class="row">
+            <p id="palete_id" data-catid="{{ palete.id }}" hidden>{{ palete.id }}</p> 
             <h1>Palete: {{ palete.nome }}</h1>
             <h2>Cliente: {{ palete.cliente.nome}}</h2>
             {% if palete.estado == 'G' %}
@@ -40,6 +41,7 @@
         </div>
         {% else %}
         <div class="row">
+            <p id="palete_id" data-catid="{{ palete.id }}" hidden>{{ palete.id }}</p> 
             <h1>Palete: {{ palete.nome }}</h1>
             {% if palete.estado == 'G' %}
                 <h3 id="estado_good">Good</h3>
@@ -73,56 +75,21 @@
                 <h1 class="alert-success"><a href="{% url 'producao:palete_rabrir' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Refazer Palete</button></a></h1>
                     
 
-                    <table class="table table-responsive">
-                            <tr>
-                                
-                                <th>Bobine nº</th>
-                                <th>Bobine</th>
-                                <th>Estado</th>
-                                <th>Largura</th>
-                                <th>Diâmetro</th>
-                                <th>Core</th>
-                                <th>Área</th>
-                                <th></th>
-                            </tr>
-                            {% for bob in bobine %}
-                                {% if bob.palete.pk == palete.pk  %}
-                                
+                        <table class="table fit" id="myTable">
+                            <thead>
                                 <tr>
-                                  
-                                    
-                                    <td>{{ bob.posicao_palete }}</td>
-                                    <td><a href="{{ bob.get_absolute_url }}">{{ bob.nome }} </a></td>
-                                    {% if bob.estado == "G" %}
-                                    <td id="estado_good">{{ bob.estado }}</td>
-                                    {% elif bob.estado == "DM"%}
-                                    <td id="estado_dm">{{ bob.estado }}</td>
-                                    {% elif bob.estado == "R" %}
-                                    <td id="estado_rejected">{{ bob.estado }}</td>
-                                    {% elif  bob.estado == "BA"%}
-                                    <td id="estado_ba">{{ bob.estado }}</td>
-                                    {% elif  bob.estado == "IND"%}
-                                    <td id="estado_ind">{{ bob.estado }}</td>
-                                    {% elif  bob.estado == "HOLD"%}
-                                    <td id="estado_hold">{{ bob.estado }}</td>
-                                    {% else %}
-                                        <td id="estado_lab">{{ bob.estado }}</td>
-                                    {% endif %}
-                                            
-                                    <td>{{ bob.largura.largura }}</td>
-                                    
-                                    <td>{{ bob.bobinagem.diam }}</td>
-                                    
-                                    
-                                    <td>{{ bob.bobinagem.perfil.core }}</td>
-                                    <td>{{ bob.area }}</td>
-                                   
-                                   
-                                          
+                                    <th>Bobine nº</th>
+                                    <th>Bobine</th>
+                                    <th>Estado</th>
+                                    <th>Largura</th>
+                                    <th>Diâmetro</th>
+                                    <th>Core</th>
+                                    <th>Área</th>
                                 </tr>
-                                {% endif %}
-                            {% endfor %}
+                            </thead>
+                            <tbody id="bobines-palete">
                                 
+                            </tbody>
                             
                         </table>
                 </div>
@@ -131,8 +98,90 @@
 
 
 </div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
-    
+    $(window).load(function() {
+
+        var id = $("#palete_id").attr("data-catid");
+        $.ajax({ 
+            type: "GET",
+            dataType: "json",
+            url: "/api/palete/dm/" + id,
+            success: function(bobines){        
+                if(!bobines || bobines.length === 0) {
+                        return;
+                    }
+                var bobines_length = bobines.length
+                for ( i = 0; i < bobines_length; i++){
+                    
+                    
+
+                    var link = "/producao/bobine/details/" + bobines[i].id
+                    // var link_ap = "/producao/bobinagem/ap/" + data[i].id
+                    // var link_dm = "/producao/bobinagem/dm/" + data[i].id
+                    // var link_rej = "/producao/bobinagem/rej/" + data[i].id
+                    // var link_hold = "/producao/bobinagem/hold/" + data[i].id
+                    // var link_del = "/producao/bobinagem/delete/" + data[i].id
+                    
+                    
+                    var a1=$(document.createElement("a")).text(bobines[i].nome).attr('href', link), td1=$(document.createElement("td"));
+                    var td2=$(document.createElement("td")).attr('id', "center")
+                    if (bobines[i].estado === 'G'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_good")    
+                    }else if(bobines[i].estado === 'R'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_rejected")    
+                    }else if(bobines[i].estado === 'DM'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_dm")    
+                    }else if(bobines[i].estado === 'IND'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_ind")    
+                    }else if(bobines[i].estado === 'LAB'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_lab")    
+                    }else if(bobines[i].estado === 'BA'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_rejected")    
+                    }else if(bobines[i].estado === 'HOLD'){
+                        var td3=$(document.createElement("td")).attr('id', "estado_hold")    
+                    }
+                    
+                    var td4=$(document.createElement("td")).attr('id', "center")
+                    var td5=$(document.createElement("td")).attr('id', "center")
+                    var td6=$(document.createElement("td")).attr('id', "center")
+                    var td6=$(document.createElement("td")).attr('id', "center")
+                    var td7=$(document.createElement("td")).attr('id', "center")
+                   
+                                                        
+
+                    td1.append(a1);
+                    td2.text(bobines[i].posicao_palete);
+                    td3.text(bobines[i].estado);
+                    td4.text(bobines[i].largura.largura);
+                    td5.text(bobines[i].bobinagem.diam);
+                    td6.text(bobines[i].bobinagem.perfil.core);
+                    td7.text(bobines[i].area);
+                  
+                    var tr=$(document.createElement("tr"));
+                    var tr_total = tr.append(td2).append(td1).append(td3).append(td4).append(td5).append(td6).append(td7);
+                    
+                                            
+                        
+                    
+
+                    
+                    // if (data[i].perfil.retrabalho == false){
+                    //     a1.click(function () {
+                    //     window.location = link
+                        
+                    //     });
+                    // }
+                    
+                    
+                    $("#bobines-palete").append(tr);
+                }
+            }
+        }); 
+    });
 </script>
 
 {% endblock %}

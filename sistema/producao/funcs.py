@@ -1,4 +1,6 @@
 from producao.models import *
+import datetime
+
 
 def areas(pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
@@ -478,3 +480,168 @@ def bobinagem_retrabalho_nome(data, num_bobinagem):
         nome_c_emendas = '3%s-%s' % (data[1:], num_bobinagem)
 
     return (nome_s_emendas, nome_c_emendas)
+
+
+def update_etiqueta_final(pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    e_p = get_object_or_404(EtiquetaPalete, palete=palete)
+    e_f = get_object_or_404(EtiquetaFinal, palete=palete)
+    bobines = Bobine.objects.filter(palete=palete)
+    bobine_1 = Bobine.objects.get(palete=palete, posicao_palete=1)
+    palete_nome = e_p.palete_nome
+    produto = e_p.produto
+    largura_bobine = e_p.largura_bobine
+    diam_min = e_p.diam_min
+    diam_max = e_p.diam_max
+    cliente = e_p.cliente
+    cod_cliente = palete.cliente.cod
+    core_bobines = palete.core_bobines
+    area = palete.area
+    comp_total = palete.comp_total
+    prf = palete.carga.enc.prf
+    num_bobines = palete.num_bobines
+    peso_liquido = palete.peso_liquido
+    peso_bruto = palete.peso_bruto
+    num_paletes_total = palete.carga.num_paletes
+    num_palete_carga = palete.num_palete_carga
+
+    cod_cliente_cliente = None
+    if cliente == 'ONTEX':
+        if largura_bobines == 140:
+            cod_cliente_cliente = 'G2.6592'
+        elif largura_bobines == 80:
+            cod_cliente_cliente = 'G2.6590'
+        elif largura_bobines == 70:
+            cod_cliente_cliente = 'G2.6589'
+        elif largura_bobines == 65:
+            cod_cliente_cliente = 'G2.6543'
+        elif largura_bobines == 130:
+            cod_cliente_cliente = 'G2.6591'
+    elif cliente == 'ABENA':
+        if largura_bobines == 150:
+            cod_cliente_cliente = '10000018848'
+    elif cliente == 'Paul Hartman':
+        if largura_bobines == 240:
+            cod_cliente_cliente = 'ELASTEK m16'
+
+    if core_bobines == '3':
+        core_bobines = 76.6
+    elif core_bobines == '6':
+        core_bobines = 152.6
+
+    data_inicial = palete.carga.data
+    for b in bobines:
+        if b.bobinagem.data < data_inicial:
+            data_inicial = b.bobinagem.data
+    
+    data_prod = data_inicial
+    data_validade = data_prod + datetime.timedelta(days=356)
+
+    gsm = bobine_1.largura.gsm
+
+    if cod_cliente_cliente is not None:
+        e_f.palete_nome = palete_nome
+        e_f.produto = produto
+        e_f.largura_bobine = largura_bobine
+        e_f.diam_min = diam_min
+        e_f.diam_max = diam_max
+        e_f.cod_cliente = cod_cliente
+        e_f.cod_cliente_cliente = cod_cliente_cliente
+        e_f.core = core_bobines
+        e_f.area = area
+        e_f.comp = comp_total
+        e_f.prf = prf
+        e_f.num_bobines = num_bobines
+        e_f.palete_num = num_palete_carga
+        e_f.palete_total = num_paletes_total
+        e_f.peso_liquido = peso_liquido
+        e_f.peso_bruto = peso_bruto
+        e_f.data_prod = data_prod
+        e_f.data_validade = data_validade
+        e_f.gsm = gsm
+        e_f.save()
+    else:
+        e_f.palete_nome = palete_nome
+        e_f.produto = produto
+        e_f.largura_bobine = largura_bobine
+        e_f.diam_min = diam_min
+        e_f.diam_max = diam_max
+        e_f.cod_cliente = cod_cliente
+        e_f.core = core_bobines
+        e_f.area = area
+        e_f.comp = comp_total
+        e_f.prf = prf
+        e_f.num_bobines = num_bobines
+        e_f.palete_num = num_palete_carga
+        e_f.palete_total = num_paletes_total
+        e_f.peso_liquido = peso_liquido
+        e_f.peso_bruto = peso_bruto
+        e_f.data_prod = data_prod
+        e_f.data_validade = data_validade
+        e_f.gsm = gsm
+        e_f.save()
+    
+  
+
+def gerar_etiqueta_final(pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    e_p = get_object_or_404(EtiquetaPalete, palete=palete)
+    bobines = Bobine.objects.filter(palete=palete)
+    bobine_1 = Bobine.objects.get(palete=palete, posicao_palete=1)
+    palete_nome = e_p.palete_nome
+    produto = e_p.produto
+    largura_bobine = e_p.largura_bobine
+    diam_min = e_p.diam_min
+    diam_max = e_p.diam_max
+    cliente = e_p.cliente
+    cod_cliente = palete.cliente.cod
+    core_bobines = palete.core_bobines
+    area = palete.area
+    comp_total = palete.comp_total
+    prf = palete.carga.enc.prf
+    num_bobines = palete.num_bobines
+    peso_liquido = palete.peso_liquido
+    peso_bruto = palete.peso_bruto
+    num_paletes_total = palete.carga.num_paletes
+    num_palete_carga = palete.num_palete_carga
+
+    cod_cliente_cliente = None
+    if cliente == 'ONTEX':
+        if largura_bobines == 140:
+            cod_cliente_cliente = 'G2.6592'
+        elif largura_bobines == 80:
+            cod_cliente_cliente = 'G2.6590'
+        elif largura_bobines == 70:
+            cod_cliente_cliente = 'G2.6589'
+        elif largura_bobines == 65:
+            cod_cliente_cliente = 'G2.6543'
+        elif largura_bobines == 130:
+            cod_cliente_cliente = 'G2.6591'
+    elif cliente == 'ABENA':
+        if largura_bobines == 150:
+            cod_cliente_cliente = '10000018848'
+    elif cliente == 'Paul Hartman':
+        if largura_bobines == 240:
+            cod_cliente_cliente = 'ELASTEK m16'
+
+    if core_bobines == '3':
+        core_bobines = 76.6
+    elif core_bobines == '6':
+        core_bobines = 152.6
+
+    data_inicial = palete.carga.data
+    for b in bobines:
+        if b.bobinagem.data < data_inicial:
+            data_inicial = b.bobinagem.data
+    
+    data_prod = data_inicial
+    data_validade = data_prod + datetime.timedelta(days=356)
+
+    gsm = bobine_1.largura.gsm
+
+    if cod_cliente_cliente is not None:
+        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobine, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+    else:
+        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobine, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        
+

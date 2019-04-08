@@ -67,9 +67,11 @@ class PaleteDmAPIView(LoginRequiredMixin, ListAPIView):
 class PaleteDmBobinesAPIView(LoginRequiredMixin, APIView):
     def get(self, request, pk, format=None):
         palete = Palete.objects.get(pk=pk)
-        bobines = Bobine.objects.filter(palete=palete)
+        bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')[:300]
         serializer = BobinesPaleteDmSerializer(bobines, many=True)
         return Response(serializer.data)
+
+
 
 class BobineListDmAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Bobine.objects.filter(estado='DM')

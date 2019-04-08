@@ -244,3 +244,10 @@ class AddPalateStockForm(ModelForm):
         super(AddPalateStockForm, self).__init__(*args, **kwargs)
         self.fields['carga'].queryset = Carga.objects.filter(estado='I')
         
+
+
+class AcompanhamentoDiarioSearchForm(forms.Form):
+    data_inicio = forms.DateField(input_formats='%Y-%m-%d')
+    hora_inicio = forms.TimeField(input_formats='%H:%M')
+    data_fim = forms.DateField(input_formats='%Y-%m-%d')
+    hora_fim = forms.TimeField(input_formats='%H:%M')

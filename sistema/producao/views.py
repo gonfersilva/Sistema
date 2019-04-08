@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -190,7 +190,7 @@ def bobinagem_status(request, pk):
 
 class LarguraUpdate(LoginRequiredMixin, UpdateView):
     model = Largura
-    fields = ['largura', 'designacao_prod']
+    fields = ['largura', 'designacao_prod', 'gsm']
     template_name = 'perfil/largura_update.html'
 
 def update_bobine(request, pk=None):
@@ -2052,7 +2052,7 @@ def palete_selecao(request):
 def palete_pesagem(request, pk=None):
     instance = get_object_or_404(Palete, pk=pk)
     template_name = 'palete/palete_pesagem.html'
-
+    palete = get_object_or_404(Palete, pk=pk)
     form = PaletePesagemForm(request.POST or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
@@ -2061,13 +2061,31 @@ def palete_pesagem(request, pk=None):
             carga = get_object_or_404(Carga, carga=carga_nome)
             if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
                 instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                carga.sqm += instance.area
-                carga.metros += instance.comp_total
-                carga.num_paletes_actual += 1
+                if instance.num_palete_carga == carga.num_paletes_actual:
+                    carga.sqm -= palete.area
+                    carga.metros -= palete.comp_total
+                    carga.sqm += instance.area
+                    carga.metros += instance.comp_total
+                
+                else:
+                    carga.sqm += instance.area
+                    carga.metros += instance.comp_total
+                    carga.num_paletes_actual += 1
+                    instance.num_palete_carga = carga.num_paletes_actual
+
                 if carga.num_paletes == carga.num_paletes_actual:
                     carga.estado = 'C'
                 carga.save()
                 instance.save()
+                
+                if EtiquetaFinal.objects.filter(palete=instance).exists():
+                    update_etiqueta_final(instance.pk)
+                else:
+                    gerar_etiqueta_final(instance.pk)
+         
+                    
+
+                
             else:
                 return redirect('producao:palete_pesagem', pk=instance.pk)
 
@@ -2143,5 +2161,58 @@ def stock_add_to_carga(request, pk=None):
         "form": form,
         "instance": instance,
     }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def acompanhamento_diario(request):
+    
+
+    form = AcompanhamentoDiarioSearchForm(request.POST or None)
+
+    template_name = 'lab/acompanhamento_diario.html'
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        
+    
+    context = {
+        "form": form,
+    }
+
+
+    return render(request, template_name, context)
+
+# @login_required
+# def acompanhamento_diario_filter(request):
+    
+
+#     form = AcompanhamentoDiarioSearchForm(request.POST or None)
+
+#     template_name = 'lab/acompanhamento_diario.html'
+    
+#     if form.is_valid():
+#         instance = form.save(commit=False)
+#         data_i = instance.data_inicio
+#         hora_i = instance.hora_inicio
+#         data_f = instance.data_fim
+#         hora_f = instance.hora_fim
+#         return redirect('producao:qualidade_home')
+    
+#     context = {
+#         "form": form,
+#     }
+
+
+#     return render(request, template_name, context)
+
+
+
+    
+@login_required
+def qualidade_home(request):
+    template_name = 'lab/qualidade_home.html'
+    context = {}
 
     return render(request, template_name, context)

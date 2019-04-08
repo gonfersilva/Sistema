@@ -174,17 +174,11 @@ class PaleteDmSerializer(ModelSerializer):
 
 class BobinesPaleteDmSerializer(ModelSerializer):
     bobinagem = BobinagemSerializer()
+    largura = LarguraSerializer()
     class Meta:
         model = Bobine
-        fields = [
-            "id",
-            "nome", 
-            "estado",
-            "largura",
-            "bobinagem",
-            "palete"
-
-        ]
+        fields = "__all__"
+            
 
 class BobinagemCompSerializer(ModelSerializer):
     class Meta:

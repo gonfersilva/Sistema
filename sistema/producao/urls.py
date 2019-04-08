@@ -73,6 +73,8 @@ urlpatterns = [
     url(r'^palete/armazem/(?P<pk>\d+)/$', palete_details_armazem, name='palete_details_armazem'),
     url(r'^stock/$', stock_list, name='stock_list'),
     url(r'^stock/palete/add/(?P<pk>\d+)/$', stock_add_to_carga, name='stock_add_to_carga'),
-      
+    url(r'^qualidade/$', qualidade_home, name='qualidade_home'),
+    url(r'^qualidade/acd/$', acompanhamento_diario, name='acompanhamento_diario'),
+        
     
 ]

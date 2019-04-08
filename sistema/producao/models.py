@@ -53,11 +53,13 @@ class Artigo(models.Model):
         return 'Artigo: %s / Código: %s / Tipo: %s' % (self.des, self.cod, self.tipo)
 
 class Largura(models.Model):
+    GSM = (('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'))
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     designacao_prod = models.CharField(verbose_name="Designação produto", max_length=200, null=True, blank=True)
     artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    gsm = models.CharField(max_length=7, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
 
     class Meta:
         verbose_name_plural = "Larguras"
@@ -214,6 +216,7 @@ class Palete(models.Model):
     data_pal        = models.DateField(auto_now=False, auto_now_add=False, default=datetime.date.today, verbose_name="Data da Palete" )
     nome            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Palete")
     num             = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Palete nº")
+    num_palete_carga = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Nº Palete Carga")
     estado          = models.CharField(max_length=2, choices=STATUSP, default='G', verbose_name="Estado")
     area            = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área palete")
     comp_total      = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento palete")
@@ -416,61 +419,35 @@ class EtiquetaPalete(models.Model):
        
 
 
-# def palete_nome(sender, instance, **kwargs):
-    # if not instance.nome:
-    #     ano = instance.data_pal
-    #     ano = ano.strftime('%Y')
-    #     # pal = Palete.objects.latest('num')
-    #     # pal = pal.num
-    #     # instance.num = pal + 1
-    #     if instance.estado == 'DM':
-    #         palete = Palete.objects.filter(estado='DM')
-    #         num = instance.num
-    #         for p in palete:
-    #             if p.num > num:
-    #                  num = p.num
+class EtiquetaFinal(models.Model):
+    palete = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete")
+    palete_nome = models.CharField(verbose_name="Palete nome", max_length=200)
+    produto = models.CharField(verbose_name="Produto", max_length=200)
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
+    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo",null=True, blank=True)
+    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
+    cod_cliente = models.IntegerField(unique=False, verbose_name="Cód. Cliente")
+    cod_cliente_cliente = models.CharField(verbose_name="Cód. Cliente do Cliente", max_length=200,null=True, blank=True)
+    pais = models.CharField(verbose_name="Produido em:", max_length=200, default="Portugal")
+    poroduzido_por = models.CharField(verbose_name="Produido por:", max_length=200, default="Elastictek")
+    core = models.DecimalField(max_digits=4, decimal_places=1, verbose_name="Core")
+    area = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Área")
+    comp = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Comprimento")
+    prf = models.CharField(verbose_name="Proforma", max_length=200)
+    num_bobines = models.IntegerField(unique=False, verbose_name="Nº de bobines")
+    palete_num = models.IntegerField(unique=False, verbose_name="Paleten nº")
+    palete_total = models.IntegerField(unique=False, verbose_name="Paleten total")
+    peso_liquido = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso Líquido")
+    peso_bruto = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso Bruto")
+    data_prod = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Data de produção")
+    data_validade = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Validade")
+    gsm = models.IntegerField(unique=False, verbose_name="Gramagem")
 
-    #         if num < 10:
-    #             instance.nome = 'DM000%s-%s' % (num, ano)
-    #         elif num < 100:
-    #             instance.nome = 'DM00%s-%s' % (num, ano)
-    #         elif num < 1000:
-    #             instance.nome = 'DM0%s-%s' % (num, ano)
-    #         else:
-    #             instance.nome = 'DM%s-%s' % (num, ano)
+    def __str__(self):
+        return self.palete_nome
 
-    #     elif instance.estado == 'G':
-    #         if instance.retrabalhada == False: 
-    #             palete = Palete.objects.filter(estado='G', data_pal__gte='2019-01-01')
-    #             num = 0
-    #             for p in palete:
-    #                 if p.num > num:
-    #                     num = p.num
-                       
-    #             instance.num = num + 1   
-    #             if num + 1 < 10:    
-    #                 instance.nome = 'P000%s-%s' % (num + 1, ano)  
-    #             elif num + 1 < 100:
-    #                 instance.nome = 'P00%s-%s' % (num + 1, ano)
-    #             elif num + 1 < 1000:
-    #                 instance.nome = 'P0%s-%s' % (num + 1, ano)
-    #             else: 
-    #                 instance.nome = 'P%s-%s' % (num + 1, ano)
-    #         else:
-    #             palete = Palete.objects.filter(estado='G')
-    #             num = 0
-    #             for p in palete:
-    #                 if p.num > num:
-    #                     num = p.num
-    #             instance.num = num + 1   
-    #             if num + 1 < 10:    
-    #                 instance.nome = 'R000%s-%s' % (num + 1, ano)  
-    #             elif num + 1 < 100:
-    #                 instance.nome = 'R00%s-%s' % (num + 1, ano)
-    #             elif num + 1 < 1000:
-    #                 instance.nome = 'R0%s-%s' % (num + 1, ano)
-    #             else: 
-    #                 instance.nome = 'R%s-%s' % (num + 1, ano)
+    
+
                 
              
    

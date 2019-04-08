@@ -62,15 +62,27 @@
                         {% endfor%}
                     </tr>
                     <tr>
-                            <th>Produto</td>
-                            {% for lar in largura %}
-                                {% if not lar.largura == None %}
-                                <td id="center">{{ lar.designacao_prod }}</td>
-                                
-                                {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor%}
+                        <th>Produto</td>
+                        {% for lar in largura %}
+                            {% if not lar.largura == None %}
+                            <td id="center">{{ lar.designacao_prod }}</td>
+                            
+                            {% else %}
+                            <td></td>
+                        {% endif %}
+                    {% endfor%}
+                        
+                    </tr>
+                    <tr>
+                        <th>Gramagem</td>
+                        {% for lar in largura %}
+                            {% if not lar.largura == None %}
+                            <td id="center">{{ lar.gsm }}</td>
+                            
+                            {% else %}
+                            <td></td>
+                        {% endif %}
+                    {% endfor%}
                         
                     </tr>
                     <tr>

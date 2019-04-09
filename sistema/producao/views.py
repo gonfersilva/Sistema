@@ -2020,7 +2020,7 @@ def carga_detail(request, pk):
                 data_inicial = b.bobinagem.data
             elif b.bobinagem.data > data_final:
                 data_final = b.bobinagem.data
-            elif b.bobinagem.data > data_inicial:
+            elif b.bobinagem.data >= data_inicial:
                 data_final = b.bobinagem.data
 
     

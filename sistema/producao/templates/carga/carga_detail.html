@@ -74,6 +74,14 @@
                             <th>Comprimento total(m): </th>
                             <td id="right">{{ carga.metros }}</td>
                         </tr>
+                        <tr>
+                                <th>Bobine mais antiga: </th>
+                                <td id="right">{{ data_inicial|date:"d-n-Y" }}</td>
+                        </tr>
+                        <tr>
+                                <th>Bobine mais recente: </th>
+                                <td id="right">{{ data_final|date:"d-n-Y" }}</td>
+                        </tr>
                     
                         
                         
@@ -93,6 +101,7 @@
         <table class="table fit" id="myTable">
             <thead>
                 <tr>
+                    <th>Palete nº</th>
                     <th>Palete</th>
                     <th>Data</th>
                     <th>Core(")</th>
@@ -130,7 +139,8 @@ $.ajax({
             }
         var paletes_length = paletes.length
         for (i=0; i < paletes_length; i++ ){
-        
+            
+            var td8=$(document.createElement("td")).attr('id', "center")
             var a1=$(document.createElement("a")).text(paletes[i].nome), td1=$(document.createElement("td"));
             var td2=$(document.createElement("td"))
             var td3=$(document.createElement("td")).attr('id', "center")
@@ -146,9 +156,10 @@ $.ajax({
             td5.text(paletes[i].cliente.nome);
             td6.text(paletes[i].area);
             td7.text(paletes[i].comp_total);
+            td8.text(paletes[i].num_palete_carga);
 
             var tr=$(document.createElement("tr"));
-            var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
+            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
 
             $("#paletes-list").append(tr);
 

@@ -2009,14 +2009,35 @@ def carga_create(request):
 @login_required
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
+    paletes = Palete.objects.filter(carga=carga)
+    data_inicial = datetime.date.today()
+    data_final = datetime.date.today()
+    for p in paletes:
+        bobines = Bobine.objects.filter(palete=p)
+        
+        for b in bobines:
+            if b.bobinagem.data < data_inicial:
+                data_inicial = b.bobinagem.data
+            elif b.bobinagem.data > data_final:
+                data_final = b.bobinagem.data
+            elif b.bobinagem.data > data_inicial:
+                data_final = b.bobinagem.data
+
+    
+                    
+
+            
+
     template_name = 'carga/carga_detail.html'
     context = {
-        "carga": carga
+        "carga": carga,
+        "data_inicial": data_inicial,
+        "data_final": data_final,
     }
 
     return render(request, template_name, context)
 
-    pass
+    
 
 @login_required
 def carga_edit(request, pk):

@@ -49,7 +49,7 @@ class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
     serializer_class = EmendaCreateSerializer
 
 class BobinagemListAPIView(LoginRequiredMixin, ListAPIView):
-    queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:300]
+    queryset = Bobinagem.objects.all().order_by('-data', '-fim')
     serializer_class = BobinagemListSerializer
 
 class BobinesBobinagemAPIView(LoginRequiredMixin, APIView):
@@ -67,7 +67,7 @@ class PaleteDmAPIView(LoginRequiredMixin, ListAPIView):
 class PaleteDmBobinesAPIView(LoginRequiredMixin, APIView):
     def get(self, request, pk, format=None):
         palete = Palete.objects.get(pk=pk)
-        bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')[:300]
+        bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')
         serializer = BobinesPaleteDmSerializer(bobines, many=True)
         return Response(serializer.data)
 

@@ -2016,9 +2016,9 @@ def carga_detail(request, pk):
         bobines = Bobine.objects.filter(palete=p)
         
         for b in bobines:
-            if b.bobinagem.data <= data_inicial:
+            if b.bobinagem.data < data_inicial:
                 data_inicial = b.bobinagem.data
-            elif b.bobinagem.data > data_final:
+            elif b.bobinagem.data >= data_final:
                 data_final = b.bobinagem.data
             elif b.bobinagem.data > data_inicial:
                 data_final = b.bobinagem.data

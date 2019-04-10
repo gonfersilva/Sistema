@@ -1411,6 +1411,21 @@ def bobinagem_list_all(request):
 
     return render(request, template_name, context)
 
+@login_required
+def bobinagem_list_all_historico(request):
+    
+    bobinagem = Bobinagem.objects.all()
+         
+    template_name = 'producao/bobinagem_list_all_historico.html'
+   
+    context = {
+               
+        "bobinagem": bobinagem,
+              
+    }
+
+    return render(request, template_name, context)
+
 
 @login_required
 def palete_list_all(request):
@@ -1419,6 +1434,21 @@ def palete_list_all(request):
    
         
     template_name = 'palete/palete_list_all.html'
+    context = {
+               
+        "palete": palete,
+              
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def palete_list_all_historico(request):
+    
+    palete = Palete.objects.all()
+   
+        
+    template_name = 'palete/palete_list_all_historico.html'
     context = {
                
         "palete": palete,
@@ -2119,7 +2149,7 @@ def palete_pesagem(request, pk=None):
 
         
         
-        return redirect('producao:palete_details_armazem', pk=instance.pk)
+        return redirect('producao:palete_selecao')
 
     context = {
         "form": form,

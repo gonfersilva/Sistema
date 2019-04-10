@@ -1,15 +1,17 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from producao.api.views import PaleteListAPIView, CargaListAPIView, CargaPaletesAPIView, StockListAPIView, BobineListDmAPIView, CargaDetailAPIView, EncomendaCargaAPIView, CargaDetailSerializer, EncomendaListAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
+from producao.api.views import PaleteListAPIView, CargaListAPIView, PaleteListHistoricoAPIView, BobinagemListHistoricoAPIView, CargaPaletesAPIView, StockListAPIView, BobineListDmAPIView, CargaDetailAPIView, EncomendaCargaAPIView, CargaDetailSerializer, EncomendaListAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
 
 app_name="producao" 
 
 urlpatterns = [
     
     url(r'^palete/$', PaleteListAPIView.as_view(), name='palete-list'),
+    url(r'^palete/historico/$', PaleteListHistoricoAPIView.as_view(), name='palete-list-historico'),
     url(r'^bobine/$', BobineListAPIView.as_view(), name='bobine-list'),
     url(r'^bobinelist/$', BobineListAllAPIView.as_view(), name='bobine-list2'),
     url(r'^bobinagem/$', BobinagemListAPIView.as_view(), name='bobinagem-list'),
+    url(r'^bobinagem/historico/$', BobinagemListHistoricoAPIView.as_view(), name='bobinagem-list-historico'),
     url(r'^emenda/$', EmendaListAPIView.as_view(), name='emenda-list'),
     url(r'^emenda/create/$', EmendaCreateAPIView.as_view(), name='emenda-create'),
     url(r'^palete/(?P<pk>\d+)/$', PaleteDetailAPIView.as_view(), name='palete-detail'),

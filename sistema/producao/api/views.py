@@ -7,9 +7,12 @@ from .serializers import PaleteListSerializer, PaleteDetailSerializer, CargaList
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
-    queryset = Palete.objects.all().order_by('-data_pal', '-num')
+    queryset = Palete.objects.all().order_by('-data_pal', '-num')[:100]
     serializer_class = PaleteListSerializer
 
+class PaleteListHistoricoAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Palete.objects.all().order_by('-data_pal', '-num')
+    serializer_class = PaleteListSerializer
 
 class PaleteDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
     queryset = Palete.objects.all()
@@ -49,6 +52,10 @@ class EmendaCreateAPIView(LoginRequiredMixin, CreateAPIView):
     serializer_class = EmendaCreateSerializer
 
 class BobinagemListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Bobinagem.objects.all().order_by('-data', '-fim')[:200]
+    serializer_class = BobinagemListSerializer
+
+class BobinagemListHistoricoAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Bobinagem.objects.all().order_by('-data', '-fim')
     serializer_class = BobinagemListSerializer
 

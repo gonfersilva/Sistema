@@ -151,10 +151,7 @@ class BobineListAllSerializer(ModelSerializer):
 class BobinagemBobinesSerializer(ModelSerializer):
     class Meta:
         model = Bobine
-        fields = [
-
-            "estado"
-        ]
+        fields = "__all__"
         
 class PaleteDmSerializer(ModelSerializer):
     class Meta:

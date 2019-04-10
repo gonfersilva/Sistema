@@ -104,21 +104,21 @@ $(window).load(function() {
                         }
                     td14.addClass('btn btn-danger glyphicon glyphicon-trash').attr('href', link_del);
 
-                    $.ajax({ 
-                        type: "GET",
-                        dataType: "json",
-                        url: "/api/bobinagem/" + 222,
-                        success: function(bobines){
-                                if(!bobines || bobines.length === 0) {
-                                    return;
-                                }
-                                var bobines_length = bobines.length 
-                                for (j = 0; j < bobines_length; j++){
-                                   alert(bobines[j].nome)
+                    // $.ajax({ 
+                    //     type: "GET",
+                    //     dataType: "json",
+                    //     url: "/api/bobinagem/" + 222,
+                    //     success: function(bobines){
+                    //             if(!bobines || bobines.length === 0) {
+                    //                 return;
+                    //             }
+                    //             var bobines_length = bobines.length 
+                    //             for (j = 0; j < bobines_length; j++){
+                    //                alert(bobines[j].nome)
                                    
-                                }
-                            }
-                    })
+                    //             }
+                    //         }
+                    // })
                     var tr=$(document.createElement("tr"));
                     var tr_total = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11).append(td12).append(td13).append(td15).append(td14);
                     

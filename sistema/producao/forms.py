@@ -223,10 +223,8 @@ class CargaCreateForm(forms.ModelForm):
 
 class SelecaoPaleteForm(forms.Form):
     palete = forms.CharField(max_length=10)
-
-    # def clean(self):
-    #     cleaned_data = super(SelecaoPaleteForm, self).clean()
-    #     palete = cleaned_data.get('palete')
+    
+        
         
     
 class PaletePesagemForm(ModelForm):

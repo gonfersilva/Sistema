@@ -84,6 +84,8 @@ $(window).load(function() {
                     var td13=$(document.createElement("a"))
                     var td14=$(document.createElement("a"))
                     var td15=$(document.createElement("a"))
+                    
+                                      
                                                            
 
                     td1.append(a1);
@@ -103,43 +105,72 @@ $(window).load(function() {
                         td15.addClass('btn btn-info').text("Hold").attr('href', link_hold);
                         }
                     td14.addClass('btn btn-danger glyphicon glyphicon-trash').attr('href', link_del);
-
+                    var tr=$(document.createElement("tr"));
+                    var tr_total = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11).append(td12).append(td13).append(td15).append(td14);
+                    
                     // $.ajax({ 
                     //     type: "GET",
                     //     dataType: "json",
-                    //     url: "/api/bobinagem/" + 222,
+                    //     url: "/api/bobinagem/" + data[i].id,
                     //     success: function(bobines){
                     //             if(!bobines || bobines.length === 0) {
                     //                 return;
                     //             }
                     //             var bobines_length = bobines.length 
+                                
+                                
+                                
                     //             for (j = 0; j < bobines_length; j++){
-                    //                alert(bobines[j].nome)
                                    
-                    //             }
-                    //         }
-                    // })
-                    var tr=$(document.createElement("tr"));
-                    var tr_total = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11).append(td12).append(td13).append(td15).append(td14);
-                    
-                    // $.ajax({
-                    //     type: "GET",
-                    //     dataType: "json",
-                    //     url: "/api/bobinagem/" + data[i].id,
-                    //     success: function(bobines){  
-                    //         var bobines_length = bobines.length
-                            
-                    //         for (i=0; i < bobines_length; i++){
-                    //             var td = $(document.createElement("td")).attr('id', "center")
-                                
-                    //             td.attr("src", './sistema/assets/img/black_stripe.jpeg')
-                    //             tr_total.append(td)
-                                
-                                
-                    //         }
+                                                                       
+                    //                 if (bobines[j].estado == 'G'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_good")
+                    //                     td.text(bobines[j].estado)
+                                        
 
-                    //     } 
+                    //                 }else if (bobines[j].estado == 'DM'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_dm")
+                    //                     td.text(bobines[j].estado)
+
+                    //                 }else if (bobines[j].estado == 'IND'){
+                    //                     var td= $(document.createElement("td")).attr("id", "estado_ind")
+                    //                     td.text(bobines[j].estado)
+                                        
+
+                    //                 }else if (bobines[j].estado == 'HOLD'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_hold")
+                    //                     td.text(bobines[j].estado)
+
+                    //                 }else if (bobines[j].estado == 'LAB'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_lab")
+                    //                     td.text(bobines[j].estado)
+
+                    //                 }else if (bobines[j].estado == 'BA'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_ba")
+                    //                     td.text(bobines[j].estado)
+
+                    //                 }else if (bobines[j].estado == 'R'){
+                    //                     var td = $(document.createElement("td")).attr("id", "estado_rejected")
+                    //                     td.text(bobines[j].estado)
+
+                    //                 }
+                                    
+                                    
+                    //                 tr_total.append(td)
+                                    
+                    //             }
+                                
+                                
+                    //         }
+                            
                     // })
+                   
+                    
+                    
+                    
+                               
+                    
+             
                    
                     
 
@@ -154,9 +185,9 @@ $(window).load(function() {
                     
                     });
                 }
-                 
                 
-                $("#jsonresp").append(tr);
+                
+                $("#jsonresp").append(tr_total);
             }
         }
     }); 

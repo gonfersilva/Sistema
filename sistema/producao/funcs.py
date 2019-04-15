@@ -590,7 +590,7 @@ def gerar_etiqueta_final(pk):
     bobine_1 = Bobine.objects.get(palete=palete, posicao_palete=1)
     palete_nome = e_p.palete_nome
     produto = e_p.produto
-    largura_bobine = e_p.largura_bobine
+    largura_bobines = e_p.largura_bobine
     diam_min = e_p.diam_min
     diam_max = e_p.diam_max
     cliente = e_p.cliente
@@ -640,8 +640,8 @@ def gerar_etiqueta_final(pk):
     gsm = bobine_1.largura.gsm
 
     if cod_cliente_cliente is not None:
-        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobine, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
     else:
-        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobine, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
         
 

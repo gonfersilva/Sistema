@@ -232,7 +232,7 @@ $(document).ready(function(){
                                             // alert(bobine_data.id)
 
                                             if (num <= palete.num_bobines){
-                                                if (bobine_data.palete != null){
+                                                if (bobine_data.palete != null && bobine_data.palete.estado != 'DM'){
                                                     valid[num-1] = false
                                                     list_bobines[num-1] = Number(bobine_data.id) 
                                                                                         
@@ -249,7 +249,7 @@ $(document).ready(function(){
                                             }
                                                     
                                                     
-                                                    
+                                            console.log(valid[num-1])       
                                             
                                             
                                            

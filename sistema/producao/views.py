@@ -1485,26 +1485,26 @@ def palete_confirmation(request, pk, id_bobines):
     for x in bobines_array:
         id_b = int(x)
         bobine = Bobine.objects.get(pk=id_b)
+        if bobine.palete != None:
+            palete_o = Palete.objects.get(id=bobine.palete.id)
+            palete_o.area -= bobine.area
+            palete_o.comp_total -= bobine.bobinagem.comp 
+            palete_o.num_bobines_act -= 1
+            palete_o.num_bobines -= 1
+            palete_o.save()
         bobine.palete = palete
         bobine.posicao_palete = num
         comp += bobine.comp_actual
         area += bobine.area
         bobine.save()
         num += 1
-        # if bobine.bobinagem.perfil.retrabalho == True:
-        #     p = palete.nome
-        #     p_split = p.split("")
-        #     p_split[0] = 'R'
-        #     palete.save()
-           
+                 
 
         
     palete.num_bobines_act = num - 1
     palete.area = area
     palete.comp_total = comp
     palete.save()
-
-    
         
     d_min = 0
     d_max = 0

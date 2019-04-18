@@ -2169,10 +2169,10 @@ def palete_pesagem(request, pk=None):
                 carga.save()
                 instance.save()
                 
-                if EtiquetaFinal.objects.filter(palete=instance).exists():
-                    update_etiqueta_final(instance.pk)
-                else:
-                    gerar_etiqueta_final(instance.pk)
+                # if EtiquetaFinal.objects.filter(palete=instance).exists():
+                #     update_etiqueta_final(instance.pk)
+                # else:
+                #     gerar_etiqueta_final(instance.pk)
          
                     
 

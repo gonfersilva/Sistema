@@ -2105,6 +2105,46 @@ def palete_pesagem(request, pk=None):
     template_name = 'palete/palete_pesagem.html'
     palete = get_object_or_404(Palete, pk=pk)
     form = PaletePesagemForm(request.POST or None, instance=instance)
+
+    # if instance.carga != None:
+    #     pass
+
+    # else:
+    #     if form.is_valid():
+    #         instance = form.save(commit=False)
+    #         carga_nome = str(form.cleaned_data['carga'])    
+    #         if Carga.objects.filter(carga=carga_nome).exists():
+    #             carga = Carga.objects.get(carga=carga_nome)
+    #             if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
+    #                 instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+    #                 carga.num_paletes_actual += 1
+    #                 carga.sqm += instance.area
+    #                 carga.metros += instance.comp_total
+    #                 if carga.num_paletes == carga.num_paletes_actual:
+    #                     carga.estado = 'C'
+    #                 carga.save()
+    #                 instance.save()
+                    
+
+    #             elif carga.num_paletes == carga.num_paletes_actual and instance.stock == False:
+    #                 pass
+
+    #             elif instance.stock == True:
+    #                 pass
+
+    #         elif instance.stock == True:
+    #             instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+    #             instance.save()
+
+
+    
+    # if EtiquetaFinal.objects.filter(palete=instance).exists():
+    #     update_etiqueta_final(instance.pk)
+
+    # else:
+    #     gerar_etiqueta_final(instance.pk)
+
+
     if form.is_valid():
         instance = form.save(commit=False)
         carga_nome = str(form.cleaned_data['carga'])
@@ -2146,7 +2186,6 @@ def palete_pesagem(request, pk=None):
         else:
             return redirect('producao:palete_pesagem', pk=instance.pk)
        
-
         
         
         return redirect('producao:palete_selecao')

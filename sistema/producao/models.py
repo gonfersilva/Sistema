@@ -230,7 +230,8 @@ class Palete(models.Model):
     peso_palete     = models.CharField(max_length=5, choices=PESOP, null=True, blank=True, verbose_name="Peso palete")
     peso_liquido    = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso liqudo")
     retrabalhada    = models.BooleanField(default=False, verbose_name="Retrabalhada")
-    
+    destino         = models.CharField(max_length=200, null=True, blank=True, verbose_name="Destino")
+        
     def __str__(self):
         return self.nome
 

@@ -350,7 +350,7 @@ $(document).ready(function(){
                 }
                             
                 
-                    if(validation == true){
+                    if(validation == true && num == palete.num_bobines){
                         url_id = "/producao/palete/validate/" + palete.id + "/"
                         for (i = 0; i < lb; i++){
                             url_id += list_bobines[i] + "-"

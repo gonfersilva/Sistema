@@ -80,7 +80,7 @@ class PaleteCreateForm(ModelForm):
     
     class Meta:
        model = Palete
-       fields = ['cliente', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines']
+       fields = ['cliente', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines', 'destino']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='G', data_pal__year='2019').latest('num')
@@ -89,13 +89,14 @@ class PaleteCreateForm(ModelForm):
         largura_bobines = palete.largura_bobines
         core_bobines = palete.core_bobines
         num = palete.num
+        destino = palete.destino
         super(PaleteCreateForm, self).__init__(*args, **kwargs)      
         self.fields['cliente'].initial = cliente
         self.fields['num_bobines'].initial = num_bobines
         self.fields['largura_bobines'].initial = largura_bobines
         self.fields['core_bobines'].initial = core_bobines
         self.fields['num'].initial = num + 1
-         
+        self.fields['destino'].initial = destino
 
 class ClienteCreateForm(ModelForm):
     

@@ -37,7 +37,11 @@
             <div class="container col-md-6">
                 <h2>Área: {{ palete.area }} m2</h2>
                 <h2>Comprimento total: {{ palete.comp_total }} m</h2>
+                {% if palete.destino == None %}
+                <h2>Carga: Sem carga </h2>
+                {% else %}
                 <h2>Carga: {{ palete.destino }}</h2>
+                {% endif %}
             </div>
         </div>
         {% else %}
@@ -58,7 +62,11 @@
             <div class="container col-md-6">
                 <h2>Área: {{ palete.area }} m2</h2>
                 <h2>Comprimento total: {{ palete.comp_total }} m</h2>
+                {% if palete.destino == None %}
+                <h2>Carga: Não tem carga atribuida.</h2>
+                {% else %}
                 <h2>Carga: {{ palete.destino }}</h2>
+                {% endif %}
             </div>
         </div>
         {% endif %}

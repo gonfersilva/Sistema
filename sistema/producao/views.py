@@ -1970,6 +1970,18 @@ def carga_list(request):
 
     return render(request, template_name, context)
 
+@login_required
+def carga_list_completa(request):
+    carga = Carga.objects.all()
+
+    template_name = 'carga/carga_list_complete.html'
+
+    context = {
+        'carga': carga,
+    }
+
+    return render(request, template_name, context)
+
 
 @login_required
 def carga_create(request):

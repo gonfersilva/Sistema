@@ -1,14 +1,13 @@
 {% extends "layout.html "%} 
-{% block title %}Cargas Incompletas | {{ block.super }}{% endblock %}
+{% block title %}Cargas Completas | {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="container">
-        <a href="{% url 'producao:armazem_home' %}" class="btn btn-primary" role="button">Voltar</a>
+        <a href="{% url 'producao:carga_list' %}" class="btn btn-primary" role="button">Voltar</a>
         
-        <a href="{% url 'producao:carga_create' %}"  class="btn btn-primary pull-right" role="button">Nova Carga</a>
-        <a href="{% url 'producao:carga_list_completa' %}"  class="btn btn-primary pull-right" role="button">Cargas Completas</a>
+                
    </div>
-<h1 id="center">Cargas Incompletas</h1><br>
+<h1 id="center">Cargas Completas</h1><br>
 <div class="container">
     <input id="myInput" type="text" placeholder="Carga"  onkeyup="searchCarga()" autofocus/>
         
@@ -56,7 +55,7 @@ $(window).load(function() {
                 }
             var cargas_length = cargas.length
             for (i=0; i < cargas_length; i++ ){
-                if(cargas[i].carga != '0' && cargas[i].estado != "C"){
+                if(cargas[i].carga != '0' && cargas[i].estado != "I"){
                 
                 var link = "/producao/carga/detail/" + cargas[i].id
 

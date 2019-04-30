@@ -29,7 +29,6 @@ class BobinagemCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         bobinagem = Bobinagem.objects.filter(perfil__retrabalho=False)
         num = bobinagem.latest()
-        # num = Bobinagem.objects.latest()
         num_b = num.num_bobinagem + 1
         fim = num.fim
         tiponwsup = num.tiponwsup
@@ -221,11 +220,9 @@ class CargaCreateForm(forms.ModelForm):
         self.fields['tipo'].initial = tipo
         
 
-
 class SelecaoPaleteForm(forms.Form):
     palete = forms.CharField(max_length=10)
     
-        
         
     
 class PaletePesagemForm(ModelForm):

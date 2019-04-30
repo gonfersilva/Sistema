@@ -259,7 +259,8 @@ class Bobine(models.Model):
     outros = models.BooleanField(default=False,verbose_name="Outros")
     buraco = models.BooleanField(default=False,verbose_name="Buracos")    
     obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="")
-    recycle = models.BooleanField(default=False,verbose_name="Reciclada")    
+    recycle = models.BooleanField(default=False,verbose_name="Reciclada")  
+    destino = models.TextField(max_length=500, null=True, blank=True, verbose_name="Destino", default="")
 
     def __str__(self):
         return self.nome

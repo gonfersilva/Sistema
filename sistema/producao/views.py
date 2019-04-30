@@ -871,10 +871,10 @@ def bobine_nome(pk):
         if bobinagem.num_bobinagem < 10 and b.largura.num_bobine < 10:
             b.nome = '3%s-0%s-0%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
-        elif bobinagem.num_bobinagem > 10 and b.largura.num_bobine < 10:
+        elif bobinagem.num_bobinagem >= 10 and b.largura.num_bobine < 10:
             b.nome = '3%s-%s-0%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
-        elif bobinagem.num_bobinagem > 10 and b.largura.num_bobine > 10:
+        elif bobinagem.num_bobinagem > 10 and b.largura.num_bobine >= 10:
             b.nome = '3%s-%s-%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
 

@@ -114,7 +114,7 @@ class EncomendaCargaAPIView(LoginRequiredMixin, APIView):
 class CargaPaletesAPIView(LoginRequiredMixin, APIView):
     def get(self, request, pk, format=None):
         carga = Carga.objects.get(pk=pk)
-        paletes = Palete.objects.filter(carga=carga)
+        paletes = Palete.objects.filter(carga=carga).order_by('nome')
         serializer = PaletesCargaSerializer(paletes, many=True)
         return Response(serializer.data)
 

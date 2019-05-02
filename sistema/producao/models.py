@@ -41,10 +41,20 @@ class Perfil(models.Model):
         return f"{self.id}"
 
 class Artigo(models.Model):
+    GSM = (('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'))
+    CORE = (('3', '3'),('6', '6'))
+    FORMU = (('HE', 'HE'),('HT', 'HT'))
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
     tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final") 
-    gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=True, default="") 
+    nw1 = models.CharField(verbose_name="NW1", max_length=10, default="")
+    formu = models.CharField(verbose_name="Formulação", max_length=10, default="", choices=FORMU)
+    nw2 = models.CharField(verbose_name="NW2", max_length=10, default="") 
+    lar = models.DecimalField(verbose_name="Largura", max_digits=10, decimal_places=2, default=0)
+    diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
+    core = models.CharField(verbose_name="Core", max_length=1, choices=CORE, default="")
+    gsm = models.CharField(max_length=1, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
+    gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=True, default="")
 
     class Meta:
         verbose_name_plural = "Artigos"

@@ -11,7 +11,10 @@
     <h3>Bobine nº {{ object.num_bobine }}</h3>
     <form method="POST">
        {% csrf_token %} 
-       {{ form }} 
+       <p>Largura: {{ form.largura }} </p>
+       <p>Artigo: {{ form.artigo }} </p>
+       <p>Produto: {{ form.designacao_prod }} </p>
+       <p>Gramagem: {{ form.gsm }} </p>
        <input type="submit" class="btn btn-primary" value="Confirmar">
     </form>
     

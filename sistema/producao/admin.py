@@ -1,11 +1,11 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga, EtiquetaFinal
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga, EtiquetaFinal, Artigo
 from django.contrib import admin
 
 
 admin.site.register(Perfil)
 admin.site.register(Largura)
 
-
+admin.site.register(Artigo)
 admin.site.register(Emenda)
 admin.site.register(Cliente)
 admin.site.register(EtiquetaRetrabalho)

@@ -41,16 +41,17 @@ class Perfil(models.Model):
         return f"{self.id}"
 
 class Artigo(models.Model):
-    cod = models.CharField(verbose_name="Cód. Artigo", max_length=50, unique=True)
+    cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
-    tipo = models.CharField(verbose_name="Tipo", max_length=50) 
+    tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final") 
+    gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=True, default="") 
 
     class Meta:
         verbose_name_plural = "Artigos"
         ordering = ['cod']
 
     def __str__(self):
-        return 'Artigo: %s / Código: %s / Tipo: %s' % (self.des, self.cod, self.tipo)
+        return '%s -  %s' % (self.cod, self.des)
 
 class Largura(models.Model):
     GSM = (('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'))

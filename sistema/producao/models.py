@@ -49,7 +49,7 @@ class Artigo(models.Model):
     tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final") 
     nw1 = models.CharField(verbose_name="NW1", max_length=10, default="")
     formu = models.CharField(verbose_name="Formulação", max_length=10, default="", choices=FORMU)
-    nw2 = models.CharField(verbose_name="NW2", max_length=10, default="") 
+    nw2 = models.CharField(verbose_name="NW2", max_length=10, default="", null=True, blank=True) 
     lar = models.DecimalField(verbose_name="Largura", max_digits=10, decimal_places=2, default=0)
     diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
     core = models.CharField(verbose_name="Core", max_length=1, choices=CORE, default="")

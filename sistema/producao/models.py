@@ -53,7 +53,7 @@ class Artigo(models.Model):
     lar = models.DecimalField(verbose_name="Largura", max_digits=10, decimal_places=2, default=0)
     diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
     core = models.CharField(verbose_name="Core", max_length=1, choices=CORE, default="")
-    gsm = models.CharField(max_length=1, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
+    gsm = models.CharField(max_length=10, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
     gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=True, default="")
 
     class Meta:

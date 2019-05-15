@@ -43,6 +43,7 @@
                     <th id="center">Largura total</th>
                     <th id="center">Core</th>
                     <th id="center">Retrabalho</th>
+                    <th id="center">Activo</th>
                     <th></th>
                     <!-- <td>Gramagem</td>
                     <td>Espessura</td>
@@ -64,6 +65,11 @@
                     <td>{{ obj.velocidade }}</td>
                     <td>{{ obj.producao }}</td> -->
                     {% if obj.retrabalho == True %}
+                    <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
+                    {% else %}
+                    <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                    {% endif %}
+                    {% if obj.obsoleto == False %}
                     <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
                     {% else %}
                     <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>

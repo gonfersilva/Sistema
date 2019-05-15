@@ -2,12 +2,11 @@ from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente,
 from django.contrib import admin
 
 
-admin.site.register(Perfil)
+# admin.site.register(Perfil)
 admin.site.register(Largura)
-
-admin.site.register(Artigo)
+# admin.site.register(Artigo)
 admin.site.register(Emenda)
-admin.site.register(Cliente)
+# admin.site.register(Cliente)
 admin.site.register(EtiquetaRetrabalho)
 admin.site.register(EtiquetaPalete)
 admin.site.register(Encomenda)
@@ -23,6 +22,20 @@ class BobineAdmin(admin.ModelAdmin):
 class PaleteAdmin(admin.ModelAdmin):
     search_fields = ['nome']
 
+class ArtigoAdmin(admin.ModelAdmin):
+    search_fields = ['des']
+
+class PerfilAdmin(admin.ModelAdmin):
+    search_fields = ['nome']
+
+class ClienteAdmin(admin.ModelAdmin):
+    search_fields = ['nome']
+
+
+
 admin.site.register(Bobinagem, BobinagemAdmin)
 admin.site.register(Bobine, BobineAdmin)
 admin.site.register(Palete, PaleteAdmin)
+admin.site.register(Artigo, ArtigoAdmin)
+admin.site.register(Perfil, PerfilAdmin)
+admin.site.register(Cliente, ClienteAdmin)

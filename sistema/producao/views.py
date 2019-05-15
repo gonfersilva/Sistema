@@ -19,31 +19,39 @@ from .funcs import *
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 
-# @login_required
-# def perfil_create(request):3
+
+
+# class CreatePerfil(LoginRequiredMixin, CreateView):
 #     template_name = 'perfil/perfil_create.html'
-#     context = {}
- 
-#     return render(request, template_name, context)
-
-class CreatePerfil(LoginRequiredMixin, CreateView):
-    template_name = 'perfil/perfil_create.html'
-    form_class = PerfilCreateForm
-    success_url = '/producao/perfil/{id}/'
+#     form_class = PerfilCreateForm
+#     success_url = '/producao/perfil/{id}/'
      
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-# class BobinagemCreateView(LoginRequiredMixin, CreateView):
-#     form_class = BobinagemCreateForm
-#     template_name = 'producao/bobinagem_create.html'
-#     # success_url = "/producao/bobinagem/"
-#     success_url = '/producao/etiqueta/retrabalho/{id}/'
-
 #     def form_valid(self, form):
 #         form.instance.user = self.request.user
 #         return super().form_valid(form)
+
+@login_required
+def create_perfil(request):
+    
+    template_name = 'perfil/perfil_create.html'
+    form = PerfilCreateForm(request.POST or None)
+           
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        
+        for i in range(instance.num_bobines):
+            lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+            lar.save()
+        
+        return redirect('producao:perfil_details', pk=instance.pk)
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
 
 @login_required
 def create_bobinagem(request):
@@ -1618,6 +1626,8 @@ def palete_confirmation(request, pk, id_bobines):
             palete.save()
             e_p.save()
             break
+    
+    add_artigo_to_bobine(pk)
           
     return redirect('producao:addbobinepalete', pk=palete.pk)
     
@@ -1775,7 +1785,6 @@ def validate_palete_dm(request, pk, id_bobines):
     e_p.save()
 
     
-
        
     return redirect('producao:addbobinepalete', pk=palete.pk)
 
@@ -2118,83 +2127,117 @@ def palete_pesagem(request, pk=None):
     palete = get_object_or_404(Palete, pk=pk)
     form = PaletePesagemForm(request.POST or None, instance=instance)
 
-    # if instance.carga != None:
-    #     pass
-
-    # else:
-    #     if form.is_valid():
-    #         instance = form.save(commit=False)
-    #         carga_nome = str(form.cleaned_data['carga'])    
-    #         if Carga.objects.filter(carga=carga_nome).exists():
-    #             carga = Carga.objects.get(carga=carga_nome)
-    #             if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
-    #                 instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-    #                 carga.num_paletes_actual += 1
-    #                 carga.sqm += instance.area
-    #                 carga.metros += instance.comp_total
-    #                 if carga.num_paletes == carga.num_paletes_actual:
-    #                     carga.estado = 'C'
-    #                 carga.save()
-    #                 instance.save()
-                    
-
-    #             elif carga.num_paletes == carga.num_paletes_actual and instance.stock == False:
-    #                 pass
-
-    #             elif instance.stock == True:
-    #                 pass
-
-    #         elif instance.stock == True:
-    #             instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-    #             instance.save()
-
-
-    
-    # if EtiquetaFinal.objects.filter(palete=instance).exists():
-    #     update_etiqueta_final(instance.pk)
-
-    # else:
-    #     gerar_etiqueta_final(instance.pk)
-
-
     if form.is_valid():
         instance = form.save(commit=False)
         carga_nome = str(form.cleaned_data['carga'])
+       
         if Carga.objects.filter(carga=carga_nome).exists():
             carga = get_object_or_404(Carga, carga=carga_nome)
             if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
-                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                if instance.num_palete_carga == carga.num_paletes_actual:
-                    carga.sqm -= palete.area
-                    carga.metros -= palete.comp_total
-                    carga.sqm += instance.area
-                    carga.metros += instance.comp_total
-                
-                else:
-                    carga.sqm += instance.area
-                    carga.metros += instance.comp_total
+                if palete.carga == None:
+                    instance.carga = carga
+                    instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                    # palete_carga_num(carga.pk, instance.pk)
+                    paletes_carga_1 = Palete.objects.filter(carga=carga)
+                    cont = 0
+                    array_num_palete = []
+                        
+                    for p1 in paletes_carga_1:
+                        array_num_palete.append(p1.num_palete_carga)
+                        # array_num_palete[cont] = p1.num_palete_carga
+                        # cont += 1
+
+                    if len(array_num_palete) == 0:
+                        instance.num_palete_carga = 1
+                    else:
+                        array_num_palete.sort()
+                        cont2 = 0
+                        for a in array_num_palete:
+                            if a != cont2 + 1:
+                                instance.num_palete_carga = cont2 + 1
+                                break
+                            elif len(array_num_palete) == cont2 + 1:
+                                instance.num_palete_carga = cont2 + 2
+                                break 
+                            cont2 += 1
+
                     carga.num_paletes_actual += 1
-                    instance.num_palete_carga = carga.num_paletes_actual
-
-                if carga.num_paletes == carga.num_paletes_actual:
-                    carga.estado = 'C'
-                carga.save()
-                instance.save()
-                
-                # if EtiquetaFinal.objects.filter(palete=instance).exists():
-                #     update_etiqueta_final(instance.pk)
-                # else:
-                #     gerar_etiqueta_final(instance.pk)
-         
+                    if carga.num_paletes == carga.num_paletes_actual:
+                        carga.estado = 'C'
                     
+                    carga.sqm += instance.area 
+                    carga.metros += instance.comp_total
+                    carga.save()
+                    instance.save()
+                    gerar_etiqueta_final(instance.pk)
+                else:
+                                                        
+                    if carga.num_paletes_actual < carga.num_paletes:
+                        carga.num_paletes_actual += 1
+                        if carga.num_paletes_actual == carga.num_paletes:
+                            carga.estado = "C"
 
-                
+                        carga_antiga = get_object_or_404(Carga, pk=palete.carga.pk)
+                        carga_antiga.num_paletes_actual -= 1
+                        if carga_antiga.num_paletes_actual < carga_antiga.num_paletes:
+                            carga_antiga.estado = 'I'
+
+                        carga_antiga.sqm -= palete.area
+                        carga_antiga.metros -= palete.comp_total
+                        instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                        # palete_carga_num(carga.pk, instance.pk)
+                        paletes_carga_1 = Palete.objects.filter(carga=carga)
+                        cont = 0
+                        array_num_palete = []
+                            
+                        for p1 in paletes_carga_1:
+                            array_num_palete.append(p1.num_palete_carga)
+                            # array_num_palete[cont] = p1.num_palete_carga
+                            # cont += 1
+
+                        if len(array_num_palete) == 0:
+                            instance.num_palete_carga = 1
+                        else:
+                            array_num_palete.sort()
+                            cont2 = 0
+                            for a in array_num_palete:
+                                if a != cont2 + 1:
+                                    instance.num_palete_carga = cont2 + 1
+                                    break
+                                elif len(array_num_palete) == cont2 + 1:
+                                    instance.num_palete_carga = cont2 + 2
+                                    break 
+                                cont2 += 1
+
+                        carga.sqm += instance.area 
+                        carga.metros += instance.comp_total
+
+                        carga.save()
+                        carga_antiga.save()
+                        instance.save()
+                        gerar_etiqueta_final(instance.pk)
+                    else:
+                        return redirect('producao:palete_pesagem', pk=instance.pk)
+
+        
             else:
                 return redirect('producao:palete_pesagem', pk=instance.pk)
 
         elif instance.stock == True:
-            instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-            instance.save()
+            if palete.carga == None:
+                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                instance.save()
+            else:
+                carga = get_object_or_404(Carga, pk=palete.carga.pk)
+                carga.num_paletes_actual -= 1
+                carga.sqm -= palete.area
+                carga.metros -= palete.comp_total
+                if carga.num_paletes_actual < carga.num_paletes:
+                    carga.estado = 'I'
+                carga.save()
+                instance.num_palete_carga = None
+                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                instance.save()
         else:
             return redirect('producao:palete_pesagem', pk=instance.pk)
        
@@ -2250,12 +2293,38 @@ def stock_add_to_carga(request, pk=None):
         instance.stock = False
         carga = Carga.objects.get(carga=instance.carga)
         carga.num_paletes_actual += 1
+
+        paletes_carga_1 = Palete.objects.filter(carga=carga)
+        cont = 0
+        array_num_palete = []
+            
+        for p1 in paletes_carga_1:
+            array_num_palete.append(p1.num_palete_carga)
+            # array_num_palete[cont] = p1.num_palete_carga
+            # cont += 1
+
+        if len(array_num_palete) == 0:
+            instance.num_palete_carga = 1
+        else:
+            array_num_palete.sort()
+            cont2 = 0
+            for a in array_num_palete:
+                if a != cont2 + 1:
+                    instance.num_palete_carga = cont2 + 1
+                    break
+                elif len(array_num_palete) == cont2 + 1:
+                    instance.num_palete_carga = cont2 + 2
+                    break 
+                cont2 += 1
+
         carga.sqm += instance.area
         carga.metros += instance.comp_total
         if carga.num_paletes_actual == carga.num_paletes:
             carga.estado = 'C'
+        
         carga.save()
         instance.save()
+        gerar_etiqueta_final(instance.pk)
         
         return redirect('producao:palete_details_armazem', pk=instance.pk)
 

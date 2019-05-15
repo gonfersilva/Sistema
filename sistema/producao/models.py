@@ -15,10 +15,11 @@ from decimal import *
 
 class Perfil(models.Model):
     CORE = (('3', '3'),('6', '6'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('SIDE PANEL ELA-ACE', 'SIDE PANEL ELA-ACE'))
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
     nome = models.CharField(verbose_name="Perfil", max_length=200, unique=True, null=True, blank=True )
-    produto = models.CharField(verbose_name="Produto", max_length=200, null=True, blank=True )
+    produto = models.CharField(verbose_name="Produto", max_length=100, default="", choices=PRODUTO)
     retrabalho = models.BooleanField(default=False, verbose_name="Retrabalho")
     num_bobines = models.PositiveIntegerField(verbose_name="Número de bobines")
     largura_bobinagem = models.DecimalField(verbose_name="Largura da bobinagem", max_digits=10, decimal_places=2)
@@ -28,14 +29,14 @@ class Perfil(models.Model):
     densidade_mp = models.DecimalField(verbose_name="Densidade da matéria prima", max_digits=10, decimal_places=2, null=True, blank=True)
     velocidade = models.DecimalField(verbose_name="Velocidade", max_digits=10, decimal_places=2, null=True, blank=True)
     producao = models.DecimalField(verbose_name="Produção", max_digits=10, decimal_places=2, null=True, blank=True)
-    
+    obsoleto = models.BooleanField(default=False, verbose_name="Obsoleto")
 
     class Meta:
         verbose_name_plural = "Perfis"
         ordering = ['-timestamp']
 
     def __str__(self):
-        return '%s' % (self.nome)
+        return '%s - %s' % (self.nome, self.produto)
     
     def get_absolute_url(self):
         return f"{self.id}"
@@ -44,6 +45,7 @@ class Artigo(models.Model):
     GSM = (('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'))
     CORE = (('3', '3'),('6', '6'))
     FORMU = (('HE', 'HE'),('HT', 'HT'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('SIDE PANEL ELA-ACE', 'SIDE PANEL ELA-ACE'))
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
     tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final") 
@@ -55,6 +57,7 @@ class Artigo(models.Model):
     core = models.CharField(verbose_name="Core", max_length=1, choices=CORE, default="")
     gsm = models.CharField(max_length=10, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
     gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=True, default="")
+    produto = models.CharField(verbose_name="Produto", max_length=100, default="", choices=PRODUTO)
 
     class Meta:
         verbose_name_plural = "Artigos"
@@ -65,11 +68,11 @@ class Artigo(models.Model):
 
 class Largura(models.Model):
     GSM = (('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('SIDE PANEL ELA-ACE', 'SIDE PANEL ELA-ACE'))
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
-    designacao_prod = models.CharField(verbose_name="Designação produto", max_length=200, null=True, blank=True)
-    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    designacao_prod = models.CharField(verbose_name="Produto", max_length=100, default="", choices=PRODUTO)
     gsm = models.CharField(max_length=7, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
 
     class Meta:
@@ -82,10 +85,10 @@ class Largura(models.Model):
     def get_absolute_url(self):
         return f"/producao/perfil/{self.perfil.id}"
 
-def perfil_larguras(sender, instance, **kwargs):
-    for i in range(instance.num_bobines):
-        lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
-        lar.save()
+# def perfil_larguras(sender, instance, **kwargs):
+#     for i in range(instance.num_bobines):
+#         lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+#         lar.save()
 
 
 
@@ -160,6 +163,7 @@ class Cliente(models.Model):
     abv = models.CharField(max_length=3, unique=True, null=True, blank=True, verbose_name="Abreviatura")
     limsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Superior")
     liminf = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Inferior")
+    diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Clientes"
@@ -254,6 +258,7 @@ class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     largura = models.ForeignKey(Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
     comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0, null=True, blank=True)
     nome = models.CharField(verbose_name="Bobine", max_length=200, null=True, blank=True, default="")
     palete = models.ForeignKey(Palete, on_delete=models.SET_NULL, null=True, blank=True)   
@@ -317,7 +322,7 @@ class Bobine(models.Model):
         bobine.save()
         palete.save()
 
-       
+      
 
 class Emenda(models.Model):
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem", null=True, blank=True)
@@ -455,6 +460,11 @@ class EtiquetaFinal(models.Model):
     data_prod = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Data de produção")
     data_validade = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Validade")
     gsm = models.IntegerField(unique=False, verbose_name="Gramagem")
+    cont = models.PositiveIntegerField(verbose_name="Contador", unique=True, default=0)
+    control = models.PositiveIntegerField(verbose_name="Variável de controlo", unique=False, default=0)
+    gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=False, default="")
+    sscc = models.CharField(verbose_name="SSCC", max_length=18, unique=False, default="")
+    activa = models.BooleanField(default=True, verbose_name="Activa") 
 
     def __str__(self):
         return self.palete_nome
@@ -481,7 +491,7 @@ def area_palete(sender, instance, **kwargs):
 
 
 
-post_save.connect(perfil_larguras, sender=Perfil)
+# post_save.connect(perfil_larguras, sender=Perfil)
 
 
 

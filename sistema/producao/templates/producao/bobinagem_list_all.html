@@ -147,6 +147,69 @@ function searchBobinagem() {
   }
 }
 
+// function bobine(bobinagem_id){
+//     $.ajax({ 
+//         type: "GET",
+//         dataType: "json",
+//         url: "/api/bobinagem/" + bobinagem_id,
+//         success: function(bobines){
+//                 if(!bobines || bobines.length === 0) {
+//                     return;
+//                 }
+//                 var bobines_length = bobines.length 
+//                 var td16=$(document.createElement("td")).attr('id', "center")    
+                
+//                 for (j = 0; j < bobines_length; j++){
+                    
+                                                        
+//                     if (bobines[j].estado == 'G'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_good")
+                                                        
+
+//                     }else if (bobines[j].estado == 'DM'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_dm")
+                        
+
+//                     }else if (bobines[j].estado == 'IND'){
+//                         td16.text(bobines[j].estado).attr("id", "estado_ind")
+                        
+                        
+
+//                     }else if (bobines[j].estado == 'HOLD'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_hold")
+                        
+
+//                     }else if (bobines[j].estado == 'LAB'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_lab")
+                        
+                        
+
+//                     }else if (bobines[j].estado == 'BA'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_ba")
+                        
+
+//                     }else if (bobines[j].estado == 'R'){
+                        
+//                         td16.text(bobines[j].estado).attr("id", "estado_rejected")
+                        
+//                     }
+                    
+                   
+                                                        
+//                 }
+                
+                
+//             }
+                
+//         })
+//         return td16
+//     }
+
 
 </script>
 {% endblock %}

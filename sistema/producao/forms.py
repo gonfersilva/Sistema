@@ -3,6 +3,7 @@ from django.forms import ModelForm, formset_factory, inlineformset_factory, mode
 import datetime, time
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 class PerfilCreateForm(ModelForm):
@@ -38,7 +39,7 @@ class BobinagemCreateForm(ModelForm):
         perfil = num.perfil
         diam = num.diam
         super(BobinagemCreateForm, self).__init__(*args, **kwargs)
-        self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=False)
+        self.fields['perfil'].queryset = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
         self.fields['num_bobinagem'].initial = num_b
         self.fields['inico'].initial = fim
         self.fields['tiponwsup'].initial = tiponwsup
@@ -66,7 +67,7 @@ class RetrabalhoCreateForm(ModelForm):
         fim = num.fim
 
         super(RetrabalhoCreateForm, self).__init__(*args, **kwargs)
-        self.fields['perfil'].queryset = Perfil.objects.filter(retrabalho=True)
+        self.fields['perfil'].queryset = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
         self.fields['num_bobinagem'].initial = num_b
         self.fields['perfil'].initial = perfil
         self.fields['inico'].initial = fim
@@ -101,7 +102,7 @@ class ClienteCreateForm(ModelForm):
     
     class Meta:
        model = Cliente
-       fields = ['cod', 'nome', 'abv', 'limsup', 'liminf']
+       fields = ['cod', 'nome', 'abv', 'limsup', 'liminf', 'diam_ref']
 
     
 

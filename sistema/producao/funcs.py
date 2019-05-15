@@ -604,6 +604,8 @@ def gerar_etiqueta_final(pk):
     peso_bruto = palete.peso_bruto
     num_paletes_total = palete.carga.num_paletes
     num_palete_carga = palete.num_palete_carga
+    artigo = bobine_1.artigo
+    ult_cont = EtiquetaFinal.objects.latest('id').cont
 
     cod_cliente_cliente = None
     if cliente == 'ONTEX':
@@ -638,10 +640,67 @@ def gerar_etiqueta_final(pk):
     data_validade = data_prod + datetime.timedelta(days=356)
 
     gsm = bobine_1.largura.gsm
+    
+    cont = ult_cont + 1
+    gtin = artigo.gtin
+    # control = cont
+    # gtin_str = (str(gtin)[:-2])
+    # sscc_str = "0" + gtin_str + str(cont) + str(control)
+    # sscc = sscc_str
+    
+    if EtiquetaFinal.objects.filter(palete=palete).exists():
+        e_f_e = EtiquetaFinal.objects.filter(palete=palete)
+        for e in e_f_e:
+            e.activa = False
+            e.save()
 
     if cod_cliente_cliente is not None:
-        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
     else:
-        e_f = EtiquetaFinal.objects.create(palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
         
 
+def add_artigo_to_bobine(pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    bobines = Bobine.objects.filter(palete=palete)
+    cliente = palete.cliente
+    artigos = Artigo.objects.all()
+
+    for b in bobines:
+        for a in artigos:
+            if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
+                artigo = get_object_or_404(Artigo, pk=a.pk)
+                b.artigo = artigo
+                b.save()
+
+
+# def palete_carga_num(carga_pk, palete_pk):
+#     carga = get_object_or_404(Carga, pk=carga_pk)
+#     palete = get_object_or_404(Palete, pk=palete_pk)
+    
+#     paletes_carga_1 = Palete.objects.filter(carga=carga)
+#     cont1 = 0
+#     array_num_palete = []
+        
+#     for p1 in paletes_carga_1:
+#         array_num_palete[cont1] = p1.num_palete_carga
+#         cont1 += 1
+
+#     if len(array_num_palete) == 0:
+#         palete.num_palete_carga = 1
+#     else:
+#         array_num_palete.sort()
+#         cont2 = 0
+#         for a in array_num_palete:
+#             if a[cont2] != cont2 + 1:
+#                 palete.num_palete_carga = cont2 + 1
+#                 break
+#             elif len(array_num_palete) == cont2 + 1:
+#                 palete.num_palete_carga = cont2 + 2
+#                 break 
+#             cont2 += 1
+    
+#     palete.save()
+    
+        
+   

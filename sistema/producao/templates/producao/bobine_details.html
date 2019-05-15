@@ -38,10 +38,11 @@
         <br>
         <div class="row">
                 {% if bobine.palete %}
-                <div class="container col-md-6">
+                <div class="container col-md-12">
                     <h3>Palete: {{ bobine.palete.nome }}</h3>
                     {% if bobine.palete.cliente %}
                     <h3>Cliente: {{ bobine.palete.cliente.nome }}</h3>
+                    <h3>Artigo: {{ bobine.artigo.cod }} - {{ bobine.artigo.des }}</h3>
                     {% endif %}
                 </div>
                 {% endif %}

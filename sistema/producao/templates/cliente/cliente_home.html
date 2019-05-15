@@ -11,7 +11,7 @@
 </div>
 <div class="container">
     <div class="container col-md-3"></div>
-        <div class="container col-md-6 table-responsive size-table">
+        <div class="container col-md-12 table-responsive size-table">
                 <h1 id="center">Clientes</h1><br>
 
                         <table class="table fit">
@@ -19,9 +19,10 @@
                                 <tr>
                                     <th id="center">Código cliente</th>
                                     <th id="center">Abv.</th>
-                                    <th>Cliente</th>
+                                    <th>Designação</th>
                                     <th id="center">Diâmetro inferior</th>
                                     <th id="center">Diâmetro superior</th>
+                                    <th id="center">Diâmetro de referência</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -32,6 +33,7 @@
                                     <td>{{ c.nome }}</td>
                                     <td id="center">{{ c.liminf }}</td>
                                     <td id="center">{{ c.limsup }}</td>
+                                    <td id="center">{{ c.diam_ref }}</td>
                                     <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>     
                                 </tr>
                                 {% endfor %}

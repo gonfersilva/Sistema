@@ -46,6 +46,14 @@
             {% endif %}
             
           </li>
+         
+          <li>
+            <a class="btn btn-secondary" href="{% url 'producao:producao_home' %}" role="button">
+              Produção
+            </a>
+          
+            
+          </li>
           <li>
             {% if user.is_staff %}
             <a class="btn btn-secondary" href="{% url 'producao:armazem_home' %}">
@@ -53,13 +61,6 @@
             </a>
            
             {% endif %}
-            
-          </li>
-          <li>
-            <a class="btn btn-secondary" href="{% url 'producao:producao_home' %}" role="button">
-              Produção
-            </a>
-          
             
           </li>
           <!-- <li>

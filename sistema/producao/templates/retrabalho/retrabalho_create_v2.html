@@ -1,0 +1,27 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+
+
+{% block title %}Retrabalho | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+            <h1 id="center">Retrabalhar bobine {{ instance.nome }}</h1>
+        <div class="col-md-6">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% retrabalho_form_v2 form %}
+        </div>
+        <div class="col-md-6">
+            
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import template
-from producao.forms import PerfilCreateForm, BobinagemCreateForm, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
+from producao.forms import PerfilCreateForm, BobinagemCreateForm, RetrabalhoFormEmendas, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
 from producao.models import Perfil, Bobinagem, Emenda, Palete
 
 register = template.Library()
@@ -91,4 +91,9 @@ def stock_add_carga_form(self):
 @register.inclusion_tag('lab/acompanhamento_diario_form.html')
 def acompanhamento_diario_form(self):
     form = AcompanhamentoDiarioSearchForm()
+    return {'form': form}
+    
+@register.inclusion_tag('retrabalho/retrabalho_form_v2.html')
+def retrabalho_form_v2(self):
+    form = RetrabalhoFormEmendas()
     return {'form': form}

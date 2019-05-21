@@ -52,30 +52,33 @@
                     <td>Produção</td> -->
                 </tr>
                 {% for obj in perfil %}
-                <tr>
-                    <td><a href='{{ obj.get_absolute_url }}'>{{ obj.nome }}</a></td>
-                    <td>{{ obj.produto }}</td>
-                    <td id="center">{{ obj.num_bobines }}</td>
-                     
-                    <td id="center">{{ obj.largura_bobinagem }}</td>
-                    <td id="center">{{ obj.core }}</td>
-                    <!-- <td>{{ obj.gramagem }}</td>
-                    <td>{{ obj.espessura }}</td>
-                    <td>{{ obj.densidade_mp }}</td>
-                    <td>{{ obj.velocidade }}</td>
-                    <td>{{ obj.producao }}</td> -->
-                    {% if obj.retrabalho == True %}
-                    <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
-                    {% else %}
-                    <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
-                    {% endif %}
                     {% if obj.obsoleto == False %}
-                    <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
-                    {% else %}
-                    <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                    <tr>
+                        <td><a href='{{ obj.get_absolute_url }}'>{{ obj.nome }}</a></td>
+                        <td>{{ obj.produto }}</td>
+                        <td id="center">{{ obj.num_bobines }}</td>
+                        
+                        <td id="center">{{ obj.largura_bobinagem }}</td>
+                        <td id="center">{{ obj.core }}</td>
+                        <!-- <td>{{ obj.gramagem }}</td>
+                        <td>{{ obj.espessura }}</td>
+                        <td>{{ obj.densidade_mp }}</td>
+                        <td>{{ obj.velocidade }}</td>
+                        <td>{{ obj.producao }}</td> -->
+                        {% if obj.retrabalho == True %}
+                        <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
+                        {% else %}
+                        <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                        {% endif %}
+                        {% if obj.obsoleto == False %}
+                        <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
+                        {% else %}
+                        <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                        {% endif %}
+                        <td id="center"><a href="{% url 'producao:perfil_delete' pk=obj.pk %}" class="btn btn-danger">Apagar</a></td>
+                    </tr>
                     {% endif %}
-                    <td id="center"><a href="{% url 'producao:perfil_delete' pk=obj.pk %}" class="btn btn-danger">Apagar</a></td>
-                </tr>
+
                 {% endfor %}
             </table>
         </div>

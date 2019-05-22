@@ -2233,7 +2233,67 @@ def palete_pesagem(request, pk=None):
                             instance.save()
                             gerar_etiqueta_final(instance.pk)
 
-        
+            elif carga.num_paletes == carga.num_paletes_actual and instance.stock == False:
+                carga_antiga = get_object_or_404(Carga, pk=palete.carga.pk)
+                if carga_antiga == carga:
+                    carga.sqm -= palete.area
+                    carga.metros -= palete.comp_total
+                    instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                                                        
+                    carga.sqm += instance.area 
+                    carga.metros += instance.comp_total
+
+                    carga.save()
+                    instance.save()
+                    gerar_etiqueta_final(instance.pk)
+                
+                elif carga_antiga != carga:
+                    if carga.num_paletes_actual < carga.num_paletes:
+                        carga_antiga.num_paletes_actual -= 1
+                        if carga_antiga.num_paletes_actual < carga_antiga.num_paletes:
+                            carga_antiga.estado = 'I'
+                        
+                        carga.num_paletes_actual += 1
+                        if carga.num_paletes_actual == carga.num_paletes:
+                            carga.estado = "C"
+
+                        carga_antiga.sqm -= palete.area
+                        carga_antiga.metros -= palete.comp_total
+                        instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+                        
+                        paletes_carga_1 = Palete.objects.filter(carga=carga)
+                        cont = 0
+                        array_num_palete = []
+                            
+                        for p1 in paletes_carga_1:
+                            array_num_palete.append(p1.num_palete_carga)
+                            
+                        if len(array_num_palete) == 0:
+                            instance.num_palete_carga = 1
+                        else:
+                            array_num_palete.sort()
+                            cont2 = 0
+                            for a in array_num_palete:
+                                if a != cont2 + 1:
+                                    instance.num_palete_carga = cont2 + 1
+                                    break
+                                elif len(array_num_palete) == cont2 + 1:
+                                    instance.num_palete_carga = cont2 + 2
+                                    break 
+                                cont2 += 1
+
+                        
+                        carga.sqm += instance.area 
+                        carga.metros += instance.comp_total
+
+                        carga.save()
+                        carga_antiga.save()
+                        instance.save()
+                        gerar_etiqueta_final(instance.pk)
+                else:
+                    redirect('producao:palete_pesagem', pk=instance.pk)
+
+
             else:
                 return redirect('producao:palete_pesagem', pk=instance.pk)
 
@@ -2410,8 +2470,27 @@ def retrabalho_v2(request, pk):
     form = RetrabalhoFormEmendas(request.POST or None)
     template_name = "retrabalho/retrabalho_create_v2.html"
 
-    # if form.is_valid():
-      
+    if form.is_valid():
+        b_1 = form.cleaned_data['bobine_1']
+        b_2 = form.cleaned_data['bobine_2']
+        b_3 = form.cleaned_data['bobine_3']
+        m_b_1 = form.cleaned_data['m_bobine_1']
+        m_b_2 = form.cleaned_data['m_bobine_2']
+        m_b_3 = form.cleaned_data['m_bobine_3']
+
+        if b_1 and b_2 and b_3 and m_b_1 and m_b_2 and m_b_3:
+            if Bobine.objects.filter(nome=b_1) and Bobine.objects.filter(nome=b_2) and Bobine.objects.filter(nome=b_3):
+                b_1 = get_object_or_404(Bobine, nome=b_1)
+                b_2 = get_object_or_404(Bobine, nome=b_2)
+                b_3 = get_object_or_404(Bobine, nome=b_3)
+                print(b_1)           
+                print(b_2)
+                print(b_3)
+                return redirect('producao:producao_home')
+        # elif b_1 and b_2 and m_b_1 and m_b_2:
+        
+        # elif b_1 and m_b_1:
+
         
     context = {
         "form": form, 

@@ -251,9 +251,9 @@ class AcompanhamentoDiarioSearchForm(forms.Form):
 
 
 class RetrabalhoFormEmendas(forms.Form):
-    bobine_1 = forms.CharField(max_length=13,label='Bobine original 1')
-    bobine_2 = forms.CharField(max_length=13, label='Bobine original 2')
-    bobine_3 = forms.CharField(max_length=13, label='Bobine original 3')
+    bobine_1 = forms.CharField(max_length=14,label='Bobine original 1')
+    bobine_2 = forms.CharField(max_length=14, label='Bobine original 2')
+    bobine_3 = forms.CharField(max_length=14, label='Bobine original 3')
     m_bobine_1 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 1')
     m_bobine_2 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 2')
     m_bobine_3 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 3')

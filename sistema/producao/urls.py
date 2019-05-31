@@ -77,7 +77,8 @@ urlpatterns = [
     url(r'^stock/palete/add/(?P<pk>\d+)/$', stock_add_to_carga, name='stock_add_to_carga'),
     url(r'^qualidade/$', qualidade_home, name='qualidade_home'),
     url(r'^qualidade/acd/$', acompanhamento_diario, name='acompanhamento_diario'),
-    url(r'^teste/(?P<pk>\d+)/$', retrabalho_v2, name='retrabalho_v2'),
+    url(r'^retrabalho/(?P<pk>\d+)/$', retrabalho_v2, name='retrabalho_v2'),
+    url(r'^retrabalho/confirmacao/(?P<pk>\d+)/(?P<b1>\d+)/(?P<m1>\d+)/(?P<b2>\w+)/(?P<m2>\w+)/(?P<b3>\w+)/(?P<m3>\w+)/$', retrabalho_confirmacao, name='retrabalho_confirmacao'),
         
     
 ]

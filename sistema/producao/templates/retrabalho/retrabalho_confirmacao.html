@@ -1,0 +1,183 @@
+{% extends "layout.html "%}
+
+
+
+{% block title %}Retrabalho Confirmação | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 id="center">Deseja confirmar o retrabalho da bobinagem {{ bobinagem.nome }} com as seguintes caracteristicas?</h2>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-5">
+            <h1 id="center">{{ bobinagem.nome }}</h1>
+            <br>
+            <br>
+            <br>
+            <br>
+            <table class="table table-striped">
+                <tr>
+                    <td class="bg-primary"><h3>Comprimento (m):</h3></td>
+                    <td id="right"><h3>2500 m</h3></td>
+                </tr>
+                <tr>
+                    <td class="bg-primary"><h3>Largura (mm):</h3></td>
+                    <td id="right"><h3>2500 mm</h3></td>
+                </tr>
+                <tr>
+                    <td class="bg-primary"><h3>Área (m2):</h3></td>
+                    <td id="right"><h3>2500 m2</h3></td>
+                </tr>
+            </table>
+            
+        </div>
+        <div class="col-md-7">
+                <h1 id="center">Bobines</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th id="center" class="bg-primary"><h3>Comp. (m)</h3></th>
+                            <th id="center" class="bg-primary"><h3>Largura (mm)</h3></th>
+                            <th id="center" class="bg-primary"><h3>Área (m2)</h3></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bobines %}
+                        <tr>
+                            <th class="bg-primary"><h3>{{ b.nome }}</h3></th>
+                            <td id="center"><h3>{{ b.comp_actual }}</h3></td>
+                            <td id="center"><h3>{{ b.largura.largura }}</h3></td>
+                            <td id="center"><h3>{{ b.area }}</h3></td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                    </table>
+            
+        </div>
+        
+
+
+    </div>
+    <br>
+    <br>
+    <div class="row">
+            <div class="col-md-12">
+                    <h1 id="center">Bobines originais</h1>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th id="center" class="bg-primary"><h3>Nº bobine</h3></th>
+                                <th id="center" class="bg-primary"><h3>Bobine</h3></th>
+                                <th id="center" class="bg-primary"><h3>Metros consumidos</h3></th>
+                                <th id="center" class="bg-primary"><h3>Metros emenda / Fim da bobinagem</h3></th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td id="center"><h3>1</h3></th>
+                                <td id="center"><h3>{{ b_1 }}</h3></td>
+                                <td id="center"><h3>{{ m_1 }}</h3></td>
+                                <td id="center"><h3>2000</h3></td>
+                            </tr>
+                            <tr>
+                                <td id="center"><h3>2</h3></th>
+                                <td id="center"><h3>{{ b_2}}</h3></td>
+                                <td id="center"><h3>{{ m_2 }}</h3></td>
+                                <td id="center"><h3>2000</h3></td>
+                            </tr>
+                            <tr>
+                                <td id="center"><h3>3</h3></th>
+                                <td id="center"><h3>{{ b_3 }}</h3></td>
+                                <td id="center"><h3>{{ m_3 }}</h3></td>
+                                <td id="center"><h3>2000</h3></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                
+            </div>
+            
+    
+    
+    
+        </div>
+        <br>
+        <br>
+        <div class="row">
+                <div class="col-md-12">
+                    <h2 id="center" class="erro">Deseja reciclar alguma das bobines originais?</h2>
+                    <br>
+                    <br>
+                    <table class="table table-striped">
+                            <tr>
+                                    <th></th>
+                                    <th id="center" class="bg-primary"><h3>Metros restantes</h3></th>
+                                    <th id="center" class="bg-primary"><h3>Reciclar</h3></th>
+                                </tr>
+                            <tr>
+                                <td class="bg-primary"><h3>Bobine 1:</h3></td>
+                                <td id="center"><h3>200</h3></td>
+                                <td id="center">
+                                        <div class="btn-group" data-toggle="buttons">
+			
+                                                <label class="btn btn-success">
+                                                    <input type="checkbox" autocomplete="off">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </label>
+                                    
+                                              
+                                            
+                                            </div>
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary"><h3>Bobine 2:</h3></td>
+                                <td id="center"><h3>200</h3></td>
+                                <td id="center">
+                                        <div class="btn-group" data-toggle="buttons">
+			
+                                                <label class="btn btn-success">
+                                                    <input type="checkbox" autocomplete="off">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </label>
+                                    
+                                                
+                                            
+                                            </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="bg-primary"><h3>Bobine 3:</h3></td>
+                                <td id="center"><h3>200</h3></td>
+                                <td id="center"> <div class="btn-group" data-toggle="buttons"></div>
+        
+                                    <div class="btn-group" data-toggle="buttons">
+			
+                                            <label class="btn btn-success">
+                                                <input type="checkbox" autocomplete="off">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </label>
+                                
+                                        
+                                        </div>
+                                                           
+                                </div>
+                            </td>
+                            </tr>
+                        </table>
+                    
+                </div>
+                
+        
+        
+        
+            </div>
+   
+</div>
+{% endblock %}

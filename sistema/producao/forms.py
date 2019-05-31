@@ -231,6 +231,11 @@ class PaletePesagemForm(ModelForm):
         model = Palete
         fields = [ 'carga', 'stock', 'peso_bruto', 'peso_palete']
 
+    def __init__(self, *args, **kwargs):
+        super(PaletePesagemForm, self).__init__(*args, **kwargs)     
+        self.fields['carga'].queryset = Carga.objects.filter(estado='I')  
+    
+
 class AddPalateStockForm(ModelForm):
     class Meta:
         model = Palete
@@ -251,9 +256,9 @@ class AcompanhamentoDiarioSearchForm(forms.Form):
 
 
 class RetrabalhoFormEmendas(forms.Form):
-    bobine_1 = forms.CharField(max_length=14,label='Bobine original 1')
-    bobine_2 = forms.CharField(max_length=14, label='Bobine original 2')
-    bobine_3 = forms.CharField(max_length=14, label='Bobine original 3')
-    m_bobine_1 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 1')
-    m_bobine_2 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 2')
-    m_bobine_3 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 3')
+    bobine_1 = forms.CharField(max_length=14, label='Bobine original 1', required=True)
+    bobine_2 = forms.CharField(max_length=14, label='Bobine original 2', required=False)
+    bobine_3 = forms.CharField(max_length=14, label='Bobine original 3', required=False)
+    m_bobine_1 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 1', required=True)
+    m_bobine_2 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 2', required=False)
+    m_bobine_3 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 3', required=False)

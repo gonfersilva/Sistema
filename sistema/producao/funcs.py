@@ -523,6 +523,9 @@ def update_etiqueta_final(pk):
     elif cliente == 'Paul Hartman':
         if largura_bobines == 240:
             cod_cliente_cliente = 'ELASTEK m16'
+    elif cliente == 'Sanita S.A.L.':
+        if largura_bobines == 150:
+            cod_cliente_cliente = 'R406EAR15'
 
     if core_bobines == '3':
         core_bobines = 76.6

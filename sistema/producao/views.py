@@ -53,6 +53,7 @@ def create_perfil(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def create_bobinagem(request):
     
@@ -124,24 +125,13 @@ def perfil_detail(request, pk):
 
 def bobinagem_list(request):
     now = datetime.datetime.now()
-    bobinagem = Bobinagem.objects.filter(data=now)
-    s = request.GET.get("s")
-    
-    if s:
-        bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
-
-    # paginator = Paginator(bobinagem, 17)
-    # page = request.GET.get('page')
+    bobinagem = Bobinagem.objects.all()
+        
     template_name = 'producao/bobinagem_home.html'
     bobine = Bobine.objects.all()
   
 
-    # try:
-    #     bobinagem = paginator.page(page)
-    # except PageNotAnInteger:
-    #     bobinagem = paginator.page(1)
-    # except EmptyPage:
-    #     bobinagem = paginator.page(paginator.num_pages)
+    
 
     context = {
         "bobinagem": bobinagem,
@@ -2483,19 +2473,187 @@ def retrabalho_v2(request, pk):
                 b_1 = get_object_or_404(Bobine, nome=b_1)
                 b_2 = get_object_or_404(Bobine, nome=b_2)
                 b_3 = get_object_or_404(Bobine, nome=b_3)
-                print(b_1)           
-                print(b_2)
-                print(b_3)
-                return redirect('producao:producao_home')
-        # elif b_1 and b_2 and m_b_1 and m_b_2:
-        
-        # elif b_1 and m_b_1:
+                comp_actual_1 = b_1.comp_actual
+                comp_actual_2 = b_2.comp_actual
+                comp_actual_3 = b_3.comp_actual
+               
+                if comp_actual_1 >= m_b_1 and comp_actual_2 >= m_b_2 and comp_actual_3 >= m_b_3 and b_1.estado == 'DM' and b_2.estado == 'DM' and b_3.estado == 'DM':
+                    if b_1 == b_2 == b_3:
+                        comp_total = m_b_1 + m_b_2 + m_b_3
+                        dif = comp_total - b_1.comp_actual
+                        if comp_total > b_1.comp_actual:
+                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                        else:
+                            print(b_1, b_2, b_3)
 
+                    elif b_1 == b_2:
+                        comp_total = m_b_1 + m_b_2
+                        dif = comp_total - b_1.comp_actual
+                        if comp_total > b_1.comp_actual:
+                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                        else:
+                            print(b_1, b_2, b_3)
+                    
+                    elif b_1 == b_3:
+                        comp_total = m_b_1 + m_b_3
+                        dif = comp_total - b_1.comp_actual
+                        if comp_total > b_1.comp_actual:
+                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                        else:
+                            print(b_1, b_2, b_3)
+
+                    elif b_2 == b_3:
+                        comp_total = m_b_2 + m_b_3
+                        dif = comp_total - b_2.comp_actual
+                        if comp_total > b_2.comp_actual:
+                            messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                        else:
+                            print(b_1, b_2, b_3)
+                    else:
+                        return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
+                        
+                                                  
+
+                    
+                else:
+                    if b_1.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
+                    if b_2.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
+                    if b_3.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_3.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_3.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
+                    if comp_actual_1 < m_b_1:
+                        dif = m_b_1 - comp_actual_1
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+                    
+                    if comp_actual_2 < m_b_2:
+                        dif = m_b_2 - comp_actual_2 
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
+                    if comp_actual_3 < m_b_3:
+                        dif = m_b_3 - comp_actual_3
+                        messages.error(request, 'A bobine ' + b_3.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
+                    
+
+                    
+                    
+            else:
+                if not Bobine.objects.filter(nome=b_1):
+                    messages.error(request, 'A bobine ' + b_1 + ' não existe.')
+                if not Bobine.objects.filter(nome=b_2):
+                    messages.error(request, 'A bobine ' + b_2 + ' não existe.')
+                if not Bobine.objects.filter(nome=b_3):
+                    messages.error(request, 'A bobine ' + b_2 + ' não existe.')
         
+        elif b_1 and b_2 and m_b_1 and m_b_2:
+            if Bobine.objects.filter(nome=b_1) and Bobine.objects.filter(nome=b_2):
+                b_1 = get_object_or_404(Bobine, nome=b_1)
+                b_2 = get_object_or_404(Bobine, nome=b_2)
+               
+                comp_actual_1 = b_1.comp_actual
+                comp_actual_2 = b_2.comp_actual
+                
+               
+                if comp_actual_1 >= m_b_1 and comp_actual_2 >= m_b_2 and b_1.estado == 'DM' and b_2.estado == 'DM':
+                    if b_1 == b_2:
+                        comp_total = m_b_1 + m_b_2
+                        dif = comp_total - b_1.comp_actual
+                        if comp_total > b_1.comp_actual:
+                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                        else:
+                            return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
+                    else:
+                        return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
+                        # print(b_1, b_2, m_b_1, m_b_2)
+                    
+                else:
+                    if b_1.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
+                    if b_2.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
+                    if comp_actual_1 < m_b_1:
+                        dif = m_b_1 - comp_actual_1
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+                    
+                    if comp_actual_2 < m_b_2:
+                        dif = m_b_2 - comp_actual_2 
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+            
+                    
+               
+                
+            else:
+                if not Bobine.objects.filter(nome=b_1):
+                    messages.error(request, 'A bobine ' + b_1 + ' não existe.')
+                if not Bobine.objects.filter(nome=b_2):
+                    messages.error(request, 'A bobine ' + b_2 + ' não existe.')
+        
+        elif b_1 and m_b_1:
+            if Bobine.objects.filter(nome=b_1):
+                b_1 = get_object_or_404(Bobine, nome=b_1)
+                comp_actual_1 = b_1.comp_actual
+                              
+                if comp_actual_1 >= m_b_1 and b_1.estado == 'DM':
+                    print(b_1)
+                                   
+                else:
+                    if b_1.estado != 'DM':
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        
+                    if comp_actual_1 < m_b_1:
+                        dif = m_b_1 - comp_actual_1
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
+                    
+
+                    
+                               
+            else:
+                if not Bobine.objects.filter(nome=b_1):
+                    messages.error(request, 'A bobine ' + b_1 + ' não existe.')
+                
     context = {
         "form": form, 
         "instance": instance,
         }
     return render(request, template_name, context)
 
+@login_required
+def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=None):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    m_1 = m1
+    m_2 = m2
+    m_3 = m3
+    
+    if m_3 is None:
+        m_3 = 
+    
+    b_1 = get_object_or_404(Bobine, pk=b1)
+    b_2 = get_object_or_404(Bobine, pk=b2)
+    # b_3 = get_object_or_404(Bobine, pk=b3)
+        
+    
+    
+  
 
+    
+    template_name = "retrabalho/retrabalho_confirmacao.html"
+
+    context = {
+            "bobinagem": bobinagem,
+            "bobines": bobines,
+            "b_1": b_1,
+            "b_2": b_2,
+            "b_3": b_3,
+            "m_1": m_1,
+            "m_2": m_2,
+            "m_3": m_3,
+        }
+    return render(request, template_name, context)

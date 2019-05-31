@@ -2632,8 +2632,6 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
     m_2 = m2
     m_3 = m3
     
-    if m_3 is None:
-        m_3 = 
     
     b_1 = get_object_or_404(Bobine, pk=b1)
     b_2 = get_object_or_404(Bobine, pk=b2)

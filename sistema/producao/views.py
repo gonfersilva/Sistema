@@ -405,7 +405,7 @@ def create_bobinagem_retrabalho(request):
             instance.save()
             area_bobinagem(instance.pk) 
             create_bobine(instance.pk) 
-            return redirect('producao:retrabalho_dm', pk=instance.pk)       
+            return redirect('producao:retrabalho_v2', pk=instance.pk)       
    
             
             

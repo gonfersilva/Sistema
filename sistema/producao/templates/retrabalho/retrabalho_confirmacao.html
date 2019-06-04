@@ -11,7 +11,7 @@
     <br>
     <br>
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-4">
             <h1 id="center">{{ bobinagem.nome }}</h1>
             <br>
             <br>
@@ -20,20 +20,20 @@
             <table class="table table-striped">
                 <tr>
                     <td class="bg-primary"><h3>Comprimento (m):</h3></td>
-                    <td id="right"><h3>2500 m</h3></td>
+                    <td id="right"><h3>{{ comp_total }}</h3></td>
                 </tr>
                 <tr>
                     <td class="bg-primary"><h3>Largura (mm):</h3></td>
-                    <td id="right"><h3>2500 mm</h3></td>
+                    <td id="right"><h3>{{ bobinagem.perfil.largura_bobinagem }}</h3></td>
                 </tr>
                 <tr>
-                    <td class="bg-primary"><h3>Área (m2):</h3></td>
-                    <td id="right"><h3>2500 m2</h3></td>
+                    <td class="bg-primary"><h3>Área Total (m2):</h3></td>
+                    <td id="right"><h3>{{ area_total }}</h3></td>
                 </tr>
             </table>
             
         </div>
-        <div class="col-md-7">
+        <div class="col-md-6">
                 <h1 id="center">Bobines</h1>
                 <table class="table table-striped">
                     <thead>
@@ -41,19 +41,49 @@
                             <th></th>
                             <th id="center" class="bg-primary"><h3>Comp. (m)</h3></th>
                             <th id="center" class="bg-primary"><h3>Largura (mm)</h3></th>
-                            <th id="center" class="bg-primary"><h3>Área (m2)</h3></th>
+                            
                         </tr>
                     </thead>
                     <tbody>
                         {% for b in bobines %}
-                        <tr>
-                            <th class="bg-primary"><h3>{{ b.nome }}</h3></th>
-                            <td id="center"><h3>{{ b.comp_actual }}</h3></td>
-                            <td id="center"><h3>{{ b.largura.largura }}</h3></td>
-                            <td id="center"><h3>{{ b.area }}</h3></td>
-                        </tr>
+                           
+                            <tr>
+                                <th class="bg-primary"><h3>{{ b.nome }}</h3></th>
+                                <td id="center"><h3>{{ comp_total }}</h3></td>
+                                <td id="center"><h3>{{ b.largura.largura }}</h3></td>
+                                
+                            </tr>
+                            
                         {% endfor %}
                         
+                    </tbody>
+                    </table>
+            
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="col-md-2">
+               
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                           
+                            <th id="center" class="bg-primary"><h3>Área (m2)</h3></th>
+                            
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            {% for a_b in area_bobines %}
+                            <tr>
+                                
+                                <td id="center"><h3>{{ a_b }}</h3></td>
+                            </tr>
+                            {% endfor %}
+                      
                     </tbody>
                     </table>
             
@@ -72,7 +102,7 @@
                             <tr>
                                 <th id="center" class="bg-primary"><h3>Nº bobine</h3></th>
                                 <th id="center" class="bg-primary"><h3>Bobine</h3></th>
-                                <th id="center" class="bg-primary"><h3>Metros consumidos</h3></th>
+                                <th id="center" class="bg-primary"><h3>Metros consumidos (m)</h3></th>
                                 <th id="center" class="bg-primary"><h3>Metros emenda / Fim da bobinagem</h3></th>
                                 
                             </tr>
@@ -83,19 +113,19 @@
                                 <td id="center"><h3>1</h3></th>
                                 <td id="center"><h3>{{ b_1 }}</h3></td>
                                 <td id="center"><h3>{{ m_1 }}</h3></td>
-                                <td id="center"><h3>2000</h3></td>
+                                <td id="center"><h3>{{ e_1 }}</h3></td>
                             </tr>
                             <tr>
                                 <td id="center"><h3>2</h3></th>
                                 <td id="center"><h3>{{ b_2}}</h3></td>
                                 <td id="center"><h3>{{ m_2 }}</h3></td>
-                                <td id="center"><h3>2000</h3></td>
+                                <td id="center"><h3>{{ e_2 }}</h3></td>
                             </tr>
                             <tr>
                                 <td id="center"><h3>3</h3></th>
                                 <td id="center"><h3>{{ b_3 }}</h3></td>
                                 <td id="center"><h3>{{ m_3 }}</h3></td>
-                                <td id="center"><h3>2000</h3></td>
+                                <td id="center"><h3>{{ e_3 }}</h3></td>
                             </tr>
                         </tbody>
                         </table>
@@ -108,6 +138,7 @@
         </div>
         <br>
         <br>
+        <form method="POST" action="#"> 
         <div class="row">
                 <div class="col-md-12">
                     <h2 id="center" class="erro">Deseja reciclar alguma das bobines originais?</h2>
@@ -116,17 +147,24 @@
                     <table class="table table-striped">
                             <tr>
                                     <th></th>
-                                    <th id="center" class="bg-primary"><h3>Metros restantes</h3></th>
+                                    <th id="center" class="bg-primary"><h3>Metros restantes (m)</h3></th>
                                     <th id="center" class="bg-primary"><h3>Reciclar</h3></th>
                                 </tr>
                             <tr>
-                                <td class="bg-primary"><h3>Bobine 1:</h3></td>
-                                <td id="center"><h3>200</h3></td>
+                                <td class="bg-primary"><h3>{{ b_1 }}</h3></td>
+                                {% if mr_1 <= 150 %}
+                                <td id="estado_ba"><h3>{{ mr_1 }}</h3></td>
+                                {% elif mr_1 <= 500 %}
+                                <td id="estado_dm"><h3>{{ mr_1 }}</h3></td>
+                                {% else %}
+                                <td id="center"><h3>{{ mr_1 }}</h3></td>
+                                {% endif %}
                                 <td id="center">
                                         <div class="btn-group" data-toggle="buttons">
-			
+                                            
                                                 <label class="btn btn-success">
                                                     <input type="checkbox" autocomplete="off">
+                                                    {{ form.recycle_1 }}
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                 </label>
                                     
@@ -136,35 +174,51 @@
                                     
                                 </td>
                             </tr>
+                            
                             <tr>
-                                <td class="bg-primary"><h3>Bobine 2:</h3></td>
-                                <td id="center"><h3>200</h3></td>
+                                <td class="bg-primary"><h3>{{ b_2 }}</h3></td>
+                                {% if mr_2 <= 150 %}
+                                <td id="estado_ba"><h3>{{ mr_2 }}</h3></td>
+                                {% elif mr_2 <= 500 %}
+                                <td id="estado_dm"><h3>{{ mr_2 }}</h3></td>
+                                {% else %}
+                                <td id="center"><h3>{{ mr_2 }}</h3></td>
+                                {% endif %}
                                 <td id="center">
                                         <div class="btn-group" data-toggle="buttons">
-			
+                                            
+                                            {% if b_2 != "N/A" and b_1 != b_2 %}
                                                 <label class="btn btn-success">
                                                     <input type="checkbox" autocomplete="off">
+                                                    {{ form.recycle_2 }}
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                 </label>
                                     
-                                                
+                                             {% endif %}   
                                             
                                             </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="bg-primary"><h3>Bobine 3:</h3></td>
-                                <td id="center"><h3>200</h3></td>
+                                <td class="bg-primary"><h3>{{ b_3 }}</h3></td>
+                                {% if mr_3 <= 150 %}
+                                <td id="estado_ba"><h3>{{ mr_3 }}</h3></td>
+                                {% elif mr_3 <= 500 %}
+                                <td id="estado_dm"><h3>{{ mr_3 }}</h3></td>
+                                {% else %}
+                                <td id="center"><h3>{{ mr_3 }}</h3></td>
+                                {% endif %}
                                 <td id="center"> <div class="btn-group" data-toggle="buttons"></div>
         
                                     <div class="btn-group" data-toggle="buttons">
-			
+                                        {% if b_3 != "N/A" and b_3 != b_2 and b_3 != b_1 %}
                                             <label class="btn btn-success">
                                                 <input type="checkbox" autocomplete="off">
+                                                {{ form.recycle_3 }}
                                                 <span class="glyphicon glyphicon-ok"></span>
                                             </label>
                                 
-                                        
+                                            {% endif %}   
                                         </div>
                                                            
                                 </div>
@@ -173,6 +227,16 @@
                         </table>
                     
                 </div>
+                <div class="row">  
+                        <div class="col-md-2"></div>  
+                        <div class="col-md-8">
+                            {% csrf_token %}
+                            <a href="{% url 'producao:retrabalho_v2' pk=bobinagem.pk %}" class="btn btn-primary pull-left" role="button">Voltar</a>
+                            <input type="submit" class="btn btn-primary pull-right" value="Confirmar">
+                        </div>
+                        <div class="col-md-2"></div>
+                </div>
+            </form>
                 
         
         

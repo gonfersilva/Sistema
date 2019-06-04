@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -1897,7 +1897,7 @@ def refazer_bobinagem_dm(request, pk):
         bobine_original.save()
         e.delete() 
 
-    return redirect('producao:retrabalho_dm', pk=bobinagem.pk)
+    return redirect('producao:retrabalho_v2', pk=bobinagem.pk)
 
 @login_required       
 def delete_bobinagem_dm(request, pk):
@@ -2484,7 +2484,7 @@ def retrabalho_v2(request, pk):
                         if comp_total > b_1.comp_actual:
                             messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
                         else:
-                            print(b_1, b_2, b_3)
+                            return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
 
                     elif b_1 == b_2:
                         comp_total = m_b_1 + m_b_2
@@ -2492,7 +2492,7 @@ def retrabalho_v2(request, pk):
                         if comp_total > b_1.comp_actual:
                             messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
                         else:
-                            print(b_1, b_2, b_3)
+                            return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
                     
                     elif b_1 == b_3:
                         comp_total = m_b_1 + m_b_3
@@ -2500,7 +2500,7 @@ def retrabalho_v2(request, pk):
                         if comp_total > b_1.comp_actual:
                             messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
                         else:
-                            print(b_1, b_2, b_3)
+                            return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
 
                     elif b_2 == b_3:
                         comp_total = m_b_2 + m_b_3
@@ -2508,7 +2508,7 @@ def retrabalho_v2(request, pk):
                         if comp_total > b_2.comp_actual:
                             messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
                         else:
-                            print(b_1, b_2, b_3)
+                            return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
                     else:
                         return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
                         
@@ -2568,7 +2568,7 @@ def retrabalho_v2(request, pk):
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
                     else:
                         return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
-                        # print(b_1, b_2, m_b_1, m_b_2)
+                        
                     
                 else:
                     if b_1.estado != 'DM':
@@ -2600,7 +2600,7 @@ def retrabalho_v2(request, pk):
                 comp_actual_1 = b_1.comp_actual
                               
                 if comp_actual_1 >= m_b_1 and b_1.estado == 'DM':
-                    print(b_1)
+                    return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=None, m2=None, b3=None, m3=None)
                                    
                 else:
                     if b_1.estado != 'DM':
@@ -2628,30 +2628,212 @@ def retrabalho_v2(request, pk):
 def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=None):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    form = ConfirmReciclarForm(request.POST or None)
     m_1 = m1
     m_2 = m2
     m_3 = m3
-    
-    
-    b_1 = get_object_or_404(Bobine, pk=b1)
-    b_2 = get_object_or_404(Bobine, pk=b2)
-    # b_3 = get_object_or_404(Bobine, pk=b3)
         
+    try:
+        b_3 = Bobine.objects.get(pk=b3)
+    except:
+        b_3 = "N/A"
+        m_3 = "N/A"
+
+    try:
+        b_2 = Bobine.objects.get(pk=b2)
+    except:
+        b_2 = "N/A"
+        m_2 = "N/A"
+        
+    b_1 = get_object_or_404(Bobine, pk=b1)
+
+    comp_total = comp_dm(b_1, m_1, b_2, m_2, b_3, m_3)
+    area_total = Decimal(comp_total) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001))
+    area_total = round(area_total,2)
+
+    area_bobines = []
+    for b in bobines:
+        area_bobines.append(round(Decimal(comp_total) * (Decimal(b.largura.largura) * Decimal(0.001)), 2))
+
+
+    if b_3 != "N/A" and b_2 != "N/A":
+        e_1 = m_1
+        e_2 = int(m_1) + int(m_2)
+        e_3 = int(m_1) + int(m_2) + int(m_3)
+        if b_1 == b_2 == b_3:
+            mr_1 = int(b_1.comp_actual) - int(m_1) - int(m_2) - int(m_3)
+            mr_2 = mr_1
+            mr_3 = mr_1
+        elif b_1 == b_2 != b_3:
+            mr_1 = int(b_1.comp_actual) - int(m_1) - int(m_2)
+            mr_2 = mr_1
+            mr_3 = int(b_3.comp_actual) - int(m_3)
+        elif b_1 == b_3 != b_2:
+            mr_1 = int(b_1.comp_actual) - int(m_1) - int(m_3)
+            mr_3 = mr_1
+            mr_2 = int(b_2.comp_actual) - int(m_2)
+        elif b_2 == b_3 != b_1:
+            mr_1 =  int(b_1.comp_actual) - int(m_1)
+            mr_2 =  int(b_2.comp_actual) - int(m_2) - int(m_3)
+            mr_3 =  mr_2
+        else:
+            mr_1 =  int(b_1.comp_actual) - int(m_1)
+            mr_2 =  int(b_2.comp_actual) - int(m_2)
+            mr_3 =  int(b_3.comp_actual) - int(m_3)
+    elif b_2 != "N/A" and b_3 == "N/A":
+        e_1 = m_1
+        e_2 = int(m_1) + int(m_2)
+        e_3 = "N/A"
+        if b_1 == b_2:
+            mr_1 = int(b_1.comp_actual) - int(m_1) - int(m_2)
+            mr_2 = mr_1
+            mr_3 = "N/A"
+        else:
+            mr_1 = int(b_1.comp_actual) - int(m_1)
+            mr_2 = int(b_2.comp_actual) - int(m_2)
+            mr_3 = "N/A"
+
+    else:
+        e_1 = m_1
+        mr_1 = int(b_1.comp_actual) - int(m_1)
+        e_2 = "N/A"
+        e_3 = "N/A"
+        mr_2 = "N/A"
+        mr_3 = "N/A"
     
-    
+    if form.is_valid():
+        recycle_1 = form.cleaned_data['recycle_1']
+        recycle_2 = form.cleaned_data['recycle_2']
+        recycle_3 = form.cleaned_data['recycle_3']
+        
+        if b_1 != "N/A" and b_3 != "N/A" and b_2 != "N/A":
+              
+            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            emenda_2 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
+            emenda_3 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_3, num_emenda=3, emenda=e_3, metros=m_3)
+
+            bobinagem.num_emendas = 3
+            bobinagem.comp = e_3
+            bobinagem.comp_par = e_3
+            bobinagem.comp_cli = e_3
+            bobinagem.area = round(Decimal(e_3) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area_g = bobinagem.area
+            bobinagem.estado = 'G'
+            bobinagem.save()
+            b_1.comp_actual = mr_1
+            b_2.comp_actual = mr_2
+            b_3.comp_actual = mr_3
+            b_1.save()
+            b_2.save()
+            b_3.save()
+            # retrabalho_nome(bobinagem.pk, 3)
+            data = bobinagem.data
+            data = data.strftime('%Y%m%d')
+            map(int, data)
+            if bobinagem.num_bobinagem < 10:
+                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+            else:
+                bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
+            bobinagem.save()    
+            for b in bobines:
+                if b.largura.num_bobine < 10:
+                    b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                else:
+                    b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                b.save() 
+
+        elif b_1 != "N/A" and b_2 != "N/A":
+            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            emenda_2 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
+            bobinagem.num_emendas = 2
+            bobinagem.comp = e_2
+            bobinagem.comp_par = e_2
+            bobinagem.comp_cli = e_2
+            bobinagem.area = round(Decimal(e_2) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area_g = bobinagem.area
+            bobinagem.estado = 'G'
+            bobinagem.save()
+            b_1.comp_actual = mr_1
+            b_2.comp_actual = mr_2
+            b_1.save()
+            b_2.save()
+            
+            # retrabalho_nome(bobinagem.pk, 2)
+            data = bobinagem.data
+            data = data.strftime('%Y%m%d')
+            map(int, data)
+            if bobinagem.num_bobinagem < 10:
+                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+            else:
+                bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
+            bobinagem.save()    
+            for b in bobines:
+                if b.largura.num_bobine < 10:
+                    b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                   
+                else:
+                    b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                b.save()      
+
+        elif b_1 != "N/A":
+            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            bobinagem.num_emendas = 1
+            bobinagem.comp = e_1
+            bobinagem.comp_par = e_1
+            bobinagem.comp_cli = e_1
+            bobinagem.area = round(Decimal(e_1) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area_g = bobinagem.area
+            bobinagem.estado = 'G'
+            bobinagem.save()
+            b_1.comp_actual = mr_1
+            b_1.save()
+            
+                        
+        if recycle_1 == True and b_1 != "N/A":
+            b_1.recycle = True
+            b_1.save()
+
+        if recycle_2 == True and b_2 != "N/A":
+            b_2.recycle = True
+            b_2.save()
+
+        if recycle_2 == True and b_3 != "N/A":
+            b_3.recycle = True
+            b_3.save()
+
+        for bob in bobines:
+            bob.comp_actual = bobinagem.comp_cli
+            bob.area = round(Decimal(bobinagem.comp_cli) * (Decimal(b.largura.largura) * Decimal(0.001)), 2)
+            bob.estado = 'G'
+            bob.save()
+                   
+
+        return redirect('producao:finalizar_retrabalho', pk=bobinagem.pk)
+          
   
 
     
     template_name = "retrabalho/retrabalho_confirmacao.html"
 
     context = {
-            "bobinagem": bobinagem,
-            "bobines": bobines,
-            "b_1": b_1,
-            "b_2": b_2,
-            "b_3": b_3,
-            "m_1": m_1,
-            "m_2": m_2,
-            "m_3": m_3,
+        "bobinagem": bobinagem,
+        "bobines": bobines,
+        "b_1": b_1,
+        "b_2": b_2,
+        "b_3": b_3,
+        "m_1": m_1,
+        "m_2": m_2,
+        "m_3": m_3,
+        "comp_total": comp_total,
+        "area_total": area_total,
+        "area_bobines": area_bobines,
+        "e_1": e_1,
+        "e_2": e_2,
+        "e_3": e_3,
+        "mr_1": mr_1,
+        "mr_2": mr_2,
+        "mr_3": mr_3,
+        "form": form,
+        
         }
     return render(request, template_name, context)

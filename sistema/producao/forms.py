@@ -262,3 +262,10 @@ class RetrabalhoFormEmendas(forms.Form):
     m_bobine_1 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 1', required=True)
     m_bobine_2 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 2', required=False)
     m_bobine_3 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 3', required=False)
+
+
+class ConfirmReciclarForm(forms.Form):
+    recycle_1 = forms.BooleanField(initial=False, label='', required=False)
+    recycle_2 = forms.BooleanField(initial=False, label='', required=False)
+    recycle_3 = forms.BooleanField(initial=False, label='', required=False)
+   

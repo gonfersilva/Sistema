@@ -1,5 +1,5 @@
 from django import template
-from producao.forms import PerfilCreateForm, BobinagemCreateForm, RetrabalhoFormEmendas, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
+from producao.forms import PerfilCreateForm, BobinagemCreateForm, ConfirmReciclarForm, RetrabalhoFormEmendas, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
 from producao.models import Perfil, Bobinagem, Emenda, Palete
 
 register = template.Library()
@@ -97,3 +97,8 @@ def acompanhamento_diario_form(self):
 def retrabalho_form_v2(self):
     form = RetrabalhoFormEmendas()
     return {'form': form}
+
+@register.inclusion_tag('retrabalho/recycle_confirm_form.html')
+def recycle_confirm_form(self):
+    form = ConfirmReciclarForm()
+    return {'form': form }

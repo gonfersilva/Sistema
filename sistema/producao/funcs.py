@@ -705,5 +705,55 @@ def add_artigo_to_bobine(pk):
     
 #     palete.save()
     
-        
+
+def comp_dm(b1, m1, b2, m2, b3, m3):
+    b_1 = Bobine.objects.get(pk=b1.pk)
+    
+    try:
+        b_2 = Bobine.objects.get(pk=b2.pk)
+    except:
+        b_2 = "N/A"
+        m_2 = "N/A"
    
+    try:
+        b_3 = Bobine.objects.get(pk=b3.pk)
+    except:
+        b_3 = "N/A"
+        m_3 = "N/A"
+
+    if b_1 != "N/A"  and b_2 != "N/A" and b_3 != "N/A":
+        comp_total = int(m1) + int(m2) + int(m3)
+    elif b_1 != "N/A" and b_2 != "N/A":
+        comp_total = int(m1) + int(m2)
+    elif b_1 != "N/A":
+        comp_total = int(m1)
+
+    return comp_total
+
+
+def retrabalho_nome(pk, emendas):
+    bobinagem = Bobinagem.objects.get(pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    data = bobinagem.data
+    data = data.strftime('%Y%m%d')
+    map(int, data)
+    if emendas > 1:
+        if bobinagem.num_bobinagem < 10:
+            bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+            bobinagem.save()
+        else:
+            bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
+            bobinagem.save()
+
+        for b in bobines:
+            if b.largura.num_bobine < 10:
+                b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                b.save()
+            else:
+                b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                b.save()
+    
+       
+    
+
+    

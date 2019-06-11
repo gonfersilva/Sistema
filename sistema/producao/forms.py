@@ -268,4 +268,8 @@ class ConfirmReciclarForm(forms.Form):
     recycle_1 = forms.BooleanField(initial=False, label='', required=False)
     recycle_2 = forms.BooleanField(initial=False, label='', required=False)
     recycle_3 = forms.BooleanField(initial=False, label='', required=False)
+
+class PicagemBobine(forms.Form):
+    bobine = forms.CharField(max_length=14, label='', required=True)
+    
    

@@ -1,0 +1,45 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+
+
+{% block title %}Retrabalho | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+            <h1 id="center">PICAGEM!</h1>
+        <div class="col-md-6">
+                {% for i in i|rjust:num_bobines %}
+                    {% palete_picagem_form form %}
+                {% endfor %}
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="col-md-6">
+            {% if messages %}
+            <ul class="messages">
+                <h1 class="erro">ERRO!</h1>
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+        </div>
+        <div class="col-md-6">
+            
+
+        </div>
+
+    </div>
+     <div class="row">  
+        <div class="col-md-2"></div>  
+        <div class="col-md-8">
+            {% csrf_token %}
+            <a href="#" class="btn btn-primary pull-left" role="button">Voltar</a>
+            <input type="submit" class="btn btn-primary pull-right" value="Gravar">
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+{% endblock %}

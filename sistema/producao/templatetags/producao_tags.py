@@ -1,6 +1,7 @@
 from django import template
 from producao.forms import PerfilCreateForm, BobinagemCreateForm, PicagemBobine, ConfirmReciclarForm, RetrabalhoFormEmendas, AcompanhamentoDiarioSearchForm, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, CargaCreateForm, Picagem, RetrabalhoCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, ClassificacaoBobines, EncomendaCreateForm
 from producao.models import Perfil, Bobinagem, Emenda, Palete
+from django.forms import formset_factory
 
 register = template.Library()
 
@@ -104,6 +105,10 @@ def recycle_confirm_form(self):
     return {'form': form }
 
 @register.inclusion_tag('palete/palete_picagem_form_v2.html')
-def palete_picagem_form(self):
-    form = PicagemBobine()
-    return {'form': form }
+def palete_picagem_form(self, pk):
+     palete = Palete.objects.get(pk=pk)
+     num = palete.num_bobines
+     PicagemBobineFormset = formset_factory(PicagemBobine, extra=num)
+     form = PicagemBobineFormset()
+    
+     return {'form': form, }

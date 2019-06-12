@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, PicagemBobine, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PerfilCreateForm, LarguraForm, PicagemBobine, PicagemBobineFormset, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -18,6 +18,7 @@ import time
 from .funcs import *
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
+from django.forms import formset_factory
 
 
 
@@ -2803,7 +2804,7 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
 
         for bob in bobines:
             bob.comp_actual = bobinagem.comp_cli
-            bob.area = round(Decimal(bobinagem.comp_cli) * (Decimal(b.largura.largura) * Decimal(0.001)), 2)
+            bob.area = round(Decimal(bobinagem.comp_cli) * (Decimal(bob.largura.largura) * Decimal(0.001)), 2)
             bob.estado = 'G'
             bob.save()
                    
@@ -2838,19 +2839,19 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
         }
     return render(request, template_name, context)
 
+@login_required
 def palete_picagem(request, pk):
     palete = get_object_or_404(Palete, pk=pk)
-    num_bobines = palete.num_bobines
-    form = PicagemBobine(request.POST or None)
+    form = PicagemBobineFormset(request.POST)
     template_name = "palete/palete_picagem_v2.html"
-
-    
+        
+    if form.is_valid():
+        return redirect('producao_home')
 
     context = {
         "palete": palete,
         "form": form,
-        "num_bobines": num_bobines
-        
+              
         
         }
     return render(request, template_name, context)

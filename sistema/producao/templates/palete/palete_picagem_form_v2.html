@@ -6,16 +6,21 @@
         <br>
         
     <div class="row">
-            
+        
         <div class="container col-md-4">
-            {% bootstrap_field form.bobine %}
+            
+            {% for f in form %}
+            <div class="row">
                 
+               <p>{{ forloop.counter }} {% bootstrap_form f %}</p>
+            </div>
+            {% endfor %}    
         </div>
  
      
     </div>
             
-    <!-- <div class="row">  
+    <div class="row">  
         <div class="col-md-2"></div>  
         <div class="col-md-8">
             {% csrf_token %}
@@ -23,7 +28,7 @@
             <input type="submit" class="btn btn-primary pull-right" value="Gravar">
         </div>
         <div class="col-md-2"></div>
-</div> -->
+</div>
     
 </div>
 

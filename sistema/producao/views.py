@@ -2791,13 +2791,15 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
                         
         if recycle_1 == True and b_1 != "N/A":
             b_1.recycle = True
+
             b_1.save()
 
         if recycle_2 == True and b_2 != "N/A":
             b_2.recycle = True
+
             b_2.save()
 
-        if recycle_2 == True and b_3 != "N/A":
+        if recycle_3 == True and b_3 != "N/A":
             b_3.recycle = True
             b_3.save()
 

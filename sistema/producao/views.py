@@ -908,8 +908,6 @@ class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
         # bobinagem = Bobinagem.objects.get(pk=self.kwargs['pk'])
         b = form.save(commit=False)
 
-
-
         fim = b.fim
         fim = fim.strftime('%H:%M')
         inico = b.inico
@@ -1182,6 +1180,7 @@ def etiqueta_retrabalho(request, pk):
     bobine = Bobine.objects.filter(bobinagem=bobinagem)
 
     if EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem).exists():
+        
         return redirect('producao:bobinestatus', pk=bobinagem.pk)
     else:
         for b in bobine:
@@ -2845,8 +2844,8 @@ def palete_picagem(request, pk):
     form = PicagemBobineFormset(request.POST)
     template_name = "palete/palete_picagem_v2.html"
         
-    if form.is_valid():
-        return redirect('producao_home')
+    # if form.is_valid():
+    #     return redirect('producao_home')
 
     context = {
         "palete": palete,

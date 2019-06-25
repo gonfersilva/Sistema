@@ -2062,18 +2062,22 @@ def carga_create(request):
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     paletes = Palete.objects.filter(carga=carga)
-    data_inicial = datetime.date.today()
-    data_final = datetime.date.today()
+    data_inicial = 0
+    data_final = 0
+
     for p in paletes:
         bobines = Bobine.objects.filter(palete=p)
         
         for b in bobines:
-            if b.bobinagem.data < data_inicial:
-                data_inicial = b.bobinagem.data
-            elif b.bobinagem.data >= data_final:
-                data_final = b.bobinagem.data
-            elif b.bobinagem.data > data_inicial:
-                data_final = b.bobinagem.data
+            data = b.bobinagem.data 
+            if data_inicial == 0 and data_final == 0:
+                data_inicial = data
+                data_final = data
+            elif data <= data_inicial:
+                data_inicial = data
+            elif data >= data_final:
+                data_final = data
+          
 
     
                     

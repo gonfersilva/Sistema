@@ -624,26 +624,37 @@ def bobinagem_delete(request, pk):
     template_name = "producao/bobinagem_delete.html"
     emenda = Emenda.objects.filter(bobinagem=obj)
     if request.method == "POST":
-        if obj.perfil.retrabalho == True:
-            # emenda = Emenda.objects.filter(bobinagem=obj)
-            for e in emenda:
-                bobine = Bobine.objects.get(pk=e.bobine.pk)
-                bobine.comp_actual += e.metros
-                if bobine.recycle == True:
-                    bobine.recycle = False
-                bobine.save()
-                e.delete()
-            obj.delete()
-            if obj.perfil.retrabalho == False:
-                return redirect('producao:bobinagem_list_all')
+        for b in bobine:
+            if b.palete != None:
+                pal = True
+                break
             else:
-                return redirect('producao:retrabalho_home')
+                pal = False 
+
+        if pal == False:
+            if obj.perfil.retrabalho == True:
+                # emenda = Emenda.objects.filter(bobinagem=obj)
+                for e in emenda:
+                    bobine = Bobine.objects.get(pk=e.bobine.pk)
+                    bobine.comp_actual += e.metros
+                    if bobine.recycle == True:
+                        bobine.recycle = False
+                    bobine.save()
+                    e.delete()
+                obj.delete()
+                if obj.perfil.retrabalho == False:
+                    return redirect('producao:bobinagem_list_all')
+                else:
+                    return redirect('producao:retrabalho_home')
+            else:
+                obj.delete()
+                if obj.perfil.retrabalho == False:
+                    return redirect('producao:bobinagem_list_all')
+                else:
+                    return redirect('producao:retrabalho_home')
+
         else:
-            obj.delete()
-            if obj.perfil.retrabalho == False:
-                return redirect('producao:bobinagem_list_all')
-            else:
-                return redirect('producao:retrabalho_home')
+            messages.error(request, 'A bobinagem não pode ser apagada porque existem bobines atribuidas a paletes.') 
 
             
     context = {
@@ -2791,12 +2802,21 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
                         
         if recycle_1 == True and b_1 != "N/A":
             b_1.recycle = True
-
+            palete_1_id = b_1.palete.id
+            print(palete_1_id) 
+            palete1 = Palete.objects.get(id=palete_1_id)
+            print(palete1)
+            palete1.area -= b_1.area
+            palete1.comp_total -= b_1.bobinagem.comp_cli
+            palete1.num_bobines_act -= 1
+            palete1.num_bobines -= 1
+            palete1.save()
+            b_1.palete = None
             b_1.save()
+          
 
         if recycle_2 == True and b_2 != "N/A":
             b_2.recycle = True
-
             b_2.save()
 
         if recycle_3 == True and b_3 != "N/A":

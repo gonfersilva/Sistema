@@ -21,12 +21,19 @@
         {% endfor %}
         
         <h1>Têm a certeza que quer apagar a bobinagem {{ object.nome }}?</h1>
-        
+        <div class="col-md-6">
+            {% if messages %}
+            <ul class="messages">
+                <h1 class="erro">ERRO!</h1>
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+        </div>
         <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:bobinagem_list_all' %}" class="btn btn-primary" role="button">Cancelar</a></p>
-        <!-- {% for e in emenda %}
-            {{ e.bobinagem }}
-        {% endfor%}
-         -->
+       
         
     </form>
     

@@ -623,6 +623,7 @@ def bobinagem_delete(request, pk):
     bobine = Bobine.objects.filter(bobinagem=obj)
     template_name = "producao/bobinagem_delete.html"
     emenda = Emenda.objects.filter(bobinagem=obj)
+    pal = False
     if request.method == "POST":
         for b in bobine:
             if b.palete != None:
@@ -2806,16 +2807,16 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
                         
         if recycle_1 == True and b_1 != "N/A":
             b_1.recycle = True
-            palete_1_id = b_1.palete.id
-            print(palete_1_id) 
-            palete1 = Palete.objects.get(id=palete_1_id)
-            print(palete1)
-            palete1.area -= b_1.area
-            palete1.comp_total -= b_1.bobinagem.comp_cli
-            palete1.num_bobines_act -= 1
-            palete1.num_bobines -= 1
-            palete1.save()
-            b_1.palete = None
+            # palete_1_id = b_1.palete.id
+            # print(palete_1_id) 
+            # palete1 = Palete.objects.get(id=palete_1_id)
+            # print(palete1)
+            # palete1.area -= b_1.area
+            # palete1.comp_total -= b_1.bobinagem.comp_cli
+            # palete1.num_bobines_act -= 1
+            # palete1.num_bobines -= 1
+            # palete1.save()
+            # b_1.palete = None
             b_1.save()
           
 

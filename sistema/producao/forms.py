@@ -276,5 +276,5 @@ class PicagemBobine(ModelForm):
         fields = [ 'nome' ]
     
 
-PicagemBobineFormset = formset_factory(PicagemBobine, extra=10)
+
    

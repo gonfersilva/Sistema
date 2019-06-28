@@ -1889,7 +1889,7 @@ def refazer_bobinagem_dm(request, pk):
         bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
     else:
         bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
-    bobinagem.save()
+    
     num = 1
     for b in bobines:
         if num < 10:
@@ -1909,6 +1909,20 @@ def refazer_bobinagem_dm(request, pk):
         bobine_original.save()
         e.delete() 
 
+    bobinagem.num_emendas = 0
+    bobinagem.comp = 0
+    bobinagem.comp_par = 0
+    bobinagem.comp_cli = 0
+    bobinagem.diam = 0
+    bobinagem.area = 0
+    bobinagem.fim = None
+    bobinagem.duracao = None
+    bobinagem.area_g = 0
+    bobinagem.area_dm = 0
+    bobinagem.area_r = 0
+    bobinagem.area_ind = 0
+    bobinagem.area_ba = 0
+    bobinagem.save()
     return redirect('producao:retrabalho_v2', pk=bobinagem.pk)
 
 @login_required       
@@ -2878,9 +2892,10 @@ def palete_picagem(request, pk):
     }
     
     form = PicagemBobineFormset(data)
-    if form.is_valid():
-        # bobine = form.cleaned_data['nome']
-        print("Olá")
+    
+    # if form.is_valid():
+    #     # bobine = form.cleaned_data['nome']
+    #     print("Olá")
     
     
     

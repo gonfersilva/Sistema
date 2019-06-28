@@ -70,7 +70,9 @@ class RetrabalhoCreateForm(ModelForm):
         self.fields['perfil'].queryset = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
         self.fields['num_bobinagem'].initial = num_b
         self.fields['perfil'].initial = perfil
+        # self.fields['inico'].widget.attrs['readonly'] = True
         self.fields['inico'].initial = fim
+        
         
 
 

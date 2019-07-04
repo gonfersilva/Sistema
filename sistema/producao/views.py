@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilCreateForm, LarguraForm, PicagemBobine, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PicagemBobines, PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -2882,28 +2882,81 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
 @login_required
 def palete_picagem(request, pk):
     palete = get_object_or_404(Palete, pk=pk)
-    template_name = "palete/palete_picagem_v2.html"
-    PicagemBobineFormset = formset_factory(PicagemBobine)
+    cliente = palete.cliente
+    template_name = 'palete/palete_picagem_v2.html'
+    num_bobines = palete.num_bobines
+    PicagemBobinesFormSet = formset_factory(PicagemBobines, extra=num_bobines)
+    
+    if request.method == 'POST':
+        formset = PicagemBobinesFormSet(request.POST)
+        if formset.is_valid():
+            count = 0
+            array_bobines = []
+            array_cores = []
+            array_larguras = []
+            validation = True
 
-    data = {
-        'form-TOTAL_FORMS': '1',
-        'form-INITIAL_FORMS': '0',
-        'form-MAX_NUM_FORMS': '',
-    }
-    
-    form = PicagemBobineFormset(data)
-    
-    # if form.is_valid():
-    #     # bobine = form.cleaned_data['nome']
-    #     print("Olá")
-    
+            #Validação individual
+            for f in formset:
+                count += 1
+                cd = f.cleaned_data
+                b = cd.get('bobine')
+                
+                if b is not None:
+                    try:
+                        bobine = get_object_or_404(Bobine, nome=b)
+                        array_bobines.append(bobine)
+                        array_cores.append(bobine.bobinagem.perfil.core)
+                        array_larguras.append(bobine.largura.largura)
+
+                        if bobine.estado != 'G' and bobine.estado != 'LAB':
+                            messages.error(request, 'A bobine ' + bobine.nome + ' não está em estado GOOD ou LAB.')
+                            validation = False
+
+                        if bobine.bobinagem.diam > cliente.limsup:
+                            messages.error(request, 'O diâmetro da bobine ' + bobine.nome + ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.') 
+                            validation = False
+                        elif bobine.bobinagem.diam > cliente.limsup:
+                            messages.error(request, 'O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
+                            validation = False
+                
+                    except:
+                        messages.error(request, 'A bobine ' + b + ' não existe.')
+                        validation = False
+                else:
+                    messages.error(request, 'Por favor preencha a campo nº ' + str(count) + '.')
+                    validation = False
+            
+            #Validação global -> remover validação global de core e largura
+            print(len(array_bobines))
+            print(palete.num_bobines)
+            print(validation)
+            print(array_cores)
+            print(array_larguras)
+            if len(array_bobines) == palete.num_bobines and validation == True:
+                if len(array_bobines) > len(set(array_bobines)):
+                    messages.error(request, 'A picagem contem bobines repetidas.')
+                else:
+                    if(len(set(array_larguras))==1):
+                        if(len(set(array_cores))==1):
+                            messages.error(request, 'As larguras e os cores condizem')
+                        else:
+                            messages.error(request, 'Os cores das bobines picadas não condizem.')
+                    else:
+                        messages.error(request, 'As larguras das bobines picadas não condizem.')
+
+                   
+
+            
+
+            
+    else:
+        formset = PicagemBobinesFormSet()
     
     
     context = {
         "palete": palete,
-        "form": form,
-         
-        
+        "formset": formset
         }
     return render(request, template_name, context)
 

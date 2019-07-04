@@ -1,37 +1,50 @@
-{% extends "layout.html "%}
-{% load producao_tags %}
-
-
-{% block title %}Retrabalho | {{ block.super }}{% endblock %}
+{% extends "layout.html "%} 
+{% block title %}Picagem de bobines | {{ block.super }}{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="row">
-            <h1 id="center">PICAGEM!</h1>
-        <div class="col-md-6">
-                
-                {% palete_picagem_form form pk=palete.pk %}
-                
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="col-md-6">
-            {% if messages %}
-            <ul class="messages">
-                <h1 class="erro">ERRO!</h1>
-                {% for message in messages %}
-                <li class="{{ message.tags }}" id="error">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            
-        </div>
-        <div class="col-md-6">
-            
-
-        </div>
-
+    <div class="container">
+        <!-- {% if palete.estado == 'G' %}
+        <a href="{% url 'producao:palete_list_all' %}" class="btn btn-primary" role="button">Voltar</a>
+        {% elif palete.estado == 'DM' %}
+        <a href="{% url 'producao:paletes_retrabalho' %}" class="btn btn-primary" role="button">Voltar</a>
+        {% endif %}
+        {% if palete.estado == 'G'%}
+        <a href="{% url 'producao:palete_create' %}" class="btn btn-primary" role="button">Nova Palete</a>
+        {% endif %} -->
     </div>
-     
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <table>
+                {% for form in formset %}
+                    {{ form }}
+                {% endfor %}
+            </table>
+            <div class="col-md-6">
+                <!-- <a href="{% url 'producao:palete_list_all' %}" class="btn btn-primary pull-left" role="button">Voltar</a> -->
+                <input type="submit" class="btn btn-primary pull-right" value="Criar">
+            </div>
+        </form>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}" id="error">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+
 </div>
+<script>
+    var input = document.getElementById("myInput");
+    input.addEventListener("keyup", function(event){
+        event.preventDefault();
+        if(event.keyCode === 13){
+            document.getElementById("myBtn").click();
+        }
+    });
+</script>
+
 {% endblock %}

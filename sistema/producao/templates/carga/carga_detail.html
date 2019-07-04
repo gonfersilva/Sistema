@@ -109,7 +109,8 @@
                     <th>Cliente</th>
                     <th>Área(m2)</th>    
                     <th>Comprimento(m)</th>
-                    <th>Peso liquido(Kg)</th>                              
+                    <th>Peso liquido(Kg)</th>
+                    <th>Relação kg/m2</th>                               
                 </tr>
             </thead>
             <tbody id="paletes-list">
@@ -140,7 +141,8 @@ $.ajax({
             }
         var paletes_length = paletes.length
         for (i=0; i < paletes_length; i++ ){
-            
+            rel = (paletes[i].peso_liquido/(paletes[i].area/10))*100
+            rel = Math.round(rel * 100) / 100
             var td8=$(document.createElement("td")).attr('id', "center")
             var a1=$(document.createElement("a")).text(paletes[i].nome), td1=$(document.createElement("td"));
             var td2=$(document.createElement("td"))
@@ -150,6 +152,7 @@ $.ajax({
             var td6=$(document.createElement("td")).attr('id', "center")
             var td7=$(document.createElement("td")).attr('id', "center")
             var td9=$(document.createElement("td")).attr('id', "center")
+            var td10=$(document.createElement("td")).attr('id', "center")
 
             td1.append(a1);
             td2.text(paletes[i].data_pal);
@@ -160,9 +163,10 @@ $.ajax({
             td7.text(paletes[i].comp_total);
             td8.text(paletes[i].num_palete_carga);
             td9.text(paletes[i].peso_liquido);
+            td10.text(rel + "%");
 
             var tr=$(document.createElement("tr"));
-            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td9);
+            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td9).append(td10);
 
             $("#paletes-list").append(tr);
 

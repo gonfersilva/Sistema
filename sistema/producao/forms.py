@@ -68,9 +68,11 @@ class RetrabalhoCreateForm(ModelForm):
 
         super(RetrabalhoCreateForm, self).__init__(*args, **kwargs)
         self.fields['perfil'].queryset = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
+        # self.fields['num_bobinagem'].widget.attrs['readonly'] = True
+        # self.fields['data'].widget.attrs['readonly'] = True
         self.fields['num_bobinagem'].initial = num_b
         self.fields['perfil'].initial = perfil
-        # self.fields['inico'].widget.attrs['readonly'] = True
+        self.fields['inico'].widget.attrs['readonly'] = True
         self.fields['inico'].initial = fim
         
         
@@ -271,11 +273,8 @@ class ConfirmReciclarForm(forms.Form):
     recycle_2 = forms.BooleanField(initial=False, label='', required=False)
     recycle_3 = forms.BooleanField(initial=False, label='', required=False)
 
-class PicagemBobine(ModelForm):
-    nome = forms.CharField(max_length=14, label='', required=True)
-    class Meta:
-        model = Bobine
-        fields = [ 'nome' ]
+class PicagemBobines(forms.Form):
+    bobine = forms.CharField()
     
 
 

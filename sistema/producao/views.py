@@ -2077,6 +2077,17 @@ def carga_create(request):
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     paletes = Palete.objects.filter(carga=carga)
+    som = 0 
+    
+    for p in paletes:
+        som += (p.peso_liquido/(p.area/10))*100
+    
+    som = som / len(paletes)
+    som = round(som, 2)
+    print(som)
+
+
+    
     data_inicial = 0
     data_final = 0
 
@@ -2104,6 +2115,7 @@ def carga_detail(request, pk):
         "carga": carga,
         "data_inicial": data_inicial,
         "data_final": data_final,
+        "som": som
     }
 
     return render(request, template_name, context)

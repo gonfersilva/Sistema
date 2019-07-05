@@ -132,6 +132,7 @@
                     <th class="check">Troca</th>
                     <th class="check">Outros</th>
                     <th>Observações</th>
+                    <th>Largura Real (mm)</th>
                 </tr>
             </thead>
                 {% for item in bobine %}
@@ -210,6 +211,11 @@
                     {% endif %}
             
                     <td>{{ item.obs }}</td>
+                    {% if item.l_real == None %}
+                        <td></td>
+                    {% else %}
+                        <td id="center">{{ item.l_real }}</td>
+                    {% endif %}
                     <td><a href="{% url 'producao:bobineupdate' item.pk %}" class="btn btn-primary" role="button">Class.</a></td>
                             
                 </tr>

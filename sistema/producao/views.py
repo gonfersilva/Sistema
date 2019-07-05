@@ -2084,10 +2084,7 @@ def carga_detail(request, pk):
     
     som = som / len(paletes)
     som = round(som, 2)
-    print(som)
-
-
-    
+      
     data_inicial = 0
     data_final = 0
 
@@ -2103,10 +2100,7 @@ def carga_detail(request, pk):
                 data_inicial = data
             elif data >= data_final:
                 data_final = data
-          
-
-    
-                    
+         
 
             
 
@@ -2931,6 +2925,14 @@ def palete_picagem(request, pk):
                         elif bobine.bobinagem.diam > cliente.limsup:
                             messages.error(request, 'O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
                             validation = False
+
+                        if bobine.largura.largura != palete.largura_bobines:
+                            messages.error(request, 'A largura de ' + bobine.nome +  ' (' + str(bobine.largura.largura) + ' mm) não corresponde a largura definida na palete de ' + str(palete.largura_bobines) + ' mm.') 
+                            validation = False
+
+                        if bobine.bobinagem.perfil.core != palete.core_bobines:
+                            messages.error(request, 'O core da ' + bobine.nome +  ' (' + str(bobine.bobinagem.perfil.core) + '") não corresponde ao core definido na palete de ' + str(palete.core_bobines) + '".') 
+                            validation = False
                 
                     except:
                         messages.error(request, 'A bobine ' + b + ' não existe.')
@@ -2940,28 +2942,29 @@ def palete_picagem(request, pk):
                     validation = False
             
             #Validação global -> remover validação global de core e largura
-            print(len(array_bobines))
-            print(palete.num_bobines)
-            print(validation)
-            print(array_cores)
-            print(array_larguras)
+            
             if len(array_bobines) == palete.num_bobines and validation == True:
                 if len(array_bobines) > len(set(array_bobines)):
                     messages.error(request, 'A picagem contem bobines repetidas.')
                 else:
-                    if(len(set(array_larguras))==1):
-                        if(len(set(array_cores))==1):
-                            messages.error(request, 'As larguras e os cores condizem')
-                        else:
-                            messages.error(request, 'Os cores das bobines picadas não condizem.')
-                    else:
-                        messages.error(request, 'As larguras das bobines picadas não condizem.')
+                    messages.error(request, 'ESTÁ CERTO!!!!!!!!!.')
+                    # To do:
+                    # -> atribuir id de palete às bobines
+                    # -> preencher etiqueta palete
+                    # -> reencaminhar para pagina de confirmação
 
-                   
 
-            
 
-            
+
+
+                    # if(len(set(array_larguras))==1):
+                    #     if(len(set(array_cores))==1):
+                    #         messages.error(request, 'As larguras e os cores condizem')
+                    #     else:
+                    #         messages.error(request, 'Os cores das bobines picadas não condizem.')
+                    # else:
+                    #     messages.error(request, 'As larguras das bobines picadas não condizem.')
+               
     else:
         formset = PicagemBobinesFormSet()
     

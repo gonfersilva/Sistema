@@ -277,6 +277,7 @@ class Bobine(models.Model):
     obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="")
     recycle = models.BooleanField(default=False,verbose_name="Reciclada")  
     destino = models.TextField(max_length=500, null=True, blank=True, verbose_name="Destino", default="")
+    l_real = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Largura Real")
 
     def __str__(self):
         return self.nome

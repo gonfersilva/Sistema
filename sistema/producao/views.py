@@ -1640,7 +1640,7 @@ def palete_rabrir(request, pk):
     bobines = Bobine.objects.filter(palete=palete)
     e_p = EtiquetaPalete.objects.get(palete=palete)
     e_p.diam_min = 0  
-    e_p.diam_max = 0  
+    e_p.diam_max = 0 
     
     palete.num_bobines_act = 0
     
@@ -2082,7 +2082,11 @@ def carga_detail(request, pk):
     for p in paletes:
         som += (p.peso_liquido/(p.area/10))*100
     
-    som = som / len(paletes)
+    if len(paletes) == 0:
+        som = 0
+    else:
+        som = som / len(paletes)
+    
     som = round(som, 2)
       
     data_inicial = 0
@@ -2947,12 +2951,26 @@ def palete_picagem(request, pk):
                 if len(array_bobines) > len(set(array_bobines)):
                     messages.error(request, 'A picagem contem bobines repetidas.')
                 else:
-                    messages.error(request, 'ESTÁ CERTO!!!!!!!!!.')
-                    # To do:
-                    # -> atribuir id de palete às bobines
-                    # -> preencher etiqueta palete
-                    # -> reencaminhar para pagina de confirmação
+                    c = 0
+                    area_sum = 0
+                    comp_total = 0
+                    for ab in array_bobines:
+                        c += 1
+                        bob = get_object_or_404(Bobine, nome=ab)
+                        bob.palete = palete
+                        bob.posicao_palete = c
+                        area_sum += bob.area
+                        comp_total += bob.bobinagem.comp_cli 
+                        bob.save()
 
+                        messages.error(request, bob.palete)     
+
+                    palete.num_bobines_act = c
+                    palete.area = area_sum
+                    palete.comp_total = comp_total
+                    palete.save()
+
+                    return redirect('producao:addbobinepalete', pk=palete.pk)
 
 
 

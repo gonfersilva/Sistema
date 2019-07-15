@@ -274,7 +274,7 @@ class ConfirmReciclarForm(forms.Form):
     recycle_3 = forms.BooleanField(initial=False, label='', required=False)
 
 class PicagemBobines(forms.Form):
-    bobine = forms.CharField()
+    bobine = forms.CharField(label='', max_length=14)
     
 
 

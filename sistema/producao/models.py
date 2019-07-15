@@ -475,17 +475,17 @@ class EtiquetaFinal(models.Model):
                 
              
    
-def area_palete(sender, instance, **kwargs):
-    bobine = Bobine.objects.filter(palete=instance.pk)
-    area = 0
-    comp = 0
-    for b in bobine:
-        if b.palete:
-            area = area + b.area 
-            comp = comp + b.bobinagem.comp
+# def area_palete(sender, instance, **kwargs):
+#     bobine = Bobine.objects.filter(palete=instance.pk)
+#     area = 0
+#     comp = 0
+#     for b in bobine:
+#         if b.palete:
+#             area = area + b.area 
+#             comp = comp + b.bobinagem.comp
         
-    instance.area = area
-    instance.comp_total = comp
+#     instance.area = area
+#     instance.comp_total = comp
 
 
 
@@ -496,7 +496,7 @@ def area_palete(sender, instance, **kwargs):
 
 
 
-pre_save.connect(area_palete, sender=Palete)
+# pre_save.connect(area_palete, sender=Palete)
 
 
 

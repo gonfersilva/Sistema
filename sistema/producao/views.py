@@ -328,6 +328,8 @@ def create_palete_retrabalho(request):
         instance.num_bobines = 0
         instance.num_bobines_act = 0
         instance.largura_bobines = 0
+        instance.area = 0
+        instance.comp_total = 0        
         instance.save()
         palete_nome(instance.pk)
         

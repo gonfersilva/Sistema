@@ -276,6 +276,20 @@ class ConfirmReciclarForm(forms.Form):
 class PicagemBobines(forms.Form):
     bobine = forms.CharField(label='', max_length=14)
     
+class ClassificacaoBobines(forms.Form):
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
+    estado = forms.CharField(max_length=4, widget=forms.Select(choices=STATUSP))
+    con = forms.BooleanField(initial=False, label='', required=False)
+    descen = forms.BooleanField(initial=False, label='', required=False)
+    presa = forms.BooleanField(initial=False, label='', required=False)
+    diam_insuf = forms.BooleanField(initial=False, label='', required=False)
+    furos = forms.BooleanField(initial=False, label='', required=False)
+    buraco = forms.BooleanField(initial=False, label='', required=False)
+    esp = forms.BooleanField(initial=False, label='', required=False)
+    troca_nw = forms.BooleanField(initial=False, label='', required=False)
+    outros = forms.BooleanField(initial=False, label='', required=False)
+    obs = forms.CharField(max_length=200, label='', required=False)
+    l_real = forms.IntegerField(required=False)
 
 
    

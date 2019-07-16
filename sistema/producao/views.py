@@ -1,11 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy, resolve
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, inlineformset_factory
 from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PicagemBobines, PerfilCreateForm, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -3006,7 +3006,7 @@ def palete_picagem(request, pk):
                         comp_total += bob.bobinagem.comp_cli 
                         bob.save()
 
-                           
+                    e_p = EtiquetaPalete.objects.get(palete=palete)       
                     for x in array_bobines:
                         bobine = Bobine.objects.get(nome=x)
                         if bobine.bobinagem.perfil.retrabalho == True:
@@ -3022,6 +3022,7 @@ def palete_picagem(request, pk):
                             else: 
                                 palete.nome = 'R%s-%s' % (num, ano)
                             palete.save()
+                            e_p.palete_nome = palete.nome
                             break
 
                     
@@ -3032,7 +3033,7 @@ def palete_picagem(request, pk):
                     palete.comp_total = comp_total
                     palete.save()
 
-                    e_p = EtiquetaPalete.objects.get(palete=palete)
+                    
                     bobines = Bobine.objects.filter(palete=palete)
                     bobines_nome = []
                     d_min = 0
@@ -3147,3 +3148,27 @@ def palete_picagem(request, pk):
 
 
     
+def classificacao_bobines_v2(request, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    template_name = 'producao/classificacao_bobines_v2.html'
+    num_bobines = len(bobines)
+
+    ClassificacaoBobinesFormSet = formset_factory(ClassificacaoBobines, extra=num_bobines)
+    
+    if request.method == 'POST':
+        formset = ClassificacaoBobinesFormSet(request.POST, instance=bobines)
+        if formset.is_valid():
+            pass
+    
+               
+    else:
+        formset = ClassificacaoBobinesFormSet()
+    
+    
+    context = {
+        "bobinagem": bobinagem,
+        "bobines":bobines,
+        "formset": formset
+        }
+    return render(request, template_name, context)

@@ -3147,28 +3147,48 @@ def palete_picagem(request, pk):
 
 
 
-    
+@login_required    
 def classificacao_bobines_v2(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'producao/classificacao_bobines_v2.html'
-    num_bobines = len(bobines)
+    
 
-    ClassificacaoBobinesFormSet = formset_factory(ClassificacaoBobines, extra=num_bobines)
+    # ClassificacaoBobinesFormSet = modelformset_factory(Bobine, fields=('estado', ))
+    ClassificacaoBobinesFormSet = inlineformset_factory(Bobinagem, Bobine, fields=('nome', 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'estado', 'buraco', 'esp', 'troca_nw', 'outros', 'obs', 'l_real', ), extra=0, can_delete=False)
+    
     
     if request.method == 'POST':
-        formset = ClassificacaoBobinesFormSet(request.POST, instance=bobines)
+        # formset = ClassificacaoBobinesFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem),)
+        formset = ClassificacaoBobinesFormSet(request.POST, instance=bobinagem)
         if formset.is_valid():
-            pass
+        #    instances = formset.save(commit=False)
+        #    for instance in instances:
+        #        instance.save()
+            formset.save()
+           
     
-               
-    else:
-        formset = ClassificacaoBobinesFormSet()
+    formset = ClassificacaoBobinesFormSet(instance=bobinagem)       
+    
     
     
     context = {
         "bobinagem": bobinagem,
         "bobines":bobines,
         "formset": formset
+        }
+    return render(request, template_name, context)
+
+
+@login_required
+def bobinagem_list_v2(request):
+    bobinagens = Bobinagem.objects.filter(perfil__retrabalho=0)
+    template_name = 'producao/bobinagem_list_v2.html'
+    query = request.GET.get("q")
+    if query:
+        bobinagens = bobinagens.filter(nome__icontains=query)
+    context = {
+        "bobinagens": bobinagens,
+        
         }
     return render(request, template_name, context)

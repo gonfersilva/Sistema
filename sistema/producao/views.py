@@ -3183,12 +3183,14 @@ def classificacao_bobines_v2(request, pk):
 @login_required
 def bobinagem_list_v2(request):
     bobinagens = Bobinagem.objects.filter(perfil__retrabalho=0, data__gt='2018-12-31')
+    bobine = Bobine.objects.filter(bobinagem__perfil__retrabalho=0)
     template_name = 'producao/bobinagem_list_v2.html'
     query = request.GET.get("q")
     if query:
         bobinagens = bobinagens.filter(nome__icontains=query)
     context = {
         "bobinagens": bobinagens,
+        "bobine": bobine
         
         }
     return render(request, template_name, context)

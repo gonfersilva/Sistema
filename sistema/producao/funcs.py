@@ -628,6 +628,12 @@ def gerar_etiqueta_final(pk):
     elif cliente == 'Paul Hartman':
         if largura_bobines == 240:
             cod_cliente_cliente = 'ELASTEK m16'
+    elif cliente == 'NUNEX' or cliente == 'Faderco SPA':
+        area = (peso_liquido * 1000) / 100 
+        comp_total = (Decimal(area) / ((Decimal(num_bobines) * Decimal(largura_bobines)) * Decimal(0.001))) * (Decimal(num_bobines))
+
+
+
 
     if core_bobines == '3':
         core_bobines = 76.6
@@ -657,6 +663,7 @@ def gerar_etiqueta_final(pk):
             e.activa = False
             e.save()
 
+    
     if cod_cliente_cliente is not None:
         e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
     else:

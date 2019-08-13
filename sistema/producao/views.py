@@ -2097,9 +2097,14 @@ def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     paletes = Palete.objects.filter(carga=carga)
     som = 0 
+    som_comp = 0
+    som_area = 0
     
     for p in paletes:
         som += (p.peso_liquido/(p.area/10))*100
+        som_area += (p.peso_liquido * 1000) / 100 
+        som_comp += (Decimal(som_area) / ((Decimal(p.num_bobines) * Decimal(p.largura_bobines)) * Decimal(0.001))) * (Decimal(p.num_bobines))
+        
     
     if len(paletes) == 0:
         som = 0
@@ -2107,6 +2112,8 @@ def carga_detail(request, pk):
         som = som / len(paletes)
     
     som = round(som, 2)
+    som_comp = round(som_comp, 2)
+    som_area = round(som_area, 2)
       
     data_inicial = 0
     data_final = 0
@@ -2132,7 +2139,9 @@ def carga_detail(request, pk):
         "carga": carga,
         "data_inicial": data_inicial,
         "data_final": data_final,
-        "som": som
+        "som": som,
+        "som_comp": som_comp,
+        "som_area": som_area
     }
 
     return render(request, template_name, context)

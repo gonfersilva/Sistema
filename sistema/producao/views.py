@@ -2104,6 +2104,7 @@ def carga_detail(request, pk):
         som += (p.peso_liquido/(p.area/10))*100
         som_area += (p.peso_liquido * 1000) / 100 
         som_comp += (Decimal(som_area) / ((Decimal(p.num_bobines) * Decimal(p.largura_bobines)) * Decimal(0.001))) * (Decimal(p.num_bobines))
+        print(som_comp)
         
     
     if len(paletes) == 0:

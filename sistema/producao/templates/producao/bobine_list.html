@@ -132,7 +132,9 @@
                     <th class="check">Troca</th>
                     <th class="check">Outros</th>
                     <th>Observações</th>
+                    <th>Largura NOK</th>
                     <th>Largura Real (mm)</th>
+                    
                 </tr>
             </thead>
                 {% for item in bobine %}
@@ -211,6 +213,11 @@
                     {% endif %}
             
                     <td>{{ item.obs }}</td>
+                    {% if not item.nok %}
+                    <td></td>
+                    {% else %}
+                    <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                    {% endif %}
                     {% if item.l_real == None %}
                         <td></td>
                     {% else %}

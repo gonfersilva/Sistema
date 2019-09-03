@@ -2105,7 +2105,7 @@ def carga_detail(request, pk):
         area = (p.peso_liquido * 1000) / 100 
         som_area += area
         som_comp += (Decimal(area) / ((Decimal(p.num_bobines) * Decimal(p.largura_bobines)) * Decimal(0.001))) * (Decimal(p.num_bobines))
-        print(som_comp)
+        
         
     
     if len(paletes) == 0:

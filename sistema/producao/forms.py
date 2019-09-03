@@ -144,7 +144,7 @@ class Picagem(forms.Form):
 class UpdateBobineForm(ModelForm):
     class Meta:
         model = Bobine
-        fields = [ 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'buraco', 'obs', 'l_real']
+        fields = [ 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'buraco', 'obs', 'l_real', 'nok']
 
 
 class PaleteRetrabalhoForm(ModelForm):

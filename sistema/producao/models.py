@@ -471,9 +471,7 @@ class EtiquetaFinal(models.Model):
     def __str__(self):
         return self.palete_nome
 
-    
-
-                
+                 
              
    
 # def area_palete(sender, instance, **kwargs):

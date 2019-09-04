@@ -66,6 +66,10 @@ def create_bobinagem(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
+        sup = instance.lotenwsup
+        inf = instance.lotenwinf
+        instance.lotenwsup = sup.replace(" ", "")
+        instance.lotenwinf = inf.replace(" ", "")
         instance.save()
         bobinagem_create(instance.pk)
         
@@ -99,7 +103,7 @@ def perfil_list(request):
     context = {
         "perfil": perfil,
     }
-    return render (request, template_name, context)
+    return render(request, template_name, context)
 
 
 @login_required

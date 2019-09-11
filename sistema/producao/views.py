@@ -70,14 +70,15 @@ def create_bobinagem(request):
         inf = instance.lotenwinf
         instance.lotenwsup = sup.replace(" ", "")
         instance.lotenwinf = inf.replace(" ", "")
-        instance.save()
-        bobinagem_create(instance.pk)
+        if (instance.estado == 'R' and instance.obs == ''):
+            messages.error(request, 'Para Rejeitar a bobinagem é necessario indicar motivo nas observações.')
+        else:
+            instance.save()
+            bobinagem_create(instance.pk)
+            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                areas(instance.pk)
         
-        
-        if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-            areas(instance.pk)
-        
-        return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
+            return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
 
     context = {
         "form": form
@@ -209,9 +210,23 @@ def update_bobine(request, pk=None):
     }
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.save()
-        update_areas_bobine(instance.pk, estado_anterior)
-        return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
+        
+        if (instance.estado == 'DM'):
+            if (instance.con == False and instance.furos == False and instance.descen == False and instance.esp == False and instance.presa == False and instance.troca_nw == False and instance.diam_insuf == False and instance.buraco == False and instance.outros == False and instance.nok == False):
+                messages.error(request, 'Para classificar a bobine como estado DM, é necessário atribuir-lhe pelo menos um motivo.')
+            elif (instance.outros == True and instance.obs == ''):
+                messages.error(request, 'Obrigatório escrever motivo nas observações')
+            else:
+                update_areas_bobine(instance.pk, estado_anterior)
+                instance.save()
+                return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
+        elif (instance.estado == 'R' and instance.obs == ''):
+            messages.error(request, 'Obrigatório escrever o motivo da rejeição nas observações')
+        else:
+            instance.save()
+            update_areas_bobine(instance.pk, estado_anterior)
+            return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
+
    
 
     return render(request, template_name, context)

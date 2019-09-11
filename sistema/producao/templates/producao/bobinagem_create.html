@@ -7,6 +7,13 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             {% bobinagem_form form %}
         </div>
         <div class="col-md-6">

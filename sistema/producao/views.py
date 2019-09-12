@@ -75,6 +75,7 @@ def create_bobinagem(request):
         else:
             instance.save()
             bobinagem_create(instance.pk)
+        
             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                 areas(instance.pk)
         

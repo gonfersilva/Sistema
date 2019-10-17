@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -184,11 +184,24 @@ def bobinagem_status(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobine = Bobine.objects.filter(bobinagem=pk)
     emenda = Emenda.objects.filter(bobinagem=pk)
+    etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=pk)
+
+    form = ImprimirEtiquetaBobine(request.POST or None)
+    if form.is_valid():
+        impressora = form['impressora'].value()
+        num_copias = int(form['num_copias'].value())
+        for etiqueta in etiquetas:
+            etiqueta.impressora = impressora
+            etiqueta.num_copias = num_copias
+            etiqueta.estado_impressao = True
+            etiqueta.save()
+
 
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
-        "emenda":emenda
+        "emenda":emenda,
+        "form": form
     }
 
     return render(request, template_name, context) 
@@ -1090,16 +1103,27 @@ def planeamento_home(request):
 
 @login_required
 def bobine_details(request, pk):
-     bobine = get_object_or_404(Bobine, pk=pk)
-     
-     emenda = Emenda.objects.filter(bobinagem=bobine.bobinagem)
+    bobine = get_object_or_404(Bobine, pk=pk)
+    form = ImprimirEtiquetaBobine(request.POST or None)
+    emenda = Emenda.objects.filter(bobinagem=bobine.bobinagem)
+    etiqueta = get_object_or_404(EtiquetaRetrabalho, bobine=bobine.nome)
 
-     template_name = 'producao/bobine_details.html'
-     context = {
-         "bobine": bobine,
-         "emenda": emenda,
-     }
-     return render(request, template_name, context)
+    if form.is_valid():
+        impressora = form['impressora'].value()
+        num_copias = int(form['num_copias'].value())
+        etiqueta.impressora = impressora
+        etiqueta.num_copias = num_copias
+        etiqueta.estado_impressao = True
+        etiqueta.save()
+
+
+    template_name = 'producao/bobine_details.html'
+    context = {
+        "bobine": bobine,
+        "emenda": emenda,
+        "form": form
+    }
+    return render(request, template_name, context)
 
 @login_required
 def relatorio_diario(request):

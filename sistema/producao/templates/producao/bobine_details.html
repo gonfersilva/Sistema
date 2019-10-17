@@ -1,4 +1,5 @@
 {% extends "layout.html "%}
+{% load bootstrap3 %}
 
 {% block title %}Bobine {{ bobine.nome }}{% endblock %}
 
@@ -33,9 +34,13 @@
                 {% endif %}
             </div>
         </div>
-        <br>
-        <br>
-        <br>
+        <div class="row">
+            <form method="POST" action="#">
+                {% bootstrap_form form %}
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary pull-right" value="Imprimir Etiqueta">
+            </form>
+        </div>
         <div class="row">
                 {% if bobine.palete %}
                 <div class="container col-md-12">

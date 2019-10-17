@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load bootstrap3 %}
 
 {% block head_title %}Bobinagem{% endblock head_title %}
 {% block content %}
@@ -114,6 +115,18 @@
                 <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='dm' %}" class="btn btn-warning" role="button">DM</a>
                 <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='rej' %}" class="btn btn-danger" role="button">Rejeitar</a>
                 <p>Os estados acima apenas serão atribuidos ás bobines que estejam em <strong id="estado_lab">LAB</strong> ou <strong id="estado_hold">HOLD</strong>.</p>
+                
+                <br>
+                <br>
+                <h3>Imprimir</h3>
+                <form method="POST" action="#">
+                    {% bootstrap_form form %}
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-primary pull-right" value="Imprimir todas">
+                </form>
+                <br>
+                <br> 
+
             </div>
         <table class="table table-fixed">
             <thead>

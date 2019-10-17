@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 import datetime, time
 from django import forms
@@ -290,6 +290,13 @@ class ClassificacaoBobines(forms.Form):
     outros = forms.BooleanField(initial=False, label='', required=False)
     obs = forms.CharField(max_length=200, label='', required=False)
     l_real = forms.IntegerField(required=False)
+
+class ImprimirEtiquetaBobine(forms.Form):
+    IMP = (('Bobinadora_CAB_A4_200', 'BOBINADORA', ), ('DM12_CAB_A4_200', 'DM12'))
+    impressora = forms.CharField(max_length=200, widget=forms.Select(choices=IMP))
+    num_copias = forms.IntegerField(label="Nº de Cópias")
+        
+
 
 
    

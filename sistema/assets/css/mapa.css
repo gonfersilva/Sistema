@@ -147,3 +147,7 @@ th
 .btn.active span.glyphicon {				
 	opacity: 1;				
 }
+
+p#atencao {
+    color:red
+}

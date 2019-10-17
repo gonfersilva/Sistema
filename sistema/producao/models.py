@@ -343,6 +343,7 @@ class Emenda(models.Model):
 #     pass
 
 class EtiquetaRetrabalho(models.Model):
+    IMP = (('Bobinadora_CAB_A4_200', 'BOBINADORA', ), ('DM12_CAB_A4_200', 'DM12'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     bobine = models.CharField(verbose_name="Bobine", max_length=200)
     data = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today,verbose_name="Data")
@@ -361,6 +362,10 @@ class EtiquetaRetrabalho(models.Model):
     metros2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 2", default=0)
     emenda3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 3", default=0)
     metros3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 3", default=0)
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
+    
     
     def __str__(self):
         return self.bobine

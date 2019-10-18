@@ -69,6 +69,8 @@ $(window).load(function() {
                 var td6=$(document.createElement("td")).attr('id', "center")
                 var td7=$(document.createElement("td")).attr('id', "center")
                 
+                
+                
                 td1.append(a1);
                 td2.text(cargas[i].enc.eef);
                 td3.text(cargas[i].tipo);
@@ -81,6 +83,7 @@ $(window).load(function() {
                 td5.text(cargas[i].data);
                 td6.text(cargas[i].num_paletes_actual + " / " + cargas[i].num_paletes );
                 td7.text(cargas[i].sqm);
+                
 
                 var tr=$(document.createElement("tr"));
                 var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);

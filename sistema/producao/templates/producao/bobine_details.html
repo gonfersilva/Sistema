@@ -34,7 +34,9 @@
                 {% endif %}
             </div>
         </div>
+        <br>
         <div class="row">
+            <h3>Imprimir Bobine {{ bobine.nome }}</h3>
             <form method="POST" action="#">
                 {% bootstrap_form form %}
                 {% csrf_token %}

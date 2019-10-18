@@ -161,6 +161,8 @@ $.ajax({
             rel = Math.round(rel * 100) / 100
             rel_area = Math.round((paletes[i].peso_liquido * 1000) / 100)
             rel_comp = Math.round((rel_area / ((paletes[i].num_bobines * paletes[i].largura_bobines) * 0.001)) * paletes[i].num_bobines)
+            // var link_imp_palete = "/producao/carga/palete/imprimir/" + paletes[i].id
+
             
             var td8=$(document.createElement("td")).attr('id', "center")
             var a1=$(document.createElement("a")).text(paletes[i].nome), td1=$(document.createElement("td"));
@@ -174,6 +176,7 @@ $.ajax({
             var td10=$(document.createElement("td")).attr('id', "center")
             var td11=$(document.createElement("td")).attr('id', "center")
             var td12=$(document.createElement("td")).attr('id', "center")
+            var td13=$(document.createElement("a"))
 
 
             td1.append(a1);
@@ -188,6 +191,9 @@ $.ajax({
             td10.text(rel + "%");
             td11.text(rel_comp);
             td12.text(rel_area);
+            // td13.addClass('btn btn-primary').text("Imprimir")
+            // .attr('href', link_imp_palete);
+
 
 
             var tr=$(document.createElement("tr"));

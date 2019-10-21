@@ -5,8 +5,8 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
-from .models import Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
+from .forms import ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .models import EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -2155,9 +2155,20 @@ def carga_create(request):
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     paletes = Palete.objects.filter(carga=carga)
+    
     som = 0 
     som_comp = 0
     som_area = 0
+
+    form = ImprimirEtiquetaFinalPalete(request.POST or None)
+    if form.is_valid():
+        num_copias = int(form['num_copias'].value())
+        for p in paletes:
+            etiqueta = EtiquetaFinal.objects.get(palete=p, activa=True)
+            etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+            etiqueta.num_copias = num_copias
+            etiqueta.estado_impressao = True
+            etiqueta.save()
     
     for p in paletes:
         som += (p.peso_liquido/(p.area/10))*100
@@ -2202,7 +2213,8 @@ def carga_detail(request, pk):
         "data_final": data_final,
         "som": som,
         "som_comp": som_comp,
-        "som_area": som_area
+        "som_area": som_area,
+        "form": form
     }
 
     return render(request, template_name, context)

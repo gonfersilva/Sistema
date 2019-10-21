@@ -300,6 +300,9 @@ class ImprimirEtiquetaPalete(forms.Form):
     IMP = (('Bobinadora_CAB_A4_200', 'BOBINADORA'), ('DM12_CAB_A4_200', 'DM12'))
     impressora = forms.CharField(max_length=200, widget=forms.Select(choices=IMP), required=True)
     num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=4, max_value=4, min_value=1)
+
+class ImprimirEtiquetaFinalPalete(forms.Form):
+    num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=1, max_value=4, min_value=1)
         
 
 

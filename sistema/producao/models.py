@@ -477,9 +477,9 @@ class EtiquetaFinal(models.Model):
     gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=False, default="")
     sscc = models.CharField(verbose_name="SSCC", max_length=18, unique=False, default="")
     activa = models.BooleanField(default=True, verbose_name="Activa") 
-    # impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
-    # num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    # estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
     
 
     def __str__(self):

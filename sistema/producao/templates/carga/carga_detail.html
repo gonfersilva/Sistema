@@ -107,14 +107,14 @@
     </div>
     <br>
     <br>
-    <div class="row">
+    <!-- <div class="row">
         <h3>Imprimir Carga {{ carga.carga }}</h3>
         <form method="POST" action="#">
             {% bootstrap_form form %}
             {% csrf_token %}
             <input type="submit" class="btn btn-primary pull-right" value="Imprimir todas">
         </form>
-    </div>
+    </div> -->
     <br>
     <br>
 
@@ -186,7 +186,7 @@ $.ajax({
             var td10=$(document.createElement("td")).attr('id', "center")
             var td11=$(document.createElement("td")).attr('id', "center")
             var td12=$(document.createElement("td")).attr('id', "center")
-            var td13=$(document.createElement("a"))
+            // var td13=$(document.createElement("a"))
 
 
             td1.append(a1);
@@ -201,13 +201,13 @@ $.ajax({
             td10.text(rel + "%");
             td11.text(rel_comp);
             td12.text(rel_area);
-            td13.addClass('btn btn-primary').text("Imprimir")
-            .attr('href', link_imp_palete);
+            // td13.addClass('btn btn-primary').text("Imprimir")
+            // .attr('href', link_imp_palete);
 
 
 
             var tr=$(document.createElement("tr"));
-            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td7).append(td6).append(td9).append(td11).append(td12).append(td10).append(td13);
+            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td7).append(td6).append(td9).append(td11).append(td12).append(td10);
 
             $("#paletes-list").append(tr);
 

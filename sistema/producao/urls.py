@@ -69,6 +69,7 @@ urlpatterns = [
     url(r'^carga/completa/$', carga_list_completa, name='carga_list_completa'),
     url(r'^carga/detail/(?P<pk>\d+)/$', carga_detail, name='carga_detail'),
     url(r'^carga/create/$', carga_create, name='carga_create'),
+    url(r'^carga/imprimiretiquetapalete/(?P<pk>\d+)/$', carga_etiqueta_palete, name='carga_etiqueta_palete'),
     url(r'^armazem/$', armazem_home, name='armazem_home'),
     url(r'^palete/selecao/$', palete_selecao, name='palete_selecao'),
     url(r'^palete/pesagem/(?P<pk>\d+)/$', palete_pesagem, name='palete_pesagem'),

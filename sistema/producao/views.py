@@ -2219,7 +2219,21 @@ def carga_detail(request, pk):
 
     return render(request, template_name, context)
 
-    
+@login_required
+def carga_etiqueta_palete(request, pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    etiqueta = EtiquetaFinal.objects.get(palete=palete, activa=True)
+    template_name = 'producao/carga_etiqueta_palete.html'
+        
+    etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+    etiqueta.num_copias = 1
+    etiqueta.estado_impressao = True
+    etiqueta.save()
+
+    context = {}
+
+    return redirect('producao:carga_detail', pk=palete.carga_id)
+
 
 @login_required
 def carga_edit(request, pk):

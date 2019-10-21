@@ -107,14 +107,14 @@
     </div>
     <br>
     <br>
-    <!-- <div class="row">
+    <div class="row">
         <h3>Imprimir Carga {{ carga.carga }}</h3>
         <form method="POST" action="#">
             {% bootstrap_form form %}
             {% csrf_token %}
             <input type="submit" class="btn btn-primary pull-right" value="Imprimir todas">
         </form>
-    </div> -->
+    </div>
     <br>
     <br>
 
@@ -171,7 +171,7 @@ $.ajax({
             rel = Math.round(rel * 100) / 100
             rel_area = Math.round((paletes[i].peso_liquido * 1000) / 100)
             rel_comp = Math.round((rel_area / ((paletes[i].num_bobines * paletes[i].largura_bobines) * 0.001)) * paletes[i].num_bobines)
-            // var link_imp_palete = "/producao/carga/palete/imprimir/" + paletes[i].id
+            var link_imp_palete = "/producao/carga/imprimiretiquetapalete/" + paletes[i].id
 
             
             var td8=$(document.createElement("td")).attr('id', "center")
@@ -201,13 +201,13 @@ $.ajax({
             td10.text(rel + "%");
             td11.text(rel_comp);
             td12.text(rel_area);
-            // td13.addClass('btn btn-primary').text("Imprimir")
-            // .attr('href', link_imp_palete);
+            td13.addClass('btn btn-primary').text("Imprimir")
+            .attr('href', link_imp_palete);
 
 
 
             var tr=$(document.createElement("tr"));
-            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td7).append(td6).append(td9).append(td11).append(td12).append(td10);
+            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td7).append(td6).append(td9).append(td11).append(td12).append(td10).append(td13);
 
             $("#paletes-list").append(tr);
 

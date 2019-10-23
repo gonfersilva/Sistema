@@ -17,6 +17,20 @@
         <h3 id="center">Proforms - Carga: {{ instance.carga }} </h3>
         {% endif %}
     </div>
+    <div class="row" id="center">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="row" id="center">
+        {% if temartigo == False %}
+            <p>As bobines da palete {{ instance.nome }} não têm artigo atribuido. Por favor contacte o Administrador.</p>
+        {% endif%}
+    </div>
     <div class="row">
         <div class="col-md-6">
                 {% palete_pesagem_form form %}

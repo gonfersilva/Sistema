@@ -3132,8 +3132,7 @@ def palete_picagem(request, pk):
                             palete.save()
                             e_p.palete_nome = palete.nome
                             break
-
-                    
+                 
 
 
                     palete.num_bobines_act = c

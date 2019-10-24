@@ -675,14 +675,40 @@ def add_artigo_to_bobine(pk):
     bobines = Bobine.objects.filter(palete=palete)
     cliente = palete.cliente
     artigos = Artigo.objects.all()
-
-    for b in bobines:
-        for a in artigos:
-            if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
-                artigo = get_object_or_404(Artigo, pk=a.pk)
+    
+    if cliente.nome == 'BB DISTRIBE SAS':
+        for b in bobines:
+            if (b.largura.largura == 160 and b.palete.cliente.diam_ref == 1200 and b.bobinagem.perfil.core == '6' and b.largura.gsm == '100' and b.largura.designacao_prod == 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'):
+                artigo = get_object_or_404(Artigo, pk=61)
                 b.artigo = artigo
                 b.save()
+            else:
+                for a in artigos:
+                    if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
+                        artigo = get_object_or_404(Artigo, pk=a.pk)
+                        b.artigo = artigo
+                        b.save()
 
+    elif cliente.nome == 'Faderco SPA':
+        for b in bobines:
+            if (b.largura.largura == 160 and b.palete.cliente.diam_ref == 1200 and b.bobinagem.perfil.core == '6' and b.largura.gsm == '100' and b.largura.designacao_prod == 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'):
+                artigo = get_object_or_404(Artigo, pk=48)
+                b.artigo = artigo
+                b.save()
+            else:
+                for a in artigos:
+                    if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
+                        artigo = get_object_or_404(Artigo, pk=a.pk)
+                        b.artigo = artigo
+                        b.save()
+
+    else:
+        for b in bobines:
+            for a in artigos:
+                if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
+                    artigo = get_object_or_404(Artigo, pk=a.pk)
+                    b.artigo = artigo
+                    b.save()
 
 # def palete_carga_num(carga_pk, palete_pk):
 #     carga = get_object_or_404(Carga, pk=carga_pk)

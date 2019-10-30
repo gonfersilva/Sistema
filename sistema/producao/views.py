@@ -694,12 +694,18 @@ def bobinagem_delete(request, pk):
                         bobine.recycle = False
                     bobine.save()
                     e.delete()
+                etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=obj)
+                for eti in etiquetas:
+                    eti.delete()
                 obj.delete()
                 if obj.perfil.retrabalho == False:
                     return redirect('producao:bobinagem_list_all')
                 else:
                     return redirect('producao:retrabalho_home')
             else:
+                etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=obj)
+                for eti in etiquetas:
+                    eti.delete()
                 obj.delete()
                 if obj.perfil.retrabalho == False:
                     return redirect('producao:bobinagem_list_all')
@@ -1256,7 +1262,8 @@ def etiqueta_retrabalho(request, pk):
 
     if EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem).exists():
         
-        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)
+           
     else:
         for b in bobine:
             e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area)
@@ -1986,6 +1993,10 @@ def refazer_bobinagem_dm(request, pk):
             bobine_original.recycle = False
         bobine_original.save()
         e.delete() 
+
+    etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem)
+    for eti in etiquetas:
+        eti.delete()
 
     bobinagem.num_emendas = 0
     bobinagem.comp = 0

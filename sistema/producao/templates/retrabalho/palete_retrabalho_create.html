@@ -5,7 +5,16 @@
 {% block title %}Palete para retrabalho | {{ block.super }}{% endblock %}
 {% block content %}
 
-    
+    <div class="col-md-12">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}" id="error">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
     {% palete_retrabalho_form form %}
        
 

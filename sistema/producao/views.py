@@ -355,32 +355,48 @@ def create_palete_retrabalho(request):
 
     if form.is_valid():
         instance = form.save(commit=False)
+        nome = ''
+        ano = instance.data_pal
+        ano = ano.strftime('%Y')
         instance.user = request.user
         instance.retrabalhada = True
         instance.estado = 'DM'
-        instance.num_bobines = 0
         instance.num_bobines_act = 0
         instance.largura_bobines = 0
         instance.area = 0
-        instance.comp_total = 0        
-        instance.save()
-        palete_nome(instance.pk)
-        
+        instance.comp_total = 0
 
-        if EtiquetaPalete.objects.filter(palete=instance).exists():
-            return redirect('producao:picagem_palete_dm', pk=instance.pk)
+        if instance.num < 10:
+            nome = 'DM000%s-%s' % (instance.num, ano)
+        elif instance.num < 100:
+            nome = 'DM00%s-%s' % (instance.num, ano)
+        elif instance.num < 1000:
+            nome = 'DM0%s-%s' % (instance.num, ano)
         else:
-            e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
-            e_p.save()
-            return redirect('producao:picagem_palete_dm', pk=instance.pk)
-                
-        return redirect('producao:picagem_palete_dm', pk=instance.pk)
+            nome = 'DM%s-%s' % (instance.num, ano)
+        
+        # print(nome, ano, instance.num)
+        if Palete.objects.filter(nome=nome).exists():
+            messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
+        else:
+            instance.save()
+            palete_nome(instance.pk)
+                  
+            if EtiquetaPalete.objects.filter(palete=instance).exists():
+                return redirect('producao:palete_picagem_dm', pk=instance.pk)
+            else:
+                e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
+                e_p.save()
+                return redirect('producao:palete_picagem_dm', pk=instance.pk)
+                    
+            return redirect('producao:palete_picagem_dm', pk=instance.pk)
 
         
     context = {
         "form": form, 
         }
     return render(request, template_name, context)
+
 
 
 @login_required
@@ -1706,53 +1722,262 @@ def palete_confirmation(request, pk, id_bobines):
 @login_required
 def palete_rabrir(request, pk):
     palete = Palete.objects.get(pk=pk)
-    
-    bobines = Bobine.objects.filter(palete=palete)
-    e_p = EtiquetaPalete.objects.get(palete=palete)
-    e_p.diam_min = 0  
-    e_p.diam_max = 0 
-    if palete.estado == 'G':
-        ano = palete.data_pal
-        ano = ano.strftime('%Y')
-        num = palete.num
-        if num < 10:    
-            palete.nome = 'P000%s-%s' % (num, ano)  
-            e_p.palete_nome = palete.nome
-        elif num < 100:
-            palete.nome = 'P00%s-%s' % (num, ano)
-            e_p.palete_nome = palete.nome
-        elif num < 1000: 
-            palete.nome = 'P0%s-%s' % (num, ano)
-            e_p.palete_nome = palete.nome
-        else: 
-            palete.nome = 'P%s-%s' % (num, ano)
-            e_p.palete_nome = palete.nome
 
-    palete.num_bobines_act = 0
-    palete.save()
-    e_p.save()
-    for b in bobines:
-        b.palete = None
-        b.save()
-    if palete.estado == 'G':
+    if palete.estado == 'G':    
+        bobines = Bobine.objects.filter(palete=palete)
+        e_p = EtiquetaPalete.objects.get(palete=palete)
+        e_p.diam_min = 0  
+        e_p.diam_max = 0 
+        if palete.estado == 'G':
+            ano = palete.data_pal
+            ano = ano.strftime('%Y')
+            num = palete.num
+            if num < 10:    
+                palete.nome = 'P000%s-%s' % (num, ano)  
+                e_p.palete_nome = palete.nome
+            elif num < 100:
+                palete.nome = 'P00%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
+            elif num < 1000: 
+                palete.nome = 'P0%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
+            else: 
+                palete.nome = 'P%s-%s' % (num, ano)
+                e_p.palete_nome = palete.nome
+
+        palete.num_bobines_act = 0
+        palete.save()
+        e_p.save()
+        for b in bobines:
+            b.palete = None
+            b.save()
+        
         return redirect('producao:palete_picagem', pk=palete.pk)
+
     elif palete.estado == 'DM':
-        return redirect('producao:picagem_palete_dm', pk=palete.pk)
+        bobines = Bobine.objects.filter(palete=palete)
+        e_p = EtiquetaPalete.objects.get(palete=palete)
+        for b in bobines:
+            b.palete == None
+            b.save()
+
+        e_p.delete()
+        palete.delete()        
+
+        return redirect('producao:palete_create_retrabalho')
+
+# @login_required
+# def picagem_palete_dm(request, pk):
+#     palete = Palete.objects.get(pk=pk)
+#     e_p = EtiquetaPalete.objects.get(palete=palete)
+
+#     template_name = 'palete/palete_picagem_dm.html'
+
+
+#     context = {
+#         "palete":palete,
+#         "e_p":e_p,
+#     }
+
+#     return render(request, template_name, context)
 
 @login_required
-def picagem_palete_dm(request, pk):
-    palete = Palete.objects.get(pk=pk)
-    e_p = EtiquetaPalete.objects.get(palete=palete)
+def palete_picagem_dm(request, pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    template_name = 'palete/palete_picagem_dm.html'
+    num_bobines = palete.num_bobines
 
-    template_name = 'palete/picagem_palete_dm.html'
+    PicagemBobinesFormSet = formset_factory(PicagemBobines, extra=num_bobines)
 
+    if request.method == 'POST':
+        formset = PicagemBobinesFormSet(request.POST)
+        if formset.is_valid():
+            count = 0
+            array_bobines = []
+            validation = True
+            
+            for f in formset:
+                count += 1
+                cd = f.cleaned_data
+                b = cd.get('bobine')
+                if b is not None:
+                    try:
+                        bobine = get_object_or_404(Bobine, nome=b)
+                        array_bobines.append(bobine)
+
+                        if bobine.palete:
+                            if bobine.palete.estado == 'G':
+                                messages.error(request, 'A bobine ' + b + ' encontra-se numa palete para cliente. Por favor verifique.')  
+                            elif bobine.palete.estado == 'DM':
+                                validation = True
+                     
+                    except:
+                        messages.error(request, '(' + str(count) + ') A bobine ' + b + ' não existe.')  
+                        validation = False
+
+                else:
+                    messages.error(request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
+                    validation = False
+
+            if len(array_bobines) == palete.num_bobines and validation == True:
+                if len(array_bobines) > len(set(array_bobines)):
+                    messages.error(request, 'A picagem contem bobines repetidas.')
+                else:
+                    c = 0
+                    area_sum = 0
+                    comp_total = 0
+
+                    for y in array_bobines:
+                        y_b = get_object_or_404(Bobine, nome=y)
+                        if y_b.palete:
+                            y_p = get_object_or_404(Palete, pk = y_b.palete.pk)
+                            if y_p.estado == 'DM':
+                                y_p.area -= Decimal(y_b.area) 
+                                y_p.comp_total -= Decimal(y_b.bobinagem.comp_cli)
+                                y_p.num_bobines -= 1
+                                y_p.num_bobines_act -= 1
+                                y_p.save()
+
+                    for ab in array_bobines:
+                        c += 1
+                        bob = get_object_or_404(Bobine, nome=ab)
+                        bob.palete = palete
+                        bob.posicao_palete = c
+                        area_sum += bob.area
+                        comp_total += bob.bobinagem.comp_cli 
+                        bob.save()
+
+                    e_p = EtiquetaPalete.objects.get(palete=palete)       
+                    # for x in array_bobines:
+                    #     bobine = Bobine.objects.get(nome=x)
+                    #     if bobine.bobinagem.perfil.retrabalho == True:
+                    #         ano = palete.data_pal
+                    #         ano = ano.strftime('%Y')
+                    #         num = palete.num
+                    #         if num < 10:    
+                    #             palete.nome = 'R000%s-%s' % (num, ano)  
+                    #         elif num < 100:
+                    #             palete.nome = 'R00%s-%s' % (num, ano)
+                    #         elif num < 1000: 
+                    #             palete.nome = 'R0%s-%s' % (num, ano)
+                    #         else: 
+                    #             palete.nome = 'R%s-%s' % (num, ano)
+                    #         palete.save()
+                    #         e_p.palete_nome = palete.nome
+                    #         break
+                 
+
+
+                    palete.num_bobines_act = c
+                    palete.area = area_sum
+                    palete.comp_total = comp_total
+                    palete.save()
+
+                    
+                    bobines = Bobine.objects.filter(palete=palete)
+                    bobines_nome = []
+                    d_min = 0
+                    d_max = 0
+                    bobine_posicao = [None] * 61
+                                        
+                    for bn in bobines:
+                        bobines_nome.append(bn.nome)
+                        d = bn.bobinagem.diam
+                        pos = bn.posicao_palete
+                        bobine_posicao[pos] = bn.nome
+                        if d_min == 0 and d_max == 0: 
+                            d_min = d
+                            d_max = d
+                        elif d <= d_min:
+                            d_min = d
+                        elif d >= d_max:
+                            d_max = d
+
+                    # bobine_produto = Bobine.objects.get(nome=bobines_nome[0])
+                    # e_p.produto = bobine_produto.largura.designacao_prod
+                    
+                    e_p.bobine1 = bobine_posicao[1]
+                    e_p.bobine2 = bobine_posicao[2]
+                    e_p.bobine3 = bobine_posicao[3]
+                    e_p.bobine4 = bobine_posicao[4]
+                    e_p.bobine5 = bobine_posicao[5]
+                    e_p.bobine6 = bobine_posicao[6]
+                    e_p.bobine7 = bobine_posicao[7]
+                    e_p.bobine8 = bobine_posicao[8]
+                    e_p.bobine9 = bobine_posicao[9]
+                    e_p.bobine10 = bobine_posicao[10]
+                    e_p.bobine11 = bobine_posicao[11]
+                    e_p.bobine12 = bobine_posicao[12]
+                    e_p.bobine13 = bobine_posicao[13]
+                    e_p.bobine14 = bobine_posicao[14]
+                    e_p.bobine15 = bobine_posicao[15]
+                    e_p.bobine16 = bobine_posicao[16]
+                    e_p.bobine17 = bobine_posicao[17]
+                    e_p.bobine18 = bobine_posicao[18]
+                    e_p.bobine19 = bobine_posicao[19]
+                    e_p.bobine20 = bobine_posicao[20]
+                    e_p.bobine21 = bobine_posicao[21]
+                    e_p.bobine22 = bobine_posicao[22]
+                    e_p.bobine23 = bobine_posicao[23]
+                    e_p.bobine24 = bobine_posicao[24]
+                    e_p.bobine25 = bobine_posicao[25]
+                    e_p.bobine26 = bobine_posicao[26]
+                    e_p.bobine27 = bobine_posicao[27]
+                    e_p.bobine28 = bobine_posicao[28]
+                    e_p.bobine29 = bobine_posicao[29]
+                    e_p.bobine30 = bobine_posicao[30]
+                    e_p.bobine31 = bobine_posicao[31]
+                    e_p.bobine32 = bobine_posicao[32]
+                    e_p.bobine33 = bobine_posicao[33]
+                    e_p.bobine34 = bobine_posicao[34]
+                    e_p.bobine35 = bobine_posicao[35]
+                    e_p.bobine36 = bobine_posicao[36]
+                    e_p.bobine37 = bobine_posicao[37]
+                    e_p.bobine38 = bobine_posicao[38]
+                    e_p.bobine39 = bobine_posicao[39]
+                    e_p.bobine40 = bobine_posicao[40]
+                    e_p.bobine41 = bobine_posicao[41]
+                    e_p.bobine42 = bobine_posicao[42]
+                    e_p.bobine43 = bobine_posicao[43]
+                    e_p.bobine44 = bobine_posicao[44]
+                    e_p.bobine45 = bobine_posicao[45]
+                    e_p.bobine46 = bobine_posicao[46]
+                    e_p.bobine47 = bobine_posicao[47]
+                    e_p.bobine48 = bobine_posicao[48]
+                    e_p.bobine49 = bobine_posicao[49]
+                    e_p.bobine50 = bobine_posicao[50]
+                    e_p.bobine51 = bobine_posicao[51]
+                    e_p.bobine52 = bobine_posicao[52]
+                    e_p.bobine53 = bobine_posicao[53]
+                    e_p.bobine54 = bobine_posicao[54]
+                    e_p.bobine55 = bobine_posicao[55]
+                    e_p.bobine56 = bobine_posicao[56]
+                    e_p.bobine57 = bobine_posicao[57]
+                    e_p.bobine58 = bobine_posicao[58]
+                    e_p.bobine59 = bobine_posicao[59]
+                    e_p.bobine60 = bobine_posicao[60]
+                    e_p.diam_min = d_min
+                    e_p.diam_max = d_max
+                    e_p.save()
+
+                    # add_artigo_to_bobine(pk)
+
+                    return redirect('producao:addbobinepalete', pk=palete.pk)
+
+            
+   
+    else:
+        formset = PicagemBobinesFormSet()
+            
 
     context = {
         "palete":palete,
-        "e_p":e_p,
+        "formset": formset,
     }
 
     return render(request, template_name, context)
+
+    
 
 @login_required
 def validate_palete_dm(request, pk, id_bobines):

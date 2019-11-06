@@ -151,7 +151,7 @@ class PaleteRetrabalhoForm(ModelForm):
 
     class Meta:
         model = Palete
-        fields = ['num', 'data_pal']
+        fields = ['num', 'data_pal', 'num_bobines']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='DM').latest('num')

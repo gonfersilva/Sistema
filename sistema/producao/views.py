@@ -297,14 +297,35 @@ def create_palete(request):
     
     if form.is_valid():
         instance = form.save(commit=False)
+        nome_s_r = ''
+        nome_c_r = ''
+        ano = instance.data_pal
+        ano = ano.strftime('%Y')
         instance.user = request.user
         instance.estado = 'G'
         instance.area = 0
         instance.comp_total = 0
-        instance.save()
-        palete_nome(instance.pk)
+
+        if instance.num < 10:
+            nome_s_r = 'P000%s-%s' % (instance.num, ano)
+            nome_c_r = 'R000%s-%s' % (instance.num, ano)
+        elif instance.num < 100:
+            nome_s_r = 'P00%s-%s' % (instance.num, ano)
+            nome_c_r = 'R00%s-%s' % (instance.num, ano)
+        elif instance.num < 1000:
+            nome_s_r = 'P0%s-%s' % (instance.num, ano)
+            nome_c_r = 'R0%s-%s' % (instance.num, ano)
+        else:
+            nome_s_r = 'P%s-%s' % (instance.num, ano)
+            nome_c_r = 'R%s-%s' % (instance.num, ano)
+
+        if Palete.objects.filter(nome=nome_s_r).exists() or Palete.objects.filter(nome=nome_c_r).exists():
+            messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
+        else:
+            instance.save()
+            palete_nome(instance.pk)
                 
-        return redirect('producao:palete_picagem', pk=instance.pk)
+            return redirect('producao:palete_picagem', pk=instance.pk)
 
     context = {
         "form": form

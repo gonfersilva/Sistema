@@ -3041,6 +3041,7 @@ def retrabalho_v2(request, pk):
             else:
                 if not Bobine.objects.filter(nome=b_1):
                     messages.error(request, 'A bobine ' + b_1 + ' não existe.')
+                    
                 
     context = {
         "form": form, 

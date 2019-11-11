@@ -788,5 +788,55 @@ def retrabalho_nome(pk, emendas):
     
        
     
+def recycling_bobine(pk):
+    bobines = []
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    emendas = Emenda.objects.filter(bobinagem=bobinagem)
+    for e in emendas:
+        if e.bobine.recycle == True:
+            bobines.append(e.bobine)
+    
+    print(bobines)
+
+    # Remover bobine da palete e recalcular campos da palete
+    for b in bobines:
+        if b.palete != None:
+            palete = get_object_or_404(Palete, pk=b.palete.pk)
+            posicao_palete = b.posicao_palete
+            b.palete = None
+            b.posicao_palete = None
+            palete.area -= b.area
+            palete.comp_total -= b.bobinagem.comp_cli
+            palete.num_bobines -= 1
+            palete.num_bobines_act -= 1
+            palete.save()
+
+    # Correção de posições das bobines da Palete
+    bobines_palete = Bobine.objects.filter(palete=palete).order_by('posicao_palete')
+    count = 1
+    for bp in bobines_palete:
+        if bp.posicao_palete == count:
+            count += 1
+            bp.save()
+        else: 
+            bp.posicao_palete = count
+            count += 1
+            bp.save()
+
+    # Etiqueta de palete
+    
 
     
+
+
+
+    
+    
+
+    return print('recycling_bobine')
+
+def invert_recycle_bobine(pk):
+
+    return print('invert_recycle_bobine')
+
+

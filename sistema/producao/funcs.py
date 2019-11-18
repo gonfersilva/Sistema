@@ -702,6 +702,19 @@ def add_artigo_to_bobine(pk):
                         b.artigo = artigo
                         b.save()
 
+    elif cliente.nome == 'ENKA HIJYEN' or cliente.nome == 'PAKTEN SAGLIK URUNLERI' :
+        for b in bobines:
+            if (b.largura.largura == 75 and b.palete.cliente.diam_ref == 1100 and b.bobinagem.perfil.core == '6' and b.largura.gsm == '100' and b.largura.designacao_prod == 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'):
+                artigo = get_object_or_404(Artigo, pk=66)
+                b.artigo = artigo
+                b.save()
+            else:
+                for a in artigos:
+                    if (b.largura.largura == a.lar and b.palete.cliente.diam_ref == a.diam_ref and b.bobinagem.perfil.core == a.core and b.largura.gsm == a.gsm and b.largura.designacao_prod == a.produto):
+                        artigo = get_object_or_404(Artigo, pk=a.pk)
+                        b.artigo = artigo
+                        b.save()
+
     else:
         for b in bobines:
             for a in artigos:

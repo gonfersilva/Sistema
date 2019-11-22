@@ -66,20 +66,43 @@ def create_bobinagem(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
+
         sup = instance.lotenwsup
         inf = instance.lotenwinf
+
+        metros_nwsup = instance.nwsup
+        metros_nwinf = instance.nwinf
+
         instance.lotenwsup = sup.replace(" ", "")
         instance.lotenwinf = inf.replace(" ", "")
+
         if (instance.estado == 'R' and instance.obs == ''):
             messages.error(request, 'Para Rejeitar a bobinagem é necessario indicar motivo nas observações.')
         else:
-            instance.save()
-            bobinagem_create(instance.pk)
+            nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
+            nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
+
+            total_sup = instance.nwsup
+            total_inf = instance.nwinf
+            for ns in nonwovensup:
+                total_sup += ns.nwsup
+            for ni in nonwoveninf:
+                total_inf += ni.nwinf
+
+            # if (total_sup > 7500):
+            #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
+            # if (total_inf > 7500):
+
+            if (total_inf > 7500 or total_sup > 7500):
+                messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido de 7500. Por favor verifique os valores introduzidos.')
+            else:
+                instance.save()
+                bobinagem_create(instance.pk)
         
-            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
-                areas(instance.pk)
+                if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                    areas(instance.pk)
         
-            return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
+                return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
 
     context = {
         "form": form

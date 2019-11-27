@@ -1,0 +1,65 @@
+{% extends "layout.html "%}
+{% load bootstrap3 %}
+
+{% block title %}Perfil | {{ block.super }}{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-9 col-lg-9">  
+                <a href="{% url 'producao:planeamento_home' %}" class="btn btn-primary">Voltar</a>
+                
+        </div>
+        <div class="col-sm-6 col-md-3 col-lg-3 float-sm-right">
+            <a href="#" class="btn btn-primary" role="button">Criar perfil Linha</a>
+            <a href="#" class="btn btn-primary" role="button">Criar perfil DM</a>
+            
+        </div>
+    </div>
+  
+    
+
+
+    <div class="row">
+        <h1 id="center">Perfis (cortes)</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Perfil</th>
+                        <th>Produto</th>
+                        <th id="center">Nº de Bobines</th>
+                        <th id="center">Core</th>
+                        <th id="center">Largura total</th>
+                        <th id="center">Retrabalho</th>
+                        <th id="center"></th>
+                        <!-- <th id="center"></th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in perfil %}
+                    <tr>
+                        <td>{{ p.nome }}</td>
+                        <td>{{ p.produto }}</td>
+                        <td id="center">{{ p.num_bobines }}</td>
+                        <td id="center">{{ p.core }}</td>
+                        <td id="center">{{ p.largura_bobinagem }}</td>
+                        {% if p.retrabalho == True %}
+                            <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
+                            {% else %}
+                            <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
+                        {% endif %}
+                        <!-- <td id="center"><a href="#" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></td> -->
+                        <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                    </tr>
+                    {% endfor%}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
+

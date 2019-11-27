@@ -82,6 +82,8 @@ urlpatterns = [
     url(r'^retrabalho/confirmacao/(?P<pk>\d+)/(?P<b1>\d+)/(?P<m1>\d+)/(?P<b2>\w+)/(?P<m2>\w+)/(?P<b3>\w+)/(?P<m3>\w+)/$', retrabalho_confirmacao, name='retrabalho_confirmacao'),
     url(r'^palete/picagem/(?P<pk>\d+)/$', palete_picagem, name='palete_picagem'),    
     url(r'^listadebobines/(?P<pk>\d+)/$', classificacao_bobines_v2, name='classificacao_bobines_v2'),   
-    url(r'^listadebobinagens/$', bobinagem_list_v2, name='bobinagem_list_v2'),    
+    url(r'^teste/perfil/list/$', perfil_list_v2, name='perfil_list_v2'),    
+    # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    
+    # url(r'^teste/perfil/largura/(?P<pk>\d+)/$', perfil_larguras_v2, name='perfil_larguras_v2'),    
     
 ]

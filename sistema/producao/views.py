@@ -3582,3 +3582,35 @@ def bobinagem_list_v2(request):
         
         }
     return render(request, template_name, context)
+
+@login_required
+def perfil_list_v2(request):
+    perfil = Perfil.objects.all()
+    template_name = 'perfil/perfil_list_v2.html'
+    
+    context = {
+        "perfil": perfil,
+    }
+    return render(request, template_name, context)
+
+@login_required
+def perfil_create_v2(request):
+    template_name = 'perfil/perfil_create_v2.html'
+    form = PerfilCreateForm(request.POST or None)
+           
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        
+        for i in range(instance.num_bobines):
+            lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+            lar.save()
+        
+        return redirect('producao:perfil_details', pk=instance.pk)
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)

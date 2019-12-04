@@ -303,7 +303,28 @@ class ImprimirEtiquetaPalete(forms.Form):
 
 class ImprimirEtiquetaFinalPalete(forms.Form):
     num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=1, max_value=4, min_value=1)
-        
+
+class PerfilLinhaForm(ModelForm):
+    largura_bobines = forms.DecimalField(required=False)
+    class Meta:
+        model = Perfil
+        fields = [ 'produto', 'num_bobines', 'core', 'gramagem']
+
+class SearchPerfil(forms.Form):
+    nome = forms.CharField(label="Nome ou produto" ,max_length=200, required=False)
+    num_bobines = forms.IntegerField(label="Nº de bobines", required=False)
+    core = forms.CharField(label="Core", max_length=200, required=False)
+    largura_bobinagem = forms.IntegerField(label="Largura da Bobinagem", required=False)
+    retrabalho = forms.BooleanField(required=False)
+
+
+
+
+
+
+
+    
+
 
 
 

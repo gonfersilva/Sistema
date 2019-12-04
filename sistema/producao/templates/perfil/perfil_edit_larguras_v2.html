@@ -1,0 +1,81 @@
+{% extends "layout.html "%} 
+{% load bootstrap3 %}
+{% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <br>
+    {% if can_edit == True %}   
+    <div class="container">
+        <form method="post">
+            <div class="row">
+                <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-primary pull-left" role="button">Cancelar</a>
+                
+                <input type="submit" class="btn btn-primary pull-right" value="Validar">
+            </div>
+            <div class="row">
+                <h1 id="center">Editar larguras</h1>
+                <h2 id="center">{{ perfil.nome }}</h1>
+                <br>
+            </div>
+            <div class="row">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="row">
+                   
+                <div class="col-md-6">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                    <div class="container">  
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h3 id="center">Bobine nº {{ forloop.counter }}</h3>
+                            </div>
+                            {% for field in form %}
+                            <div class="col-sm-3">
+                                        {% bootstrap_field field %}
+                                    </div>
+                                {% endfor %}
+                            </div>   
+                    </div>  
+                    {% endfor %}
+                        
+                        
+                </div>
+                        
+                        
+                        
+            </form>
+                    
+        </div>
+        {% else %}
+        <div class="container">
+            <br>
+            <div class="row">
+
+                <h1 id="center">O perfil não pode ser editado porque já foram geradas bobinagens com o mesmo.</h1>
+                <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-block btn-primary" role="button">Cancelar</a>
+
+            </div>
+        </div>
+        {% endif %}
+            
+            
+</div>
+{% endblock %}
+                                                     
+                            
+                            
+                            
+                                
+                            
+                            
+                
+               

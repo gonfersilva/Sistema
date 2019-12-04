@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -19,6 +19,7 @@ from .funcs import *
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.forms import formset_factory
+from django.http import HttpResponse
 
 
 
@@ -3585,32 +3586,351 @@ def bobinagem_list_v2(request):
 
 @login_required
 def perfil_list_v2(request):
-    perfil = Perfil.objects.all()
+    perfil = Perfil.objects.filter(obsoleto=False)
     template_name = 'perfil/perfil_list_v2.html'
+    form = SearchPerfil(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        nome = cd.get('nome')
+        num_bobines = cd.get('num_bobines')
+        core = cd.get('core')
+        largura_bobinagem = cd.get('largura_bobinagem')
+        retrabalho = cd.get('retrabalho')
+
+        if retrabalho == True:
+            if nome and num_bobines and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and num_bobines and core:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and num_bobines and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif num_bobines and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and num_bobines:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif num_bobines and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome and core:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif num_bobines and core:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif nome:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif num_bobines:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True)) & Q(obsoleto=False)
+            elif core:
+                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+            elif largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+            else:
+                perfil = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
+        
+        if retrabalho == False:
+            if nome and num_bobines and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and num_bobines and core:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and num_bobines and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif num_bobines and core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and num_bobines:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif num_bobines and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False)& Q(obsoleto=False))
+            elif core and largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome and core:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif num_bobines and core:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif nome:
+                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif num_bobines:
+                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif core:
+                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+            elif largura_bobinagem:
+                perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+            else:
+                perfil = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
+
+
+
     
     context = {
         "perfil": perfil,
+        "form": form
+    }
+    return render(request, template_name, context)
+
+
+
+@login_required
+def perfil_details_v2(request, pk):
+    template_name = 'perfil/perfil_details_v2.html'
+    perfil = get_object_or_404(Perfil, pk=pk)
+    largura = Largura.objects.filter(perfil=pk)
+
+    context = {
+        "perfil": perfil,
+        "largura": largura,
     }
     return render(request, template_name, context)
 
 @login_required
-def perfil_create_v2(request):
-    template_name = 'perfil/perfil_create_v2.html'
-    form = PerfilCreateForm(request.POST or None)
-           
+def perfil_create_linha_v2(request):
+    template_name = 'perfil/perfil_create_linha_v2.html'
+    form = PerfilLinhaForm(request.POST or None)
+
     if form.is_valid():
         instance = form.save(commit=False)
+        cd = form.cleaned_data
+        largura_bobines = cd.get('largura_bobines')
+
+
+        # print(instance.produto, instance.num_bobines, instance.core, instance.gramagem)
+      
+            
         instance.user = request.user
+        instance.retrabalho = False
         instance.save()
-        
+
         for i in range(instance.num_bobines):
-            lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
-            lar.save()
-        
-        return redirect('producao:perfil_details', pk=instance.pk)
+            if largura_bobines and instance.gramagem:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
+                lar.save()
+            elif largura_bobines:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
+            elif instance.gramagem:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
+            else:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+
+
+        return redirect('producao:perfil_larguras_v2', pk=instance.pk)
+
+
+
 
     context = {
-        "form": form
+        "form": form, 
     }
+    return render(request, template_name, context)
 
+@login_required
+def perfil_create_dm_v2(request):
+    template_name = 'perfil/perfil_create_linha_v2.html'
+    form = PerfilLinhaForm(request.POST or None)
+
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        
+        instance.user = request.user
+        instance.retrabalho = True
+        instance.save()
+
+        
+
+
+
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
+@login_required
+def perfil_larguras_v2(request, pk):
+    perfil = get_object_or_404(Perfil, pk=pk)
+    template_name = 'perfil/perfil_larguras_v2.html'
+    # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    largura_total = 0
+    larguras = []
+    produtos = []
+    gsms = []
+    cont = []
+    nome_largura = ''
+    bobinagem = Bobinagem.objects.filter(perfil=perfil)
+    can_edit = True
+    if bobinagem.exists():
+        can_edit = False
+    
+    if request.method == 'POST':
+        formset = LargurasPerfilFormSet(request.POST, queryset=Largura.objects.filter(perfil=perfil))
+        if formset.is_valid():
+            for f in formset:
+                cd = f.cleaned_data
+                designacao_prod = cd.get('designacao_prod')
+                largura = cd.get('largura')
+                gsm = cd.get('gsm')
+                largura_total += int(largura)
+                larguras.append(largura)
+                produtos.append(designacao_prod)
+                gsms.append(gsm)
+
+
+            lar_s_dupli = list(dict.fromkeys(larguras))   
+
+            for i in lar_s_dupli:
+                num = larguras.count(i)
+                cont.append(num)
+
+          
+            larguras_dict = dict(zip(lar_s_dupli, cont))
+            for ld in larguras_dict:
+                nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
+
+            nome_largura = nome_largura[:-1]
+            nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+
+            if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
+                perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
+                perfis += 1
+                nome = nome_parcial + ' ' + str(perfis)
+            else:
+                nome = nome_parcial + ' 1'
+                
+            
+            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms)
+
+            if Perfil.objects.filter(token=token).exists():
+                perfil_2 = get_object_or_404(Perfil, token=token)
+                messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
+                messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
+            else:
+                # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
+                # print(token)
+                perfil.token = token
+                perfil.largura_bobinagem = largura_total
+                perfil.nome = nome
+                perfil.save()
+                formset.save()
+                return redirect('producao:perfil_details_v2', pk=perfil.pk)
+
+
+    else:
+        formset = LargurasPerfilFormSet(queryset=Largura.objects.filter(perfil=perfil))
+
+    context = {
+        "formset": formset, 
+        "perfil": perfil,
+        "can_edit": can_edit
+    }
+    return render(request, template_name, context)
+
+@login_required
+def perfil_edit_larguras_v2(request, pk):
+    perfil = get_object_or_404(Perfil, pk=pk)
+    template_name = 'perfil/perfil_edit_larguras_v2.html'
+    # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    largura_total = 0
+    larguras = []
+    produtos = []
+    gsms = []
+    cont = []
+    nome_largura = ''
+    bobinagem = Bobinagem.objects.filter(perfil=perfil)
+    can_edit = True
+    if bobinagem.exists():
+        can_edit = False
+    
+    if request.method == 'POST':
+        formset = LargurasPerfilFormSet(request.POST, queryset=Largura.objects.filter(perfil=perfil))
+        if formset.is_valid():
+            for f in formset:
+                cd = f.cleaned_data
+                designacao_prod = cd.get('designacao_prod')
+                largura = cd.get('largura')
+                gsm = cd.get('gsm')
+                largura_total += int(largura)
+                larguras.append(largura)
+                produtos.append(designacao_prod)
+                gsms.append(gsm)
+
+
+            lar_s_dupli = list(dict.fromkeys(larguras))   
+
+            for i in lar_s_dupli:
+                num = larguras.count(i)
+                cont.append(num)
+
+          
+            larguras_dict = dict(zip(lar_s_dupli, cont))
+            for ld in larguras_dict:
+                nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
+
+            nome_largura = nome_largura[:-1]
+            nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+
+            if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
+                perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
+                perfis += 1
+                nome = nome_parcial + ' ' + str(perfis)
+            else:
+                nome = nome_parcial + ' 1'
+                
+            
+            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms)
+
+            if Perfil.objects.filter(token=token).exists():
+                perfil_2 = get_object_or_404(Perfil, token=token)
+                messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
+                messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
+            else:
+                # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
+                # print(token)
+                perfil.token = token
+                perfil.largura_bobinagem = largura_total
+                perfil.nome = nome
+                perfil.save()
+                formset.save()
+                return redirect('producao:perfil_details_v2', pk=perfil.pk)
+
+
+    else:
+        formset = LargurasPerfilFormSet(queryset=Largura.objects.filter(perfil=perfil))
+
+    context = {
+        "formset": formset, 
+        "perfil": perfil,
+        "can_edit": can_edit
+    }
+    return render(request, template_name, context)
+
+@login_required
+def perfil_delete_v2(request, pk):
+    perfil = get_object_or_404(Perfil, pk=pk)
+    template_name = 'perfil/perfil_delete_v2.html'
+    can_delete = True
+    bobinagem = Bobinagem.objects.filter(perfil=perfil)
+    if bobinagem.exists():
+        can_delete = False
+
+    if request.method == 'POST':
+        perfil.delete()
+        return redirect('producao:perfil_list_v2')
+
+
+
+    context = {
+        "can_delete": can_delete,
+        "perfil": perfil,
+        "bobinagem": bobinagem
+        
+    }
     return render(request, template_name, context)

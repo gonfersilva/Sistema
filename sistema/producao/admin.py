@@ -27,6 +27,7 @@ class ArtigoAdmin(admin.ModelAdmin):
 
 class PerfilAdmin(admin.ModelAdmin):
     search_fields = ['nome']
+    readonly_fields = ['token']
 
 class ClienteAdmin(admin.ModelAdmin):
     search_fields = ['nome']

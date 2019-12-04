@@ -838,18 +838,66 @@ def recycling_bobine(pk):
 
     # Etiqueta de palete
     
-
-    
-
-
-
-    
-    
-
     return print('recycling_bobine')
 
 def invert_recycle_bobine(pk):
 
     return print('invert_recycle_bobine')
 
+def cancel_insert_larguras(request, pk):
+    perfil = get_object_or_404(Perfil, pk=pk)
+    larguras = Largura.objects.filter(perfil=perfil)
+    for l in larguras:
+        l.delete()
+
+    perfil.delete()
+
+    return redirect('producao:perfil_create_linha_v2')
+
+def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms):
+    
+    produtos_dict = {
+        'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE': 'A',
+        'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT': 'B',
+        'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE': 'C', 
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL': 'D', 
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL': 'E', 
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL': 'F', 
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL': 'G', 
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL': 'H', 
+        'SIDE PANEL ELA-ACE 100 HE': 'I',
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO': 'J',
+        'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE': 'K', 
+        'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)': 'L', 
+        'FRONTAL TAPE 48': 'M', 
+        'CAR PROTECTION SHEET 57': 'N', 
+        'ELASTIC FILM': 'O'
+    }
+
+    gsm_dict = {
+        '105': '1',
+        '100': '2',
+        '95': '3',
+        '90': '4',
+        '80': '5',
+        '57': '6',
+        '50': '7',
+        '48': '8'
+    }
+
+    token = '' + str(num_bobines) + produtos_dict.get(produto) + core 
+
+    for l in larguras:
+        token += str(l)
+
+    for p in produtos:
+        token += produtos_dict.get(p)
+    
+    for gsm in gsms:
+        token += gsm_dict.get(gsm)
+
+
+
+
+    return token
 

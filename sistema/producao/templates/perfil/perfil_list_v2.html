@@ -11,17 +11,58 @@
                 
         </div>
         <div class="col-sm-6 col-md-3 col-lg-3 float-sm-right">
-            <a href="#" class="btn btn-primary" role="button">Criar perfil Linha</a>
+            <a href="{% url 'producao:perfil_create_linha_v2' %}" class="btn btn-primary" role="button">Criar perfil Linha</a>
             <a href="#" class="btn btn-primary" role="button">Criar perfil DM</a>
             
         </div>
     </div>
-  
-    
+    <br><br>
+    <!-- <div class="row">
+ 
+        <input type="button" class="btn btn-primary pull-right" id="open_search_button" onclick="toggleSearch()" value="Fechar procura"></button>
+    </div> -->
+    <br>
+    <div class="row" id="search_form">
+        <h1 id="center">Perfis (cortes)</h1>
+        <br>
+        
+        <p><strong>Pesquisar</strong></p>
+        <form method="post" id="myForm">
+            <div class="row">
 
+                {% csrf_token %}
+                <div class="col-sm-4">
+                    {% bootstrap_field form.nome %}
+                </div>
+                <div class="col-sm-2">
+                    {% bootstrap_field form.num_bobines %}
+                </div>
+                <div class="col-sm-2">
+                    {% bootstrap_field form.core %}
+    
+                </div>
+                <div class="col-sm-4">
+                    {% bootstrap_field form.largura_bobinagem %}
+    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    {% bootstrap_field form.retrabalho %}
+                </div>
+            </div>
+
+         
+            <div class="row">
+                <!-- {% bootstrap_field form.nome %} -->
+                <input type="submit" onclick="submit()" class="btn btn-primary pull-right" value="Procurar">
+                <a class="btn btn-primary" href="{% url 'producao:perfil_list_v2' %}">Reset</a>
+            </div>
+        </form>
+    </div>
+    <br>
 
     <div class="row">
-        <h1 id="center">Perfis (cortes)</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -33,13 +74,14 @@
                         <th id="center">Largura total</th>
                         <th id="center">Retrabalho</th>
                         <th id="center"></th>
+                        <th id="center"></th>
                         <!-- <th id="center"></th> -->
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in perfil %}
                     <tr>
-                        <td>{{ p.nome }}</td>
+                        <td><a href="{% url 'producao:perfil_details_v2' pk=p.pk %}">{{ p.nome }}</a></td>
                         <td>{{ p.produto }}</td>
                         <td id="center">{{ p.num_bobines }}</td>
                         <td id="center">{{ p.core }}</td>
@@ -50,7 +92,9 @@
                             <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
                         {% endif %}
                         <!-- <td id="center"><a href="#" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></td> -->
-                        <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                        <td id="center"><a href="{% url 'producao:perfil_edit_larguras_v2' pk=p.pk %}" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></a></td>
+                        <td id="center"><a href="{% url 'producao:perfil_delete_v2' pk=p.pk %}" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                        
                     </tr>
                     {% endfor%}
                     
@@ -60,6 +104,22 @@
     </div>
     
 </div>
+<!-- <script>
+function toggleSearch() {
+    var x = document.getElementById("search_form");
+    var y = document.getElementById("open_search_button")
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        y.value = "Fechar procura";
+    } else {
+        x.style.display = "none";
+        y.value = "Abrir procura";
+
+    }
+}
+
+
+</script> -->
 
 {% endblock %}
 

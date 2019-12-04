@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from . import views
 from .views import *
+from .funcs import *
 
 app_name="producao" 
 
@@ -83,6 +84,13 @@ urlpatterns = [
     url(r'^palete/picagem/(?P<pk>\d+)/$', palete_picagem, name='palete_picagem'),    
     url(r'^listadebobines/(?P<pk>\d+)/$', classificacao_bobines_v2, name='classificacao_bobines_v2'),   
     url(r'^teste/perfil/list/$', perfil_list_v2, name='perfil_list_v2'),    
+    url(r'^teste/perfil/details/(?P<pk>\d+)/$', perfil_details_v2, name='perfil_details_v2'),    
+    url(r'^teste/perfil/create/linha/$', perfil_create_linha_v2, name='perfil_create_linha_v2'),    
+    url(r'^teste/perfil/larguras/(?P<pk>\d+)/$', perfil_larguras_v2, name='perfil_larguras_v2'),
+    url(r'^teste/perfil/larguras/edit/(?P<pk>\d+)/$', perfil_edit_larguras_v2, name='perfil_edit_larguras_v2'),
+    url(r'^teste/perfil/larguras/cancel/(?P<pk>\d+)/$', cancel_insert_larguras, name='cancel_insert_larguras'),
+    url(r'^teste/perfil/delete/(?P<pk>\d+)/$', perfil_delete_v2, name='perfil_delete_v2'),
+
     # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    
     # url(r'^teste/perfil/largura/(?P<pk>\d+)/$', perfil_larguras_v2, name='perfil_larguras_v2'),    
     

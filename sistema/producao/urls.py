@@ -86,6 +86,7 @@ urlpatterns = [
     url(r'^teste/perfil/list/$', perfil_list_v2, name='perfil_list_v2'),    
     url(r'^teste/perfil/details/(?P<pk>\d+)/$', perfil_details_v2, name='perfil_details_v2'),    
     url(r'^teste/perfil/create/linha/$', perfil_create_linha_v2, name='perfil_create_linha_v2'),    
+    url(r'^teste/perfil/create/dm/$', perfil_create_dm_v2, name='perfil_create_dm_v2'),    
     url(r'^teste/perfil/larguras/(?P<pk>\d+)/$', perfil_larguras_v2, name='perfil_larguras_v2'),
     url(r'^teste/perfil/larguras/edit/(?P<pk>\d+)/$', perfil_edit_larguras_v2, name='perfil_edit_larguras_v2'),
     url(r'^teste/perfil/larguras/cancel/(?P<pk>\d+)/$', cancel_insert_larguras, name='cancel_insert_larguras'),

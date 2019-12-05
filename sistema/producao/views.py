@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -3731,22 +3731,36 @@ def perfil_create_linha_v2(request):
 
 @login_required
 def perfil_create_dm_v2(request):
-    template_name = 'perfil/perfil_create_linha_v2.html'
-    form = PerfilLinhaForm(request.POST or None)
-
+    template_name = 'perfil/perfil_create_dm_v2.html'
+    form = PerfilDMForm(request.POST or None)
+    
 
     if form.is_valid():
         instance = form.save(commit=False)
-        
+        cd = form.cleaned_data
+        largura_bobines = cd.get('largura_bobines')
+        largura_original = cd.get('largura_original')
+        core_original = cd.get('core_original')
         instance.user = request.user
         instance.retrabalho = True
+        instance.core_original = core_original
+        instance.largura_original = largura_original
         instance.save()
 
+        for i in range(instance.num_bobines):
+            if largura_bobines and instance.gramagem:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
+                lar.save()
+            elif largura_bobines:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
+            elif instance.gramagem:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
+            else:
+                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+
+
+        return redirect('producao:perfil_larguras_v2', pk=instance.pk)
         
-
-
-
-
     context = {
         "form": form, 
     }
@@ -3795,17 +3809,21 @@ def perfil_larguras_v2(request, pk):
                 nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
 
             nome_largura = nome_largura[:-1]
-            nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+            if perfil.retrabalho == False: 
+                nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+            if perfil.retrabalho == True: 
+                nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
 
             if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
                 perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
                 perfis += 1
                 nome = nome_parcial + ' ' + str(perfis)
+                
             else:
                 nome = nome_parcial + ' 1'
                 
             
-            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms)
+            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
 
             if Perfil.objects.filter(token=token).exists():
                 perfil_2 = get_object_or_404(Perfil, token=token)
@@ -3875,7 +3893,10 @@ def perfil_edit_larguras_v2(request, pk):
                 nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
 
             nome_largura = nome_largura[:-1]
-            nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+            if perfil.retrabalho == False: 
+                nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+            if perfil.retrabalho == True: 
+                nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
 
             if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
                 perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
@@ -3885,7 +3906,7 @@ def perfil_edit_larguras_v2(request, pk):
                 nome = nome_parcial + ' 1'
                 
             
-            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms)
+            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
 
             if Perfil.objects.filter(token=token).exists():
                 perfil_2 = get_object_or_404(Perfil, token=token)
@@ -3934,3 +3955,6 @@ def perfil_delete_v2(request, pk):
         
     }
     return render(request, template_name, context)
+
+
+

@@ -23,7 +23,7 @@ class Perfil(models.Model):
     produto = models.CharField(verbose_name="Produto", max_length=100, default="", choices=PRODUTO)
     retrabalho = models.BooleanField(default=False, verbose_name="Retrabalho")
     num_bobines = models.PositiveIntegerField(verbose_name="Número de bobines")
-    largura_bobinagem = models.DecimalField(verbose_name="Largura da bobinagem", max_digits=10, decimal_places=2, null=True, blank=True)
+    largura_bobinagem = models.DecimalField(verbose_name="Largura da bobinagem", max_digits=10, decimal_places=0, null=True, blank=True)
     core = models.CharField(verbose_name="Core", max_length=1, choices=CORE)
     gramagem = models.CharField(verbose_name="Gramagem", max_length=10, null=True, blank=True, choices=GSM)
     espessura = models.DecimalField(verbose_name="Espessura", max_digits=10, decimal_places=2, null=True, blank=True)
@@ -32,8 +32,9 @@ class Perfil(models.Model):
     producao = models.DecimalField(verbose_name="Produção", max_digits=10, decimal_places=2, null=True, blank=True)
     obsoleto = models.BooleanField(default=False, verbose_name="Obsoleto")
     token = models.CharField(verbose_name="Token", max_length=255, unique=True, null=True, blank=True)
-
-
+    core_original = models.CharField(verbose_name="Core", max_length=1, null=True, blank=True, choices=CORE)
+    largura_original = models.DecimalField(verbose_name="Largura da bobinagem", max_digits=10, decimal_places=0, null=True, blank=True)
+   
     class Meta:
         verbose_name_plural = "Perfis"
         ordering = ['-timestamp']

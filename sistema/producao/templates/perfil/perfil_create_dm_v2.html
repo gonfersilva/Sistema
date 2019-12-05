@@ -1,0 +1,84 @@
+{% extends "layout.html "%}
+{% load bootstrap3 %}
+
+{% block title %}Perfil Create DM | {{ block.super }}{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-9 col-lg-9">  
+                <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-primary">Voltar</a>
+                
+        </div>
+        
+    </div>
+  
+    
+
+
+    <div class="row">
+        <h1 id="center">Criar perfil de DM</h1>
+    </div>
+    <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {% bootstrap_field form.produto %}
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% bootstrap_field form.num_bobines %}
+                        </div>
+                        <div class="col-sm-6">
+                            {% bootstrap_field form.core %}
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+                <br>
+                <div class="row">
+                    <p id="center">Preencher apenas se a largura e a gramagem das bobines forem todas iguais.</p>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-6">
+                        {% bootstrap_field form.largura_bobines %}
+                    </div>
+                    <div class="col-sm-6">
+                        {% bootstrap_field form.gramagem %}
+
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <p id="center">Dados da bobine original</p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        {% bootstrap_field form.largura_original %}
+                    </div>
+                    <div class="col-sm-6">
+                        {% bootstrap_field form.core_original %}
+
+                    </div>
+                </div>
+                
+                
+                <!-- {% bootstrap_form form %} -->
+               
+                <input type="submit" class="btn btn-block btn-primary pull-right" value="Criar">
+                
+            </form>
+    </div>
+                
+    </div>        
+    
+</div>
+
+{% endblock %}

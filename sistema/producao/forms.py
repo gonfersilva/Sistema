@@ -310,11 +310,22 @@ class PerfilLinhaForm(ModelForm):
         model = Perfil
         fields = [ 'produto', 'num_bobines', 'core', 'gramagem']
 
+class PerfilDMForm(ModelForm):
+    CORE = ((None, '---------'), ('3', '3"'),('6', '6"'))
+    largura_bobines = forms.DecimalField(required=False)
+    core_original = forms.CharField(label="Core original", max_length=200, required=True, widget=forms.Select(choices=CORE))
+    largura_original = forms.DecimalField(required=True)
+    class Meta:
+        model = Perfil
+        fields = [ 'produto', 'num_bobines', 'core', 'gramagem']
+
 class SearchPerfil(forms.Form):
-    nome = forms.CharField(label="Nome ou produto" ,max_length=200, required=False)
+    CORE = ((None, '---------'), ('3', '3"'),('6', '6"'))
+    PRODUTO = ((None, '---------'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
+    nome = forms.CharField(label="Produto" ,max_length=200, required=False, widget=forms.Select(choices=PRODUTO))
     num_bobines = forms.IntegerField(label="Nº de bobines", required=False)
-    core = forms.CharField(label="Core", max_length=200, required=False)
-    largura_bobinagem = forms.IntegerField(label="Largura da Bobinagem", required=False)
+    core = forms.CharField(label="Core", max_length=200, required=False, widget=forms.Select(choices=CORE))
+    largura_bobinagem = forms.DecimalField(label="Largura da Bobinagem", required=False)
     retrabalho = forms.BooleanField(required=False)
 
 

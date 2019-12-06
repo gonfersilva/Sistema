@@ -196,7 +196,7 @@ class Encomenda(models.Model):
 
     class Meta:
         verbose_name_plural = "Encomendas"
-        ordering = ['-data', '-eef']
+        ordering = ['estado', '-data', '-eef']
 
     
 class Carga(models.Model):

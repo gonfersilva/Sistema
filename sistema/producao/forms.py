@@ -328,6 +328,9 @@ class SearchPerfil(forms.Form):
     largura_bobinagem = forms.DecimalField(label="Largura da Bobinagem", required=False)
     retrabalho = forms.BooleanField(required=False)
 
+class SearchBobinagem(forms.Form):
+    nome = forms.CharField(label="Bobinagem",max_length=200, required=True)
+
 
 
 

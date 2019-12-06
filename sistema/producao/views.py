@@ -5,7 +5,7 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .models import EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -3957,4 +3957,31 @@ def perfil_delete_v2(request, pk):
     return render(request, template_name, context)
 
 
+@login_required
+def bobinagem_retrabalho_list_v2(request):
+    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=True)
+    template_name = 'retrabalho/bobinagem_retrabalho_list_v2.html'
+    form = SearchBobinagem(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        nome = cd.get('nome')
+        bobinagem_list = Bobinagem.objects.filter(nome__icontains=nome, perfil__retrabalho=True)
 
+    paginator = Paginator(bobinagem_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        bobinagem = paginator.page(page)
+    except PageNotAnInteger:
+        bobinagem = paginator.page(1)
+    except EmptyPage:
+        bobinagem = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "bobinagem": bobinagem,
+        "form": form
+    }
+    return render(request, template_name, context)

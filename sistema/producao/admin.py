@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga, EtiquetaFinal, Artigo
+from .models import ConsumoNonwoven, Nonwoven, Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga, EtiquetaFinal, Artigo
 from django.contrib import admin
 
 
@@ -12,6 +12,7 @@ admin.site.register(EtiquetaPalete)
 admin.site.register(Encomenda)
 admin.site.register(Carga)
 admin.site.register(EtiquetaFinal)
+admin.site.register(ConsumoNonwoven)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']
@@ -32,6 +33,9 @@ class PerfilAdmin(admin.ModelAdmin):
 class ClienteAdmin(admin.ModelAdmin):
     search_fields = ['nome']
 
+class NonwovenAdmin(admin.ModelAdmin):
+    search_fields = ['designacao']
+
 
 
 admin.site.register(Bobinagem, BobinagemAdmin)
@@ -40,3 +44,4 @@ admin.site.register(Palete, PaleteAdmin)
 admin.site.register(Artigo, ArtigoAdmin)
 admin.site.register(Perfil, PerfilAdmin)
 admin.site.register(Cliente, ClienteAdmin)
+admin.site.register(Nonwoven, NonwovenAdmin)

@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 import datetime, time
 from django import forms
@@ -274,7 +274,7 @@ class ConfirmReciclarForm(forms.Form):
     recycle_3 = forms.BooleanField(initial=False, label='', required=False)
 
 class PicagemBobines(forms.Form):
-    bobine = forms.CharField(label='', max_length=14)
+    bobine = forms.CharField(label='', max_length=15)
     
 class ClassificacaoBobines(forms.Form):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
@@ -330,6 +330,14 @@ class SearchPerfil(forms.Form):
 
 class SearchBobinagem(forms.Form):
     nome = forms.CharField(label="Bobinagem",max_length=200, required=True)
+
+class CreateNonwovenManual(ModelForm):
+    class Meta:
+        model = Nonwoven
+        fields = ['designacao_fornecedor', 'fornecedor', 'comp_total', 'largura']
+
+class CreateNonWovenAuto(ModelForm):
+    pass
 
 
 

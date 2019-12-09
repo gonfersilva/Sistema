@@ -1,0 +1,76 @@
+{% extends "layout.html " %} 
+{% load producao_tags %}
+{% block title %}Nonwoven Lista | {{ block.super }}{% endblock %} 
+{% block content %}
+<div class="container">
+    <br>
+    <div class="row">
+        <a href="#" class="btn btn-primary">Voltar</a>
+        <a href="{% url 'producao:nonwoven_create_manual' %}" class="btn btn-primary pull-right" role="button">Adicionar Lote de Nonwoven</a>
+    </div>
+    <div class="row">
+       pesquisa
+    </div>
+    <br>
+    <div class="row">
+        <h1 id="center">Lotes de Nonwoven</h1>
+        <br>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Designação</th>
+                        <th id="center">Designação Fornecedor</th>
+                        <th id="center">Fornecedor</th>
+                        <th id="center">Comp. total(m)</th>
+                        <th id="center">Comp. actual(m)</th>
+                        <th id="center">Largura(mm)</th>
+                        <th id="center"></th>
+                        <th id="center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nw in nonwoven %}
+                    <tr>
+                        <td><a href="#">{{ nw.designacao }}</a></td>
+                        <td id="center">{{ nw.designacao_fornecedor }}</td>
+                        <td id="center">{{ nw.fornecedor }}</td> 
+                        <td id="center">{{ nw.comp_total }}</td>
+                        <td id="center">{{ nw.comp_actual }}</td>
+                        <td id="center">{{ nw.largura }}</td>
+                        <td id="center"><a href="#" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></a></td>
+                        <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                        
+                    </tr>
+                    {% endfor%}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        {% if nonwoven.has_other_pages %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if nonwoven.has_previous %}
+                    <a role="button" class="btn btn-primary " href="?page=1">Primeira</a>
+                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-left" href="?page={{ nonwoven.previous_page_number }}"></a>
+                {% endif %}
+        
+                <span class="current">
+                    Pág. {{ nonwoven.number }} de {{ nonwoven.paginator.num_pages }}
+                </span>
+        
+                {% if nonwoven.has_next %}
+                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-right" href="?page={{ nonwoven.next_page_number }}"></a>
+                    <a role="button" class="btn btn-primary" href="?page={{ bobinagem.paginator.num_pages }}">Última</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    
+    </div>
+</div>
+
+
+{% endblock %}

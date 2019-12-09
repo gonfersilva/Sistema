@@ -5,8 +5,9 @@ from django import forms
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
 from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
-from .forms import SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
-from .models import EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
+# from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
+from .forms import *
+from .models import Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -3985,3 +3986,46 @@ def bobinagem_retrabalho_list_v2(request):
         "form": form
     }
     return render(request, template_name, context)
+
+@login_required
+def nonwoven_list(request):
+    nonwoven_list = Nonwoven.objects.all()
+    template_name = 'nonwoven/nonwoven_list.html'
+
+    paginator = Paginator(nonwoven_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        nonwoven = paginator.page(page)
+    except PageNotAnInteger:
+        nonwoven = paginator.page(1)
+    except EmptyPage:
+        nonwoven = paginator.page(paginator.num_pages)
+
+    context = {
+        "nonwoven": nonwoven
+    }
+    return render(request, template_name, context)
+
+@login_required
+def nonwoven_create_manual(request):
+    template_name = 'nonwoven/nonwoven_create_manual.html'
+    form = CreateNonwovenManual(request.POST or None)
+    
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        cd = form.cleaned_data
+        
+
+        instance.save()
+
+       
+        return redirect('producao:nonwoven_list')
+        
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+

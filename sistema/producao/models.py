@@ -258,6 +258,41 @@ class Palete(models.Model):
         verbose_name_plural = "Paletes"
         ordering = ['-data_pal','-num']  
 
+class Nonwoven(models.Model):
+    user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp               = models.DateTimeField(auto_now_add=True)
+    designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
+    designacao_fornecedor   = models.CharField(max_length=200, unique=True, verbose_name="Designação do Cliente")
+    fornecedor              = models.CharField(max_length=200, unique=True, verbose_name="Fornecedor")
+    comp_total              = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
+    comp_actual             = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual")
+    largura                 = models.IntegerField(verbose_name="Largura", null=True, blank=True)
+    vazio                   = models.BooleanField(default=False, verbose_name="Utilizado")
+
+    def __str__(self):
+        return self.designacao
+
+    class Meta:
+        verbose_name_plural = "Nonwovens"
+        ordering = ['-timestamp'] 
+
+class ConsumoNonwoven(models.Model):
+    POS =  (('SUP', 'Superior'), ('INF', 'Inferior'))
+    user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp   = models.DateTimeField(auto_now_add=True)
+    bobinagem   = models.ForeignKey(Bobinagem, on_delete=models.PROTECT,verbose_name="Bobinagem")
+    nonwoven    = models.ForeignKey(Nonwoven, on_delete=models.PROTECT,verbose_name="Nonwoven")
+    posicao     = models.CharField(max_length=10, verbose_name="Posição (Sup/Inf)", choices=POS)
+    consumo     = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Consumo")
+
+    def __str__(self):
+        return '%s - %s:  %s' % (self.bobinagem.nome, self.nonwoven.designacao, self.posicao)
+
+    class Meta:
+        verbose_name_plural = "Consumos de Nonwoven"
+        ordering = ['-timestamp'] 
+
+
 class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")

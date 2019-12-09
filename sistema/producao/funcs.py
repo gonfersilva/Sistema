@@ -900,9 +900,6 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         token = 'DM' + token
     else:
         token = 'L1' + token
-        
-
-
-
+    
     return token
 

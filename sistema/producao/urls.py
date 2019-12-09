@@ -92,6 +92,8 @@ urlpatterns = [
     url(r'^perfil/larguras/cancel/(?P<pk>\d+)/$', cancel_insert_larguras, name='cancel_insert_larguras'),
     url(r'^perfil/delete/(?P<pk>\d+)/$', perfil_delete_v2, name='perfil_delete_v2'),
     url(r'^teste/retrabalho/list/$', bobinagem_retrabalho_list_v2, name='bobinagem_retrabalho_list_v2'),
+    url(r'^nonwoven/list/$', nonwoven_list, name='nonwoven_list'),
+    url(r'^nonwoven/createmanual/$', nonwoven_create_manual, name='nonwoven_create_manual'),
 
 
     # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    

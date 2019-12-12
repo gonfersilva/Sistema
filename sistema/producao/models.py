@@ -258,12 +258,32 @@ class Palete(models.Model):
         verbose_name_plural = "Paletes"
         ordering = ['-data_pal','-num']  
 
+class Fornecedor(models.Model):
+    user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp               = models.DateTimeField(auto_now_add=True)
+    designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
+    
+
+    def __str__(self):
+        return self.designacao
+
+    class Meta:
+        verbose_name_plural = "Fornecedores"
+        ordering = ['-timestamp'] 
+
+# class Rececao(models.Model):
+#     pass
+
+# class ArtigoMP(models.Model):
+#     pass
+
+
 class Nonwoven(models.Model):
     user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp               = models.DateTimeField(auto_now_add=True)
     designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
-    designacao_fornecedor   = models.CharField(max_length=200, unique=True, verbose_name="Designação do Cliente")
-    fornecedor              = models.CharField(max_length=200, unique=True, verbose_name="Fornecedor")
+    designacao_fornecedor   = models.CharField(max_length=200, unique=True, verbose_name="Designação do Fornecedor")
+    fornecedor              = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
     comp_total              = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
     comp_actual             = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual")
     largura                 = models.IntegerField(verbose_name="Largura", null=True, blank=True)
@@ -275,6 +295,9 @@ class Nonwoven(models.Model):
     class Meta:
         verbose_name_plural = "Nonwovens"
         ordering = ['-timestamp'] 
+
+# class EtiquetaNonwoven(models.Model):
+#     pass
 
 class ConsumoNonwoven(models.Model):
     POS =  (('SUP', 'Superior'), ('INF', 'Inferior'))
@@ -526,30 +549,20 @@ class EtiquetaFinal(models.Model):
 
                  
              
-   
-# def area_palete(sender, instance, **kwargs):
-#     bobine = Bobine.objects.filter(palete=instance.pk)
-#     area = 0
-#     comp = 0
-#     for b in bobine:
-#         if b.palete:
-#             area = area + b.area 
-#             comp = comp + b.bobinagem.comp
-        
-#     instance.area = area
-#     instance.comp_total = comp
+class InventarioBobinesDM(models.Model):
+    user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp   = models.DateTimeField(auto_now_add=True)
+    bobine = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+
+class InventarioPaletesCliente(models.Model):
+    user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp   = models.DateTimeField(auto_now_add=True)
+    palete = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    
+    
 
 
-
-
-
-
-# post_save.connect(perfil_larguras, sender=Perfil)
-
-
-
-# pre_save.connect(area_palete, sender=Palete)
-
+    
 
 
 

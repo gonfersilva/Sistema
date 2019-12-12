@@ -850,11 +850,15 @@ def cancel_insert_larguras(request, pk):
     for l in larguras:
         l.delete()
 
-    perfil.delete()
+    
+    if perfil.retrabalho == False:
+        perfil.delete()
+        return redirect('producao:perfil_create_linha_v2')
+    else:
+        perfil.delete()
+        return redirect('producao:perfil_create_dm_v2')
 
-    return redirect('producao:perfil_create_linha_v2')
-
-def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, retrabalho):
+def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, retrabalho, core_original, largura_original):
     
     produtos_dict = {
         'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE': 'A',
@@ -897,7 +901,7 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         token += gsm_dict.get(gsm)
     
     if retrabalho == True:
-        token = 'DM' + token
+        token = 'DM' + token + str(core_original) + str(largura_original)
     else:
         token = 'L1' + token
     

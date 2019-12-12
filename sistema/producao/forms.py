@@ -332,6 +332,7 @@ class SearchBobinagem(forms.Form):
     nome = forms.CharField(label="Bobinagem",max_length=200, required=True)
 
 class CreateNonwovenManual(ModelForm):
+    
     class Meta:
         model = Nonwoven
         fields = ['designacao_fornecedor', 'fornecedor', 'comp_total', 'largura']

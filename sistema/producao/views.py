@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
+from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -3699,11 +3699,8 @@ def perfil_create_linha_v2(request):
         instance = form.save(commit=False)
         cd = form.cleaned_data
         largura_bobines = cd.get('largura_bobines')
-
-
-        # print(instance.produto, instance.num_bobines, instance.core, instance.gramagem)
-      
-            
+    
+           
         instance.user = request.user
         instance.retrabalho = False
         instance.save()
@@ -3746,6 +3743,7 @@ def perfil_create_dm_v2(request):
         instance.retrabalho = True
         instance.core_original = core_original
         instance.largura_original = largura_original
+        
         instance.save()
 
         for i in range(instance.num_bobines):
@@ -3797,48 +3795,54 @@ def perfil_larguras_v2(request, pk):
                 produtos.append(designacao_prod)
                 gsms.append(gsm)
 
-
-            lar_s_dupli = list(dict.fromkeys(larguras))   
-
-            for i in lar_s_dupli:
-                num = larguras.count(i)
-                cont.append(num)
-
-          
-            larguras_dict = dict(zip(lar_s_dupli, cont))
-            for ld in larguras_dict:
-                nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
-
-            nome_largura = nome_largura[:-1]
-            if perfil.retrabalho == False: 
-                nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
-            if perfil.retrabalho == True: 
-                nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
-
-            if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
-                perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
-                perfis += 1
-                nome = nome_parcial + ' ' + str(perfis)
-                
+            if perfil.retrabalho == True and perfil.largura_original < largura_total:
+                messages.error(request, 'Não é possivel validar as larguras inseridas. A largura da bobine original é inferior ao total da bobine final')
             else:
-                nome = nome_parcial + ' 1'
                 
+                lar_s_dupli = list(dict.fromkeys(larguras))   
+
+                for i in lar_s_dupli:
+                    num = larguras.count(i)
+                    cont.append(num)
+
             
-            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
+                larguras_dict = dict(zip(lar_s_dupli, cont))
+                for ld in larguras_dict:
+                    nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
 
-            if Perfil.objects.filter(token=token).exists():
-                perfil_2 = get_object_or_404(Perfil, token=token)
-                messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
-                messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
-            else:
-                # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
-                # print(token)
-                perfil.token = token
-                perfil.largura_bobinagem = largura_total
-                perfil.nome = nome
-                perfil.save()
-                formset.save()
-                return redirect('producao:perfil_details_v2', pk=perfil.pk)
+                nome_largura = nome_largura[:-1]
+                if perfil.retrabalho == False: 
+                    nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
+                if perfil.retrabalho == True: 
+                    nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
+
+                if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
+                    perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
+                    perfis += 1
+                    nome = nome_parcial + ' ' + str(perfis)
+                    
+                else:
+                    nome = nome_parcial + ' 1'
+                    
+                if perfil.retrabalho == True:
+                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original)
+                else:
+                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
+
+
+                if Perfil.objects.filter(token=token).exists():
+                    perfil_2 = get_object_or_404(Perfil, token=token)
+                    messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
+                    messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
+                else:
+                    # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
+                    # print(token)
+                    perfil.token = token
+                    perfil.largura_bobinagem = largura_total
+                    perfil.nome = nome
+                    perfil.save()
+                    formset.save()
+                    return redirect('producao:perfil_details_v2', pk=perfil.pk)
 
 
     else:
@@ -4016,8 +4020,10 @@ def nonwoven_create_manual(request):
 
     if form.is_valid():
         instance = form.save(commit=False)
-        cd = form.cleaned_data
-        
+        # cd = form.cleaned_data
+        instance.user = request.user
+        instance.comp_actual = instance.comp_total
+        instance.designacao = instance.designacao_fornecedor + '-FORN'
 
         instance.save()
 
@@ -4029,3 +4035,9 @@ def nonwoven_create_manual(request):
     }
     return render(request, template_name, context)
 
+
+@login_required
+def inventario_bobines_list(request):
+    bobines = InventarioBobinesDM.objects.all()
+
+    

@@ -12,6 +12,17 @@
         </div>
         
     </div>
+    <br>
+    <div class="row">
+        <h1 id="center">Inserir Nonwoven</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+           
+            <input type="submit" class="btn btn-block btn-primary pull-right" value="Criar">
+            
+        </form>
+    </div>
   
     
 

@@ -1,4 +1,4 @@
-from .models import Fornecedor, ConsumoNonwoven, Nonwoven, Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, EtiquetaPalete, Encomenda, Carga, EtiquetaFinal, Artigo
+from .models import *
 from django.contrib import admin
 
 
@@ -14,6 +14,8 @@ admin.site.register(Carga)
 admin.site.register(EtiquetaFinal)
 admin.site.register(ConsumoNonwoven)
 admin.site.register(Fornecedor)
+admin.site.register(InventarioBobinesDM)
+admin.site.register(InventarioPaletesCliente)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']

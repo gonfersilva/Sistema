@@ -105,6 +105,10 @@ th
     color: red;
 }
 
+#success {
+    color: green;
+}
+
 #white {
     color: white;
 }

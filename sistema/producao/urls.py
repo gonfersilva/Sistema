@@ -94,6 +94,8 @@ urlpatterns = [
     url(r'^teste/retrabalho/list/$', bobinagem_retrabalho_list_v2, name='bobinagem_retrabalho_list_v2'),
     url(r'^nonwoven/list/$', nonwoven_list, name='nonwoven_list'),
     url(r'^nonwoven/createmanual/$', nonwoven_create_manual, name='nonwoven_create_manual'),
+    url(r'^inventario/dm/list/$', inventario_bobines_list, name='inventario_bobines_list'),
+    url(r'^inventario/dm/insert/$', inventario_bobines_dm_insert, name='inventario_bobines_dm_insert'),
 
 
     # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    

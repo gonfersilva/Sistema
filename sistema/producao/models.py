@@ -547,19 +547,31 @@ class EtiquetaFinal(models.Model):
     def __str__(self):
         return self.palete_nome
 
-                 
+        
              
 class InventarioBobinesDM(models.Model):
     user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp   = models.DateTimeField(auto_now_add=True)
-    bobine = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+    bobine      = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+    nome        = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name_plural = "Inventário Bobines DM"
 
 class InventarioPaletesCliente(models.Model):
     user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp   = models.DateTimeField(auto_now_add=True)
-    palete = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    palete      = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    nome        = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
     
-    
+    class Meta:
+        verbose_name_plural = "Intentário Paletes Cliente"
 
 
     

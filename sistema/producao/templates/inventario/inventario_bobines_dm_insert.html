@@ -1,0 +1,61 @@
+{% extends "layout.html "%}
+{% load bootstrap3 %}
+
+{% block title %}Perfil Create DM | {{ block.super }}{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-9 col-lg-9">  
+                <a href="#" class="btn btn-primary">Voltar</a>
+                
+        </div>
+        
+    </div>
+  
+    
+
+
+    <div class="row">
+        <h1 id="center">Inserir Bobines Inventário</h1>
+        
+    </div>
+    <div class="row">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        <li class="{{ message.tags }}" id="success">{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="row">
+                    
+                        <div class="col-md-12">
+                            {% bootstrap_form form %}
+                        </div>
+
+                </div>
+                  
+                    
+                
+                
+               
+                <input type="submit" class="btn btn-block btn-primary pull-right" value="Inserir">
+                
+            </form>
+    </div>
+                
+</div>        
+    
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block head_title %}Inventário DM{% endblock head_title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <a href="#" role="button" class="btn btn-primary">Voltar</a>
+    </div>
+    <div class="row">
+        <h1 id="center">Inventário DM</h1>
+    </div>
+    <br>
+
+    <div class="row">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Bobine</th>
+                            <th>Produto</th>
+                            <th id="center">Comp. (m)</th>
+                            <th id="center">Comp. actual (m)</th>
+                            <th id="center">Largura (mm)</th>
+                            <th id="center">Área (m<sup>2</sup>)</th>
+                            <th id="center">Diâmetro (mm)</th>
+                            <th id="center">Core (")</th>
+                            <th id="center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bobines %}
+                        <tr>
+                            <td><a href="#">{{ b.nome }}</a></td>
+                            <td>{{ b.largura.designacao_prod }}</td>
+                            <td id="center">{{ b.bobinagem.comp_cli}}</td>
+                            <td id="center">{{ b.comp_actual}}</td>
+                            <td id="center">{{ b.largura.largura }}</td>
+                            <td id="center">{{ b.area }}</td>
+                            <td id="center">{{ b.bobinagem.diam }}</td>
+                            <td id="center">{{ b.bobinagem.perfil.core }}</td>
+                            <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                            
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</div>
+
+
+
+
+{% endblock %}

@@ -3827,7 +3827,7 @@ def perfil_larguras_v2(request, pk):
                 if perfil.retrabalho == True:
                     token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original)
                 else:
-                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
+                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None)
 
 
                 if Perfil.objects.filter(token=token).exists():
@@ -3911,7 +3911,10 @@ def perfil_edit_larguras_v2(request, pk):
                 nome = nome_parcial + ' 1'
                 
             
-            token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho)
+            if perfil.retrabalho == True:
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original)
+            else:
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None)
 
             if Perfil.objects.filter(token=token).exists():
                 perfil_2 = get_object_or_404(Perfil, token=token)
@@ -4038,6 +4041,47 @@ def nonwoven_create_manual(request):
 
 @login_required
 def inventario_bobines_list(request):
-    bobines = InventarioBobinesDM.objects.all()
+    bobines_inventario = InventarioBobinesDM.objects.all()
+    template_name = 'inventario/inventario_bobines_list.html'
+    bobines = []
+    for bi in bobines_inventario:
+        b = get_object_or_404(Bobine, pk=bi.bobine.pk)
+        bobines.append(b)
+
+    context = {
+        
+        "bobines": bobines
+
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def inventario_bobines_dm_insert(request):
+    template_name = 'inventario/inventario_bobines_dm_insert.html'
+    form = InventarioBobineDMInsert(request.POST or None)
+    
+
+    if form.is_valid():
+        form
+        cd = form.cleaned_data
+        bobine_picada = cd.get('bobine')
+        bobines = Bobine.objects.filter(nome=bobine_picada)
+        print(bobine_picada, bobines)
+        if bobines.exists():
+            bobine = get_object_or_404(Bobine, nome=bobine_picada)
+            bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
+            bobine_inv.save()
+            messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
+        else:
+            messages.error(request, 'A bobine que inseriu não existe. Tente de novo')
+
+        
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
 
     
+

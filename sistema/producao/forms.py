@@ -340,6 +340,8 @@ class CreateNonwovenManual(ModelForm):
 class CreateNonWovenAuto(ModelForm):
     pass
 
+class InventarioBobineDMInsert(forms.Form):
+    bobine = forms.CharField(max_length=15, required=True)
 
 
 

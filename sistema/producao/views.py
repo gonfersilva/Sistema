@@ -850,7 +850,7 @@ def status_bobinagem(request, operation, pk):
         for i in range(bobinagem.perfil.num_bobines):
             largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
-            if bobine.estado == 'LAB':
+            if bobine.estado == 'LAB' or bobine.estado == 'DM':
                 bobine.estado = 'HOLD'
                 bobine.save()
             num += 1
@@ -4069,12 +4069,20 @@ def inventario_bobines_dm_insert(request):
         bobines = Bobine.objects.filter(nome=bobine_picada)
         print(bobine_picada, bobines)
         if bobines.exists():
-            bobine = get_object_or_404(Bobine, nome=bobine_picada)
-            bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
-            bobine_inv.save()
-            messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
+            bobine = InventarioBobinesDM.objects.filter(nome=bobine_picada)
+            if bobine.exists():
+                messages.warning(request, 'A bobine ' + bobine_picada + ' já se encontra no Inventário.')
+                form = InventarioBobineDMInsert()
+            else:
+                bobine = get_object_or_404(Bobine, nome=bobine_picada)
+                bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
+                bobine_inv.save()
+                messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
+                form = InventarioBobineDMInsert()
+            
         else:
-            messages.error(request, 'A bobine que inseriu não existe. Tente de novo')
+            messages.error(request, 'A bobine que inseriu não existe. Tente de novo.')
+            form = InventarioBobineDMInsert()
 
         
     context = {

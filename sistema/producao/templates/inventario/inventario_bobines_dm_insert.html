@@ -1,7 +1,7 @@
 {% extends "layout.html "%}
 {% load bootstrap3 %}
 
-{% block title %}Perfil Create DM | {{ block.super }}{% endblock %}
+{% block title %}Inventário Bobines DM Picagem| {{ block.super }}{% endblock %}
 {% block content %}
 
 <div class="container">
@@ -22,15 +22,26 @@
     </div>
     <div class="row">
             {% if messages %}
-            <ul class="messages">
+            
                 {% for message in messages %}
                     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                        <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                    <div class="alert alert-danger" role="alert">
+                        <h3 id="center">ERRO!</h3>
+                        <p id="center"> {{message}} </p>
+                     </div>
                     {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                        <li class="{{ message.tags }}" id="success">{{ message }}</li>
+                    <div class="alert alert-success" role="alert">
+                        <h3 id="center">SUCESSO!</h3>
+                        <p id="center"> {{message}} </p>
+                    </div>
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                    <div class="alert alert-warning" role="alert">
+                        <h3 id="center">JÁ EXISTE!</h3>
+                        <p id="center"> {{message}} </p>
+                    </div>
                     {% endif %}
                 {% endfor %}
-            </ul>
+            
             {% endif %}
         </div>
     <div class="row">
@@ -54,8 +65,19 @@
             </form>
     </div>
                 
-</div>        
-    
+</div>  
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>      
+<script type="text/javascript">
+    $(document).ready(function() {
+        window.onload = function() {
+            $("#id_bobine").focus();
+         
+        };  
+    }); 
+</script>  
 
 
 {% endblock %}

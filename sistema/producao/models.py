@@ -562,10 +562,18 @@ class InventarioBobinesDM(models.Model):
         verbose_name_plural = "Inventário Bobines DM"
 
 class InventarioPaletesCliente(models.Model):
-    user        = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
-    timestamp   = models.DateTimeField(auto_now_add=True)
-    palete      = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
-    nome        = models.CharField(max_length=15, blank=True, null=True)
+    user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp       = models.DateTimeField(auto_now_add=True)
+    palete          = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    nome            = models.CharField(max_length=15, blank=True, null=True)
+    artigo          = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    cliente         = models.CharField(max_length=50, blank=True, null=True)
+    comp_total      = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Comprimento Total", null=True, blank=True)
+    area            = models.DecimalField(max_digits=15, decimal_places=1, verbose_name="Área", null=True, blank=True)
+    largura_bobine  = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura", null=True, blank=True)
+    diam_min        = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo",null=True, blank=True)
+    diam_max        = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
+    core_bobines    = models.CharField(max_length=1, verbose_name="Core das bobines",null=True, blank=True)
 
     def __str__(self):
         return self.nome

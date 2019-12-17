@@ -343,6 +343,9 @@ class CreateNonWovenAuto(ModelForm):
 class InventarioBobineDMInsert(forms.Form):
     bobine = forms.CharField(max_length=15, required=True)
 
+class InventarioPaleteClienteInsert(forms.Form):
+    palete = forms.CharField(max_length=20, required=True)
+
 
 
 

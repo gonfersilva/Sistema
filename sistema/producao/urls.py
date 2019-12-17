@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^bobinagemlist/$', bobinagem_list_all, name='bobinagem_list_all'),
     url(r'^bobinagem/historico/$', bobinagem_list_all_historico, name='bobinagem_list_all_historico'),
     url(r'^bobinagem/create/$', create_bobinagem, name='bobinagem_create'),
+    url(r'^bobinagem/larguras-reais/(?P<pk>\d+)/$', bobines_larguras_reais, name='bobines_larguras_reais'),
     url(r'^bobinagem/(?P<pk>\d+)/$', bobinagem_status, name='bobinestatus'),
     url(r'^bobinagem/update/(?P<pk>\d+)/', BobinagemUpdate.as_view(), name='bobinagemupdate'),
     url(r'^bobinagem/delete/(?P<pk>\d+)/', bobinagem_delete, name='bobinagem_delete'),
@@ -96,6 +97,10 @@ urlpatterns = [
     url(r'^nonwoven/createmanual/$', nonwoven_create_manual, name='nonwoven_create_manual'),
     url(r'^inventario/dm/list/$', inventario_bobines_list, name='inventario_bobines_list'),
     url(r'^inventario/dm/insert/$', inventario_bobines_dm_insert, name='inventario_bobines_dm_insert'),
+    url(r'^inventario/dm/delete/(?P<pk>\d+)/$', inventario_bobines_dm_remover, name='inventario_bobines_dm_remover'),
+    url(r'^inventario/paletescliente/list/$', inventario_paletes_cliente_list, name='inventario_paletes_cliente_list'),
+    url(r'^inventario/paletescliente/insert/$', inventario_palete_cliente_insert, name='inventario_palete_cliente_insert'),
+
 
 
     # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    

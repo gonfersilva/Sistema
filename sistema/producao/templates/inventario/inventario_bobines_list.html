@@ -4,7 +4,8 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <a href="#" role="button" class="btn btn-primary">Voltar</a>
+        <a href="{% url 'producao:planeamento_home' %}" role="button" class="btn btn-primary">Voltar</a>
+        <a href="{% url 'producao:inventario_bobines_dm_insert' %}" role="button" class="btn btn-primary pull-right">Inserir Bobines DM</a>
     </div>
     <div class="row">
         <h1 id="center">Inventário DM</h1>
@@ -24,13 +25,14 @@
                             <th id="center">Área (m<sup>2</sup>)</th>
                             <th id="center">Diâmetro (mm)</th>
                             <th id="center">Core (")</th>
+                            <th id="center">Palete</th>
                             <th id="center"></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for b in bobines %}
                         <tr>
-                            <td><a href="#">{{ b.nome }}</a></td>
+                            <td><strong>{{ b.nome }}</strong></td>
                             <td>{{ b.largura.designacao_prod }}</td>
                             <td id="center">{{ b.bobinagem.comp_cli}}</td>
                             <td id="center">{{ b.comp_actual}}</td>
@@ -38,7 +40,12 @@
                             <td id="center">{{ b.area }}</td>
                             <td id="center">{{ b.bobinagem.diam }}</td>
                             <td id="center">{{ b.bobinagem.perfil.core }}</td>
-                            <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
+                            {% if b.palete == None %}
+                                <td id="center">s/ Palete</td>
+                            {% else %}
+                                <td id="center">{{ b.palete }}</td>
+                            {% endif %}
+                            <!-- <td id="center"><a href="{% url 'producao:inventario_bobines_dm_remover' pk=b.pk %}" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td> -->
                             
                         </tr>
                         {% endfor %}

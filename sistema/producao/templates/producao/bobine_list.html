@@ -114,6 +114,7 @@
                 <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='ap' %}" class="btn btn-success" role="button">Aprovar</a>
                 <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='dm' %}" class="btn btn-warning" role="button">DM</a>
                 <a href="{% url 'producao:bobinagem_status' pk=bobinagem.pk operation='rej' %}" class="btn btn-danger" role="button">Rejeitar</a>
+                <a href="{% url 'producao:bobines_larguras_reais' pk=bobinagem.pk %}" class="btn btn-primary pull-right" role="button">Larguras reais</a>
                 <p>Os estados acima apenas serão atribuidos ás bobines que estejam em <strong id="estado_lab">LAB</strong> ou <strong id="estado_hold">HOLD</strong>.</p>
                 
                 <br>

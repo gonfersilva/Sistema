@@ -103,8 +103,11 @@ def create_bobinagem(request):
         
                 if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                     areas(instance.pk)
-        
-                return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
+
+                if instance.estado == 'BA':
+                    return redirect('producao:bobines_larguras_reais', pk=instance.pk)
+                else:
+                    return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
 
     context = {
         "form": form
@@ -4061,28 +4064,29 @@ def inventario_bobines_dm_insert(request):
     template_name = 'inventario/inventario_bobines_dm_insert.html'
     form = InventarioBobineDMInsert(request.POST or None)
     
-
     if form.is_valid():
-        form
         cd = form.cleaned_data
         bobine_picada = cd.get('bobine')
         bobines = Bobine.objects.filter(nome=bobine_picada)
-        print(bobine_picada, bobines)
-        if bobines.exists():
-            bobine = InventarioBobinesDM.objects.filter(nome=bobine_picada)
-            if bobine.exists():
-                messages.warning(request, 'A bobine ' + bobine_picada + ' já se encontra no Inventário.')
-                form = InventarioBobineDMInsert()
-            else:
-                bobine = get_object_or_404(Bobine, nome=bobine_picada)
-                bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
-                bobine_inv.save()
-                messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
-                form = InventarioBobineDMInsert()
-            
+        user = request.user.username
+        if user != 'elsa.rodrigues':
+            messages.error(request, 'Não tem permissão para introduzir bobines no inventário. Por favor, fale com o administrador.')
         else:
-            messages.error(request, 'A bobine que inseriu não existe. Tente de novo.')
-            form = InventarioBobineDMInsert()
+            if bobines.exists():
+                bobine = InventarioBobinesDM.objects.filter(nome=bobine_picada)
+                if bobine.exists():
+                    messages.warning(request, 'A bobine ' + bobine_picada + ' já se encontra no Inventário.')
+                    form = InventarioBobineDMInsert()
+                else:
+                    bobine = get_object_or_404(Bobine, nome=bobine_picada)
+                    bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
+                    bobine_inv.save()
+                    messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
+                    form = InventarioBobineDMInsert()
+                
+            else:
+                messages.error(request, 'A bobine que inseriu não existe. Tente de novo.')
+                form = InventarioBobineDMInsert()
 
         
     context = {
@@ -4091,5 +4095,120 @@ def inventario_bobines_dm_insert(request):
     return render(request, template_name, context)
 
 
+@login_required
+def inventario_bobines_dm_remover(request, pk):
+    bobine = get_object_or_404(Bobine, pk=pk)
+    bobine_inv = get_object_or_404(InventarioBobinesDM, nome=bobine.nome)
+    template_name = 'inventario/inventario_bobines_dm_remover.html'
+
+    if request.method == 'POST':
+        bobine_inv.delete()
+        return redirect('producao:inventario_bobines_list')
+
+
+
+    context = {
+        "bobine": bobine,
+        "bobine_inv": bobine_inv
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def inventario_paletes_cliente_list(request):
+    paletes_inventario = InventarioPaletesCliente.objects.all()
+    template_name = 'inventario/inventario_paletes_cliente_list.html'
+    # paletes = []
+    # for pi in paletes_inventario:
+    #     p = get_object_or_404(Palete, pk=pi.palete.pk)
+    #     paletes.append(p)
+
+    context = {
+        # "paletes": paletes,
+        "paletes_inventario": paletes_inventario
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def inventario_palete_cliente_insert(request):
+    template_name = 'inventario/inventario_palete_cliente_insert.html'
+    form = InventarioPaleteClienteInsert(request.POST or None)
     
+
+    if form.is_valid():
+        cd = form.cleaned_data
+        palete_picada = cd.get('palete')
+        paletes = Palete.objects.filter(nome=palete_picada)
+        user = request.user.username
+        if user != 'elsa.rodrigues':
+            messages.error(request, 'Não tem permissão para introduzir Paletes no inventário. Por favor, fale com o administrador.')
+        else:
+            if paletes.exists():
+                palete = InventarioPaletesCliente.objects.filter(nome=palete_picada)
+                if palete.exists():
+                    messages.warning(request, 'A palete ' + palete_picada + ' já se encontra no Inventário.')
+                    form = InventarioPaleteClienteInsert()
+                else:
+                    palete = get_object_or_404(Palete, nome=palete_picada)
+                    palete_etiqueta = get_object_or_404(EtiquetaPalete, palete=palete)
+                    bobines = Bobine.objects.filter(palete=palete)
+                    artigo = bobines[0].artigo
+                    palete_inv = InventarioPaletesCliente.objects.create(user=request.user, palete=palete, nome=palete_picada, cliente=palete_etiqueta.cliente, comp_total=palete.comp_total, area=palete.area, largura_bobine=palete_etiqueta.largura_bobine, diam_max=palete_etiqueta.diam_max, diam_min=palete_etiqueta.diam_min, core_bobines=palete.core_bobines, artigo=artigo)
+                    palete_inv.save()
+                    messages.success(request, 'A palete ' + palete_picada + ' foi inserida com sucesso.')
+                    form = InventarioPaleteClienteInsert()
+                
+            else:
+                messages.error(request, 'A palete que inseriu não existe. Tente de novo.')
+                form = InventarioPaleteClienteInsert()
+
+        
+    context = {
+        "form": form, 
+        
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def bobines_larguras_reais(request, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    template_name = 'producao/bobines_larguras_reais.html'
+    LargurasReaisFormSet = modelformset_factory(Bobine, fields=('l_real',), extra=0)
+    larguras_validator = []
+    
+    if request.method == 'POST':
+        formset = LargurasReaisFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem))
+        if formset.is_valid():
+            for f in formset:
+                bobine = f.save(commit=False)
+                cd = f.cleaned_data
+                l_real = cd.get('l_real')
+                if l_real == None:
+                    larguras_validator.append(1)
+                else:
+                    bobine.save()
+
+            print(larguras_validator)
+            if len(larguras_validator) == 0:
+                return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)
+            else:
+                messages.error(request, 'Todos os campos de larguras reais são de preenchimento obrigatório.')
+                
+
+    else:
+        formset = LargurasReaisFormSet(queryset=Bobine.objects.filter(bobinagem=bobinagem))
+
+
+    context = {
+        "formset": formset,
+        "bobinagem": bobinagem
+    }
+
+    return render(request, template_name, context)
+
+
+
 

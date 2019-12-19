@@ -4142,27 +4142,27 @@ def inventario_palete_cliente_insert(request):
         palete_picada = cd.get('palete')
         paletes = Palete.objects.filter(nome=palete_picada)
         user = request.user.username
-        if user != 'elsa.rodrigues':
-            messages.error(request, 'Não tem permissão para introduzir Paletes no inventário. Por favor, fale com o administrador.')
-        else:
-            if paletes.exists():
-                palete = InventarioPaletesCliente.objects.filter(nome=palete_picada)
-                if palete.exists():
-                    messages.warning(request, 'A palete ' + palete_picada + ' já se encontra no Inventário.')
-                    form = InventarioPaleteClienteInsert()
-                else:
-                    palete = get_object_or_404(Palete, nome=palete_picada)
-                    palete_etiqueta = get_object_or_404(EtiquetaPalete, palete=palete)
-                    bobines = Bobine.objects.filter(palete=palete)
-                    artigo = bobines[0].artigo
-                    palete_inv = InventarioPaletesCliente.objects.create(user=request.user, palete=palete, nome=palete_picada, cliente=palete_etiqueta.cliente, comp_total=palete.comp_total, area=palete.area, largura_bobine=palete_etiqueta.largura_bobine, diam_max=palete_etiqueta.diam_max, diam_min=palete_etiqueta.diam_min, core_bobines=palete.core_bobines, artigo=artigo)
-                    palete_inv.save()
-                    messages.success(request, 'A palete ' + palete_picada + ' foi inserida com sucesso.')
-                    form = InventarioPaleteClienteInsert()
-                
-            else:
-                messages.error(request, 'A palete que inseriu não existe. Tente de novo.')
+        # if user != 'elsa.rodrigues':
+        #     messages.error(request, 'Não tem permissão para introduzir Paletes no inventário. Por favor, fale com o administrador.')
+        # else:
+        if paletes.exists():
+            palete = InventarioPaletesCliente.objects.filter(nome=palete_picada)
+            if palete.exists():
+                messages.warning(request, 'A palete ' + palete_picada + ' já se encontra no Inventário.')
                 form = InventarioPaleteClienteInsert()
+            else:
+                palete = get_object_or_404(Palete, nome=palete_picada)
+                palete_etiqueta = get_object_or_404(EtiquetaPalete, palete=palete)
+                bobines = Bobine.objects.filter(palete=palete)
+                artigo = bobines[0].artigo
+                palete_inv = InventarioPaletesCliente.objects.create(user=request.user, palete=palete, nome=palete_picada, cliente=palete_etiqueta.cliente, comp_total=palete.comp_total, area=palete.area, largura_bobine=palete_etiqueta.largura_bobine, diam_max=palete_etiqueta.diam_max, diam_min=palete_etiqueta.diam_min, core_bobines=palete.core_bobines, artigo=artigo)
+                palete_inv.save()
+                messages.success(request, 'A palete ' + palete_picada + ' foi inserida com sucesso.')
+                form = InventarioPaleteClienteInsert()
+            
+        else:
+            messages.error(request, 'A palete que inseriu não existe. Tente de novo.')
+            form = InventarioPaleteClienteInsert()
 
         
     context = {

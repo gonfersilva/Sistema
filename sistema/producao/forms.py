@@ -87,7 +87,7 @@ class PaleteCreateForm(ModelForm):
        fields = ['cliente', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines', 'destino']
 
     def __init__(self, *args, **kwargs):
-        palete = Palete.objects.filter(estado='G', data_pal__year='2019').latest('num')
+        palete = Palete.objects.filter(estado='G', data_pal__year='2020').latest('num')
         cliente = palete.cliente
         num_bobines = palete.num_bobines
         largura_bobines = palete.largura_bobines

@@ -766,7 +766,7 @@ def bobinagem_delete(request, pk):
                 if obj.perfil.retrabalho == False:
                     return redirect('producao:bobinagem_list_all')
                 else:
-                    return redirect('producao:retrabalho_home')
+                    return redirect('producao:bobinagem_retrabalho_list_v2')
             else:
                 etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=obj)
                 for eti in etiquetas:
@@ -775,7 +775,7 @@ def bobinagem_delete(request, pk):
                 if obj.perfil.retrabalho == False:
                     return redirect('producao:bobinagem_list_all')
                 else:
-                    return redirect('producao:retrabalho_home')
+                    return redirect('producao:bobinagem_retrabalho_list_v2')
 
         else:
             messages.error(request, 'A bobinagem não pode ser apagada porque existem bobines atribuidas a paletes.') 
@@ -3970,14 +3970,14 @@ def perfil_delete_v2(request, pk):
 
 @login_required
 def bobinagem_retrabalho_list_v2(request):
-    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=True)
+    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
     template_name = 'retrabalho/bobinagem_retrabalho_list_v2.html'
     form = SearchBobinagem(request.POST or None)
     
     if form.is_valid():
         cd = form.cleaned_data
         nome = cd.get('nome')
-        bobinagem_list = Bobinagem.objects.filter(nome__icontains=nome, perfil__retrabalho=True)
+        bobinagem_list = Bobinagem.objects.filter(nome__icontains=nome, perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
 
     paginator = Paginator(bobinagem_list, 14)
     page = request.GET.get('page')

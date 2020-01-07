@@ -764,7 +764,7 @@ def bobinagem_delete(request, pk):
                     eti.delete()
                 obj.delete()
                 if obj.perfil.retrabalho == False:
-                    return redirect('producao:bobinagem_list_all')
+                    return redirect('producao:bobinagem_list_v3')
                 else:
                     return redirect('producao:bobinagem_retrabalho_list_v2')
             else:
@@ -773,7 +773,7 @@ def bobinagem_delete(request, pk):
                     eti.delete()
                 obj.delete()
                 if obj.perfil.retrabalho == False:
-                    return redirect('producao:bobinagem_list_all')
+                    return redirect('producao:bobinagem_list_v3')
                 else:
                     return redirect('producao:bobinagem_retrabalho_list_v2')
 
@@ -1352,7 +1352,7 @@ def etiqueta_retrabalho(request, pk):
         if bobinagem.perfil.retrabalho == True:
             return redirect('producao:bobinestatus', pk=bobinagem.pk)
         else:
-            return redirect('producao:bobinagem_list_all')
+            return redirect('producao:bobinagem_list_v3')
 
 @login_required
 def etiqueta_palete(request, pk):
@@ -4211,4 +4211,38 @@ def bobines_larguras_reais(request, pk):
 
 
 
+
+@login_required
+def bobinagem_list_v3(request):
+    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
+    template_name = 'producao/bobinagem_list_v3.html'
+    
+
+
+    
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        bobinagem_list = Bobinagem.objects.filter(nome__icontains=query, perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
+
+
+    paginator = Paginator(bobinagem_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        bobinagem = paginator.page(page)
+    except PageNotAnInteger:
+        bobinagem = paginator.page(1)
+    except EmptyPage:
+        bobinagem = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "bobinagem": bobinagem,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
 

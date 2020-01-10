@@ -99,7 +99,8 @@ urlpatterns = [
     url(r'^inventario/dm/delete/(?P<pk>\d+)/$', inventario_bobines_dm_remover, name='inventario_bobines_dm_remover'),
     url(r'^inventario/paletescliente/list/$', inventario_paletes_cliente_list, name='inventario_paletes_cliente_list'),
     url(r'^inventario/paletescliente/insert/$', inventario_palete_cliente_insert, name='inventario_palete_cliente_insert'),
-    # url(r'^teste/bobinagem/list/$', bobinagem_list_v3, name='bobinagem_list_v3'),
+    url(r'^teste/cliente/details/(?P<pk>\d+)/$', cliente_details, name='cliente_details'),
+    url(r'^teste/cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
 
 
 

@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete
+from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
@@ -4244,5 +4244,46 @@ def bobinagem_list_v3(request):
         "query": query,
         
     }
+    return render(request, template_name, context)
+
+@login_required
+def cliente_details(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente)
+    template_name = 'cliente/cliente_details.html'
+
+    context = {
+        "cliente": cliente, 
+        "artigos_cliente": artigos_cliente
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def cliente_add_artigo(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    artigo_cliente = ArtigoCliente.objects.filter(cliente=cliente)
+    template_name = 'cliente/cliente_add_artigo.html'
+    form = ArtigoClientInsert(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.cliente = cliente
+
+        for ac in artigo_cliente:
+            if ac.artigo == instance.artigo:
+                messages.error(request, 'O Artigo selecionado já está associado ao cliente ' + cliente.nome + '.')
+                form = ArtigoClientInsert()
+
+        # else:
+        #     return redirect('producao:cliente_details', pk=cliente.pk)
+
+    context = {
+        "cliente": cliente, 
+        "form": form
+    }
+
     return render(request, template_name, context)
 

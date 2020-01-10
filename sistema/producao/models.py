@@ -16,7 +16,7 @@ from decimal import *
 class Perfil(models.Model):
     CORE = (('3', '3'),('6', '6'))
     GSM = (('105' , '105 gsm'), ('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'), ('57' , '57 gsm'), ('50' , '50 gsm'), ('48' , '48 gsm'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
     nome = models.CharField(verbose_name="Perfil", max_length=200, unique=True, null=True, blank=True)
@@ -49,7 +49,7 @@ class Artigo(models.Model):
     GSM = (('105' , '105 gsm'), ('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'), ('57' , '57 gsm'), ('50' , '50 gsm'), ('48' , '48 gsm'))
     CORE = (('3', '3'),('6', '6'))
     FORMU = (('HE', 'HE'),('HT', 'HT'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
     tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final") 
@@ -70,14 +70,32 @@ class Artigo(models.Model):
     def __str__(self):
         return '%s -  %s' % (self.cod, self.des)
 
+class Cliente(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    cod = models.PositiveIntegerField(verbose_name="Código de cliente", unique=True)
+    nome = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nome")
+    abv = models.CharField(max_length=3, unique=True, null=True, blank=True, verbose_name="Abreviatura")
+    limsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Superior")
+    liminf = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Inferior")
+    diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Clientes"
+        ordering = ['-timestamp', '-nome']
+
+    def __str__(self):
+        return self.nome
+
 class Largura(models.Model):
     GSM = (('105' , '105 gsm'), ('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'), ('57' , '57 gsm'), ('50' , '50 gsm'), ('48' , '48 gsm'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'),  ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'))
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=0, null=True, blank=True)
     designacao_prod = models.CharField(verbose_name="Produto", max_length=100, default="", choices=PRODUTO)
     gsm = models.CharField(max_length=7, choices=GSM, null=True, blank=True, verbose_name="Gramagem")
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name="Cliente", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Larguras"
@@ -89,25 +107,20 @@ class Largura(models.Model):
     def get_absolute_url(self):
         return f"/producao/perfil/{self.perfil.id}"
 
-# def perfil_larguras(sender, instance, **kwargs):
-#     for i in range(instance.num_bobines):
-#         lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
-#         lar.save()
+class ArtigoCliente(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username",null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo")
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name="Cliente")
+    cod_client = models.CharField(max_length=200, unique=True, verbose_name="Cód. Cliente", null=True, blank=True)
 
+    
+    class Meta:
+        verbose_name_plural = "Artigos Cliente"
+        ordering = ['-timestamp']
 
-
-# class Nonwoven(models.Model):
-
-#     pass
-
-# class Lote(models.Model):
-#     pass
-
-# class Produto(models.Model):
-#     pass
-
-# class Consumo(models.Model):
-#     pass
+    def __str__(self):
+            return '%s - %s' % (self.artigo.des, self.cliente.nome)
 
 
 class Bobinagem(models.Model):
@@ -160,21 +173,7 @@ class Bobinagem(models.Model):
     def get_absolute_url(self):
         return f"/producao/bobinagem/{self.id}"
 
-class Cliente(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    cod = models.PositiveIntegerField(verbose_name="Código de cliente", unique=True)
-    nome = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nome")
-    abv = models.CharField(max_length=3, unique=True, null=True, blank=True, verbose_name="Abreviatura")
-    limsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Superior")
-    liminf = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Inferior")
-    diam_ref = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro de referência", null=True, blank=True)
 
-    class Meta:
-        verbose_name_plural = "Clientes"
-        ordering = ['-timestamp', '-nome']
-
-    def __str__(self):
-        return self.nome
 
 # class PerfilPalete(models.Model):
 #     pass

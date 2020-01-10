@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 import datetime, time
 from django import forms
@@ -345,6 +345,14 @@ class InventarioBobineDMInsert(forms.Form):
 
 class InventarioPaleteClienteInsert(forms.Form):
     palete = forms.CharField(max_length=20, required=True)
+
+class ArtigoClientInsert(ModelForm):
+    class Meta:
+        model = ArtigoCliente
+        fields = ['artigo', 'cod_client']
+
+
+
 
 
 

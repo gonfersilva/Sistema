@@ -15,6 +15,22 @@
         
     </div>
 <div class="container">
+    <br>
+    <br>
+    <div class="row">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="alert alert-warning" role="alert">
+                    <h3 id="center">Impressão em curso noutro posto!</h3>
+                    <p id="center"> {{message}} </p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        
+    </div>
     <div class="row">
             <h1 id="center">Detalhe da bobinagem</h1>
             <h2 id="center">{{ bobinagem.nome }}</h2>

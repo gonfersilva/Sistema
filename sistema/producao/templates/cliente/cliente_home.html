@@ -30,7 +30,7 @@
                                 <tr>
                                     <td id="center">{{ c.cod }}</td>
                                     <td id="center">{{ c.abv }}</td>
-                                    <td>{{ c.nome }}</td>
+                                    <td><a href="{% url 'producao:cliente_details' pk=c.pk %}">{{ c.nome }}</a></td>
                                     <td id="center">{{ c.liminf }}</td>
                                     <td id="center">{{ c.limsup }}</td>
                                     <td id="center">{{ c.diam_ref }}</td>

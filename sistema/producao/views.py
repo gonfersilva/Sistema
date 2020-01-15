@@ -213,16 +213,26 @@ def bobinagem_status(request, pk):
     bobine = Bobine.objects.filter(bobinagem=pk)
     emenda = Emenda.objects.filter(bobinagem=pk)
     etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=pk)
-
+    estado_impressao = False
     form = ImprimirEtiquetaBobine(request.POST or None)
     if form.is_valid():
         impressora = form['impressora'].value()
         num_copias = int(form['num_copias'].value())
+
         for etiqueta in etiquetas:
+            if etiqueta.estado_impressao == 1:
+                estado_impressao = True
+                break
+
+        if estado_impressao == False:
             etiqueta.impressora = impressora
             etiqueta.num_copias = num_copias
             etiqueta.estado_impressao = True
             etiqueta.save()
+            # messages.warning(request, 'SUCESSO')
+        else:
+            messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
+            
 
 
     context = {
@@ -352,7 +362,6 @@ def create_palete(request):
         else:
             instance.save()
             palete_nome(instance.pk)
-                
             return redirect('producao:palete_picagem', pk=instance.pk)
 
     context = {
@@ -4266,7 +4275,7 @@ def cliente_add_artigo(request, pk):
     artigo_cliente = ArtigoCliente.objects.filter(cliente=cliente)
     template_name = 'cliente/cliente_add_artigo.html'
     form = ArtigoClientInsert(request.POST or None)
-
+    artigo_valido = True
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -4274,11 +4283,15 @@ def cliente_add_artigo(request, pk):
 
         for ac in artigo_cliente:
             if ac.artigo == instance.artigo:
-                messages.error(request, 'O Artigo selecionado já está associado ao cliente ' + cliente.nome + '.')
-                form = ArtigoClientInsert()
-
-        # else:
-        #     return redirect('producao:cliente_details', pk=cliente.pk)
+                artigo_valido = False
+                break
+                        
+        if artigo_valido == True:
+            instance.save()
+            return redirect('producao:cliente_details', pk=cliente.pk)
+        else:
+            messages.error(request, 'O Artigo ' + instance.artigo.des + ' já está associado ao cliente ' + cliente.nome + '.')
+            form = ArtigoClientInsert()
 
     context = {
         "cliente": cliente, 

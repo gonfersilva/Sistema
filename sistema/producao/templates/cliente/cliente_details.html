@@ -5,8 +5,8 @@
 
 <div class="container">
     <div class="row">
-        <a href="#"  class="btn btn-primary" role="button">Voltar</a>
-        <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}"  class="btn btn-primary pull-right" role="button">Associar Artigo a Cliente</a>
+        <a href="{% url 'producao:clientes' %}"  class="btn btn-primary" role="button">Voltar</a>
+        <!-- <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}"  class="btn btn-primary pull-right" role="button">Associar Artigo a Cliente</a> -->
     </div>
     <br>
     <div class="row">
@@ -41,8 +41,10 @@
                                <td id="center">N/A</td>                            
                            {% else %}
                                <td id="center">{{ ac.cod_client }}</td>                            
-                               <td id="center">{{ ac.cod_client }}</td>                            
                            {% endif%}
+                           <td>
+                                <a href="#" role="button" class="btn btn-danger">Remover</a>
+                           </td>
                         </tr>
                     {% endfor %}
                 </tbody>

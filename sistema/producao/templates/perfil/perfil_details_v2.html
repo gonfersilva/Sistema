@@ -44,7 +44,7 @@
                         <tr>
                             <th>Largura</td>
                             {% for lar in largura %}
-                                {% if not lar.largura == None%}
+                                {% if not lar.largura == None %}
                                 <td id="center">{{ lar.largura }}</td>
                                 
                                 {% else %}
@@ -75,6 +75,37 @@
                                 <td></td>
                             {% endif %}
                         {% endfor%}
+                            
+                        </tr>
+                        <tr>
+                            <th>Cliente</td>
+                            {% for lar in largura %}
+                                {% if not lar.largura == None %}
+                                    {% if not lar.cliente == None %}
+                                        <td id="center">{{ lar.cliente }}</td>
+                                    {% else %}
+                                        <td id="center">S/ Cliente</td>
+                                    {% endif %}
+                                {% else %}
+                                       <td></td>
+                                {% endif %}
+                            {% endfor%}
+                                    
+                            
+                        </tr>
+                        <tr>
+                            <th>Artigo</td>
+                                {% for lar in largura %}
+                                    {% if not lar.largura == None %}
+                                        {% if not lar.artigo == None %}
+                                            <td id="center">{{ lar.artigo }}</td>
+                                        {% else %}
+                                            <td id="center">S/ Artigo</td>
+                                        {% endif %}
+                                {% else %}
+                                       <td></td>
+                                {% endif %}
+                            {% endfor%}
                             
                         </tr>
                         

@@ -219,20 +219,21 @@ def bobinagem_status(request, pk):
         impressora = form['impressora'].value()
         num_copias = int(form['num_copias'].value())
 
-        for etiqueta in etiquetas:
-            if etiqueta.estado_impressao == 1:
-                estado_impressao = True
-                break
+        # for etiqueta in etiquetas:
+        #     if etiqueta.estado_impressao == 1:
+        #         estado_impressao = True
+        #         break
 
-        if estado_impressao == False:
-            for etiqueta in etiquetas:
-                etiqueta.impressora = impressora
-                etiqueta.num_copias = num_copias
-                etiqueta.estado_impressao = True
-                etiqueta.save()
+        # if estado_impressao == False:
+            
+        #     for etiqueta in etiquetas:
+        etiqueta.impressora = impressora
+        etiqueta.num_copias = num_copias
+        etiqueta.estado_impressao = True
+        etiqueta.save()
             # messages.warning(request, 'SUCESSO')
-        else:
-            messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
+        # else:
+        #     messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
             
 
 
@@ -3783,10 +3784,12 @@ def perfil_larguras_v2(request, pk):
     perfil = get_object_or_404(Perfil, pk=pk)
     template_name = 'perfil/perfil_larguras_v2.html'
     # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
-    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
     largura_total = 0
     larguras = []
     produtos = []
+    clientes = []
+    artigos = []
     gsms = []
     cont = []
     nome_largura = ''
@@ -3803,10 +3806,14 @@ def perfil_larguras_v2(request, pk):
                 designacao_prod = cd.get('designacao_prod')
                 largura = cd.get('largura')
                 gsm = cd.get('gsm')
+                cliente = cd.get('cliente')
+                artigo = cd.get('artigo')
                 largura_total += int(largura)
                 larguras.append(largura)
                 produtos.append(designacao_prod)
                 gsms.append(gsm)
+                clientes.append(cliente)
+                artigos.append(artigo)
 
             if perfil.retrabalho == True and perfil.largura_original < largura_total:
                 messages.error(request, 'Não é possivel validar as larguras inseridas. A largura da bobine original é inferior ao total da bobine final')
@@ -3838,9 +3845,9 @@ def perfil_larguras_v2(request, pk):
                     nome = nome_parcial + ' 1'
                     
                 if perfil.retrabalho == True:
-                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original)
+                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
                 else:
-                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None)
+                    token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
 
 
                 if Perfil.objects.filter(token=token).exists():
@@ -3873,10 +3880,12 @@ def perfil_edit_larguras_v2(request, pk):
     perfil = get_object_or_404(Perfil, pk=pk)
     template_name = 'perfil/perfil_edit_larguras_v2.html'
     # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
-    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
     largura_total = 0
     larguras = []
     produtos = []
+    clientes = []
+    artigos = []
     gsms = []
     cont = []
     nome_largura = ''
@@ -3893,10 +3902,14 @@ def perfil_edit_larguras_v2(request, pk):
                 designacao_prod = cd.get('designacao_prod')
                 largura = cd.get('largura')
                 gsm = cd.get('gsm')
+                cliente = cd.get('cliente')
+                artigo = cd.get('artigo')
                 largura_total += int(largura)
                 larguras.append(largura)
                 produtos.append(designacao_prod)
                 gsms.append(gsm)
+                clientes.append(cliente)
+                artigos.append(artigo)
 
 
             lar_s_dupli = list(dict.fromkeys(larguras))   
@@ -3925,9 +3938,9 @@ def perfil_edit_larguras_v2(request, pk):
                 
             
             if perfil.retrabalho == True:
-                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original)
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
             else:
-                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None)
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
 
             if Perfil.objects.filter(token=token).exists():
                 perfil_2 = get_object_or_404(Perfil, token=token)

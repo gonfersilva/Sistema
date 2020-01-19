@@ -858,7 +858,7 @@ def cancel_insert_larguras(request, pk):
         perfil.delete()
         return redirect('producao:perfil_create_dm_v2')
 
-def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, retrabalho, core_original, largura_original):
+def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, retrabalho, core_original, largura_original, clientes, artigos):
     
     produtos_dict = {
         'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE': 'A',
@@ -899,6 +899,18 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
     
     for gsm in gsms:
         token += gsm_dict.get(gsm)
+    
+    for cliente in clientes:
+        if cliente != None:
+            token += str(cliente.pk)
+        else:
+            token += 'N'
+    
+    for artigo in artigos:
+        if artigo != None:
+            token += str(artigo.pk)
+        else:
+            token += 'N'
     
     if retrabalho == True:
         token = 'DM' + token + str(core_original) + str(largura_original)

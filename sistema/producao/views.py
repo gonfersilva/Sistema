@@ -226,11 +226,11 @@ def bobinagem_status(request, pk):
 
         # if estado_impressao == False:
             
-        #     for etiqueta in etiquetas:
-        etiqueta.impressora = impressora
-        etiqueta.num_copias = num_copias
-        etiqueta.estado_impressao = True
-        etiqueta.save()
+        for etiqueta in etiquetas:
+            etiqueta.impressora = impressora
+            etiqueta.num_copias = num_copias
+            etiqueta.estado_impressao = True
+            etiqueta.save()
             # messages.warning(request, 'SUCESSO')
         # else:
         #     messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')

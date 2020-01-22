@@ -99,13 +99,10 @@ urlpatterns = [
     url(r'^inventario/dm/delete/(?P<pk>\d+)/$', inventario_bobines_dm_remover, name='inventario_bobines_dm_remover'),
     url(r'^inventario/paletescliente/list/$', inventario_paletes_cliente_list, name='inventario_paletes_cliente_list'),
     url(r'^inventario/paletescliente/insert/$', inventario_palete_cliente_insert, name='inventario_palete_cliente_insert'),
-    url(r'^teste/cliente/details/(?P<pk>\d+)/$', cliente_details, name='cliente_details'),
-    url(r'^teste/cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
-
-
-
-
-    # url(r'^teste/perfil/create/$', perfil_create_v2, name='perfil_create_v2'),    
-    # url(r'^teste/perfil/largura/(?P<pk>\d+)/$', perfil_larguras_v2, name='perfil_larguras_v2'),    
+    url(r'^cliente/details/(?P<pk>\d+)/$', cliente_details, name='cliente_details'),
+    url(r'^cliente/details/(?P<pk_cliente>\d+)/(?P<pk_artigo>\d+)/remove/$', cliente_remover_artigo, name='cliente_remover_artigo'),
+    url(r'^cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
+    # url(r'^teste/cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
+  
     
 ]

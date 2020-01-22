@@ -213,19 +213,19 @@ def bobinagem_status(request, pk):
     bobine = Bobine.objects.filter(bobinagem=pk)
     emenda = Emenda.objects.filter(bobinagem=pk)
     etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=pk)
-    estado_impressao = False
+    # etiquetas_all = EtiquetaRetrabalho.objects.all()
+    # estado_impressao = False
     form = ImprimirEtiquetaBobine(request.POST or None)
     if form.is_valid():
         impressora = form['impressora'].value()
         num_copias = int(form['num_copias'].value())
 
-        # for etiqueta in etiquetas:
+        # for etiqueta in etiquetas_all:
         #     if etiqueta.estado_impressao == 1:
         #         estado_impressao = True
         #         break
 
         # if estado_impressao == False:
-            
         for etiqueta in etiquetas:
             etiqueta.impressora = impressora
             etiqueta.num_copias = num_copias
@@ -1342,7 +1342,8 @@ def etiqueta_retrabalho(request, pk):
            
     else:
         for b in bobine:
-            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area)
+            artigo_cliente = ArtigoCliente.objects.get(cliente=b.largura.cliente, artigo=b.artigo)
+            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area, cod_cliente=artigo_cliente.cod_client, artigo=b.artigo.des)
             if Emenda.objects.filter(bobinagem=bobinagem).exists():
                 emenda = Emenda.objects.filter(bobinagem=bobinagem)
                 for e in emenda:
@@ -3459,6 +3460,9 @@ def palete_picagem(request, pk):
 
                     bobine_produto = Bobine.objects.get(nome=bobines_nome[0])
                     e_p.produto = bobine_produto.largura.designacao_prod
+                    e_p.artigo = bobine_produto.artigo.des
+                    artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine_produto.artigo)
+                    e_p.cod_cliente = artigo_cliente.cod_client
                     
                     e_p.bobine1 = bobine_posicao[1]
                     e_p.bobine2 = bobine_posicao[2]
@@ -3523,8 +3527,6 @@ def palete_picagem(request, pk):
                     e_p.diam_min = d_min
                     e_p.diam_max = d_max
                     e_p.save()
-
-                    add_artigo_to_bobine(pk)
 
                     return redirect('producao:addbobinepalete', pk=palete.pk)
 
@@ -4313,4 +4315,26 @@ def cliente_add_artigo(request, pk):
     }
 
     return render(request, template_name, context)
+
+
+@login_required
+def cliente_remover_artigo(request, pk_cliente, pk_artigo):
+    cliente = get_object_or_404(Cliente, pk=pk_cliente)
+    artigo = get_object_or_404(Artigo, pk=pk_artigo)
+    artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=artigo)
+    template_name = 'cliente/cliente_remover_artigo.html'
+
+    if request.method == "POST":
+        artigo_cliente.delete()
+        return redirect('producao:cliente_details', pk=cliente.pk)
+
+
+    context = {
+        "cliente": cliente,
+        "artigo:": artigo,
+        "artigo_cliente": artigo_cliente
+    }
+
+    return render(request, template_name, context)
+    
 

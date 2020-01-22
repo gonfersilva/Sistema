@@ -220,7 +220,7 @@ def create_bobine(pk):
         lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
         bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
         if not bob:
-            bob = Bobine.objects.create(bobinagem=instance, largura=lar, comp_actual=instance.comp)
+            bob = Bobine.objects.create(bobinagem=instance, largura=lar, comp_actual=instance.comp, artigo=lar.artigo)
             if num < 10:
                 bob.nome = '%s-0%s' % (instance.nome, num)
             else:

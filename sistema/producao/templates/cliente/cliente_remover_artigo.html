@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+ 
+    
+    <form action="." method="POST">{% csrf_token %}
+        <h1>Deseja apagar o artigo {{ artigo_cliente.artigo.des }}?</h1>
+        <p><input type="submit" class="btn btn-block btn-danger" value="Sim">  <a href="{% url 'producao:cliente_details' pk=cliente.pk %}" class="btn btn-block btn-primary" role="button">Não</a></p>
+    </form>
+    
+</div>
+
+{% endblock %}

@@ -43,7 +43,7 @@
                                <td id="center">{{ ac.cod_client }}</td>                            
                            {% endif%}
                            <td>
-                                <a href="#" role="button" class="btn btn-danger">Remover</a>
+                                <a href="{% url 'producao:cliente_remover_artigo' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}" role="button" class="btn btn-danger">Remover</a>
                            </td>
                         </tr>
                     {% endfor %}

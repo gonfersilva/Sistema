@@ -426,6 +426,9 @@ class EtiquetaRetrabalho(models.Model):
     impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
     num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
     estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
+    artigo = models.CharField(max_length=200, verbose_name="Artigo", null=True, blank=True)
+    cod_cliente = models.CharField(max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
+
     
     
     def __str__(self):
@@ -500,6 +503,8 @@ class EtiquetaPalete(models.Model):
     bobine58 = models.CharField(verbose_name="Bobine nº 58", max_length=200, null=True, blank=True)
     bobine59 = models.CharField(verbose_name="Bobine nº 59", max_length=200, null=True, blank=True)
     bobine60 = models.CharField(verbose_name="Bobine nº 60", max_length=200, null=True, blank=True)
+    artigo = models.CharField(max_length=200, verbose_name="Artigo", null=True, blank=True)
+    cod_cliente = models.CharField(max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
     impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
     num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
     estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")

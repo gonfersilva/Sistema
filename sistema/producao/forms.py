@@ -306,6 +306,7 @@ class ImprimirEtiquetaFinalPalete(forms.Form):
 
 class PerfilLinhaForm(ModelForm):
     largura_bobines = forms.DecimalField(required=False)
+       
     class Meta:
         model = Perfil
         fields = [ 'produto', 'num_bobines', 'core', 'gramagem']

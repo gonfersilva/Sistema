@@ -36,6 +36,10 @@
         </div>
         <br>
         <div class="row">
+            <h3>Artigo: {{ bobine.artigo.des}}</h3>
+            <h3>Cliente: {{ bobine.largura.cliente.nome }}</h3>
+        </div>
+        <div class="row">
             <h3>Imprimir Bobine {{ bobine.nome }}</h3>
             <form method="POST" action="#">
                 {% bootstrap_form form %}

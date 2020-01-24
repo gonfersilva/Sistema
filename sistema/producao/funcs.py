@@ -602,6 +602,7 @@ def gerar_etiqueta_final(pk):
     area = palete.area
     comp_total = palete.comp_total
     prf = palete.carga.enc.prf
+    order_num = palete.carga.enc.order_num
     num_bobines = palete.num_bobines
     peso_liquido = palete.peso_liquido
     peso_bruto = palete.peso_bruto
@@ -665,9 +666,9 @@ def gerar_etiqueta_final(pk):
 
     
     if cod_cliente_cliente is not None:
-        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num)
     else:
-        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num)
         
 
 def add_artigo_to_bobine(pk):

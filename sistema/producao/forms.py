@@ -186,7 +186,7 @@ class EncomendaCreateForm(forms.ModelForm):
         
     class Meta:
         model = Encomenda
-        fields = ['cliente', 'data', 'eef', 'prf', 'sqm', 'num_cargas']
+        fields = ['cliente', 'data', 'eef', 'prf', 'sqm', 'num_cargas', 'order_num']
 
     def __init__(self, *args, **kwargs):
         encomenda = Encomenda.objects.all().latest('id')

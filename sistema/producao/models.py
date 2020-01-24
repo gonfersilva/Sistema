@@ -189,6 +189,7 @@ class Encomenda(models.Model):
     estado              = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado")
     num_cargas_actual   = models.IntegerField(default=0) 
     num_cargas          = models.IntegerField(default=0) 
+    order_num           = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="Order Number")
 
     def __str__(self):
         return self.eef
@@ -546,8 +547,9 @@ class EtiquetaFinal(models.Model):
     impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
     num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
     estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
-    
+    order_num = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="Order Number")
 
+    
     def __str__(self):
         return self.palete_nome
 

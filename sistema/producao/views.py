@@ -4336,5 +4336,11 @@ def cliente_remover_artigo(request, pk_cliente, pk_artigo):
     }
 
     return render(request, template_name, context)
-    
+
+@login_required
+def load_artigos_cliente(request):
+    cliente = request.GET.get('cliente')
+    cliente_obj = get_object_or_404(Cliente, pk=cliente) 
+    artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj).order_by('artigo')
+    return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})        
 

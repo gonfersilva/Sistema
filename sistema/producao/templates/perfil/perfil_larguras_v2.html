@@ -6,7 +6,7 @@
     <br>
     <br>
     <div class="container">
-        <form method="post">
+        <form method="post" id="largurasForm" data-artigos-url="{% url 'producao:load_artigos_cliente' %}">
             <div class="row">
                 <a href="{% url 'producao:cancel_insert_larguras' pk=perfil.pk %}" class="btn btn-primary pull-left" role="button">Cancelar</a>
                 
@@ -56,6 +56,527 @@
        
             
 </div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    
+    var num_forms = $('#id_form-TOTAL_FORMS').val()
+
+    
+    
+
+    $("#id_form-0-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-0-artigo").html(data);  
+            }
+        });
+
+    });
+
+    
+    $("#id_form-1-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-1-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-2-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-2-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-3-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-3-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-4-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-4-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-5-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-5-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-6-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-6-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-7-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-7-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-8-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-8-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-9-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-9-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-10-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-10-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-11-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-11-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-12-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-12-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-13-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-13-artigo").html(data);  
+            }
+        });
+
+    });
+
+    $("#id_form-14-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-14-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-15-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-15-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-16-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-16-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-17-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-17-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-18-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-18-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-19-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-19-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-20-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-20-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-21-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-21-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-22-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-22-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-23-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-23-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-24-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-24-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-25-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-25-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-26-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-26-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-27-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-27-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-28-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-28-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-29-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-29-artigo").html(data);  
+            }
+        });
+
+    });
+    $("#id_form-30-cliente").change(function () {
+        var url = $("#largurasForm").attr("data-artigos-url");  
+        var clienteId = $(this).val();  
+        
+        $.ajax({                       
+            url: url,                   
+            data: {
+                'cliente': clienteId      
+            },
+            success: function (data) { 
+               
+                $("#id_form-30-artigo").html(data);  
+            }
+        });
+
+    });
+
+  </script>
 {% endblock %}
                                                      
                             

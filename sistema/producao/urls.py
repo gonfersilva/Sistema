@@ -102,6 +102,7 @@ urlpatterns = [
     url(r'^cliente/details/(?P<pk>\d+)/$', cliente_details, name='cliente_details'),
     url(r'^cliente/details/(?P<pk_cliente>\d+)/(?P<pk_artigo>\d+)/remove/$', cliente_remover_artigo, name='cliente_remover_artigo'),
     url(r'^cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
+    url(r'^ajax/artigos-cliente/$', load_artigos_cliente, name='load_artigos_cliente'),
     # url(r'^teste/cliente/details/(?P<pk>\d+)/add/$', cliente_add_artigo, name='cliente_add_artigo'),
   
     

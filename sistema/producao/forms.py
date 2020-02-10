@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 import datetime, time
 from django import forms
@@ -48,8 +48,32 @@ class BobinagemCreateForm(ModelForm):
         self.fields['lotenwinf'].initial = lotenwinf
         self.fields['perfil'].initial = perfil
         self.fields['diam'].initial = diam
+
+class BobinagemCreateFormV2(ModelForm):
+    nonwoven_sup = forms.CharField(max_length=20, label='Nonwoven Superior', required=True)
+    nonwoven_inf = forms.CharField(max_length=20, label='Nonwoven Inferior', required=True)
+    consumo_sup = forms.DecimalField(max_digits=6, decimal_places=2, label='Consumo Superior', required=True)
+    consumo_inf = forms.DecimalField(max_digits=6, decimal_places=2, label='Consumo Inferior', required=True)
     
-        
+    class Meta:
+       model = Bobinagem
+       fields = ['data', 'num_bobinagem', 'perfil', 'comp', 'comp_par', 'diam', 'inico', 'fim', 'estado', 'obs']
+
+    def __init__(self, *args, **kwargs):
+        bobinagem = Bobinagem.objects.filter(perfil__retrabalho=False)
+        num = bobinagem.latest()
+        num_b = num.num_bobinagem + 1
+        fim = num.fim
+        perfil = num.perfil
+        diam = num.diam
+        super(BobinagemCreateFormV2, self).__init__(*args, **kwargs)
+        self.fields['perfil'].queryset = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
+        self.fields['num_bobinagem'].initial = num_b
+        self.fields['inico'].initial = fim
+        self.fields['perfil'].initial = perfil
+        self.fields['diam'].initial = diam
+  
+     
          
 
 
@@ -332,14 +356,9 @@ class SearchPerfil(forms.Form):
 class SearchBobinagem(forms.Form):
     nome = forms.CharField(label="Bobinagem",max_length=200, required=True)
 
-class CreateNonwovenManual(ModelForm):
-    
-    class Meta:
-        model = Nonwoven
-        fields = ['designacao_fornecedor', 'fornecedor', 'comp_total', 'largura']
 
-class CreateNonWovenAuto(ModelForm):
-    pass
+
+
 
 class InventarioBobineDMInsert(forms.Form):
     bobine = forms.CharField(max_length=15, required=True)
@@ -351,6 +370,35 @@ class ArtigoClientInsert(ModelForm):
     class Meta:
         model = ArtigoCliente
         fields = ['artigo', 'cod_client']
+
+class FornecedorCreateForm(ModelForm):
+    class Meta:
+        model = Fornecedor
+        fields = ['cod', 'abv', 'designacao']
+
+class FornecedorEditForm(ModelForm):
+    class Meta:
+        model = Fornecedor
+        fields = ['abv', 'designacao']
+
+class RececaoCreateForm(ModelForm):
+    class Meta:
+        model = Rececao
+        fields = ['fornecedor', 'encomenda']
+
+class ArtigoNWCreateForm(ModelForm):
+    class Meta:
+        model = ArtigoNW
+        fields = ['cod', 'designacao', 'fornecedor', 'largura', 'gsm']
+
+
+class RececaoInsertNW(forms.Form):
+    artigo_nw = forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={'autofocus': True, 'value': ''}))
+    sqm = forms.CharField(max_length=20, required=True)
+    lote = forms.CharField(max_length=20, required=True)
+    prod = forms.CharField(max_length=20, required=True)
+    stack_num = forms.CharField(max_length=20, required=True)
+
 
 
 

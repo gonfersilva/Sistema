@@ -7,10 +7,10 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente
+from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.db.models.signals import pre_save, post_save
 from django.contrib import messages
 from time import gmtime, strftime
@@ -21,6 +21,9 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponse
+from datetime import datetime
+from urllib.error import HTTPError
+import django.core.exceptions
 
 
 
@@ -4022,49 +4025,8 @@ def bobinagem_retrabalho_list_v2(request):
     }
     return render(request, template_name, context)
 
-@login_required
-def nonwoven_list(request):
-    nonwoven_list = Nonwoven.objects.all()
-    template_name = 'nonwoven/nonwoven_list.html'
 
-    paginator = Paginator(nonwoven_list, 14)
-    page = request.GET.get('page')
-    
 
-    try:
-        nonwoven = paginator.page(page)
-    except PageNotAnInteger:
-        nonwoven = paginator.page(1)
-    except EmptyPage:
-        nonwoven = paginator.page(paginator.num_pages)
-
-    context = {
-        "nonwoven": nonwoven
-    }
-    return render(request, template_name, context)
-
-@login_required
-def nonwoven_create_manual(request):
-    template_name = 'nonwoven/nonwoven_create_manual.html'
-    form = CreateNonwovenManual(request.POST or None)
-    
-
-    if form.is_valid():
-        instance = form.save(commit=False)
-        # cd = form.cleaned_data
-        instance.user = request.user
-        instance.comp_actual = instance.comp_total
-        instance.designacao = instance.designacao_fornecedor + '-FORN'
-
-        instance.save()
-
-       
-        return redirect('producao:nonwoven_list')
-        
-    context = {
-        "form": form, 
-    }
-    return render(request, template_name, context)
 
 
 @login_required
@@ -4342,5 +4304,486 @@ def load_artigos_cliente(request):
     cliente = request.GET.get('cliente')
     cliente_obj = get_object_or_404(Cliente, pk=cliente) 
     artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj).order_by('artigo')
-    return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})        
+    return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})       
 
+
+@login_required
+def fornecedor_list(request):
+    fornecedor_list = Fornecedor.objects.all().order_by('-cod')
+    template_name = 'fornecedor/fornecedor_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        fornecedor_list = Fornecedor.objects.filter(designacao__icontains=query).order_by('-cod')
+
+
+    paginator = Paginator(fornecedor_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        fornecedor = paginator.page(page)
+    except PageNotAnInteger:
+        fornecedor = paginator.page(1)
+    except EmptyPage:
+        fornecedor = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "fornecedor": fornecedor,
+        "query": query,
+        
+    }
+    return render(request, template_name, context) 
+
+
+@login_required
+def fornecedor_create(request):
+    template_name = 'fornecedor/fornecedor_create.html'
+    form = FornecedorCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        return redirect('producao:fornecedor_list')
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
+@login_required
+def fornecedor_delete(request, pk):
+    fornecedor = get_object_or_404(Fornecedor, pk=pk)
+    template_name = 'fornecedor/fornecedor_delete.html'
+    can_delete = True
+    artigonw = ArtigoNW.objects.filter(fornecedor=fornecedor)
+    if artigonw.exists():
+        can_delete = False
+
+    if request.method == 'POST':
+        fornecedor.delete()
+        return redirect('producao:fornecedor_list')
+
+
+
+    context = {
+        "can_delete": can_delete,
+        "fornecedor": fornecedor,
+        "artigonw": artigonw
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def fornecedor_edit(request, pk):
+    template_name = 'fornecedor/fornecedor_edit.html'
+    fornecedor = get_object_or_404(Fornecedor, pk=pk)
+    form = FornecedorEditForm(request.POST or None, instance=fornecedor)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        return redirect('producao:fornecedor_list')
+
+    context = {
+        "form": form, 
+        "fornecedor": fornecedor
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def rececao_list(request):
+    rececao_list = Rececao.objects.all().order_by('estado', '-num')
+    template_name = 'rececao/rececao_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        rececao_list = Rececao.objects.filter(rececao__icontains=query).order_by('estado', '-num')
+
+
+    paginator = Paginator(rececao_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        rececao = paginator.page(page)
+    except PageNotAnInteger:
+        rececao = paginator.page(1)
+    except EmptyPage:
+        rececao = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "rececao": rececao,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def rececao_create(request):
+    template_name = 'rececao/rececao_create.html'
+    form = RececaoCreateForm(request.POST or None)
+    rececoes = Rececao.objects.all().order_by('-num')
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.quantidade = 0
+        instance.estado = 'A'
+        ult_rec = rececoes.latest('num')
+        instance.num = ult_rec.num + 1
+        date = datetime.now()
+        mes = date.strftime("%m")
+        ano = date.strftime("%y")
+        str_num = ''
+        if instance.num < 10:
+            str_num = '0000'
+        elif instance.num < 100:
+            str_num = '000'
+        elif instance.num < 1000:
+            str_num = '00'
+        elif instance.num < 10000:
+            str_num = '0'
+        elif instance.num < 100000:
+            str_num = ''
+ 
+        instance.rececao = 'R-'+ mes + ano + '/'+ str_num + str(instance.num)
+        instance.save()
+        return redirect('producao:rececao_insert_nw', pk=instance.pk)
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
+@login_required
+def artigonw_list(request):
+    artigonw_list = ArtigoNW.objects.all().order_by('-timestamp')
+    template_name = 'artigonw/artigonw_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        artigonw_list = ArtigoNW.objects.filter(designacao__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(artigonw_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        artigonw = paginator.page(page)
+    except PageNotAnInteger:
+        artigonw = paginator.page(1)
+    except EmptyPage:
+        artigonw = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "artigonw": artigonw,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def artigonw_create(request):
+    template_name = 'artigonw/artigonw_create.html'
+    form = ArtigoNWCreateForm(request.POST or None)
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+       
+        instance.save()
+        return redirect('producao:artigonw_list')
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
+@login_required
+def rececao_insert_nw(request, pk):
+    template_name = 'rececao/rececao_insert_nw.html'
+    rececao = get_object_or_404(Rececao, pk=pk)
+    fornecedor = get_object_or_404(Fornecedor, pk=rececao.fornecedor.pk)
+    form = RececaoInsertNW(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        cod_artigo = cd.get('artigo_nw')
+        sqm = cd.get('sqm')
+        lote = cd.get('lote')
+        prod = cd.get('prod')
+        stack_num = cd.get('stack_num')
+        # print(artigo_nw)           
+        # print(sqm)           
+        # print(lote)           
+        # print(prod)           
+        # print(stack_num) 
+        artigo_nw = ''    
+
+        try:
+            artigo_nw = get_object_or_404(ArtigoNW, cod=cod_artigo, fornecedor=fornecedor)
+            form = RececaoInsertNW()
+                   
+        except:           
+            messages.error(request, 'O Artigo com o código ' + cod_artigo + ' não existe ou  não corresponde ao fornecedor da receção.')
+            form = RececaoInsertNW()
+        
+        try:
+            sqm = sqm[:-3]
+            sqm = Decimal(sqm.replace(',','.'))
+            form = RececaoInsertNW()
+        except:           
+            messages.error(request, 'Metros quadrados inválidos')
+            form = RececaoInsertNW()
+
+        try:
+            nw = get_object_or_404(Nonwoven, stack_num=stack_num)
+            messages.error(request, 'O Nonwoven com a Stack Number ' + stack_num + ' já foi inserido.')
+        except:
+            pass
+               
+        try:
+            comp = sqm / (artigo_nw.largura / 1000)
+            nw = Nonwoven.objects.create(user=request.user, artigo_nw=artigo_nw, rececao=rececao, stack_num=stack_num, sqm=sqm, lote=lote, prod=prod, comp_total=comp, comp_actual=comp)
+            cont = Nonwoven.objects.filter(rececao=rececao).count()
+
+            if cont < 10:
+                cont = '00' + str(cont)
+            elif cont < 100:
+                cont = '0' + str(cont)
+            else:
+                cont = '' + str(cont)
+            
+            cod_nw = 'NW' + rececao.encomenda + cont
+
+            etiquetanw = EtiquetaNonwoven.objects.create(nonwoven=nw, rececao=rececao, cod_nw=cod_nw, rececao_rec=rececao.rececao, encomenda=rececao.encomenda, data_rec=rececao.timestamp, nw_des=nw.artigo_nw.designacao)
+            nw.cod_nw = cod_nw
+            nw.save()
+            rececao.quantidade += 1
+            rececao.save()
+            messages.success(request, 'Nonwoven inserido com successo')
+        except:
+            pass
+                  
+
+
+    context = {
+        "form": form, 
+        "rececao": rececao
+    }
+    return render(request, template_name, context)
+
+
+
+@login_required
+def rececao_close(request, pk):
+    rececao = get_object_or_404(Rececao, pk=pk)
+    nonwovens = Nonwoven.objects.filter(rececao=rececao)
+    template_name = 'rececao/rececao_close.html'
+
+    if request.method == "POST":
+        rececao.estado = 'F'
+        rececao.save()
+        return redirect('producao:rececao_list')
+
+    context = {
+        "rececao": rececao, 
+        "nonwovens": nonwovens
+    }
+    return render(request, template_name, context)
+
+@login_required
+def rececao_open(request, pk):
+    rececao = get_object_or_404(Rececao, pk=pk)
+    nonwovens = Nonwoven.objects.filter(rececao=rececao)
+    template_name = 'rececao/rececao_open.html'
+
+    if request.method == "POST":
+        rececao.estado = 'A'
+        rececao.save()
+        return redirect('producao:rececao_insert_nw', pk=rececao.pk)
+
+    context = {
+        "rececao": rececao, 
+        "nonwovens": nonwovens
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def fornecedor_details(request, pk):
+    fornecedor = get_object_or_404(Fornecedor, pk=pk)
+    template_name = 'fornecedor/fornecedor_details.html'
+
+    artigonw = ArtigoNW.objects.filter(fornecedor=fornecedor)
+
+    context = {
+        "fornecedor": fornecedor,
+        "artigonw": artigonw
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def artigonw_details(request, pk):
+    artigonw = get_object_or_404(ArtigoNW, pk=pk)
+    nonwoven = Nonwoven.objects.filter(artigo_nw=artigonw)
+    template_name = 'artigonw/artigonw_details.html'
+
+    
+
+    context = {
+        "artigonw": artigonw,
+        "nonwoven": nonwoven
+    }
+
+    return render(request, template_name, context)
+
+
+
+@login_required
+def artigonw_edit(request, pk):
+    artigonw = get_object_or_404(ArtigoNW, pk=pk)
+    template_name = 'artigonw/artigonw_edit.html'
+    form = ArtigoNWCreateForm(request.POST or None, instance=artigonw)
+    can_edit = True
+    if Nonwoven.objects.filter(artigo_nw=artigonw).exists():
+        can_edit = False
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+       
+        instance.save()
+        return redirect('producao:artigonw_list')
+
+    context = {
+        "form": form, 
+        "can_edit": can_edit
+    }
+    return render(request, template_name, context)
+
+@login_required
+def artigonw_delete(request, pk):
+    artigonw = get_object_or_404(ArtigoNW, pk=pk)
+    template_name = 'artigonw/artigonw_delete.html'
+    can_delete = True
+    if Nonwoven.objects.filter(artigo_nw=artigonw).exists():
+        can_delete = False
+
+    if request.method == 'POST':
+        artigonw.delete()
+        return redirect('producao:artigonw_list')
+
+
+
+    context = {
+        "can_delete": can_delete,
+        "artigonw": artigonw
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def rececao_details(request, pk):
+    rececao = get_object_or_404(Rececao, pk=pk)
+    template_name = 'rececao/rececao_details.html'
+
+    nonwoven = Nonwoven.objects.filter(rececao=rececao)
+
+    context = {
+        "rececao": rececao,
+        "nonwoven": nonwoven
+    }
+
+    return render(request, template_name, context)
+
+
+
+
+@login_required
+def bobinagem_create_v2(request):
+    
+    template_name = 'producao/bobinagem_create_v2.html'
+    form = BobinagemCreateFormV2(request.POST or None)
+    
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+
+        cd = form.cleaned_data
+        nonwoven_sup = cd.get('nonwoven_sup')
+        consumo_sup = cd.get('consumo_sup')
+        nonwoven_inf = cd.get('nonwoven_inf')
+        consumo_inf = cd.get('consumo_inf')
+
+        try:
+            nonwoven_sup = get_object_or_404(Nonwoven, cod_nw=nonwoven_sup)
+            nonwoven_inf = get_object_or_404(Nonwoven, cod_nw=nonwoven_inf)
+            print(nonwoven_sup.cod_nw + '->' + str(consumo_sup))
+            print(nonwoven_inf.cod_nw + '->' + str(consumo_inf)) 
+
+        except:
+            messages.error(request, 'O Nonwoven ' + nonwoven_sup + ' não existe.')
+
+    
+        # sup = instance.lotenwsup
+        # inf = instance.lotenwinf
+
+        # metros_nwsup = instance.nwsup
+        # metros_nwinf = instance.nwinf
+
+        # instance.lotenwsup = sup.replace(" ", "")
+        # instance.lotenwinf = inf.replace(" ", "")
+
+        # if (instance.estado == 'R' and instance.obs == ''):
+        #     messages.error(request, 'Para Rejeitar a bobinagem é necessario indicar motivo nas observações.')
+        # else:
+        #     nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
+        #     nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
+
+        #     total_sup = instance.nwsup
+        #     total_inf = instance.nwinf
+        #     for ns in nonwovensup:
+        #         total_sup += ns.nwsup
+        #     for ni in nonwoveninf:
+        #         total_inf += ni.nwinf
+
+        #     # if (total_sup > 7500):
+        #     #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
+        #     # if (total_inf > 7500):
+
+        #     if (total_inf > 7500 or total_sup > 7500):
+        #         messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido de 7500. Por favor verifique os valores introduzidos.')
+        #     else:
+        #         instance.save()
+        #         bobinagem_create(instance.pk)
+        
+        #         if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+        #             areas(instance.pk)
+
+        #         if instance.estado == 'BA':
+        #             return redirect('producao:bobines_larguras_reais', pk=instance.pk)
+        #         else:
+        #             return redirect('producao:etiqueta_retrabalho', pk=instance.pk)
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)

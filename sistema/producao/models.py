@@ -261,43 +261,92 @@ class Palete(models.Model):
 class Fornecedor(models.Model):
     user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp               = models.DateTimeField(auto_now_add=True)
+    cod                     = models.CharField(max_length=20, unique=True, verbose_name="Código Fornecedor",null=True, blank=True)
+    abv                     = models.CharField(max_length=3, unique=True, verbose_name="Abreviatura", null=True, blank=True)
     designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
     
-
     def __str__(self):
-        return self.designacao
+        return '%s - %s' % (self.cod, self.designacao)
 
     class Meta:
         verbose_name_plural = "Fornecedores"
         ordering = ['-timestamp'] 
 
-# class Rececao(models.Model):
-#     pass
+class Rececao(models.Model):
+    STATUS = (('A', 'Aberta'), ('F', 'Fechada'))
+    user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp               = models.DateTimeField(auto_now_add=True)
+    fornecedor              = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
+    rececao                 = models.CharField(max_length=20, unique=True, verbose_name="Receção")
+    num                     = models.IntegerField(verbose_name="Rececao nº", null=True, blank=True)
+    quantidade              = models.IntegerField(verbose_name="Quantidade de Lotes", null=True, blank=True)
+    estado                  = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado da Receção")
+    encomenda               = models.CharField(max_length=15, unique=True, verbose_name="Encomenda")
 
-# class ArtigoMP(models.Model):
-#     pass
+    def __str__(self):
+        return self.rececao
 
+    class Meta:
+        verbose_name_plural = "Receções"
+        ordering = ['-timestamp'] 
+
+class ArtigoNW(models.Model):
+    user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp               = models.DateTimeField(auto_now_add=True)
+    fornecedor              = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
+    cod                     = models.CharField(max_length=50, unique=True, verbose_name="Código Artigo Nonwoven")
+    designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
+    gsm                     = models.IntegerField(verbose_name="Gramagem")      
+    largura                 = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")   
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.designacao)
+
+    class Meta:
+        verbose_name_plural = "Artigos Nonwoven"
+        ordering = ['-timestamp'] 
 
 class Nonwoven(models.Model):
     user                    = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp               = models.DateTimeField(auto_now_add=True)
-    designacao              = models.CharField(max_length=200, unique=True, verbose_name="Designação")
-    designacao_fornecedor   = models.CharField(max_length=200, unique=True, verbose_name="Designação do Fornecedor")
-    fornecedor              = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
+    artigo_nw               = models.ForeignKey(ArtigoNW, on_delete=models.PROTECT, verbose_name="Artigo Nonwoven", null=True, blank=True)
+    rececao                 = models.ForeignKey(Rececao, on_delete=models.PROTECT, verbose_name="Receção", null=True, blank=True)
+    cod_nw                  = models.CharField(max_length=50, verbose_name="Código Nonwoven", unique=True, null=True, blank=True)
+    stack_num               = models.CharField(max_length=20, verbose_name="Stack number", unique=True, null=True, blank=True)
+    sqm                     = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Metros quadrados", null=True, blank=True)
+    lote                    = models.CharField(max_length=10, verbose_name="Lote", null=True, blank=True)
+    prod                    = models.CharField(max_length=10, verbose_name="Produção", null=True, blank=True)
     comp_total              = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
     comp_actual             = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual")
-    largura                 = models.IntegerField(verbose_name="Largura", null=True, blank=True)
     vazio                   = models.BooleanField(default=False, verbose_name="Utilizado")
 
     def __str__(self):
-        return self.designacao
+        return '%s - %s - %s' % (self.stack_num, self.rececao, self.artigo_nw.designacao)
 
     class Meta:
         verbose_name_plural = "Nonwovens"
         ordering = ['-timestamp'] 
 
-# class EtiquetaNonwoven(models.Model):
-#     pass
+class EtiquetaNonwoven(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    nonwoven = models.ForeignKey(Nonwoven, on_delete=models.CASCADE, verbose_name="Nonwoven")
+    rececao = models.ForeignKey(Rececao, on_delete=models.PROTECT, verbose_name="Receção")
+    cod_nw = models.CharField(max_length=100, verbose_name="Código NW")
+    nw_des = models.CharField(max_length=100, verbose_name="Descrição NW")
+    rececao_rec = models.CharField(max_length=100, verbose_name="Receção Rec")
+    encomenda = models.CharField(max_length=100, verbose_name="Encomenda")
+    data_rec = models.CharField(max_length=100, verbose_name="Data de Receção")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
+
+    def __str__(self):
+        return self.cod_nw
+
+    class Meta:
+        verbose_name_plural = "Etiquetas Nonwoven"
+        ordering = ['-timestamp'] 
+
 
 class ConsumoNonwoven(models.Model):
     POS =  (('SUP', 'Superior'), ('INF', 'Inferior'))

@@ -19,24 +19,28 @@
         <br>
         <div class="row">
             
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:perfil_list_v2' %}"><button class="btn btn-primary btn-lg">Perfis bobinagens</button></a></div>    
+            <!-- <div class="container col-md-6" id="center"><a href="{% url 'producao:fornecedor_list' %}"><button class="btn btn-primary btn-lg">Fornecedores</button></a></div>     -->
             <div class="container col-md-6" id="center"><a href="{% url 'producao:clientes' %}"><button class="btn btn-primary btn-lg">Cliente</button></a></div>    
         </div>
         <br>
         <br>
         <br>
         <div class="row">
-            
             <div class="container col-md-6" id="center"><a href="{% url 'producao:encomenda_list' %}"><button class="btn btn-primary btn-lg">Encomendas</button></a></div>    
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:inventario_bobines_list' %}"><button class="btn btn-primary btn-lg">Inventário Bobines DM</button></a></div>    
-            
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:perfil_list_v2' %}"><button class="btn btn-primary btn-lg">Perfis bobinagens</button></a></div>    
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <!-- <div class="container col-md-6" id="center"><a href="{% url 'producao:artigonw_list' %}"><button class="btn btn-primary btn-lg">Artigos Nonwoven</button></a></div>     -->
+            <!-- <div class="container col-md-6" id="center"><a href="{% url 'producao:perfil_list_v2' %}"><button class="btn btn-primary btn-lg">Perfis bobinagens</button></a></div>     -->
         </div>
         <br>
         <br>
         <br>
         <div class="row">
-            
             <div class="container col-md-6" id="center"><a href="{% url 'producao:inventario_paletes_cliente_list' %}"><button class="btn btn-primary btn-lg">Inventário Paletes Cliente</button></a></div>    
+            <div class="container col-md-6" id="center"><a href="{% url 'producao:inventario_bobines_list' %}"><button class="btn btn-primary btn-lg">Inventário Bobines DM</button></a></div>    
 
             
         </div>
@@ -55,3 +59,4 @@
 
 
 {% endblock %}
+            

@@ -17,6 +17,9 @@ admin.site.register(Fornecedor)
 admin.site.register(InventarioBobinesDM)
 admin.site.register(InventarioPaletesCliente)
 admin.site.register(ArtigoCliente)
+admin.site.register(Rececao)
+admin.site.register(ArtigoNW)
+admin.site.register(EtiquetaNonwoven)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']

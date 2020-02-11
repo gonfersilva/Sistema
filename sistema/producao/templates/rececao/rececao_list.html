@@ -44,6 +44,7 @@
                         <th id="center">Remover</th> -->
                         <th id="center">Fechar Receção</th>
                         <th id="center">Abrir Receção</th>
+                        <th id="center">Imprimir</th>
                         
                 </tr>
                 <tbody>
@@ -65,6 +66,7 @@
                             <td id="center"><a href="#" role="button" class="btn btn-danger glyphicon glyphicon-trash"></a></td> -->
                             <td id="center"><a href="{% url 'producao:rececao_close' pk=r.pk %}" role="button" class="btn btn-success glyphicon glyphicon-ok"></a></td>
                             <td id="center"></td>
+                            <td id="center"></td>
 
                             {% else %}
                             <td id="center"></td>
@@ -72,6 +74,7 @@
                             <td id="center"></td> -->
                             <td id="center"></td>
                             <td id="center"><a href="{% url 'producao:rececao_open' pk=r.pk %}" role="button" class="btn btn-success glyphicon glyphicon-open"></a></td>
+                            <td id="center"><a href="{% url 'producao:carga_etiqueta_nonwoven_rececao' pk=r.pk %}" role="button" class="btn btn-primary glyphicon glyphicon-print"></a></td>
                             {% endif %}
                             
                             

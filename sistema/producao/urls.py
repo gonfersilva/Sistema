@@ -116,6 +116,8 @@ urlpatterns = [
     url(r'^rececoes/insertnw/(?P<pk>\d+)/$', rececao_insert_nw, name='rececao_insert_nw'),
     url(r'^rececoes/close/(?P<pk>\d+)/$', rececao_close, name='rececao_close'),
     url(r'^rececoes/open/(?P<pk>\d+)/$', rececao_open, name='rececao_open'),
+    url(r'^rececoes/imprimiretiquetanonwoven/(?P<pk>\d+)/$', carga_etiqueta_nonwoven, name='carga_etiqueta_nonwoven'),
+    url(r'^rececoes/imprimiretiquetanonwovenrececao/(?P<pk>\d+)/$', carga_etiqueta_nonwoven_rececao, name='carga_etiqueta_nonwoven_rececao'),
     url(r'^artigonw/details/(?P<pk>\d+)/$', artigonw_details, name='artigonw_details'),
     # url(r'^teste/bobinagem/create/$', bobinagem_create_v2, name='bobinagem_create_v2'),
   

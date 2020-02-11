@@ -4787,3 +4787,32 @@ def bobinagem_create_v2(request):
     }
 
     return render(request, template_name, context)
+
+@login_required
+def carga_etiqueta_nonwoven(request, pk):
+    nonwoven = get_object_or_404(Nonwoven, pk=pk)
+    etiqueta = EtiquetaNonwoven.objects.get(nonwoven=nonwoven)
+        
+    etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+    etiqueta.num_copias = 1
+    etiqueta.estado_impressao = True
+    etiqueta.save()
+
+    context = {}
+
+    return redirect('producao:rececao_details', pk=nonwoven.rececao.pk)
+
+@login_required
+def carga_etiqueta_nonwoven_rececao(request, pk):
+    rececao = get_object_or_404(Rececao, pk=pk)
+    nonwovens = Nonwoven.objects.filter(rececao=rececao)
+    for nw in nonwovens:
+        etiqueta = EtiquetaNonwoven.objects.get(nonwoven=nw)
+        etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+        etiqueta.num_copias = 1
+        etiqueta.estado_impressao = True
+        etiqueta.save()
+
+    context = {}
+
+    return redirect('producao:rececao_list')

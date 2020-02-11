@@ -33,6 +33,7 @@
                         <th id="center">Comp. actual(m)</th>
                         <th id="center">Comp. Total(m)</th>
                         <th id="center">Disponivel</th>
+                        <th id="center">Imprimir</th>
                         <!-- <th id="center"></th>
                         <th id="center"></th> -->
                     </tr>
@@ -47,8 +48,13 @@
                         <td id="center">{{ nw.comp_total }}</td>
                         {% if nw.vazio == True %}
                             <td id="estado_rejected"><i class="glyphicon glyphicon glyphicon-remove"></td>
+                            <td id="center"><a href="{% url 'producao:carga_etiqueta_nonwoven' pk=nw.pk %}" role="button" class="btn btn-primary glyphicon glyphicon-print"></a></td>
+                            
+
                         {% else %}
                             <td id="estado_good"><i class="glyphicon glyphicon-ok"></td>
+                            <td id="center"><a href="{% url 'producao:carga_etiqueta_nonwoven' pk=nw.pk %}" role="button" class="btn btn-primary glyphicon glyphicon-print"></a></td>
+
                         {% endif %}
                         <!-- <td id="center"><a href="#" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></a></td>
                         <td id="center"><a href="#" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td> -->

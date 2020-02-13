@@ -390,6 +390,21 @@ class Bobine(models.Model):
     destino = models.TextField(max_length=500, null=True, blank=True, verbose_name="Destino", default="")
     l_real = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Largura Real")
     nok = models.BooleanField(default=False,verbose_name="Largura NOK")
+    fc = models.BooleanField(default=False,verbose_name="Falha de corte")
+    ff = models.BooleanField(default=False,verbose_name="Falha de filme")
+    fmp = models.BooleanField(default=False,verbose_name="Falha de Matéria Prima")
+    suj = models.BooleanField(default=False,verbose_name="Sujidade/Caiu do carro")
+    car = models.BooleanField(default=False,verbose_name="Carro andou para trás")
+    lac = models.BooleanField(default=False,verbose_name="Laçou")
+    ncore = models.BooleanField(default=False,verbose_name="Não colou core/Falta de fita cola")
+    sbrt = models.BooleanField(default=False,verbose_name="Sobre tiragem")
+    prop = models.BooleanField(default=False,verbose_name="Propriedades")
+    prop_obs = models.TextField(max_length=200, null=True, blank=True, verbose_name="Observações Propriedades", default="")
+    fc_diam_ini = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de corte inicio", null=True, blank=True)
+    fc_diam_fim = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de corte fim", null=True, blank=True)
+    ff_m_ini = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de filme inicio", null=True, blank=True)
+    ff_m_fim = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de fimle fim", null=True, blank=True)
+
 
     def __str__(self):
         return self.nome

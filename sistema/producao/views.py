@@ -216,27 +216,27 @@ def bobinagem_status(request, pk):
     bobine = Bobine.objects.filter(bobinagem=pk)
     emenda = Emenda.objects.filter(bobinagem=pk)
     etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=pk)
-    # etiquetas_all = EtiquetaRetrabalho.objects.all()
-    # estado_impressao = False
+    etiquetas_all = EtiquetaRetrabalho.objects.all()
+    estado_impressao = False
     form = ImprimirEtiquetaBobine(request.POST or None)
     if form.is_valid():
         impressora = form['impressora'].value()
         num_copias = int(form['num_copias'].value())
 
-        # for etiqueta in etiquetas_all:
-        #     if etiqueta.estado_impressao == 1:
-        #         estado_impressao = True
-        #         break
+        for etiqueta in etiquetas_all:
+            if etiqueta.estado_impressao == 1:
+                estado_impressao = True
+                break
 
-        # if estado_impressao == False:
-        for etiqueta in etiquetas:
-            etiqueta.impressora = impressora
-            etiqueta.num_copias = num_copias
-            etiqueta.estado_impressao = True
-            etiqueta.save()
-            # messages.warning(request, 'SUCESSO')
-        # else:
-        #     messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
+        if estado_impressao == False:
+            for etiqueta in etiquetas:
+                etiqueta.impressora = impressora
+                etiqueta.num_copias = num_copias
+                etiqueta.estado_impressao = True
+                etiqueta.save()
+                # messages.warning(request, 'SUCESSO')
+        else:
+            messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
             
 
 
@@ -4816,3 +4816,41 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
     context = {}
 
     return redirect('producao:rececao_list')
+
+@login_required
+def bobinagem_classificacao(request, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    template_name = 'bobine/bobinagem_classificacao.html'
+    # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
+    BobineClassificacaoFormSet = modelformset_factory(Bobine, fields=('estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'obs', 'nok', 'car', 'fc', 'fc_diam_fim', 'fc_diam_ini',  'ff', 'ff_m_ini', 'ff_m_fim', 'fmp', 'lac', 'ncore', 'prop', 'prop_obs', 'sbrt', 'suj', 'l_real'), extra=0)
+    # largura_total = 0
+    # larguras = []
+    # produtos = []
+    # clientes = []
+    # artigos = []
+    # gsms = []
+    # cont = []
+    # nome_largura = ''
+    # bobinagem = Bobinagem.objects.filter(perfil=perfil)
+    # can_edit = True
+    # if bobinagem.exists():
+    #     can_edit = False
+    
+    if request.method == 'POST':
+        formset = BobineClassificacaoFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem))
+        if formset.is_valid():
+            for f in formset:
+                cd = f.cleaned_data
+                # designacao_prod = cd.get('designacao_prod')
+                
+                
+
+
+    else:
+        formset = BobineClassificacaoFormSet(queryset=Bobine.objects.filter(bobinagem=bobinagem))
+
+    context = {
+        "formset": formset, 
+        "bobinagem": bobinagem,
+    }
+    return render(request, template_name, context)

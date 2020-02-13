@@ -1,0 +1,290 @@
+{% extends "layout.html "%} 
+{% load bootstrap3 %}
+{% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    
+    <div class="container-fluid">
+        <form method="post">
+            <div class="row">
+                <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}" class="btn btn-primary pull-left" role="button">Cancelar</a>
+                
+                
+            </div>
+            <div class="row">
+                <h1 id="center">Classificar Bobinagem {{ bobinagem.nome }}</h1>
+                <br>
+            </div>
+            
+            <div class="row">
+                {% if messages %}
+                
+                    {% for message in messages %}
+                        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        <div class="alert alert-danger" role="alert">
+                            <h3 id="center">ERRO!</h3>
+                            <p id="center"> {{message}} </p>
+                         </div>
+                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        <div class="alert alert-success" role="alert">
+                            <h3 id="center">SUCESSO!</h3>
+                            <p id="center"> {{message}} </p>
+                        </div>
+                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                        <div class="alert alert-warning" role="alert">
+                            <h3 id="center">JÁ EXISTE!</h3>
+                            <p id="center"> {{message}} </p>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                
+                {% endif %}
+            </div>
+            <!-- <div class="row">
+                   
+                <div class="col-md-12">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                    <div class="container">  
+                        <div class="row">
+                            <h3 id="center">Bobine nº {{ forloop.counter }}</h3>
+                            <br>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% bootstrap_field form.estado %}
+                                {% bootstrap_field form.l_real %}
+                                {% bootstrap_field form.obs %}
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div><h3 id="center">Defeitos</h3></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.fc %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.fc_diam_ini %}
+
+                                    </div>
+                                    <div class="col-md-4    ">
+                                        {% bootstrap_field form.fc_diam_fim %}
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.ff %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.ff_m_ini %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.ff_m_fim %}
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.con %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.descen %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.presa %}
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.diam_insuf %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.furos %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.esp %}
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.troca_nw %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.nok %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.car %}
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.fmp %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.lac %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.ncore %}
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.sbrt %}
+                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.suj %}
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        {% bootstrap_field form.outros %}
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {% bootstrap_field form.prop %}
+                                       
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% bootstrap_field form.prop_obs %}
+
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+
+                        </div>   
+                    </div>  
+                    {% endfor %}
+                        
+                    <input type="submit" class="btn btn-primary btn-block pull-right" value="Validar">    
+                </div>
+                        
+                        
+                        
+            </form>
+                    
+        </div> -->
+            <div class="row">
+                <div class="container-fluid">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+                    <table class="table table-striped">
+                        <thead>
+                                <tr>
+                                <th>Bobine</th>
+                                <th>Estado</th>
+                                <th>Largura Real</th>
+                                <th>Cónica</th>
+                                <th>Descentrada</th>
+                                <th>Presa</th>
+                                <th>Diâmetro Insuficiente</th>
+                                <th>Furos</th>
+                                <th>Gramagem</th>
+                                <th>Troca NW</th>
+                                <th>Largura NOK</th>
+                                <th>Carro andou para trás</th>
+                                <th>Falha de MP</th>
+                                <th>Laçou</th>
+                                <th>Não colou core/Falha de fita cola</th>
+                                <th>Sobre tiragem</th>
+                                <th>Sujidade/Caiu do carro</th>
+                                <th>Falha de corte</th>
+                                <th>Falha de corte inicio</th>
+                                <th>Falha de corte fim</th>
+                                <th>Falha de filme</th>
+                                <th>Falha de filme inicio</th>
+                                <th>Falha de filme fim</th>
+                                <th>Prop.</th>
+                                <th>Prop. Observações</th>
+                                <th>Outros</th>
+                                <th>Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formset %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{% bootstrap_field form.estado show_label=False  lable=""%}</td>
+                                <td>{% bootstrap_field form.l_real show_label=False %}</td>
+                                <td>{% bootstrap_field form.con  layout='inline' show_label=False %}</td>
+                                <td>{% bootstrap_field form.descen show_label=False %}</td>
+                                <td>{% bootstrap_field form.presa show_label=False %}</td>
+                                <td>{% bootstrap_field form.diam_insuf show_label=False %}</td>
+                                <td>{% bootstrap_field form.furos show_label=False %}</td>
+                                <td>{% bootstrap_field form.esp show_label=False %}</td>
+                                <td>{% bootstrap_field form.troca_nw show_label=False %}</td>
+                                <td>{% bootstrap_field form.nok show_label=False %}</td>
+                                <td>{% bootstrap_field form.car show_label=False %}</td>
+                                <td>{% bootstrap_field form.fmp show_label=False %}</td>
+                                <td>{% bootstrap_field form.lac show_label=False %}</td>
+                                <td>{% bootstrap_field form.ncore show_label=False %}</td>
+                                <td>{% bootstrap_field form.sbrt show_label=False %}</td>
+                                <td>{% bootstrap_field form.suj show_label=False %}</td>
+                                <td>{% bootstrap_field form.fc show_label=False %}</td>
+                                <td>{% bootstrap_field form.fc_diam_ini show_label=False %}</td>
+                                <td>{% bootstrap_field form.fc_diam_fim show_label=False%}</td>
+                                <td>{% bootstrap_field form.ff show_label=False %}</td>
+                                <td>{% bootstrap_field form.ff_m_ini show_label=False %}</td>
+                                <td>{% bootstrap_field form.ff_m_fim show_label=False %}</td>
+                                <td>{% bootstrap_field form.prop show_label=False %}</td>
+                                <td>{% bootstrap_field form.prop_obs show_label=False  %}</td>
+                                <td>{% bootstrap_field form.outros show_label=False %}</td>
+                                <td>{% bootstrap_field form.obs show_label=False %}</td>
+                            </tr> 
+                                
+                            {% endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+       </form>
+            
+</div>
+
+{% endblock %}
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                

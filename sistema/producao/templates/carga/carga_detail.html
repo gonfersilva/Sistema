@@ -66,6 +66,7 @@
                 <th>Relação kg/m2</th>      
                 <th>Comp./Peso (m)</th>                               
                 <th>Área/Peso (m2)</th>   
+                <th>Imprimir</th>   
 
             </tr>
         </thead>
@@ -84,6 +85,8 @@
                     <td>{{ relacoes|index:forloop.counter0 }}%</td>
                     <td>{{ realcoes_comp|index:forloop.counter0 }}</td>
                     <td>{{ relacoes_area|index:forloop.counter0 }}</td>
+                    <td class="td-icon"><a href="{% url 'producao:carga_etiqueta_palete' pk=pal.pk %}"><i class="fas fa-print"></i></a></td>
+
                     
                    
                 

@@ -104,3 +104,6 @@ def recycle_confirm_form(self):
     form = ConfirmReciclarForm()
     return {'form': form }
 
+@register.filter
+def index(indexable, i):
+    return indexable[i]

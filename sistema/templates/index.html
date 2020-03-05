@@ -1,41 +1,9 @@
 {% extends "layout.html" %} 
+{% load static from staticfiles %}
 {% block content %}
-
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>Bem vindo ao Sistema de Gestão de Produção da Elastictek</h1>
-           <!-- <a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a> -->
-        </p>
-    </div>
-</div>
-
-<div class="container">
-    <!-- Example row of columns -->
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Indicador 1</h2>
-            <p>Em construção</p>
-            <p>
-                <!--<a class="btn btn-default" href="#" role="button">View details &raquo;</a> -->
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h2>Indicador 2</h2>
-            <p>Em construção</p>
-            <p>
-               <!-- <a class="btn btn-default" href="#" role="button">View details &raquo;</a> -->
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h2>Indicador 3</h2>
-            <p>Em construção</p>
-            <p>
-               <!-- <a class="btn btn-default" href="#" role="button">View details &raquo;</a> -->
-            </p>
-        </div>
-    </div>
-
-
-
-    {% endblock %}
+<section id="home">
+    <!-- <img src="{%  static 'img/logo.png' %}" alt=""> -->
+    <h1 class="title">Bem vindo</h1>
+    <h1 class="subtitle">SISTEMA DE GESTÃO DE PRODUÇÃO</h1>
+</section>
+{% endblock %}

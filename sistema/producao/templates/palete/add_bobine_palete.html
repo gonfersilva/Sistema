@@ -2,7 +2,97 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>Palete</h1>
+    <h2>{{ palete.nome }}</h2>
+    {% if palete.estado == 'G'%}<h3 id="estado_palete_g">GOOD</h3>{% elif palete.estado == 'DM' %}<h3 id="estado_palete_dm">DM12</h3>{% endif %}
+</div>
+<div class="content_details">
+    <div>
+        <div><h3>Data: <span>{{ palete.data_pal|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Comprimento: <span>{{ palete.comp_total }} m</span></h3></div>
+        <div><h3>Área: <span>{{ palete.area }} m<sup>2</sup></span></h3></div>
+        <div><h3>Bobines: <span>{{ palete.num_bobines }} / {{ palete.num_bobines_act }}</span></h3></div>
+        {% if palete.estado == 'G' %}
+        <div><h3>Largura das bobines: <span>{{ palete.largura_bobines }} mm</span></h3></div>
+        <div><h3>Core: <span>{{ palete.core_bobines }}"</span></h3></div>
+        {% endif %}
+        
+    </div>
+    <div>
+        {% if palete.estado == 'G' %}
+        <div><h3>Cliente: <span>{{ palete.cliente }}</span></h3></div>
+        <div><h3>Destino: <span>{{ palete.destino }}</span></h3></div>
+        {% if palete.peso_bruto == None %}<div><h3>Peso Bruto: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Bruto: <span>{{ palete.peso_bruto }}</span></h3></div>{% endif %}
+        {% if palete.peso_liquido == None %}<div><h3>Peso Liquido: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Liquido: <span>{{ palete.peso_liquido }}</span></h3></div>{% endif %}
+        {% if palete.carga == None %}<div><h3>Carga: <span>Sem carga atribuida</span></h3></div>{% else %}<div><h3>Carga: <span>{{ palete.carga.carga }}</span></h3></div>{% endif %}
+        {% if palete.stock == False %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-times"></i></span></h3></div>{% else %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-check"></i></span></h3></div>{% endif %}
+        {% endif %}
+    </div>
+</div>
 
+<div class="content_details">
+    <div>
+        <h3>Bobines</h3>
+
+        <table class="content-table">
+            <thead>
+                <tr>
+                    <th>Nº</th>
+                    <th>Bobine</th>
+                    <th>Estado</th>
+                    <th>Largura</th>
+                    <th>Diâmetro (mm)</th>
+                    <th>Core (")</th>
+                    <th>Área(m<sup>2</sup>)</th>
+                
+                </tr>
+            </thead>
+            <tbody>
+                <tbody>    
+                    {% for b in bobines %}
+                    <tr>
+                        <td>{{ b.posicao_palete }}</td>
+                        <td><a href="{% url 'producao:bobine_details' pk=b.pk %}">{{ b.nome }}</a></td>
+                        {% if b.estado == 'G' %}<td id="estado_good">{{ b.estado }}</td>
+                        {% elif b.estado == 'R' %}<td id="estado_rejected">{{ b.estado }}</td>
+                        {% elif b.estado == 'DM' %}<td id="estado_dm">{{ b.estado }}</td>
+                        {% elif b.estado == 'BA' %}<td id="estado_ba">{{ b.estado }}</td>
+                        {% elif b.estado == 'LAB' %}<td id="estado_lab">{{ b.estado }}</td>
+                        {% elif b.estado == 'IND' %}<td id="estado_ind">{{ b.estado }}</td>
+                        {% elif b.estado == 'HOLD' %}<td id="estado_hold">{{ b.estado }}</td>{% endif %}
+                        <td>{{ b.largura.largura }}</td>
+                        <td>{{ b.bobinagem.diam }}</td>
+                        <td>{{ b.largura.perfil.core }}</td>
+                        <td>{{ b.area }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>  
+            </tbody>
+            </table>
+    </div>
+    <div>
+        <form method="POST" action="#">
+            <h3>Imprimir Etiquetas</h3>
+            {% csrf_token %}
+            <label for="id_impressora">Impressora: </label>{{ form.impressora }}
+            <label for="id_num_copias">Nº de Cópias: </label>{{ form.num_copias }}
+            <input type="submit" value="Imprimir" id="confirm-btn">
+        </form>
+        <a href="{% url 'producao:palete_rabrir' pk=palete.pk %}" type="button" class="btn_list_r">Refazer Palete</a>
+
+    </div>
+           
+</div>   
+                    
+                 
+                   
+<!--                             
+    
+   
 <div class="container">
     <div class="container">
         {% if palete.estado == 'G' %}
@@ -204,6 +294,6 @@
             }
         }); 
     });
-</script>
+</script> -->
 
 {% endblock %}

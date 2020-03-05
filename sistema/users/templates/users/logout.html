@@ -2,21 +2,17 @@
 
 {% block title %}Logout | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Tem a certeza que quer sair?</h3>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" value="Logout" class="btn btn-default">
-            </form>
-        </div>
-        <div class="col-md-6">
-            <h3>Volte sempre!</h3>
-            
-        </div>
 
-    </div>
+<div class="title_logout">
+    <h1>Tem a certeza que quer fazer logout?</h1>
+</div>
+<div class="form_log">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <a href="{% url 'home' %}" class="btn_back">Cancelar</a>
+    <input type="submit" value="Logout">
+    </form>
+</div>
 </div>
 {% endblock %}

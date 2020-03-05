@@ -211,7 +211,7 @@ def bobinagem_historico(request):
 
 @login_required
 def bobinagem_status(request, pk):
-    template_name = 'producao/bobine_list.html'
+    template_name = 'producao/bobinagem_details.html'
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobine = Bobine.objects.filter(bobinagem=pk)
     emenda = Emenda.objects.filter(bobinagem=pk)
@@ -468,7 +468,7 @@ def add_bobine_palete(request, pk):
     palete = Palete.objects.get(pk=pk)
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
-    bobines = Bobine.objects.filter(palete=palete)
+    bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')
     
 
     form = ImprimirEtiquetaPalete(request.POST or None)
@@ -486,7 +486,7 @@ def add_bobine_palete(request, pk):
 
          
     context = {"palete": palete, 
-               "bobine": bobine,
+               "bobines": bobines,
                "bobinagem": bobinagem,
                "form": form          
                
@@ -880,14 +880,34 @@ def status_bobinagem(request, operation, pk):
 
 @login_required
 def palete_retrabalho(request):
-    palete = Palete.objects.filter(estado='DM')
+    palete_list = Palete.objects.filter(estado='DM').order_by('-data_pal','-num')
     template_name = 'palete/palete_retrabalho.html'
+     
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        palete_list = Palete.objects.filter(nome__icontains=query,estado='DM').order_by('-data_pal','-num')
+
+    paginator = Paginator(palete_list, 11)
+    page = request.GET.get('page')
     
+
+    try:
+        palete = paginator.page(page)
+    except PageNotAnInteger:
+        palete = paginator.page(1)
+    except EmptyPage:
+        palete = paginator.page(paginator.num_pages)
+             
+
     context = {
         "palete": palete,
+        "query": query,
+        
     }
-    return render (request, template_name, context)
-
+    return render(request, template_name, context)
+   
 
 @login_required
 def palete_create_retrabalho(request):
@@ -1178,9 +1198,37 @@ def emenda_delete(request, pk):
 
 @login_required
 def cliente_home(request):
-    cliente = Cliente.objects.all()
 
+    cliente_list = Cliente.objects.all().order_by('-timestamp')
     template_name = 'cliente/cliente_home.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        cliente_list = Cliente.objects.filter(nome__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(cliente_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        cliente = paginator.page(page)
+    except PageNotAnInteger:
+        cliente = paginator.page(1)
+    except EmptyPage:
+        cliente = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "cliente": cliente,
+        # "query": query,
+        
+    }
+    return render(request, template_name, context)
+
+    
     context = {
         "cliente":cliente
     }
@@ -1589,18 +1637,37 @@ def bobinagem_list_all_historico(request):
 
 @login_required
 def palete_list_all(request):
-    
-    palete = Palete.objects.all()
-   
-        
-    template_name = 'palete/palete_list_all.html'
-    context = {
-               
-        "palete": palete,
-              
-    }
+    palete_list = Palete.objects.filter(estado='G').order_by('-data_pal','-num')
+    template_name = 'palete/palete_list.html'
+     
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        palete_list = Palete.objects.filter(nome__icontains=query,estado='G').order_by('-data_pal','-num')
 
+    paginator = Paginator(palete_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        palete = paginator.page(page)
+    except PageNotAnInteger:
+        palete = paginator.page(1)
+    except EmptyPage:
+        palete = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "palete": palete,
+        "query": query,
+        
+    }
     return render(request, template_name, context)
+    
+ 
+           
+   
 
 @login_required
 def palete_list_all_historico(request):
@@ -2317,15 +2384,33 @@ def delete_bobinagem_dm(request, pk):
 
 @login_required
 def encomenda_list(request):
-    enc = Encomenda.objects.all()
-
+    encomenda_list = Encomenda.objects.all().order_by('-timestamp')
     template_name = 'encomenda/encomenda_list.html'
+       
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        encomenda_list = encomenda_list.filter(eef__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(encomenda_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        encomenda= paginator.page(page)
+    except PageNotAnInteger:
+        encomenda = paginator.page(1)
+    except EmptyPage:
+        encomenda = paginator.page(paginator.num_pages)
+             
 
     context = {
-        'enc': enc,
+        "encomenda": encomenda,
+        "query": query,
+        
     }
-
-    return render(request, template_name, context)
+    return render(request, template_name, context) 
 
 
 @login_required
@@ -2352,39 +2437,80 @@ def encomenda_create(request):
 @login_required
 def encomenda_detail(request, pk):
     enc = get_object_or_404(Encomenda, pk=pk)
+    cargas = Carga.objects.filter(enc=enc)
 
     template_name = 'encomenda/encomenda_detail.html'
 
     context = {
-        "enc": enc
+        "enc": enc,
+        "cargas": cargas,
     }
 
     return render(request, template_name, context)
 
 @login_required
 def carga_list(request):
-    carga = Carga.objects.all()
-
+    carga_list = Carga.objects.filter(estado='I').order_by('-data')
     template_name = 'carga/carga_list.html'
+     
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        carga_list = Carga.objects.filter(carga__icontains=query, estado='I').order_by('-data',)
+
+
+    paginator = Paginator(carga_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        carga = paginator.page(page)
+    except PageNotAnInteger:
+        carga = paginator.page(1)
+    except EmptyPage:
+        carga = paginator.page(paginator.num_pages)
+             
 
     context = {
-        'carga': carga,
+        "carga": carga,
+        "query": query,
+        
     }
-
     return render(request, template_name, context)
+   
 
 @login_required
 def carga_list_completa(request):
-    carga = Carga.objects.all()
-
+    carga_list = Carga.objects.filter(estado='C').order_by('-data')
     template_name = 'carga/carga_list_complete.html'
+     
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        carga_list = Carga.objects.filter(carga__icontains=query, estado='C').order_by('-data',)
+
+
+    paginator = Paginator(carga_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        carga = paginator.page(page)
+    except PageNotAnInteger:
+        carga = paginator.page(1)
+    except EmptyPage:
+        carga = paginator.page(paginator.num_pages)
+             
 
     context = {
-        'carga': carga,
+        "carga": carga,
+        "query": query,
+        
     }
-
     return render(request, template_name, context)
-
+    
 
 @login_required
 def carga_create(request):
@@ -2454,11 +2580,22 @@ def carga_create(request):
 @login_required
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
-    paletes = Palete.objects.filter(carga=carga)
-    
+    paletes = Palete.objects.filter(carga=carga).order_by('-num_palete_carga')
+     
+    relacoes = []
+    relacoes_area = []
+    realcoes_comp = []
+    num = 1
     som = 0 
     som_comp = 0
     som_area = 0
+    for pal in paletes:
+        rel = round((Decimal(pal.peso_liquido) / (Decimal(pal.area / 10 ))) * 100, 2)
+        relacoes.append(rel)
+        rel_area = round((Decimal(pal.peso_liquido) * 1000) / 100, 0)
+        relacoes_area.append(rel_area)
+        rel_comp = round((Decimal(rel_area) / ((Decimal(pal.num_bobines) * Decimal(pal.largura_bobines)) * Decimal(0.001))) * Decimal(pal.num_bobines), 2)
+        realcoes_comp.append(rel_comp)
 
     form = ImprimirEtiquetaFinalPalete(request.POST or None)
     if form.is_valid():
@@ -2514,7 +2651,11 @@ def carga_detail(request, pk):
         "som": som,
         "som_comp": som_comp,
         "som_area": som_area,
-        "form": form
+        "form": form,
+        "paletes": paletes,
+        "relacoes": relacoes,
+        "relacoes_area": relacoes_area,
+        "realcoes_comp": realcoes_comp,
     }
 
     return render(request, template_name, context)
@@ -2802,7 +2943,33 @@ def palete_details_armazem(request, pk):
 
 @login_required
 def stock_list(request):
+    palete_list = Palete.objects.filter(stock=True).order_by('-data_pal','-num')
+    template_name = 'stock/stock_list.html'
+     
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        palete_list = Palete.objects.filter(nome__icontains=query, stock=True).order_by('-data_pal','-num')
 
+    paginator = Paginator(palete_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        palete = paginator.page(page)
+    except PageNotAnInteger:
+        palete = paginator.page(1)
+    except EmptyPage:
+        palete = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "palete": palete,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
     paletes = Palete.objects.filter(stock=True)
 
     template_name = 'stock/stock_list.html'
@@ -2857,7 +3024,7 @@ def stock_add_to_carga(request, pk=None):
         instance.save()
         gerar_etiqueta_final(instance.pk)
         
-        return redirect('producao:palete_details_armazem', pk=instance.pk)
+        return redirect('producao:carga_detail', pk=carga.pk)
 
     context = {
         "form": form,
@@ -3606,94 +3773,117 @@ def bobinagem_list_v2(request):
 
 @login_required
 def perfil_list_v2(request):
-    perfil = Perfil.objects.filter(obsoleto=False)
+    perfil_list = Perfil.objects.filter(obsoleto=False).order_by('-timestamp')
     template_name = 'perfil/perfil_list_v2.html'
-    form = SearchPerfil(request.POST or None)
+    # form = SearchPerfil(request.POST or None)
+
+       
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        perfil_list = perfil_list.filter(nome__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(perfil_list, 7)
+    page = request.GET.get('page')
     
-    if form.is_valid():
-        cd = form.cleaned_data
-        nome = cd.get('nome')
-        num_bobines = cd.get('num_bobines')
-        core = cd.get('core')
-        largura_bobinagem = cd.get('largura_bobinagem')
-        retrabalho = cd.get('retrabalho')
 
-        if retrabalho == True:
-            if nome and num_bobines and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and num_bobines and core:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and num_bobines and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif num_bobines and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and num_bobines:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif num_bobines and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome and core:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif num_bobines and core:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif nome:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif num_bobines:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True)) & Q(obsoleto=False)
-            elif core:
-                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
-            elif largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
-            else:
-                perfil = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
-        
-        if retrabalho == False:
-            if nome and num_bobines and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and num_bobines and core:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and num_bobines and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif num_bobines and core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and num_bobines:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif num_bobines and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False)& Q(obsoleto=False))
-            elif core and largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome and core:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif num_bobines and core:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif nome:
-                perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif num_bobines:
-                perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif core:
-                perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
-            elif largura_bobinagem:
-                perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
-            else:
-                perfil = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
+    try:
+        perfil= paginator.page(page)
+    except PageNotAnInteger:
+        perfil = paginator.page(1)
+    except EmptyPage:
+        perfil = paginator.page(paginator.num_pages)
+             
 
-
-
-    
     context = {
         "perfil": perfil,
-        "form": form
+        "query": query,
+        
     }
-    return render(request, template_name, context)
+    return render(request, template_name, context) 
+    
+    # if form.is_valid():
+    #     cd = form.cleaned_data
+    #     nome = cd.get('nome')
+    #     num_bobines = cd.get('num_bobines')
+    #     core = cd.get('core')
+    #     largura_bobinagem = cd.get('largura_bobinagem')
+    #     retrabalho = cd.get('retrabalho')
+
+    #     if retrabalho == True:
+    #         if nome and num_bobines and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and num_bobines and core:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and num_bobines and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif num_bobines and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and num_bobines:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif num_bobines and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome and core:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif num_bobines and core:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif nome:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif num_bobines:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=True)) & Q(obsoleto=False)
+    #         elif core:
+    #             perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         elif largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
+    #         else:
+    #             perfil = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
+        
+    #     if retrabalho == False:
+    #         if nome and num_bobines and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and num_bobines and core:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and num_bobines and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif num_bobines and core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and num_bobines:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif num_bobines and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False)& Q(obsoleto=False))
+    #         elif core and largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome and core:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif num_bobines and core:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif nome:
+    #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif num_bobines:
+    #             perfil = Perfil.objects.filter(Q(num_bobines__iexact=num_bobines) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif core:
+    #             perfil = Perfil.objects.filter(Q(core__iexact=core) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         elif largura_bobinagem:
+    #             perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
+    #         else:
+    #             perfil = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
+
+
+
+    
+    
 
 
 
@@ -4000,14 +4190,15 @@ def perfil_delete_v2(request, pk):
 def bobinagem_retrabalho_list_v2(request):
     bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
     template_name = 'retrabalho/bobinagem_retrabalho_list_v2.html'
-    form = SearchBobinagem(request.POST or None)
     
-    if form.is_valid():
-        cd = form.cleaned_data
-        nome = cd.get('nome')
-        bobinagem_list = Bobinagem.objects.filter(nome__icontains=nome, perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        bobinagem_list = Bobinagem.objects.filter(nome__icontains=query, perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
 
-    paginator = Paginator(bobinagem_list, 14)
+
+    paginator = Paginator(bobinagem_list, 10)
     page = request.GET.get('page')
     
 
@@ -4021,7 +4212,7 @@ def bobinagem_retrabalho_list_v2(request):
 
     context = {
         "bobinagem": bobinagem,
-        "form": form
+        "query": query
     }
     return render(request, template_name, context)
 
@@ -4203,10 +4394,7 @@ def bobines_larguras_reais(request, pk):
 def bobinagem_list_v3(request):
     bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
     template_name = 'producao/bobinagem_list_v3.html'
-    
-
-
-    
+     
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
@@ -4214,7 +4402,7 @@ def bobinagem_list_v3(request):
         bobinagem_list = Bobinagem.objects.filter(nome__icontains=query, perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
 
 
-    paginator = Paginator(bobinagem_list, 14)
+    paginator = Paginator(bobinagem_list, 12)
     page = request.GET.get('page')
     
 
@@ -4309,17 +4497,17 @@ def load_artigos_cliente(request):
 
 @login_required
 def fornecedor_list(request):
-    fornecedor_list = Fornecedor.objects.all().order_by('-cod')
+    fornecedor_list = Fornecedor.objects.all().order_by('-timestamp')
     template_name = 'fornecedor/fornecedor_list.html'
         
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        fornecedor_list = Fornecedor.objects.filter(designacao__icontains=query).order_by('-cod')
+        fornecedor_list = Fornecedor.objects.filter(designacao__icontains=query).order_by('-timestamp')
 
 
-    paginator = Paginator(fornecedor_list, 14)
+    paginator = Paginator(fornecedor_list, 12)
     page = request.GET.get('page')
     
 
@@ -4819,38 +5007,29 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
 @login_required
 def bobinagem_classificacao(request, pk):
+    BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'buraco', 'esp', 'troca_nw', 'nok', 'fc', 'fc_diam_fim', 'fc_diam_ini', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp', 'suj', 'car',  'lac', 'ncore', 'sbrt',  'prop', 'prop_obs','outros','obs'), extra=0, can_delete=False)
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'bobine/bobinagem_classificacao.html'
-    # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
-    BobineClassificacaoFormSet = modelformset_factory(Bobine, fields=('estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'esp', 'troca_nw', 'outros', 'obs', 'nok', 'car', 'fc', 'fc_diam_fim', 'fc_diam_ini',  'ff', 'ff_m_ini', 'ff_m_fim', 'fmp', 'lac', 'ncore', 'prop', 'prop_obs', 'sbrt', 'suj', 'l_real'), extra=0)
-    # largura_total = 0
-    # larguras = []
-    # produtos = []
-    # clientes = []
-    # artigos = []
-    # gsms = []
-    # cont = []
-    # nome_largura = ''
-    # bobinagem = Bobinagem.objects.filter(perfil=perfil)
-    # can_edit = True
-    # if bobinagem.exists():
-    #     can_edit = False
-    
+
     if request.method == 'POST':
-        formset = BobineClassificacaoFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem))
+        formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
         if formset.is_valid():
-            for f in formset:
-                cd = f.cleaned_data
-                # designacao_prod = cd.get('designacao_prod')
+            for form in formset:
+                form.save()
+                # cd = form.cleaned_data
+                # estado = cd.get('estado')
+                # print(estado)
                 
-                
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)
+              
 
 
-    else:
-        formset = BobineClassificacaoFormSet(queryset=Bobine.objects.filter(bobinagem=bobinagem))
-
+    formset = BobineClassificacaoFormSet(instance=bobinagem)
+    
     context = {
         "formset": formset, 
         "bobinagem": bobinagem,
+        "bobines": bobines,
     }
     return render(request, template_name, context)

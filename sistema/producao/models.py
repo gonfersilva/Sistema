@@ -68,7 +68,7 @@ class Artigo(models.Model):
         ordering = ['cod']
 
     def __str__(self):
-        return '%s -  %s' % (self.cod, self.des)
+        return self.cod
 
 class Cliente(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -400,10 +400,10 @@ class Bobine(models.Model):
     sbrt = models.BooleanField(default=False,verbose_name="Sobre tiragem")
     prop = models.BooleanField(default=False,verbose_name="Propriedades")
     prop_obs = models.TextField(max_length=200, null=True, blank=True, verbose_name="Observações Propriedades", default="")
-    fc_diam_ini = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de corte inicio", null=True, blank=True)
-    fc_diam_fim = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de corte fim", null=True, blank=True)
-    ff_m_ini = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de filme inicio", null=True, blank=True)
-    ff_m_fim = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Falha de fimle fim", null=True, blank=True)
+    fc_diam_ini = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de corte inicio", null=True, blank=True)
+    fc_diam_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de corte fim", null=True, blank=True)
+    ff_m_ini = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de filme inicio", null=True, blank=True)
+    ff_m_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de fimle fim", null=True, blank=True)
 
 
     def __str__(self):

@@ -4,123 +4,106 @@
 
 {% block title %}Bobinagens Linha 1 | {{ block.super }}{% endblock %} 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <a href="{% url 'producao:producao_home' %}" role="button" class="btn btn-primary">Voltar</a>
-        <a href="{% url 'producao:bobinagem_create' %}" role="button" class="btn btn-primary pull-right">Criar Bobinagem</a>
-    </div>
-    <div class="row">
-        <h1 id="center">Bobinagens Linha 1</h1>
-    </div>
-    
-    <br>
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    <a href="{% url 'producao:bobinagem_create' %}"  class="btn_create" role="button">Criar Bobinagem</a>
 
-    <div class="row">
-        <p><strong>Pesquisar Bobinagem</strong></p>
-        <form action="" method="GET">
-            <input type="text" name="q">
-            <input type="submit" class="btn btn-primary" value="Procurar">
-            <a class="btn btn-primary" href="{% url 'producao:bobinagem_list_v3' %}">Reset</a>
-        </form>
-
-
-
-    </div>
-    
-    <br>
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th style="min-width: 100px;">Bobinagem</th>
-                        <th id="center" style="min-width: 100px;">Data</th>
-                        <th id="center">Início</th>
-                        <th id="center">Fim</th>
-                        <th id="center">Duração</th>
-                        <th id="center">Core</th>
-                        <th id="center">Comp(m)</th>
-                        <th id="center">Comp. Emenda(m)</th>
-                        <th id="center">Comp. Cliente</th>
-                        <th id="center">Área(m<sup>2</sup>)</th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        
-                </tr>
-                <tbody>
-                    {% for b in bobinagem %}
-                        <tr>
-                            <td><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
-                            <td id="center">{{ b.data|date:"d-n-Y" }}</td>
-                            <td id="center">{{ b.inico|date:"G:i" }}</td>
-                            <td id="center">{{ b.fim|date:"G:i" }}</td>
-                            <td id="center">{{ b.duracao }}</td>
-                            <td id="center">{{ b.perfil.core }}</td>
-                            <td id="center">{{ b.comp }}</td>
-                            <td id="center">{{ b.comp_par }}</td>
-                            <td id="center">{{ b.comp_cli }}</td>
-                            <td id="center">{{ b.area }}</td>
-
-                            {% if b.estado == 'LAB' %}
-                                <td>
-                                    <a href="{% url 'producao:bobinagem_status' pk=b.pk operation='ap' %}" role="button" class="btn btn-success">Aprovar</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'producao:bobinagem_status' pk=b.pk operation='dm' %}" role="button" class="btn btn-warning">DM12</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'producao:bobinagem_status' pk=b.pk operation='rej' %}" role="button" class="btn btn-danger">Rejeitar</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'producao:bobinagem_status' pk=b.pk operation='hold' %}" role="button" class="btn btn-info">Hold</a>
-                                </td>
-                             
-
-                                                               
-                                
-                            {% endif %}
-                            <td>                            
-                                <a href="{% url 'producao:bobinagem_delete' pk=b.pk %}" role="button" class="btn btn-danger glyphicon glyphicon-trash"></a>
-                             </td>
-                            
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                </thead>
-            </table>
-        </div>
-    </div>
-
-    <div class="row">
-        {% if bobinagem.has_other_pages %}
-        <div class="pagination">
-            <span class="step-links">
-                {% if bobinagem.has_previous %}
-                    <a role="button" class="btn btn-primary " href="?{% if query %}q={{query}}&{% endif %}page=1">Primeira</a>
-                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-left" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.previous_page_number }}"></a>
-                {% endif %}
-        
-                <span class="current">
-                    Pág. {{ bobinagem.number }} de {{ bobinagem.paginator.num_pages }}
-                </span>
-        
-                {% if bobinagem.has_next %}
-                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-right" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.next_page_number }}"></a>
-                    <a role="button" class="btn btn-primary" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.paginator.num_pages }}">Última</a>
-                {% endif %}
-            </span>
-        </div>
-        {% endif %}
-
-    </div>
-
-       
-
-    
 </div>
+<div class="title_block-list">
+    <h1>Bobinagens Linha 1</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:bobinagem_list_v3' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Bobinagem</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Duração</th>
+                <th>Core</th>
+                <th>Comp(m)</th>
+                <th>Comp. Emenda(m)</th>
+                <th>Comp. Cliente</th>
+                <th>Área(m<sup>2</sup>)</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bobinagem %}
+            <tr>
+                
+                <td id="designacao"><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
+                <td>{{ b.data|date:"d-n-Y" }}</td>
+                <td>{{ b.inico|date:"G:i" }}</td>
+                <td>{{ b.fim|date:"G:i" }}</td>
+                <td>{{ b.duracao }}</td>
+                <td>{{ b.perfil.core }}</td>
+                <td>{{ b.comp }}</td>
+                <td>{{ b.comp_par }}</td>
+                <td>{{ b.comp_cli }}</td>
+                <td>{{ b.area }}</td>
+                {% if b.estado == 'LAB' %}
+                    <td><a href="{% url 'producao:bobinagem_status' pk=b.pk operation='ap' %}" class="btn_list_g" role="button">Aprovar</a></td>
+                    <td><a href="{% url 'producao:bobinagem_status' pk=b.pk operation='dm' %}" class="btn_list_dm" role="button">DM</a></td>
+                    <td><a href="{% url 'producao:bobinagem_status' pk=b.pk operation='rej' %}" class="btn_list_r" role="button">Rejeitar</a></td>
+                    <td><a href="{% url 'producao:bobinagem_status' pk=b.pk operation='hold' %}" class="btn_list_hold" role="button">Hold</a></td>
+                    <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
+                {% else %}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
+
+                {% endif %}
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
+            
+      
+                
+
+            
+            
+</div>
+<div class="pagination">
+    {% if bobinagem.has_other_pages %}
+    <div>
+        <span>
+            {% if bobinagem.has_previous %}
+                <a role="button" class="fas fa-angle-double-left" href="?{% if query %}q={{query}}&{% endif %}page=1"></a>
+                <a role="button" class="fas fa-angle-left" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.previous_page_number }}"></a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ bobinagem.number }} de {{ bobinagem.paginator.num_pages }}
+            </span>
+    
+            {% if bobinagem.has_next %}
+                <a role="button" class="fas fa-angle-right" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.next_page_number }}"></a>
+                <a role="button" class="fas fa-angle-double-right" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.paginator.num_pages }}"></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
+</div>
+
+
 
 {% endblock %}

@@ -2,7 +2,62 @@
 {% load bootstrap3 %}
 {% block title %}Larguras Reais || {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
+
+<form action="" method="POST">
+    <div>
+        <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk%}" class="btn_back" role="button">Cancelar</a>
+        <input type="submit" value="Validar" id="validate-btn">
+    </div>
+    <div class="title_block-list">
+        <h1>Larguras Reais</h1>
+        <h2>{{ bobinagem.nome }}</h2>
+    </div>
+    <div class="title_block-list">
+        {% if messages %}
+               
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger" role="alert">
+                    <h3 id="center">ERRO!</h3>
+                    <p id="center"> {{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success" role="alert">
+                    <h3 id="center">SUCESSO!</h3>
+                    <p id="center"> {{message}} </p>
+                </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="alert alert-warning" role="alert">
+                    <h3 id="center">JÁ EXISTE!</h3>
+                    <p id="center"> {{message}} </p>
+                </div>
+                {% endif %}
+            {% endfor %}
+                
+        {% endif %}
+    </div>
+    <div class="content-form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <div class="title_block-list">
+        
+            <h3>Bobine {{ forloop.counter }}</h3>
+        </div>
+           
+            {% for field in form %}
+            <div class="content-form-2" id="largura-real">
+                {{ field }}
+            </div>
+            
+            {% endfor %}
+        {% endfor %}
+
+    </div>
+</form>   
+
+
+<!-- <div class="container">
     <br>
     <br>
       
@@ -74,7 +129,7 @@
         
             
             
-</div>
+</div> -->
 {% endblock %}
                                                      
               

@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
- 
-    
-    <form action="." method="POST">{% csrf_token %}
-        <h1>Deseja apagar o artigo {{ artigo_cliente.artigo.des }}?</h1>
-        <p><input type="submit" class="btn btn-block btn-danger" value="Sim">  <a href="{% url 'producao:cliente_details' pk=cliente.pk %}" class="btn btn-block btn-primary" role="button">Não</a></p>
-    </form>
-    
+<div class="title_block-list">
+    <h1>Deseja remover o artigo {{ artigo_cliente.artigo.des }}?</h1>
 </div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <a href="{% url 'producao:cliente_details' pk=cliente.pk %}"  class="btn_back" role="button">Não</a>
+    <input type="submit" value="Sim" id="validate-btn">
+</form>               
+           
 
 {% endblock %}

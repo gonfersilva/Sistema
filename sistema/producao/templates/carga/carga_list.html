@@ -2,125 +2,83 @@
 {% block title %}Cargas Incompletas | {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="container">
-        <a href="{% url 'producao:armazem_home' %}" class="btn btn-primary" role="button">Voltar</a>
-        
-        <a href="{% url 'producao:carga_create' %}"  class="btn btn-primary pull-right" role="button">Nova Carga</a>
-        <a href="{% url 'producao:carga_list_completa' %}"  class="btn btn-primary pull-right" role="button">Cargas Completas</a>
-   </div>
-<h1 id="center">Cargas Incompletas</h1><br>
-<div class="container">
-    <input id="myInput" type="text" placeholder="Carga"  onkeyup="searchCarga()" autofocus/>
-        
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    <a href="{% url 'producao:carga_create' %}"  class="btn_create" role="button">Nova Carga</a>
+    <a href="{% url 'producao:carga_list_completa' %}"  class="btn_create" role="button">Cargas completas</a>
     
+
 </div>
-<br>
-<div class="container table-responsive size-table">
-        
-<table class="table fit" id="myTable">
-    <thead>
-        <tr>
-            <th>Carga</th>
-            <th>Encomenda</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Data</th>
-            <th>Nº Paletes</th>    
-            <th>M2</th>                              
+<div class="title_block-list">
+    <h1>Cargas Incompletas</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:carga_list' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Carga</th>
+                <th>Encomenda</th>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Nº de Paletes</th>
+                <th>M<sup>2</sup></th>
+                <th>Estado</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for ca in carga %}
+            <tr>
+                
+                <td id="designacao"><a href="{% url 'producao:carga_detail' pk=ca.pk%}">{{ ca.carga }}</a></td>
+                <td>{{ ca.enc }}</td>
+                <td>{{ ca.tipo }}</td>
+                <td>{{ ca.data|date:"d-n-Y" }}</td>
+                <td>{{ ca.num_paletes_actual }} / {{ ca.num_paletes }}</td>
+                <td>{{ ca.sqm }}</td>
+                <td><i class="fas fa-truck-loading"></i></td>
+                
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
             
-        </tr>
-    </thead>
-    <tbody id="cargas-list">
-        
-    </tbody>
+      
+                
+
+            
+            
+</div>
+<div class="pagination">
+    {% if carga.has_other_pages %}
+    <div>
+        <span>
+            {% if carga.has_previous %}
+                <a role="button" class="fas fa-angle-double-left" href="?{% if query %}q={{query}}&{% endif %}page=1"></a>
+                <a role="button" class="fas fa-angle-left" href="?{% if query %}q={{query}}&{% endif %}page={{ carga.previous_page_number }}"></a>
+            {% endif %}
     
-</table>
+            <span>
+                Pág. {{ carga.number }} de {{ carga.paginator.num_pages }}
+            </span>
+    
+            {% if carga.has_next %}
+                <a role="button" class="fas fa-angle-right" href="?{% if query %}q={{query}}&{% endif %}page={{ carga.next_page_number }}"></a>
+                <a role="button" class="fas fa-angle-double-right" href="?{% if query %}q={{query}}&{% endif %}page={{ carga.paginator.num_pages }}"></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
 </div>
 
 
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-
-$(window).load(function() {
-    $.ajax({ 
-        type: "GET",
-        dataType: "json",
-        url: "/api/carga/",
-        success: function(cargas){ 
-
-            if(!cargas || cargas.length === 0) {
-                    return;
-                }
-            var cargas_length = cargas.length
-            for (i=0; i < cargas_length; i++ ){
-                if(cargas[i].carga != '0' && cargas[i].estado != "C"){
-                
-                var link = "/producao/carga/detail/" + cargas[i].id
-
-                var a1=$(document.createElement("a")).text(cargas[i].carga).attr('href', link), td1=$(document.createElement("td"));
-                var td2=$(document.createElement("td"))
-                var td3=$(document.createElement("td")).attr('id', "center")
-                var td4=$(document.createElement("td")).attr('id', "center")
-                var td5=$(document.createElement("td")).attr('id', "center")
-                var td6=$(document.createElement("td")).attr('id', "center")
-                var td7=$(document.createElement("td")).attr('id', "center")
-                
-                
-                
-                td1.append(a1);
-                td2.text(cargas[i].enc.eef);
-                td3.text(cargas[i].tipo);
-                if (cargas[i].estado === "I"){
-                    td4.text("Incompleto").attr('id', 'estado_rejected');
-                }else{
-                    td4.text("Completo").attr('id', 'estado_good');
-                }
-                // td4.text(cargas[i].estado);
-                td5.text(cargas[i].data);
-                td6.text(cargas[i].num_paletes_actual + " / " + cargas[i].num_paletes );
-                td7.text(cargas[i].sqm);
-                
-
-                var tr=$(document.createElement("tr"));
-                var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
-
-                $("#cargas-list").append(tr);
-
-                }
-            }
-            
-
-        }
-        
-    })
-})
-
-function searchCarga() {
-  // Declare variables 
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();;
-  table = document.getElementById("myTable");
-  tr = table.getElementsByTagName("tr");
-
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    } 
-  }
-}
-
-
-</script>
 {% endblock %}

@@ -4,45 +4,28 @@
 
 {% block title %}Armazém{% endblock %}
 {% block content %}
-<div class="container size-table">
-    <div class="row">
-        <div class="container">
-            <a href="{% url 'home' %}" class="btn btn-primary" role="button">Voltar</a>
-        </div>  
-        <br>
-        <br>
-        <div class="row">
-            <h1 id="center">Armazém</h1>
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:carga_list' %}"><button class="btn btn-primary btn-lg">Cargas</button></a></div>    
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:palete_selecao' %}"><button class="btn btn-primary btn-lg">Pesagem</button></a></div>    
-             
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:stock_list' %}"><button class="btn btn-primary btn-lg">Stock</button></a></div>    
-            <!-- <div class="container col-md-6" id="center"><a href="{% url 'producao:rececao_list' %}"><button class="btn btn-primary btn-lg">Receções</button></a></div>     -->
-            <!--  -->
-                 
-        </div>
-        
-        
-        
-       
-    
-    
-
+<div>
+    <a href="{% url 'home' %}" class="btn_back">Voltar</a>
 </div>
-
-
+<div class="title_block">
+    <h1>Armazém</h1>
+</div>
+<div class="menu">
+    <div>
+        <a href="{% url 'producao:carga_list' %}">Cargas</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:palete_selecao' %}">Pesagem</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:stock_list' %}">Stock</a>
+    </div>
+    <!-- <div>
+        <a href="{% url 'producao:rececao_list' %}">Receções</a>
+    </div> -->
+    
+    
+</div>
 
 
 

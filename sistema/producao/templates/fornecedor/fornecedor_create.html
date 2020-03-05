@@ -3,53 +3,18 @@
 
 {% block title %}Fornecedor Create | {{ block.super }}{% endblock %}
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        <div class="col-sm-6 col-md-9 col-lg-9">  
-                <a href="{% url 'producao:fornecedor_list' %}" class="btn btn-primary">Voltar</a>
-                
-        </div>
-        
-    </div>
-  
-    
-
-
-    <div class="row">
-        <h1 id="center">Criar Fornecedor</h1>
-    </div>
-    <div class="row">
-            <form method="POST">
-                {% csrf_token %}
-
-                <div class="row">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% bootstrap_field form.cod %}
-                        </div>
-                        <div class="col-sm-6">
-                            {% bootstrap_field form.abv %}
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            {% bootstrap_field form.designacao %}
-                        </div>
-                    </div>
-                    
-                    
-                </div>
-                               
-               
-                <input type="submit" class="btn btn-block btn-primary pull-right" value="Criar">
-                
-            </form>
-    </div>
-                
-    </div>        
-    
+<div>
+    <a href="{% url 'producao:fornecedor_list' %}"  class="btn_back" role="button">Voltar</a>
 </div>
+<div class="title_block-list">
+    <h1>Criar Fornecedor</h1>
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_cod">Código cliente</label>{{ form.cod }}
+    <label for="id_abv">Abreviatura</label>{{ form.abv }}
+    <label for="id_designacao">Designação</label>{{ form.designacao }}
+    <input type="submit" value="Validar" id="validate-btn">
+</form>
 
 {% endblock %}

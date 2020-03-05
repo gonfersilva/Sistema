@@ -5,47 +5,74 @@
 {% block title %}Bobinagens | {{ block.super }}{% endblock %}
 {% block content %}
 
-<div class="container">
-    <a href="{% url 'producao:planeamento_home' %}"  class="btn btn-primary" role="button">Voltar</a>
-    <a href="{% url 'producao:cliente_create' %}"  class="btn btn-primary pull-right" role="button">Criar cliente</a>
+<div>
+    <a href="{% url 'producao:planeamento_home' %}"  class="btn_back" role="button">Voltar</a>
+    <a href="{% url 'producao:cliente_create' %}"  class="btn_create" role="button">Criar cliente</a>
 </div>
-<div class="container">
-    <div class="container col-md-3"></div>
-        <div class="container col-md-12 table-responsive size-table">
-                <h1 id="center">Clientes</h1><br>
-
-                        <table class="table fit">
-                            <thead>
-                                <tr>
-                                    <th id="center">Código cliente</th>
-                                    <th id="center">Abv.</th>
-                                    <th>Designação</th>
-                                    <th id="center">Diâmetro inferior</th>
-                                    <th id="center">Diâmetro superior</th>
-                                    <th id="center">Diâmetro de referência</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for c in cliente %}
-                                <tr>
-                                    <td id="center">{{ c.cod }}</td>
-                                    <td id="center">{{ c.abv }}</td>
-                                    <td><a href="{% url 'producao:cliente_details' pk=c.pk %}">{{ c.nome }}</a></td>
-                                    <td id="center">{{ c.liminf }}</td>
-                                    <td id="center">{{ c.limsup }}</td>
-                                    <td id="center">{{ c.diam_ref }}</td>
-                                    <!-- <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>      -->
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            </table>
+<div class="title_block-list">
+    <h1>Clientes</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:clientes' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Código cliente</th>
+                <th>Abv.</th>
+                <th id="designacao">Designação</th>
+                <th>Diâmetro inferior</th>
+                <th>Diâmetro superior</th>
+                <th>Diâmetro de referência</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cliente %}
+            <tr>
+                <td>{{ c.cod }}</td>
+                <td>{{ c.abv }}</td>
+                <td id="designacao"><a href="{% url 'producao:cliente_details' pk=c.pk %}">{{ c.nome }}</a></td>
+                <td>{{ c.liminf }}</td>
+                <td>{{ c.limsup }}</td>
+                <td>{{ c.diam_ref }}</td>
+                <!-- <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>      -->
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
             
+        
                 
 
             
             
-        </div>
-    <div class="container col-md-3"></div>
+</div>
+<div class="pagination">
+    {% if cliente.has_other_pages %}
+    <div>
+        <span>
+            {% if cliente.has_previous %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ cliente.previous_page_number }}"><</a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ cliente.number }} de {{ cliente.paginator.num_pages }}
+            </span>
+    
+            {% if cliente.has_next %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ cliente.next_page_number }}">></a>
+                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ cliente.paginator.num_pages }}">>></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
 </div>
 
 

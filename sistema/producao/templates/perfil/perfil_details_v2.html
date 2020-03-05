@@ -3,122 +3,77 @@
 
 {% block title %}Perfil | {{ block.super }}{% endblock %}
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        <div class="container">  
-                <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-primary">Voltar</a>
-                
-        </div>
-        
-    </div>
-  
+<div>
+    <a href="{% url 'producao:perfil_list_v2' %}"  class="btn_back" role="button">Voltar</a>
+</div>
+<div class="title_block-list">
+    <h1>Perfil</h1>
+    <h1>{{ perfil.nome }}</h1>
+    <h2>Nº de Bobines: {{ perfil.num_bobines }}</h2>
+    <h2>Largura total: {{ perfil.largura_bobinagem }} mm</h2>
+    <h2>Core: {{ perfil.core }}"</h2>
+</div>
+<div class="title_block-list">
+    <h2>Cortes</h2>
     
-
-
-    <div class="row">
-        <div class="container">
-            <div class="row">
-                <h1 id="center">Perfil: {{ perfil.nome }}</h1>
-            </div>
-            <div class="row">
-                <h2>Nº de Bobines: <span id="span_details_perfil">{{ perfil.num_bobines }}</span></h2>
-                <h2>Largura total: <span id="span_details_perfil">{{ perfil.largura_bobinagem }} mm</span></h2>
-                <h2>Core: <span id="span_details_perfil">{{ perfil.core }}"</span></h2>
-            </div>
-            <br>
-            <div class="row">
-                    <h1 id="center">Cortes</h1>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-md-12 table-responsive">
-                    <table class="table table-striped">
-                        
-                        <tr>
-                            <th>Bobine</td>
-                            {% for lar in largura %}
-                                <th id="center">{{ lar.num_bobine }}</th>
-                            {% endfor%}
-                        </tr>
-                        <tr>
-                            <th>Largura</td>
-                            {% for lar in largura %}
-                                {% if not lar.largura == None %}
-                                <td id="center">{{ lar.largura }}</td>
-                                
-                                {% else %}
-                                <td></td>
-                                {% endif %}
-                            {% endfor%}
-                        </tr>
-                        
-                        <tr>
-                            <th>Produto</td>
-                            {% for lar in largura %}
-                                {% if not lar.largura == None %}
-                                <td id="center">{{ lar.designacao_prod }}</td>
-                                
-                                {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor%}
-                            
-                        </tr>
-                        <tr>
-                            <th>Gramagem</td>
-                            {% for lar in largura %}
-                                {% if not lar.largura == None %}
-                                <td id="center">{{ lar.gsm }}</td>
-                                
-                                {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor%}
-                            
-                        </tr>
-                        <tr>
-                            <th>Cliente</td>
-                            {% for lar in largura %}
-                                {% if not lar.largura == None %}
-                                    {% if not lar.cliente == None %}
-                                        <td id="center">{{ lar.cliente }}</td>
-                                    {% else %}
-                                        <td id="center">S/ Cliente</td>
-                                    {% endif %}
-                                {% else %}
-                                       <td></td>
-                                {% endif %}
-                            {% endfor%}
-                                    
-                            
-                        </tr>
-                        <tr>
-                            <th>Artigo</td>
-                                {% for lar in largura %}
-                                    {% if not lar.largura == None %}
-                                        {% if not lar.artigo == None %}
-                                            <td id="center">{{ lar.artigo }}</td>
-                                        {% else %}
-                                            <td id="center">S/ Artigo</td>
-                                        {% endif %}
-                                {% else %}
-                                       <td></td>
-                                {% endif %}
-                            {% endfor%}
-                            
-                        </tr>
-                        
-                            
-                    </table>
-                        
-                </div>
-
-
-
-        </div>
+</div>
+<div>
+<table class="content-table">
+    <thead>
+        <tr>
+            <th>Bobine</th>
+            <th>Largura (mm)</th>
+            <th id="designacao">Produto</th>
+            <th>Gramagem (gsm)</th>
+            <th>Cliente</th>
+            <th>Artigo</th>
+        </tr>
+    </thead>
+    <tbody>
         
-    </div>
+        {% for lar in largura %}
+        <tr>
+            <td id="center">{{ lar.num_bobine }}</td>
+            {% if not lar.largura == None %}
+                <td id="center">{{ lar.largura }}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            {% if not lar.largura == None %}
+                <td id="designacao">{{ lar.designacao_prod }}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            {% if not lar.largura == None %}
+                <td id="center">{{ lar.gsm }}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            {% if not lar.largura == None %}
+                {% if not lar.cliente == None %}
+                    <td>{{ lar.cliente }}</td>
+                {% else %}
+                    <td>S/ Cliente</td>
+                {% endif %}
+            {% else %}
+                    <td></td>
+            {% endif %}
+            {% if not lar.largura == None %}
+                {% if not lar.artigo == None %}
+                    <td id="center">{{ lar.artigo.cod }}</td>
+                {% else %}
+                    <td id="center">S/ Artigo</td>
+                {% endif %}
+            {% else %}
+                    <td></td>
+            {% endif %}
+        </tr>
+        {% endfor%}
+       
+    </tbody>
+</table>
+        
+
     
 </div>
 

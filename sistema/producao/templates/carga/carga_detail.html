@@ -1,224 +1,100 @@
 {% extends "layout.html "%}
-{% load bootstrap3 %}
+{% load producao_tags %}
 
 {% block title %}Carga {{ carga.carga }}{% endblock %}
 
 {% block content %}
-
-<div class="container">
-    
-    <div class="container">
-        <a href="{% url 'producao:carga_list' %}"class="btn btn-primary" role="button">Voltar</a>      
-
-    </div><br>
-    <h1>Detalhes: {{ carga.carga }}</h1>
-    <p id="carga_id" data-catid="{{ carga.id }}" hidden>{{ carga.id }}</p> 
-    <br>
-    <br>
-    <div class="container">
-        <div class="row">
-            <div class="container col-sm-4">
-                <table>
-                    <tr>
-                       <th>Carga:</th>
-                       <td id="right">{{ carga.carga }}</td>
-                    </tr>
-                   
-                    <tr>
-                        <th>Encomenda:</th>
-                        <td id="right">{{ carga.enc.eef }}</td>
-                    </tr>
-                    <tr>
-                        <th>Proforma:</th>
-                        <td id="right">{{ carga.enc.prf }}</td>
-                    </tr>
-                    <tr>
-                        <th>Cliente:</th>
-                        <td id="right">{{ carga.enc.cliente.nome }}</td>
-                    </tr>
-                   
-                         
-                    
-                </table>
-            </div>
-            <div class="container col-sm-4">
-                <table>
-                    <tr>
-                       <th>Nº:</th>
-                       <td id="right">{{ carga.num_carga}}</td>
-                    </tr>
-                   
-                    <tr>
-                        <th>Data:</th>
-                        <td id="right">{{ carga.data|date:"d-n-Y" }}</td>
-                    </tr>
-                    <tr>
-                        <th>Tipo:</th>
-                        <td id="right">{{ carga.tipo }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nº de Paletes:</th>
-                        <td id="right">{{ carga.num_paletes_actual }} / {{ carga.num_paletes }}</td>
-                    </tr>
-                       
-                         
-                    
-                </table>
-            </div>
-            <div class="container col-sm-4">
-                    <table>
-                        <tr>
-                           <th>Área total(m2): </th>
-                           <td id="right">{{ carga.sqm }}</td>
-                        </tr>
-                        <tr>
-                            <th>Comprimento total(m): </th>
-                            <td id="right">{{ carga.metros }}</td>
-                        </tr>
-                        <tr>
-                                <th>Bobine mais antiga: </th>
-                                <td id="right">{{ data_inicial|date:"d-n-Y" }}</td>
-                        </tr>
-                        <tr>
-                                <th>Bobine mais recente: </th>
-                                <td id="right">{{ data_final|date:"d-n-Y" }}</td>
-                        </tr>
-                        <tr>
-                            <th>Relação kg/m2 (Média): </th>
-                            <td id="right">{{ som }} %</td>
-                         </tr>
-                         <tr>
-                            <th>Comp. / Peso (m): </th>
-                            <td id="right">{{ som_comp }} m</td>
-                         </tr>
-                         <tr>
-                            <th>Área / Peso (m2): </th>
-                            <td id="right">{{ som_area }} m2</td>
-                         </tr>
-                    
-                        
-                        
-                           
-                             
-                        
-                    </table>
-                </div>
-        </div>
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>Carga</h1>
+    <h2>{{ carga.carga }}</h2>
+</div>
+<div class="content_details">
+    <div>
+        <div><h3>Encomenda: <span>{{ carga.enc }}</span></h3></div>
+        <div><h3>Proforma: <span>{{ carga.enc.prf }}</span></h3></div>
+        <div><h3>Cliente: <span>{{ carga.enc.cliente }}</span></h3></div>
+        <div><h3>Nº Carga: <span>{{ carga.num_carga }}</span></h3></div>
+        <div><h3>Data: <span>{{ carga.data|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Tipo: <span>{{ carga.tipo }}</span></h3></div>
+        <div><h3>Nº de paletes: <span>{{ carga.num_paletes_actual }} / {{ carga.num_paletes }} </span></h3></div>
     </div>
-    <br>
-    <br>
-    <div class="row">
-        <h3>Imprimir Carga {{ carga.carga }}</h3>
+    <div>
+        <div><h3>Área Tota (m<sup>2</sup>): <span>{{ carga.sqm }}</span></h3></div>
+        <div><h3>Comp. Total (m): <span>{{ carga.metros }}</span></h3></div>
+        <div><h3>Bobine mais antiga: <span>{{ data_inicial|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Bobine mais recente: <span>{{ data_final|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Relação kg/m<sup>2</sup> (Média): <span>{{ som }}%</span></h3></div>
+        <div><h3>Comp. / Peso (m): <span>{{ som_comp }}</span></h3></div>
+        <div><h3>Área / Peso (m<sup>2</sup>): <span>{{ som_area }}</span></h3></div>
+    </div>
+   
+
+    
+    
+    
+</div>
+<div class="content_details">
+    <div></div>
+    <div>
         <form method="POST" action="#">
-            {% bootstrap_form form %}
             {% csrf_token %}
-            <input type="submit" class="btn btn-primary pull-right" value="Imprimir todas">
+            <h3>Imprimir Etiqueta Final</h3>
+            <label for="id_num_copias">Nº de Cópias: </label>{{ form.num_copias }}
+            <input type="submit" value="Imprimir Todas" id="confirm-btn">
         </form>
     </div>
-    <br>
-    <br>
+</div>
+<div class="title_block-list">
+    <h2>Paletes</h2>
+    
+</div>
+<div>
+    <table class="content-table" id="defeitos">
+        <thead>
+            <tr>
+                <th>Palete nº</th>
+                <th id="designacao">Palete</th>
+                <th>Data</th>
+                <th>Core(")</th>
+                <th>Largura(mm)</th>
+                <th>Comprimento(m)</th>
+                <th>Área(m2)</th>    
+                <th>Peso liquido(Kg)</th>
+                <th>Relação kg/m2</th>      
+                <th>Comp./Peso (m)</th>                               
+                <th>Área/Peso (m2)</th>   
 
-    <div class="container table-responsive size-table">
-        <h3>Paletes</h3>
-        <table class="table fit" id="myTable">
-            <thead>
+            </tr>
+        </thead>
+        <tbody>
+            <tbody>    
+                {% for pal in paletes %}
                 <tr>
-                    <th>Palete nº</th>
-                    <th>Palete</th>
-                    <th>Data</th>
-                    <th>Core(")</th>
-                    <th>Largura(mm)</th>
-                    <th>Cliente</th>
-                    <th>Comprimento(m)</th>
-                    <th>Área(m2)</th>    
-                    <th>Peso liquido(Kg)</th>
-                    <th>Comp./Peso (m)</th>                               
-                    <th>Área/Peso (m2)</th>   
-                    <th>Relação kg/m2</th>                               
-                                                
-
+                    <td>{{ forloop.counter }}</td>
+                    <td id="designacao"><a href="{% url 'producao:addbobinepalete' pk=pal.pk %}">{{ pal.nome }}</a></td>
+                    <td>{{ pal.data_pal|date:"d-n-Y" }}</td>
+                    <td>{{ pal.core_bobines }}</td>
+                    <td>{{ pal.largura_bobines }}</td>
+                    <td>{{ pal.comp_total }}</td>
+                    <td>{{ pal.area }}</td>
+                    <td>{{ pal.peso_liquido }}</td>
+                    <td>{{ relacoes|index:forloop.counter0 }}%</td>
+                    <td>{{ realcoes_comp|index:forloop.counter0 }}</td>
+                    <td>{{ relacoes_area|index:forloop.counter0 }}</td>
+                    
+                   
+                
+                   
+                   
+                            
                 </tr>
-            </thead>
-            <tbody id="paletes-list">
-                
-            </tbody>
-            
+                {% endfor %}
+            </tbody>  
+        </tbody>
         </table>
-    
 </div>
-</div>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-$(window).load(function() {
-
-var id = $("#carga_id").attr("data-catid");
-
-$.ajax({ 
-    type: "GET",
-    dataType: "json",
-    url: "/api/carga/paletes/" + id,
-    success: function(paletes){ 
-
-        if(!paletes || paletes.length === 0) {
-                return;
-            }
-        var paletes_length = paletes.length
-        for (i=0; i < paletes_length; i++ ){
-            rel = (paletes[i].peso_liquido/(paletes[i].area/10))*100
-            rel = Math.round(rel * 100) / 100
-            rel_area = Math.round((paletes[i].peso_liquido * 1000) / 100)
-            rel_comp = Math.round((rel_area / ((paletes[i].num_bobines * paletes[i].largura_bobines) * 0.001)) * paletes[i].num_bobines)
-            var link_imp_palete = "/producao/carga/imprimiretiquetapalete/" + paletes[i].id
-
-            
-            var td8=$(document.createElement("td")).attr('id', "center")
-            var a1=$(document.createElement("a")).text(paletes[i].nome), td1=$(document.createElement("td"));
-            var td2=$(document.createElement("td"))
-            var td3=$(document.createElement("td")).attr('id', "center")
-            var td4=$(document.createElement("td")).attr('id', "center")
-            var td5=$(document.createElement("td")).attr('id', "center")
-            var td6=$(document.createElement("td")).attr('id', "center")
-            var td7=$(document.createElement("td")).attr('id', "center")
-            var td9=$(document.createElement("td")).attr('id', "center")
-            var td10=$(document.createElement("td")).attr('id', "center")
-            var td11=$(document.createElement("td")).attr('id', "center")
-            var td12=$(document.createElement("td")).attr('id', "center")
-            var td13=$(document.createElement("a"))
-
-
-            td1.append(a1);
-            td2.text(paletes[i].data_pal);
-            td3.text(paletes[i].core_bobines);
-            td4.text(paletes[i].largura_bobines);
-            td5.text(paletes[i].cliente.nome);
-            td6.text(paletes[i].area);
-            td7.text(paletes[i].comp_total);
-            td8.text(paletes[i].num_palete_carga);
-            td9.text(paletes[i].peso_liquido);
-            td10.text(rel + "%");
-            td11.text(rel_comp);
-            td12.text(rel_area);
-            td13.addClass('btn btn-primary glyphicon glyphicon-print')
-            .attr('href', link_imp_palete);
-
-
-
-            var tr=$(document.createElement("tr"));
-            var tr = tr.append(td8).append(td1).append(td2).append(td3).append(td4).append(td5).append(td7).append(td6).append(td9).append(td11).append(td12).append(td10).append(td13);
-
-            $("#paletes-list").append(tr);
-
-                
-            }
-    
-    }   
-})
-})
-
-
-</script>
-    
 {% endblock %}

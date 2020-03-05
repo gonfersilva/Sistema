@@ -3,147 +3,94 @@
 {% block title %}Bobine {{ bobine.nome }}{% endblock %}
 
 {% block content %}
-
-<div class="container">
-    
-    <div class="container">
-        <a href="{% url 'producao:encomenda_list' %}"class="btn btn-primary" role="button">Voltar</a>      
-
-    </div><br>
-    <h1>Detalhes {{ enc.eef }}</h1>
-    <p id="encomenda_id" data-catid="{{ enc.id }}" hidden>{{ enc.id }}</p> 
-    <br>
-    <br>
-    <div class="container">
-        <div class="row">
-            <div class="container col-sm-6">
-                <table>
-                    <tr>
-                       <th>Encomenda:</th>
-                       <td id="right">{{ enc.eef}}</td>
-                    </tr>
-                   
-                    <tr>
-                        <th>Proforma:</th>
-                        <td id="right">{{ enc.prf }}</td>
-                    </tr>
-                    <tr>
-                        <th>M2:</th>
-                        <td id="right">{{ enc.sqm }} m2</td>
-                    </tr>
-                    <tr>
-                        <th>Order Number:</th>
-                        <td id="right">{{ enc.order_num }}</td>
-                    </tr>
-                   
-                         
-                    
-                </table>
-            </div>
-            <div class="container col-sm-6">
-                <table>
-                    <tr>
-                       <th>Data:</th>
-                       <td id="right">{{ enc.data|date:"d-n-Y" }}</td>
-                    </tr>
-                   
-                    <tr>
-                        <th>Cliente:</th>
-                        <td id="right">{{ enc.cliente }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nº de Cargas:</th>
-                        <td id="right">{{ enc.num_cargas_actual }} / {{ enc.num_cargas }}</td>
-                    </tr>
-                   
-                         
-                    
-                </table>
-            </div>
-        </div>
+<div>
+    <form>
+        <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    </form>
+</div>
+<div class="title_block-list">
+    <h1>Encomenda</h1>
+    <h2>{{ enc.eef }}</h1>
+</div>
+<div class="content_details">
+    <div>
+        <div><h3>Proforma: <span>{{ enc.prf }}</span></h3></div>
+        <div><h3>Order Number: {% if enc.order_num != None %}<span>{{ enc.order_num }}</span>{% else %}<span>N/A</span>{% endif %}</h3></div>
+        <div><h3>M<sup>2</sup>: <span>{{ enc.sqm }}</span></h3></div>
     </div>
-    <br>
-    <br>
-    <br>
-
-    <div class="container table-responsive size-table">
-        <h3>Cargas</h3>
-        <table class="table fit" id="myTable">
-            <thead>
-                <tr>
-                    <th>Carga</th>
-                    <th>Encomenda</th>
-                    <th>Tipo</th>
-                    <th>Estado</th>
-                    <th>Data</th>
-                    <th>Nº Paletes</th>    
-                    <th>M2</th>                              
-                </tr>
-            </thead>
-            <tbody id="cargas-list">
+    <div>
+        <div><h3>Data: <span>{{ enc.data|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Cliente: <span>{{ enc.cliente }}</span></h3></div>
+        <div><h3>Nº de Cargas: <span>{{ enc.num_cargas_actual }} / {{ enc.num_cargas }}</span></h3></div>
+    </div>
+</div>
+<div class="title_block-list">
+    <h2>Cargas</h2>
+</div>
+<!-- <div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:encomenda_list' %}">Reset</a>
+    </form>
+</div> -->
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Carga</th>
+                <th id="designacao">Encomenda</th>
+                <th>Data</th>
+                <th>M<sup>2</sup></th>   
+                <th>Tipo</th>
+                <th>Nº Paletes</th>    
+                <th>Estado</th>
                 
-            </tbody>
-            
+            </tr>
+        </thead>
+        <tbody>
+            {% for carga in cargas %}
+            <tr>
+                <td id="designacao"><a href="{% url 'producao:carga_detail' pk=carga.pk%}">{{ carga.carga }}</a></td>
+                <td id="designacao">{{ carga.enc }}</td>
+                <td>{{ carga.data|date:"d-n-Y" }}</td>
+                <td>{{ carga.sqm }}</td>
+                <td>{{ carga.tipo }}</td>
+                <td>{{ carga.num_paletes_actual }} / {{ carga.num_paletes }}</td>
+                {% if carga.estado == 'C' %}
+                <td><i class="fas fa-truck"></i></td>
+                {% else %}
+                <td><i class="fas fa-truck-loading"></i></td>
+                {% endif %}
+            </tr>
+            {% endfor%}
+        </tbody>
         </table>
+
+</div>
+<!-- <div class="pagination">
+    {% if encomenda.has_other_pages %}
+    <div>
+        <span>
+            {% if encomenda.has_previous %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.previous_page_number }}"><</a>
+            {% endif %}
     
-</div>
-</div>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
+            <span>
+                Pág. {{ encomenda.number }} de {{ encomenda.paginator.num_pages }}
+            </span>
+    
+            {% if encomenda.has_next %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.next_page_number }}">></a>
+                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.paginator.num_pages }}">>></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-$(window).load(function() {
+</div> -->
 
-    var id = $("#encomenda_id").attr("data-catid");
-
-    $.ajax({ 
-        type: "GET",
-        dataType: "json",
-        url: "/api/encomenda/" + id,
-        success: function(cargas){ 
-
-            if(!cargas || cargas.length === 0) {
-                    return;
-                }
-            var cargas_length = cargas.length
-            for (i=0; i < cargas_length; i++ ){
-            
-                if(cargas[i].carga != '0'){
-
-                    var a1=$(document.createElement("a")).text(cargas[i].carga), td1=$(document.createElement("td"));
-                    var td2=$(document.createElement("td"))
-                    var td3=$(document.createElement("td")).attr('id', "center")
-                    var td4=$(document.createElement("td")).attr('id', "center")
-                    var td5=$(document.createElement("td")).attr('id', "center")
-                    var td6=$(document.createElement("td")).attr('id', "center")
-                    var td7=$(document.createElement("td")).attr('id', "center")
-
-                    td1.append(a1);
-                    td2.text(cargas[i].enc.eef);
-                    td3.text(cargas[i].tipo);
-                    if (cargas[i].estado === "I"){
-                        td4.text("Incompleto").attr('id', 'estado_rejected');
-                    }else{
-                        td4.text("Completo").attr('id', 'estado_good');
-                    }
-                    // td4.text(cargas[i].estado);
-                    td5.text(cargas[i].data);
-                    td6.text(cargas[i].num_paletes_actual + " / " + cargas[i].num_paletes );
-                    td7.text(cargas[i].sqm);
-
-                    var tr=$(document.createElement("tr"));
-                    var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
-
-                    $("#cargas-list").append(tr);
-
-                    }
-                }
-        
-        }   
-    })
-})
-</script>
-
+  
 
 {% endblock %}

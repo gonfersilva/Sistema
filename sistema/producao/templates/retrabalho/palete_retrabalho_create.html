@@ -4,18 +4,31 @@
 
 {% block title %}Palete para retrabalho | {{ block.super }}{% endblock %}
 {% block content %}
-
-    <div class="col-md-12">
-        {% if messages %}
+<div>
+    <a href="{% url 'producao:paletes_retrabalho' %}"  class="btn_back" role="button">Voltar</a>
+</div>
+<div class="title_block-list">
+    <h1>Nova Palete para Retrabalho</h1>
+</div>
+<div>
+    {% if messages %}
         <ul class="messages">
             {% for message in messages %}
             <li class="{{ message.tags }}" id="error">{{ message }}</li>
             {% endfor %}
         </ul>
         {% endif %}
-    </div>
-
-    {% palete_retrabalho_form form %}
+</div>
+<div>
+    <form action="" method="POST" class="submission-form">
+        {% csrf_token %}
+        <label for="id_num">Palete nº</label>{{ form.num }}
+        <label for="id_data_pal">Data da Palete</label>{{ form.data_pal }}
+        <label for="id_num_bobines">Bobines total</label>{{ form.num_bobines }}
+        <input type="submit" value="Criar" id="validate-btn">
+    </form>
+</div>
+   
+    <!-- {% palete_retrabalho_form form %} -->
        
-
 {% endblock %}

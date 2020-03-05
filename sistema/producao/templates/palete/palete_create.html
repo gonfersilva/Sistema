@@ -3,19 +3,24 @@
 {% load producao_tags %}
 
 
-{% block title %}Palete | {{ block.super }}{% endblock %}
+{% block title %}Criar Palete Cliente | {{ block.super }}{% endblock %}
 {% block content %}
-
-<div class="col-md-12">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}" id="error">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
-            {% palete_form form %}
-       
-
+      
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>Criar Palete para Cliente</h1>
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_cliente">Cliente</label>{{ form.cliente }}
+    <label for="id_num">Palete Nº</label>{{ form.num }}
+    <label for="id_data_pal">Data</label>{{ form.data_pal }}
+    <label for="id_num_bobines">Bobines Total</label>{{ form.num_bobines }}
+    <label for="id_largura_bobines">Largura das Bobines</label>{{ form.largura_bobines }}
+    <label for="id_core_bobines">Core das Bobines</label>{{ form.core_bobines }}
+    <label for="id_destino">Destino</label>{{ form.destino }}
+    <input type="submit" value="Criar" id="validate-btn">
+</form>
 {% endblock %}

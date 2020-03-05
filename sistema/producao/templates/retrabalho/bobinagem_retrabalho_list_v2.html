@@ -3,101 +3,89 @@
 
 {% block title %}Retrabalho | {{ block.super }}{% endblock %} 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <a href="{% url 'producao:producao_home' %}" role="button" class="btn btn-primary">Voltar</a>
-        <a href="{% url 'producao:create_bobinagem_retrabalho' %}" role="button" class="btn btn-primary pull-right">Retrabalhar</a>
-    </div>
-    <div class="row">
-        <h1 id="center">Bobinagens Retrabalhadas</h1>
-    </div>
-    
-    <br>
-    <div class="row" id="search_form">
-              
-        <p><strong>Pesquisar</strong></p>
-        <form method="post" id="myForm">
-            <div class="row">
+<div>
+    <form>
+        <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+        <a href="{% url 'producao:create_bobinagem_retrabalho' %}"  class="btn_create" role="button">Criar Bobinagem</a>
 
-                {% csrf_token %}
-                <div class="col-sm-4">
-                    {% bootstrap_form form %} <span><input type="submit" onclick="submit()" class="btn btn-primary pull-right" value="Procurar" name='q'></span> 
-                <a class="btn btn-primary" href="{% url 'producao:bobinagem_retrabalho_list_v2' %}">Reset</a>
-                  
-                   
-                </div>
+    </form>
+</div>
+<div class="title_block-list">
+    <h1>Bobinagens Retrabalhadas</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:bobinagem_retrabalho_list_v2' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Bobinagem</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Duração</th>
+                <th>Nº de Bobines Originais</th>
+                <th>Nº de Bobines Finais</th>
+                <th>Comp (m)</th>
+                <th>Área</th>
+                <th>Refazer</th>
+                <th>Apagar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bobinagem %}
+            <tr>
                 
-            </div>
+                <td id="designacao"><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
+                <td>{{ b.data|date:"d-n-Y" }}</td>
+                <td>{{ b.inico|date:"G:i" }}</td>
+                <td>{{ b.fim|date:"G:i" }}</td>
+                {% if b.duracao == None %}<td>0</td>{% else %}<td>{{ b.duracao }}</td>{% endif %}
+                <td>{{ b.num_emendas }}</td>
+                <td>{{ b.perfil.num_bobines }}</td>
+                <td>{{ b.comp_cli }}</td>
+                <td>{{ b.area }}</td>
+                <td class="td-icon"><a href="{% url 'producao:refazer_bobinagem_dm' pk=b.pk %}"><i class="fas fa-pencil-ruler"></i></a></td>
+                <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
+
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
+            
+      
+                
+
             
             
-            
-        </form>
-        <!-- <form method="GET" >
-            <div class="input-field">
-                    {% bootstrap_form form %}
-
-                <button class="btn" type="submit" name="action">Search</button>
-            </div>
-        </form> -->
-    </div>
-    <br>
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Bobinagem</th>
-                        <th id="center">Nº de bobines originais</th>
-                        <th id="center">Nº de bobines</th>
-                        <th id="center">Comp.(m)</th>
-                        <th id="center">Área(m<sup>2</sup>)</th>
-                        <th></th>
-                        
-                </tr>
-                <tbody>
-                    {% for b in bobinagem %}
-                        <tr>
-                            <td><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
-                            <td id="center">{{ b.num_emendas }}</td>
-                            <td id="center">{{ b.perfil.num_bobines }}</td>
-                            <td id="center">{{ b.comp_cli }}</td>
-                            <td id="center">{{ b.area }}</td>
-                            <td><a href="{% url 'producao:refazer_bobinagem_dm' pk=b.pk %}" role="button" class="btn btn-warning">Refazer</a>
-                            <a href="{% url 'producao:bobinagem_delete' pk=b.pk %}" role="button" class="btn btn-danger glyphicon glyphicon-trash"></a></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                </thead>
-            </table>
-        </div>
-    </div>
-
-    <div class="row">
-        {% if bobinagem.has_other_pages %}
-        <div class="pagination">
-            <span class="step-links">
-                {% if bobinagem.has_previous %}
-                    <a role="button" class="btn btn-primary " href="?page=1">Primeira</a>
-                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-left" href="?page={{ bobinagem.previous_page_number }}"></a>
-                {% endif %}
-        
-                <span class="current">
-                    Pág. {{ bobinagem.number }} de {{ bobinagem.paginator.num_pages }}
-                </span>
-        
-                {% if bobinagem.has_next %}
-                    <a role="button" class="btn btn-primary glyphicon glyphicon-menu-right" href="?page={{ bobinagem.next_page_number }}"></a>
-                    <a role="button" class="btn btn-primary" href="?page={{ bobinagem.paginator.num_pages }}">Última</a>
-                {% endif %}
-            </span>
-        </div>
-        {% endif %}
-
-    </div>
-
-       
-
+</div>
+<div class="pagination">
+    {% if bobinagem.has_other_pages %}
+    <div>
+        <span>
+            {% if bobinagem.has_previous %}
+                <a role="button" class="fas fa-angle-double-left" href="?{% if query %}q={{query}}&{% endif %}page=1"></a>
+                <a role="button" class="fas fa-angle-left" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.previous_page_number }}"></a>
+            {% endif %}
     
+            <span>
+                Pág. {{ bobinagem.number }} de {{ bobinagem.paginator.num_pages }}
+            </span>
+    
+            {% if bobinagem.has_next %}
+                <a role="button" class="fas fa-angle-right" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.next_page_number }}"></a>
+                <a role="button" class="fas fa-angle-double-right" href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.paginator.num_pages }}"></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}

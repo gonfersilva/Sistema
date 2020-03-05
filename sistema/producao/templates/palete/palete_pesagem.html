@@ -4,6 +4,47 @@
 
 {% block title %}Palete pesagem | {{ block.super }}{% endblock %}
 {% block content %}
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>{{ instance.nome }}</h1>
+    <h3>Destino: <span>{{ instance.destino }}</span></h3>
+    {% if instance.carga == None %}
+    <h3>Carga: Sem carga atribuida </h3>
+    {% else %}
+    <h3>Carga: <span>{{ instance.carga }}</span></h3>
+    {% endif %}
+</div>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}" id="error">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<div>
+    {% if temartigo == False %}
+        <p>As bobines da palete {{ instance.nome }} não têm artigo atribuido. Por favor contacte o Administrador.</p>
+    {% endif%}
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <h3><label for="id_carga">Carga</label>{{ form.carga }}</h3>
+    <h3><label for="id_peso_bruto">Peso Bruto</label>{{ form.peso_bruto }}</h3>
+    <h3><label for="id_peso_palete">Peso Palete</label>{{ form.peso_palete }}</h3>
+    <h3><label for="id_stock">Stock</label>{{ form.stock }}</h3>
+    <input type="submit" value="Avançar" id="validate-btn">
+</form>
+
+
+
+<!-- 
+
+'carga', 'stock', 'peso_bruto', 'peso_palete'
+
+
+
 <div class="container">
     <div class="container">
         <a href="{% url 'producao:palete_selecao' %}" class="btn btn-primary pull-left" role="button">Voltar</a>
@@ -44,5 +85,5 @@
         </div>
 
     </div>
-</div>
+</div> -->
 {% endblock %}

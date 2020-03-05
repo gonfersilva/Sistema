@@ -2,120 +2,85 @@
 {% block title %}Bobinagens | {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="container">
-        <a href="{% url 'producao:planeamento_home' %}" class="btn btn-primary" role="button">Voltar</a>
-        
-        <a href="{% url 'producao:encomenda_create' %}"  class="btn btn-primary pull-right" role="button">Nova Encomenda</a>
-        
-   </div>
-<h1 id="center">Encomendas</h1><br>
-<div class="container">
-    <input id="myInput" type="text" placeholder="Encomenda" onkeyup="searchEncomenda()" autofocus/>
-        
+
+<div>
     
+    <form>
+        <a href="{% url 'producao:encomenda_create' %}"  class="btn_create" role="button">Nova Encomenda</a>
+        <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    </form>
 </div>
-<br>
-<div class="container table-responsive size-table">
-        
-<table class="table fit" id="myTable">
-    <thead>
-        <tr>
-            <th>Encomenda</th>
-            <th>Cliente</th>
-            <th>Proforma</th>
-            <th>Data</th>
-            <th>M2</th>    
-            <th>Nº de Cargas</th>                              
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody id="encomendas-list">
-        
-    </tbody>
-    
-</table>
+<div class="title_block-list">
+    <h1>Encomendas</h1>
 </div>
-
-
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-$(window).load(function() {
-    $.ajax({ 
-        type: "GET",
-        dataType: "json",
-        url: "/api/encomenda/",
-        success: function(encomendas){ 
-
-            if(!encomendas || encomendas.length === 0) {
-                    return;
-                }
-            var encomendas_length = encomendas.length
-            for (i=0; i < encomendas_length; i++ ){
-                if (encomendas[i].eef != 0){
-                    
-                    var link = "/producao/encomenda/" + encomendas[i].id
-
-                    var a1=$(document.createElement("a")).text(encomendas[i].eef).attr('href', link), td1=$(document.createElement("td"));
-                    var td2=$(document.createElement("td"))
-                    var td3=$(document.createElement("td")).attr('id', "center")
-                    var td4=$(document.createElement("td")).attr('id', "center")
-                    var td5=$(document.createElement("td")).attr('id', "center")
-                    var td6=$(document.createElement("td")).attr('id', "center")
-                    var td7=$(document.createElement("td")).attr('id', "center")
-                    
-                    
-                    td1.append(a1);
-                    td2.text(encomendas[i].cliente.nome);
-                    td3.text(encomendas[i].prf);
-                    td4.text(encomendas[i].data);
-                    td5.text(encomendas[i].sqm);
-                    td6.text(encomendas[i].num_cargas_actual + " / " + encomendas[i].num_cargas);
-                    if (encomendas[i].estado === "F"){
-                        td7.text("Fechada").attr('id', 'estado_rejected');
-                    }else{
-                        td7.text("Aberta").attr('id', 'estado_good');
-                    }
-                    // td7.text(encomendas[i].sqm);
-
-                    var tr=$(document.createElement("tr"));
-                    var tr = tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
-
-                    $("#encomendas-list").append(tr);
-
-                }
-            }
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:encomenda_list' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Encomenda</th>
+                <th id="designacao">Cliente</th>
+                <th>Proforma</th>
+                <th>Data</th>
+                <th>M<sup>2</sup></th>    
+                <th>Nº de Cargas</th>                              
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in encomenda %}
+            <tr>
+                <td id="designacao"><a href="{% url 'producao:encomenda_detail' pk=e.pk %}">{{ e.eef }}</a></td>
+                <td id="designacao">{{ e.cliente }}</td>
+                <td>{{ e.prf }}</td>
+                <td>{{ e.data|date:"d-n-Y" }}</td>
+                <td>{{ e.sqm }}</td>
+                <td>{{ e.num_cargas_actual }} / {{ e.num_cargas }}</td>
+                {% if e.estado == 'A' %}
+                    <td class="td-icon"><i class="fas fa-box-open"></i></td>
+                {% else %}
+                    <td class="td-icon"><i class="fas fa-box"></i></td>
+                {% endif %}
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
             
+      
+                
 
-        }
-        
-    })
-})
+            
+            
+</div>
+<div class="pagination">
+    {% if encomenda.has_other_pages %}
+    <div>
+        <span>
+            {% if encomenda.has_previous %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.previous_page_number }}"><</a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ encomenda.number }} de {{ encomenda.paginator.num_pages }}
+            </span>
+    
+            {% if encomenda.has_next %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.next_page_number }}">></a>
+                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.paginator.num_pages }}">>></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
 
-function searchEncomenda() {
-  // Declare variables 
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();;
-  table = document.getElementById("myTable");
-  tr = table.getElementsByTagName("tr");
+</div>
 
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    } 
-  }
-}
 
-</script>
+
 {% endblock %}

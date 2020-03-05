@@ -4,19 +4,16 @@
 
 {% block title %}Seleção Palete a pesar | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            {% palete_selecao_form form %}
-            
-            
-            
-        </div>
-        <div class="col-md-6">
-            
 
-        </div>
-
-    </div>
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
+<div class="title_block-list">
+    <h1>Pique a palete que deseja pesar</h1>
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_palete">Palete</label>{{ form.palete }}
+    <input type="submit" value="Avançar" id="validate-btn">
+</form>
 {% endblock %}

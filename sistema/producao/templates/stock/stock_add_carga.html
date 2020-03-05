@@ -4,25 +4,16 @@
 
 {% block title %}Adiconar palete a carga | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
-    <div class="container">
-        <a href="{% url 'producao:stock_list' %}" class="btn btn-primary pull-left" role="button">Voltar</a>
-    </div>
-    <div class="container">
-        <h1 id="center">Adicionar palete {{ instance.nome }} a carga</h1>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-                {% stock_add_carga_form form %}
-            
-            
-            
-        </div>
-        <div class="col-md-6">
-            
-
-        </div>
-
-    </div>
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
+<div class="title_block-list">
+    <h1>Adicionar palete {{ instance.nome }} à carga</h1>
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_carga">Carga</label>{{ form.carga }}
+    <input type="submit" value="Avançar" id="validate-btn">
+</form>
+
 {% endblock %}

@@ -1,15 +1,18 @@
-{% extends "layout.html "%} 
-{% block title %}Paletes para retrabalho | {{ block.super }}{% endblock %}
+{% extends "layout.html " %} 
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}Paletes | {{ block.super }}{% endblock %} 
 {% block content %}
 <div>
     <form>
         <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
-        <a href="{% url 'producao:palete_create_retrabalho' %}"  class="btn_create" role="button">Criar Palete DM</a>
+        <a href="{% url 'producao:palete_create' %}"  class="btn_create" role="button">Criar Palete</a>
 
     </form>
 </div>
 <div class="title_block-list">
-    <h1>Paletes para Retrabalho</h1>
+    <h1>Paletes</h1>
 </div>
 <div class="form-search">
     <form action="" method="GET">
@@ -27,6 +30,9 @@
                 <th>Data</th>
                 <th>Estado</th>
                 <th>Bobines</th>
+                <th>Core</th>
+                <th>Largura</th>
+                <th>Cliente</th>
                 <th>Área (m<sup>2</sup>)</th>
                 <th>Comprimento (m)</th>
                 <th></th>
@@ -42,6 +48,9 @@
                 {% if pal.estado == 'G' %}<td id="estado_good">{{ pal.estado }}</td>
                 {% elif pal.estado == 'DM' %}<td id="estado_dm">{{ pal.estado }}</td>{% endif %}
                 <td>{{ pal.num_bobines_act }} / {{ pal.num_bobines }}</td>
+                <td>{{ pal.core_bobines }}</td>
+                <td>{{ pal.largura_bobines }}</td>
+                <td>{{ pal.cliente }}</td>
                 <td>{{ pal.area }}</td>
                 <td>{{ pal.comp_total }}</td>
                 <td class="td-icon"><a href="{% url 'producao:palete_delete' pk=pal.pk %}"><i class="fas fa-trash"></i></a></td>
@@ -80,6 +89,7 @@
     {% endif %}
 
 </div>
+
 
 
 {% endblock %}

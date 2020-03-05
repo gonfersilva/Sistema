@@ -1,151 +1,90 @@
 {% extends "layout.html "%} 
 {% block title %}Stock | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
-        <a href="{% url 'producao:armazem_home' %}" class="btn btn-primary" role="button">Voltar</a>
-        
-        
-        
+<div>
+    <form>
+        <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+        <a href="{% url 'producao:palete_create' %}"  class="btn_create" role="button">Criar Palete</a>
+
+    </form>
+</div>
+<div class="title_block-list">
+    <h1>Stock</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:stock_list' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Palete</th>
+                <th>Nº</th>
+                <th>Data</th>
+                <th>Estado</th>
+                <th>Bobines</th>
+                <th>Core (")</th>
+                <th>Largura (mm)</th>
+                <th>Área (m<sup>2</sup>)</th>
+                <th>Comprimento (m)</th>
+                <th>Cliente</th>
+                <th>Adicionar a carga</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pal in palete %}
+            <tr>
+                
+                <td id="designacao"><a href="{% url 'producao:addbobinepalete' pk=pal.pk %}">{{ pal.nome }}</a></td>
+                <td>{{ pal.num }}</td>
+                <td>{{ pal.data_pal|date:"d-n-Y" }}</td>
+                {% if pal.estado == 'G' %}<td id="estado_good">{{ pal.estado }}</td>
+                {% elif pal.estado == 'DM' %}<td id="estado_dm">{{ pal.estado }}</td>{% endif %}
+                <td>{{ pal.num_bobines_act }} / {{ pal.num_bobines }}</td>
+                <td>{{ pal.core_bobines }}</td>
+                <td>{{ pal.largura_bobines }}</td>
+                <td>{{ pal.area }}</td>
+                <td>{{ pal.comp_total }}</td>
+                <td>{{ pal.cliente }}</td>
+                <td class="td-icon"><a href="{% url 'producao:stock_add_to_carga' pk=pal.pk %}"><i class="fas fa-dolly"></i></a></td>
+
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
+            
+      
+                
+
+            
+            
+</div>
+<div class="pagination">
+    {% if palete.has_other_pages %}
+    <div>
+        <span>
+            {% if palete.has_previous %}
+                <a role="button" class="fas fa-angle-double-left" href="?{% if query %}q={{query}}&{% endif %}page=1"></a>
+                <a role="button" class="fas fa-angle-left" href="?{% if query %}q={{query}}&{% endif %}page={{ palete.previous_page_number }}"></a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ palete.number }} de {{ palete.paginator.num_pages }}
+            </span>
+    
+            {% if palete.has_next %}
+                <a role="button" class="fas fa-angle-right" href="?{% if query %}q={{query}}&{% endif %}page={{ palete.next_page_number }}"></a>
+                <a role="button" class="fas fa-angle-double-right" href="?{% if query %}q={{query}}&{% endif %}page={{ palete.paginator.num_pages }}"></a>
+            {% endif %}
+        </span>
     </div>
-<h1 id="center">Stock</h1><br>
-<div class="container">
-    <!-- <input id="myInput" type="text" placeholder="Palete" onkeyup="searchPalete()" autofocus/> -->
-        
-    
-</div>
-<div class="container table-responsive size-table">
-        
-<table class="table fit" id="myTable">
-    <thead>
-        <tr>
-            <th>Palete</th>
-            <th>Nº</th>
-            <th>Data</th>
-            <th>Estado</th>    
-            <th>Bobines</th>                              
-            <th>Core(")</th>
-            <th>Largura(mm)</th>
-            <th>Cliente</th>             
-            <th>Área(m2)</th> 
-            <th>Comprimento(m)</th>
-        </tr>
-    </thead>
-    <tbody id="stock-list">
-        
-    </tbody>
-    
-</table>
+    {% endif %}
+
 </div>
 
-
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-
-        $(window).load(function() {
-            diam_min = 0
-            diam_max = 0
-            $.ajax({ 
-                type: "GET",
-                dataType: "json",
-                url: "/api/stock/",
-                success: function(data){        
-                    if(!data || data.length === 0) {
-                            return;
-                        }
-                    var data_length = data.length
-                    for ( i = 0; i < data_length; i++){
-                        
-                        if (data[i].estado == 'G' && data[i].num != 0){
-                            var link = "/producao/palete/" + data[i].id
-                            var link_add = "/producao/stock/palete/add/" + data[i].id
-                            // var link_del = "/producao/palete/delete/" + data[i].id
-                            
-                            
-                            var a1=$(document.createElement("a")).text(data[i].nome).attr('href', link), td1=$(document.createElement("td"));
-                            var td2=$(document.createElement("td"))
-                            var td3=$(document.createElement("td")).attr('id', "center")
-                            var td4=$(document.createElement("td")).attr('id', "estado_good")
-                            var td5=$(document.createElement("td")).attr('id', "center")
-                            var td6=$(document.createElement("td")).attr('id', "center")
-                            var td7=$(document.createElement("td")).attr('id', "center")
-                            var td8=$(document.createElement("td")).attr('id', "center")
-                            var td9=$(document.createElement("td")).attr('id', "center")
-                            var td10=$(document.createElement("td")).attr('id', "center")
-                            var td11=$(document.createElement("a"))
-                            
-                                               
-        
-                            td1.append(a1);
-                            td2.text(data[i].num);
-                            td3.text(data[i].data_pal);
-                            td4.text(data[i].estado);
-                            td5.text(data[i].num_bobines_act + " / " + data[i].num_bobines);
-                            td6.text(data[i].core_bobines);
-                            td7.text(data[i].largura_bobines);
-                            // $.ajax({
-                            //     type: "GET",
-                            //     dataType: "json",
-                            //     url: "/api/bobine/" + data[i].id,
-                            //     success: function(bobine){ 
-                            //         if (bobine.bobinagem.diam >= diam_max){
-                            //             diam_max = bobine.bobinagem.diam
-                            //         }else if(bobine.bobinagem.diam <= diam_max && diam_min == 0){
-                            //             diam_min = bobine.bobinagem.diam
-                            //         }else if(bobine.bobinagem.diam <= diam_min){
-                            //             diam_min = bobine.bobinagem.diam
-                            //         }
-                            //         td8.text(diam_min + " / " + diam_max);
-                            //     }    
-                            // })
-                            td8.text(data[i].cliente.nome);               
-                                
-                            td9.text(data[i].area);
-                            td10.text(data[i].comp_total);
-                             
-                            td11.addClass('btn btn-primary').text("Adicionar a carga").attr('href', link_add);
-        
-                            var tr=$(document.createElement("tr"));
-                            tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7).append(td8).append(td9).append(td10).append(td11);
-                            
-                        }    
-                       
-        
-                        
-                        // a1.click(function() {
-                        //     window.location = link
-                            
-                        //     }); 
-                        $("#stock-list").append(tr);
-                    }
-                }
-            }); 
-        });
-        function searchPalete() {
-          // Declare variables 
-          var input, filter, table, tr, td, i, txtValue;
-          input = document.getElementById("myInput");
-          filter = input.value.toUpperCase();
-          table = document.getElementById("myTable");
-          tr = table.getElementsByTagName("tr");
-        
-          // Loop through all table rows, and hide those who don't match the search query
-          for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-              txtValue = td.textContent || td.innerText;
-              if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-              } else {
-                tr[i].style.display = "none";
-              }
-            } 
-          }
-        }
-        
-        
-        </script>
 {% endblock %}

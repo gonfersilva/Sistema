@@ -4,49 +4,31 @@
 
 {% block title %}Produção{% endblock %}
 {% block content %}
-<div class="container size-table">
-    <div class="row">
-        <div class="container">
-            <a href="{% url 'home' %}" class="btn btn-primary" role="button">Voltar</a>
-        </div>  
-        <br>
-        <br>
-        <div class="row">
-            <h1 id="center">Produção</h1>
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:bobinagem_list_v3' %}"><button class="btn btn-primary btn-lg">Bobinagens</button></a></div>    
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:bobinagem_retrabalho_list_v2' %}"><button class="btn btn-primary btn-lg">Retrabalho</button></a></div>       
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:palete_list_all' %}"><button class="btn btn-primary btn-lg">Paletes</button></a></div>    
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:paletes_retrabalho' %}"><button class="btn btn-primary btn-lg">Paletes para retrabalho</button></a></div>   
-        </div>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            <!-- <div class="container col-md-6" id="center"><a href="{% url 'producao:bobinagem_list_all_historico' %}"><button class="btn btn-primary btn-lg">Bobinagens Histórico</button></a></div>  -->
-            <div class="container col-md-6" id="center"><a href="{% url 'producao:palete_list_all_historico' %}"><button class="btn btn-primary btn-lg">Paletes Histórico</button></a></div> 
-            
-        </div>
-        
-        
-       
-    
-    
 
+<div>
+    <a href="{% url 'home' %}" class="btn_back">Voltar</a>
 </div>
-
-
-
+<div class="title_block">
+    <h1>Produção</h1>
+</div>
+<div class="menu">
+    <div>
+        <a href="{% url 'producao:bobinagem_list_v3' %}">Bobinagens Linha 1</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:bobinagem_retrabalho_list_v2' %}">Retrabalho</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:palete_list_all' %}">Paletes</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:paletes_retrabalho' %}">Paletes para retrabalho</a>
+    </div>
+    <!-- <div>
+        <a href="{% url 'producao:palete_list_all_historico' %}">Paletes Histórico</a>
+    </div> -->
+    
+</div>
 
 
 

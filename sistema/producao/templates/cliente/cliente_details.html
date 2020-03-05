@@ -2,59 +2,77 @@
 
 {% block title %}Cliente Detalhes | {{ block.super }}{% endblock %}
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        <a href="{% url 'producao:clientes' %}"  class="btn btn-primary" role="button">Voltar</a>
-        <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}"  class="btn btn-primary pull-right" role="button">Associar Artigo a Cliente</a>
-    </div>
-    <br>
-    <div class="row">
-        <h1 id="center">Detalhes {{ cliente.nome }}</h1>
-        <br>
-        <h2>Limite inferior: {{ cliente.liminf }}</h2>
-        <h2>Limite superior: {{ cliente.limsup }}</h2>
-        <h2>Diâmâmetro de referência: {{ cliente.diam_ref }}</h2>
-       
-        
-    </div>
-    <br>
-    <br>
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th id="center">Cód.</th>
-                        <th>Descrição</th>
-                        <th id="center">Cód. do Cliente</th id="center">
-                       
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ac in artigos_cliente %}
-                        <tr>
-                           <td id="center">{{ ac.artigo.cod }}</td>
-                           <td>{{ ac.artigo.des }}</td>
-                           {% if ac.cod_client == None %}
-                               <td id="center">N/A</td>                            
-                           {% else %}
-                               <td id="center">{{ ac.cod_client }}</td>                            
-                           {% endif%}
-                           <td>
-                                <a href="{% url 'producao:cliente_remover_artigo' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}" role="button" class="btn btn-danger">Remover</a>
-                           </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                </thead>
-            </table>
-        </div>
-    </div>
-    
+<div>
+    <a href="{% url 'producao:clientes' %}"  class="btn_back" role="button">Voltar</a>
+    <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}"  class="btn_create" role="button">Associar Artigo a Cliente</a>
+</div>
+<div class="title_block-list">
+    <h1>Detalhes</h1>
+    <h1>{{ cliente.nome }}</h1>
+    <h2>Limite inferior: {{ cliente.liminf }}</h2>
+    <h2>Limite superior: {{ cliente.limsup }}</h2>
+    <h2>Diâmâmetro de referência: {{ cliente.diam_ref }}</h2>
+</div>
+<br>
+<div class="title_block-list">
+    <h2>Artigos associados</h2>
     
 </div>
+<div>
+<table class="content-table">
+    <thead>
+        <tr>
+            <th>Cód. Artigo</th>
+            <th id="designacao">Designação</th>
+            <th>Cód. Cliente</th>
+            <th></th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for ac in artigos_cliente %}
+        <tr>
+            <td>{{ ac.artigo.cod }}</td>
+            <td id="designacao">{{ ac.artigo.des }}</td>
+            {% if not ac.cod_client == None %}
+                <td>{{ ac.cod_client }}</td>
+            {% else %}
+                <td>N/A</td>
+            {% endif %}
+            <td><a href="{% url 'producao:cliente_remover_artigo' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}" role="button" class="btn btn-danger">Remover</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+        
+        
+                
+
+            
+            
+</div>
+<!-- <div class="pagination">
+    {% if fornecedor.has_other_pages %}
+    <div>
+        <span>
+            {% if fornecedor.has_previous %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.previous_page_number }}"><</a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ fornecedor.number }} de {{ fornecedor.paginator.num_pages }}
+            </span>
+    
+            {% if fornecedor.has_next %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.next_page_number }}">></a>
+                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.paginator.num_pages }}">>></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
+</div> -->
 
 
 

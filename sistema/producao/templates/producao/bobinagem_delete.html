@@ -1,27 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="title_block-list">
+    <h1>Atenção!!!</h1>
 
-<div class="container">
- 
-    <h1></h1>
+
     <form action="." method="POST">{% csrf_token %}
-        <h1 id="estado_rejected">Atenção</h1>
         <h3>Ao apagar esta bobinagem, as seguintes bobines serão também apagadas: </h3>
-        <p id="estado_rejected">Se alguma das bobines já estiver designada a uma palete não é aconselhável apagar a bobinagem.</p>
+        <p>Se alguma das bobines já estiver designada a uma palete não é aconselhável apagar a bobinagem.</p>
         <p>{{ bobine.nome }}</p>
        
         {% for bob in bobine %}
        
         {% if bob.palete != Null %}
-            <p id="estado_rejected">{{ bob.nome }}  - Palete: {{ bob.palete }}</p>
+            <p>{{ bob.nome }}  - Palete: {{ bob.palete }}</p>
             
         {% else %}
-            <p id="estado_rejected">{{ bob.nome }}</p>
+            <p>{{ bob.nome }}</p>
         {% endif %}
         {% endfor %}
         
-        <h1>Têm a certeza que quer apagar a bobinagem {{ object.nome }}?</h1>
-        <div class="col-md-6">
+        <h2>Têm a certeza que quer apagar a bobinagem {{ object.nome }}?</h2>
+        <div>
             {% if messages %}
             <ul class="messages">
                 <h1 class="erro">ERRO!</h1>
@@ -32,11 +31,14 @@
             {% endif %}
             
         </div>
-        <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:bobinagem_list_v3' %}" class="btn btn-primary" role="button">Cancelar</a></p>
+        <input type="button" value="Cancelar" id="confirm-btn" onclick="history.back()">
+        <input type="submit" value="Sim" id="confirm-btn">
        
         
     </form>
     
 </div>
+
+    
 
 {% endblock %}

@@ -3,123 +3,86 @@
 
 {% block title %}Perfil | {{ block.super }}{% endblock %}
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        <div class="col-sm-6 col-md-9 col-lg-9">  
-                <a href="{% url 'producao:planeamento_home' %}" class="btn btn-primary">Voltar</a>
-                
-        </div>
-        <div class="col-sm-6 col-md-3 col-lg-3 float-sm-right">
-            <a href="{% url 'producao:perfil_create_linha_v2' %}" class="btn btn-primary" role="button">Criar perfil Linha</a>
-            <a href="{% url 'producao:perfil_create_dm_v2' %}" class="btn btn-primary" role="button">Criar perfil DM</a>
-            
-        </div>
-    </div>
-    <br><br>
-    <!-- <div class="row">
- 
-        <input type="button" class="btn btn-primary pull-right" id="open_search_button" onclick="toggleSearch()" value="Fechar procura"></button>
-    </div> -->
-    <br>
-    <div class="row" id="search_form">
-        <h1 id="center">Perfis (cortes)</h1>
-        <br>
-        
-        <p><strong>Pesquisar</strong></p>
-        <form method="post" id="myForm">
-            <div class="row">
-
-                {% csrf_token %}
-                <div class="col-sm-4">
-                    {% bootstrap_field form.nome %}
-                </div>
-                <div class="col-sm-2">
-                    {% bootstrap_field form.num_bobines %}
-                </div>
-                <div class="col-sm-2">
-                    {% bootstrap_field form.core %}
-    
-                </div>
-                <div class="col-sm-4">
-                    {% bootstrap_field form.largura_bobinagem %}
-    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    {% bootstrap_field form.retrabalho %}
-                </div>
-            </div>
-
-         
-            <div class="row">
-                <!-- {% bootstrap_field form.nome %} -->
-                <input type="submit" onclick="submit()" class="btn btn-primary pull-right" value="Procurar">
-                <a class="btn btn-primary" href="{% url 'producao:perfil_list_v2' %}">Reset</a>
-            </div>
-        </form>
-    </div>
-    <br>
-
-    <div class="row">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Perfil</th>
-                        <th>Produto</th>
-                        <th id="center">Nº de Bobines</th>
-                        <th id="center">Core</th>
-                        <th id="center">Largura total</th>
-                        <th id="center">Retrabalho</th>
-                        <th id="center"></th>
-                        <th id="center"></th>
-                        <!-- <th id="center"></th> -->
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in perfil %}
-                    <tr>
-                        <td><a href="{% url 'producao:perfil_details_v2' pk=p.pk %}">{{ p.nome }}</a></td>
-                        <td>{{ p.produto }}</td>
-                        <td id="center">{{ p.num_bobines }}</td>
-                        <td id="center">{{ p.core }}</td>
-                        <td id="center">{{ p.largura_bobinagem }}</td>
-                        {% if p.retrabalho == True %}
-                            <td class="check"><span style="color:green"><i class="glyphicon glyphicon-ok"></i></span></td>
-                            {% else %}
-                            <td class="check"><span style="color:red"><i class="glyphicon glyphicon-remove"></i></span></td>
-                        {% endif %}
-                        <!-- <td id="center"><a href="#" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></td> -->
-                        <td id="center"><a href="{% url 'producao:perfil_edit_larguras_v2' pk=p.pk %}" class="btn btn-warning"><i class="glyphicon glyphicon-pencil"></i></span></a></td>
-                        <td id="center"><a href="{% url 'producao:perfil_delete_v2' pk=p.pk %}" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></span></a></td>
-                        
-                    </tr>
-                    {% endfor%}
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
+<div>
+    <form>
+        <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+        <a href="{% url 'producao:perfil_create_linha_v2' %}"  class="btn_create" role="button">Criar Perfil Linha</a>
+        <a href="{% url 'producao:perfil_create_dm_v2' %}"  class="btn_create" role="button">Criar Perfil DM</a>
+    </form>
 </div>
-<!-- <script>
-function toggleSearch() {
-    var x = document.getElementById("search_form");
-    var y = document.getElementById("open_search_button")
-    if (x.style.display === "none") {
-        x.style.display = "block";
-        y.value = "Fechar procura";
-    } else {
-        x.style.display = "none";
-        y.value = "Abrir procura";
+<div class="title_block-list">
+    <h1>Perfis (cortes)</h1>
+</div>
+<div class="form-search">
+    <form action="" method="GET">
+        <input type="text" name="q">
+        <input type="submit" value="Procurar">
+        <a href="{% url 'producao:perfil_list_v2' %}">Reset</a>
+    </form>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Perfil</th>
+                <th>Produto</th>
+                <th>Nº de Bobines</th>
+                <th>Core</th>
+                <th>Largura total</th>
+                <th>Retrabalho</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in perfil %}
+            <tr>
+                <td id="designacao"><a href="{% url 'producao:perfil_details_v2' pk=p.pk %}">{{ p.nome }}</a></td>
+                <td id="td_produto">{{ p.produto }}</td>
+                <td>{{ p.num_bobines }}</td>
+                <td>{{ p.core }}</td>
+                <td>{{ p.largura_bobinagem }}</td>
+                {% if p.retrabalho == True %}
+                    <td><i class="fas fa-check"></i></td>
+                    {% else %}
+                    <td><i class="fas fa-times"></i></td>
+                {% endif %}
+                <td class="td-icon"><a href="{% url 'producao:perfil_edit_larguras_v2' pk=p.pk %}"><i class="fas fa-pencil-alt"></i></a></td>
+                <td class="td-icon"><a href="{% url 'producao:perfil_delete_v2' pk=p.pk %}"><i class="fas fa-trash"></i></a></td>
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
+            
+      
+                
 
-    }
-}
+            
+            
+</div>
+<div class="pagination">
+    {% if perfil.has_other_pages %}
+    <div>
+        <span>
+            {% if perfil.has_previous %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ perfil.previous_page_number }}"><</a>
+            {% endif %}
+    
+            <span>
+                Pág. {{ perfil.number }} de {{ perfil.paginator.num_pages }}
+            </span>
+    
+            {% if perfil.has_next %}
+                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ perfil.next_page_number }}">></a>
+                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ perfil.paginator.num_pages }}">>></a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
 
-
-</script> -->
+</div>
 
 {% endblock %}
 

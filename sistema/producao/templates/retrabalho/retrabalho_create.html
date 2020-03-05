@@ -4,24 +4,19 @@
 
 {% block title %}Retrabalho | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
-    <div class="row">
-            <h1 id="center">Criar bobinagem de Retrabalho</h1>
-        <div class="col-md-6">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li class="{{ message.tags }}" id="error">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% retrabalho_form form %}
-        </div>
-        <div class="col-md-6">
-            
-
-        </div>
-
-    </div>
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
+<div class="title_block-list">
+    <h1>Criar Bobinagem de Retrabalho</h1>
+</div>
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_data">Data:</label>{{ form.data }}
+    <label for="id_num_bobinagem">Bobinagem nº</label>{{ form.num_bobinagem }}
+    <label for="id_perfil">Perfil</label>{{ form.perfil }}
+    <label for="id_limsup">Início</label>{{ form.inico }}
+     <input type="submit" value="Criar" id="validate-btn">
+</form>
+
 {% endblock %}

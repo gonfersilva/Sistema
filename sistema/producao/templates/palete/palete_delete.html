@@ -1,14 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
- 
-    <h1></h1>
-    <form action="." method="POST">{% csrf_token %}
-        <h1>De certeza que quer apagar a palete {{ object.nome }}?</h1>
-        <p><input type="submit" class="btn btn-primary" value="Sim">  <a href="{% url 'producao:palete_list_all' %}" class="btn btn-primary" role="button">Cancelar</a></p>
-    </form>
-    
+<div class="title_block-list">
+    <h1>De certeza que quer apagar a palete {{ object.nome }}?</h1>
+    <form action="." method="POST">
+        {% csrf_token %}
+        <input type="button" value="Cancelar" id="confirm-btn" onclick="history.back()">
+        <input type="submit" value="Confirmar" id="confirm-btn">
+     </form>
 </div>
-
 {% endblock %}

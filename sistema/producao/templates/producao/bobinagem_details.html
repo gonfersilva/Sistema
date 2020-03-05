@@ -1,0 +1,222 @@
+{% extends "layout.html" %}
+
+{% block head_title %}Bobinagem Detalhes{% endblock head_title %}
+{% block content %}
+
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>Bobinagem</h1>
+    <h2>{{ bobinagem.nome }}</h2>
+</div>
+<div class="content_details">
+    <div>
+        <div><h3>Data: <span>{{ bobinagem.data|date:"d-n-Y" }}</span></h3></div>
+        <div><h3>Comprimento: <span>{{ bobinagem.comp }} m</span></h3></div>
+        <div><h3>Diâmetro: <span>{{ bobinagem.diam }} mm</span></h3></div>
+        <div><h3>Área: <span>{{ bobinagem.area }} m<sup>2</sup></span></h3></div>
+        <div><h3>Desperdício: <span>{{ bobinagem.desper }} m</span></h3></div>
+    </div>
+    <div>
+        <div><h3>Início: <span>{{ bobinagem.inico|date:"G:i" }}</span></h3></div>
+        <div><h3>Fim: <span>{{ bobinagem.fim|date:"G:i" }}</span></h3></div>
+        <div><h3>Duração: <span>{{ bobinagem.duracao }}</span></h3></div>
+        <div><h3>Perfil: <span>{{ bobinagem.perfil.nome }}</span></h3></div>
+        <div><h3>Core: <span>{{ bobinagem.perfil.core }}"</span></h3></div>
+    </div>
+   
+    
+   
+</div>
+<div class="content_details">
+    <div>
+
+
+        <table class="content-table"> 
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nonwoven Superior</th>
+                    <th>Nonwoven Superior</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="designacao">Tipo:</td>
+                    {% if bobinagem.tiponwsup == '' %}<td>N/A</td>{% else %}<td>{{ bobinagem.tiponwsup }}</td>{% endif %}
+                    {% if bobinagem.tiponwinf == '' %}<td>N/A</td>{% else %}<td>{{ bobinagem.tiponwinf }}</td>{% endif %}
+
+                </tr>
+                <tr>
+                    <td id="designacao">Lote:</td>
+                    {% if bobinagem.lotenwsup == None %}<td>N/A</td>{% else %}<td>{{ bobinagem.lotenwsup }}</td>{% endif %}
+                    {% if bobinagem.lotenwinf == None %}<td>N/A</td>{% else %}<td>{{ bobinagem.lotenwinf }}</td>{% endif %}
+                    
+                </tr>
+                <tr>
+                    <td id="designacao">Consumo (m):</td>
+                    {% if bobinagem.nwsup == None %}<td>N/A</td>{% else %}<td>{{ bobinagem.nwsup }}</td>{% endif %}
+                    {% if bobinagem.nwinf == None %}<td>N/A</td>{% else %}<td>{{ bobinagem.nwinf }}</td>{% endif %}
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <label for="id_impressora">Impressora: </label>{{ form.impressora }}
+            <label for="id_num_copias">Nº de Cópias: </label>{{ form.num_copias }}
+            <input type="submit" value="Imprimir Todas" id="confirm-btn">
+        </form>
+    </div>
+</div>
+<div class="title_block-list">
+    <h2>Bobines</h2>
+    
+    <a href="{% url 'producao:bobinagem_classificacao' pk=bobinagem.pk%}"  class="btn_create" role="button">Classificar Bobinagem</a>
+</div>
+<div>
+    <table class="content-table" id="defeitos">
+        <thead>
+            <tr>
+                <th id="designacao">Bobine</th>
+                <th>Largura</th>
+                <th>Área(m<sup>2</sup>)</th>
+                <th>Estado</th>
+                <th>Largura Real (mm)</th>
+                <th>Cónico</th>
+                <th>Desc.</th>
+                <th>Presa</th>
+                <th>Diâm.</th>
+                <th>Furos</th>
+                <th>Buracos</th>
+                <th>Gram.</th>
+                <th>Troca</th>
+                <th>Largura NOK</th>
+                <th>Falha de Corte</th>
+                <th>Inicio (mm)</th>
+                <th>Fim (mm)</th>
+                <th>Falha de Filme</th>
+                <th>Início (m)</th>
+                <th>Fim (m)</th>
+                <th>Falha MP</th>
+                <th>Suj./Caiu do carro</th>
+                <th>Carro andou para trás</th>
+                <th>Laçou</th>
+                <th>Não Colou Core / Falta de fita cola</th>
+                <th>Sobretiragem</th>
+                <th>Propriedade</th>
+                <th>Prop. Obs.</th>
+                <th>Outros</th>
+                <th>Obs.</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tbody>    
+                {% for b in bobine %}
+                <tr>
+                    <td><a href="{% url 'producao:bobine_details' pk=b.pk %}">{{ forloop.counter }}</a></td>
+                    <td>{{ b.largura.largura }}</td>
+                    <td>{{ b.area }}</td>
+                    {% if b.estado == 'G' %}<td id="estado_good">{{ b.estado }}</td>
+                    {% elif b.estado == 'R' %}<td id="estado_rejected">{{ b.estado }}</td>
+                    {% elif b.estado == 'DM' %}<td id="estado_dm">{{ b.estado }}</td>
+                    {% elif b.estado == 'BA' %}<td id="estado_ba">{{ b.estado }}</td>
+                    {% elif b.estado == 'LAB' %}<td id="estado_lab">{{ b.estado }}</td>
+                    {% elif b.estado == 'IND' %}<td id="estado_ind">{{ b.estado }}</td>
+                    {% elif b.estado == 'HOLD' %}<td id="estado_hold">{{ b.estado }}</td>{% endif %}
+                    {% if b.l_real == None %}<td></td>{% else %}<td>{{ b.l_real }}</td>{% endif %}
+                    {% if b.con == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.descen == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.presa == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.diam_insuf == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.furos == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.buraco == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.esp == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.troca_nw == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.nok == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.fc == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.fc_diam_ini == None %}<td></td>{% else %}<td>{{ b.fc_diam_ini|floatformat }}</td>{% endif %}
+                    {% if b.fc_diam_fim == None %}<td></td>{% else %}<td>{{ b.fc_diam_fim|floatformat }}</td>{% endif %}
+                    {% if b.ff == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.ff_m_ini == None %}<td></td>{% else %}<td>{{ b.ff_m_ini|floatformat }}</td>{% endif %}
+                    {% if b.ff_m_fim == None %}<td></td>{% else %}<td>{{ b.ff_m_fim|floatformat }}</td>{% endif %}
+                    {% if b.fmp == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.suj == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.car == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.lac == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.ncore == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.sbrt == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.prop == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.prop_obs == None %}<td></td>{% else %}<td>{{ b.prop_obs }}</td>{% endif %}
+                    {% if b.outros == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+                    {% if b.obs == None %}<td></td>{% else %}<td>{{ b.obs }}</td>{% endif %}
+                   
+                
+                   
+                   
+                            
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </tbody>
+        </table>
+</div>
+<br>
+<br>
+
+<div class="content-form">
+    {% if bobinagem.perfil.retrabalho == True %}
+    <div class="title_block-list">
+        <h2>Bobines Originais</h2>
+    </div>
+    <div>
+        <table class="content-table" id="defeitos">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th id="designacao">Bobine original</th>
+                    <th>Consumo (m) </th>
+                    <th>Emenda (m)</th>
+                    
+    
+                </tr>
+            </thead>
+            <tbody>
+                <tbody>    
+                    {% for em in emenda %}
+                    <tr>
+                        <td>{{ em.num_emenda }}</td>
+                        <td id="designacao"><a href="{% url 'producao:bobine_details' em.bobine.pk %}">{{ em.bobine }}</a></td>
+                        <td>{{ em.metros }}</td>
+                        <td>{{ em.emenda }}</td>
+                       
+                    
+                       
+                       
+                                
+                    </tr>
+                    {% endfor %}
+                </tbody>  
+            </tbody>
+            </table>
+    </div>
+    {% endif %}
+    {% if bobinagem.obs != '' %}
+    <div class="title_block-list">
+        <h2>Observações</h2>
+    </div>
+    <div>{{ bobinagem.obs}}</div>
+    {% endif %}
+</div>
+
+{% endblock %}

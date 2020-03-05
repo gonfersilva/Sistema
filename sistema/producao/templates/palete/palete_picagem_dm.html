@@ -1,20 +1,72 @@
 {% extends "layout.html "%} 
 {% load bootstrap3 %}
-{% block title %}Picagem de bobines | {{ block.super }}{% endblock %}
+{% block title %}Picagem de bobines DM | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="container">
+<form action="" method="POST">
+    <div>
+        <input type="button" value="Cancelar" id="confirm-btn" onclick="history.back()">
+        <input type="submit" value="Validar" id="validate-btn">
+    </div>
+    
+    <div class="title_block-list">
+        <br>
+        <h1>Palete: {{ palete.num }}-2020</h1>
+        {% if palete.estado == 'G'%}<h3 id="estado_palete_g">GOOD</h3>{% elif palete.estado == 'DM' %}<h3 id="estado_palete_dm">DM12</h3>{% endif %}
+        <h3>Nº de bobines total: {{ palete.num_bobines }}</h3>
+    </div>
+    <div class="title_block-list">
+        {% if messages %}
+               
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger" role="alert">
+                    <h3 id="center">ERRO!</h3>
+                    <p id="center"> {{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success" role="alert">
+                    <h3 id="center">SUCESSO!</h3>
+                    <p id="center"> {{message}} </p>
+                </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="alert alert-warning" role="alert">
+                    <h3 id="center">JÁ EXISTE!</h3>
+                    <p id="center"> {{message}} </p>
+                </div>
+                {% endif %}
+            {% endfor %}
+                
+        {% endif %}
+    </div>
+    <div class="content-form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <div class="title_block-list">
+            <h3>Bobine {{ forloop.counter }}</h3>
+        </div>
+  
+           
+            {% for field in form %}
+            <div class="content-form-2" id="largura-real">
+                {{ field }}
+            </div>
+            
+            {% endfor %}
+        {% endfor %}
+
+    </div>
+</form>
+<!-- <div class="container">
    
     <div class="container">
         <div class="row">
             
             <div class="col-md-6">
                 <h1>Palete nº {{ palete.num }}-2019</h1>
-                <!-- <h2>Palete: {{ palete.cliente.nome }}</h2> -->
             </div>
             <div class="col-md-6">
-                <!-- <h3>Nº de bobines total: {{ palete.num_bobines }}</h3>
-                <h3>Largura das bobines: {{ palete.largura_bobines }}</h3>
-                <h3>Core das bobines: {{ palete.core_bobines }}</h3> -->
+                
                 <h1 id="estado_dm">{{ palete.estado }}</h1>
             </div>
         </div>
@@ -77,7 +129,7 @@
     </div>
 
 
-</div>
+</div> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
 

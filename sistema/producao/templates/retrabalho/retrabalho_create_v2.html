@@ -21,7 +21,7 @@
         </ul>
     {% endif %}
 </div>
-<form action="" method="POST" class="submission-form">
+<form action="" method="POST" class="submission-form" onkeypress="return event.keyCode != 13;">
     <div class="content_details">
         {% csrf_token %}
         <div>

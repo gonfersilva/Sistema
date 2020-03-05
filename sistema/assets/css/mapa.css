@@ -389,6 +389,10 @@ header a:hover {
 
 }
 
+.menu a {
+    text-decoration: none;
+}
+
 .btn_back {
     background-color: #00ace6;
     color: white;

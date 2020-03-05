@@ -389,8 +389,8 @@ header a:hover {
 
 }
 
-.menu a {
-    text-decoration: none;
+.menu a{
+    color: inherit;
 }
 
 .btn_back {

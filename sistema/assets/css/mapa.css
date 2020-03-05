@@ -389,8 +389,8 @@ header a:hover {
 
 }
 
-.menu a{
-    color: inherit;
+.menu a:visited{
+    color: white;
 }
 
 .btn_back {

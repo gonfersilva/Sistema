@@ -2626,6 +2626,9 @@ def carga_detail(request, pk):
       
     data_inicial = 0
     data_final = 0
+    l_real_max = 0
+    l_real_min = 0
+    l_real = 0
 
     for p in paletes:
         bobines = Bobine.objects.filter(palete=p)
@@ -2639,9 +2642,22 @@ def carga_detail(request, pk):
                 data_inicial = data
             elif data >= data_final:
                 data_final = data
-         
 
-            
+                        
+            if b.l_real == None:
+                l_real = 0
+            else:
+                l_real = b.l_real
+
+            if l_real_max == 0 and l_real_min == 0:
+                l_real_min = l_real
+                l_real_max = l_real
+            if l_real == 0:
+                pass
+            elif l_real <= l_real_min:
+                l_real_min = l_real
+            elif l_real >= l_real_max:
+                l_real_max = l_real
 
     template_name = 'carga/carga_detail.html'
     context = {
@@ -2656,6 +2672,8 @@ def carga_detail(request, pk):
         "relacoes": relacoes,
         "relacoes_area": relacoes_area,
         "realcoes_comp": realcoes_comp,
+        "l_real_min": l_real_min,
+        "l_real_max": l_real_max
     }
 
     return render(request, template_name, context)

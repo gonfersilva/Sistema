@@ -29,6 +29,8 @@
         <div><h3>Relação kg/m<sup>2</sup> (Média): <span>{{ som }}%</span></h3></div>
         <div><h3>Comp. / Peso (m): <span>{{ som_comp }}</span></h3></div>
         <div><h3>Área / Peso (m<sup>2</sup>): <span>{{ som_area }}</span></h3></div>
+        <div><h3>Largura Real Minima (mm): <span>{{ l_real_min }}</span></h3></div>
+        <div><h3>Largura Real Máxima (mm): <span>{{ l_real_max }}</span></h3></div>
     </div>
    
 
@@ -85,9 +87,7 @@
                     <td>{{ relacoes|index:forloop.counter0 }}%</td>
                     <td>{{ realcoes_comp|index:forloop.counter0 }}</td>
                     <td>{{ relacoes_area|index:forloop.counter0 }}</td>
-                    <td class="td-icon"><a href="{% url 'producao:carga_etiqueta_palete' pk=pal.pk %}"><i class="fas fa-print"></i></a></td>
-
-                    
+                    <td class="td-icon"><a href="{% url 'producao:carga_etiqueta_palete' pk=pal.pk %}"><i class="fas fa-print"></i></a></td>                 
                    
                 
                    

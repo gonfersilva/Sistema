@@ -3,7 +3,7 @@
 
 {% block content %}
 <div>
-    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    <a href="{% url 'producao:palete_list_all' %}"  class="btn_back" role="button">Voltar</a>
 </div>
 <div class="title_block-list">
     <h1>Palete</h1>

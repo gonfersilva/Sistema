@@ -40,7 +40,15 @@ class Perfil(models.Model):
         ordering = ['-timestamp']
 
     def __str__(self):
-        return '%s' % (self.nome)
+        larguras = Largura.objects.filter(perfil=self)
+        nome = self.nome
+        for lar in larguras:
+            nome = nome + ' - ' + lar.cliente.abv
+
+        if self.retrabalho == True:
+            return '%s' % nome 
+        else:
+            return '%s' % (self.nome)
     
     def get_absolute_url(self):
         return f"{self.id}"

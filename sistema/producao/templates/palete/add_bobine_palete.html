@@ -15,7 +15,7 @@
         <div><h3>Data: <span>{{ palete.data_pal|date:"d-n-Y" }}</span></h3></div>
         <div><h3>Comprimento: <span>{{ palete.comp_total }} m</span></h3></div>
         <div><h3>Área: <span>{{ palete.area }} m<sup>2</sup></span></h3></div>
-        <div><h3>Bobines: <span>{{ palete.num_bobines }} / {{ palete.num_bobines_act }}</span></h3></div>
+        <div><h3>Bobines: <span>{{ palete.num_bobines_act }} / {{ palete.num_bobines }}</span></h3></div>
         {% if palete.estado == 'G' %}
         <div><h3>Largura das bobines: <span>{{ palete.largura_bobines }} mm</span></h3></div>
         <div><h3>Core: <span>{{ palete.core_bobines }}"</span></h3></div>

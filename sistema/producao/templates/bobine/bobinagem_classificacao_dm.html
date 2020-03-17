@@ -1,6 +1,6 @@
 {% extends "layout.html "%} 
 {% load bootstrap3 %}
-{% block title %}Classificar Bobinagem | {{ block.super }}{% endblock %}
+{% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
@@ -9,6 +9,9 @@
 <div class="title_block-list">
     <h1>Classificar Bobinagem</h1>
     <h2>{{ bobinagem.nome }}</h2>
+    {% if operation == 'dm' %}
+    <h3 id="estado_palete_dm">DM12</h3>
+    {% endif %}
 </div>
 {% if messages %}
     <div>
@@ -34,19 +37,10 @@
 <div>
     <form action='' method="post">
         {% csrf_token %}
-        {{ formset.management_form }}
         <input type="submit" value="Validar" class="btn_create">
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a> -->
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a> -->
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='ap' %}" class="btn_g" role="button">Aprovar</a> -->
         <table class="content-table" id="defeitos">
             <thead>
                 <tr>
-                    <th id="designacao">Bobine</th>
-                    <!-- <th>Largura</th>
-                    <th>Área(m<sup>2</sup>)</th> -->
-                    <th>Estado</th>
-                    <th>Largura Real (mm)</th>
                     <th>Largura NOK</th>
                     <th>Cónico</th>
                     <th>Desc.</th>
@@ -72,62 +66,54 @@
                     <th>Outros</th>
                     <th>Obs.</th>
                     <th>Troca</th>
-                  
-
-
                 </tr>
             </thead>
             <tbody>
                 <tbody>    
-                    <!-- {{ formset }} -->
-                    {% for form in formset %}
-                        <tr>
-                            <td>{{ forloop.counter}}</td>
-                            {% for field in form %}
-                            <td>{{ field }}</td>
-                            {% endfor %}
-                            <!-- <td>{{ form.estado }}</td>
-                            <td>{{ form.l_real }}</td>
-                            <td>{{ form.con }}</td>
-                            <td>{{ form.descen }}</td>
-                            <td>{{ form.presa }}</td>
-                            <td>{{ form.diam_insuf }}</td>
-                            <td>{{ form.furos }}</td>
-                            <td>{{ form.buraco }}</td>
-                            <td>{{ form.esp }}</td>
-                            <td>{{ form.troca_nw }}</td>
-                            <td>{{ form.nok }}</td>
-                            <td>{{ form.fc }}</td>
-                            <td>{{ form.fc_diam_ini }}</td>
-                            <td>{{ form.fc_diam_fim }}</td>
-                            <td>{{ form.ff }}</td>
-                            <td>{{ form.ff_m_ini }}</td>
-                            <td>{{ form.ff_m_fim }}</td>
-                            <td>{{ form.fmp }}</td>
-                            <td>{{ form.suj }}</td>
-                            <td>{{ form.car }}</td>
-                            <td>{{ form.lac }}</td>
-                            <td>{{ form.ncore }}</td>
-                            <td>{{ form.sbrt }}</td>
-                            <td>{{ form.prop }}</td>
-                            <td>{{ form.prop_obs }}</td>
-                            <td>{{ form.outros }}</td>
-                            <td>{{ form.obs }}</td> -->
-                                  
-                        
-                            
-                            
-                            
-                        </tr>
-                    {% endfor %}
-                                
+                    <tr>
+                        <td>{{ form.nok }}</td>
+                        <td>{{ form.con }}</td>
+                        <td>{{ form.descen }}</td>
+                        <td>{{ form.presa }}</td>
+                        <td>{{ form.diam_insuf }}</td>
+                        <td>{{ form.suj }}</td>
+                        <td>{{ form.car }}</td>
+                        <td>{{ form.lac }}</td>
+                        <td>{{ form.ncore }}</td>
+                        <td>{{ form.sbrt }}</td>
+                        <td>{{ form.fc }}</td>
+                        <td>{{ form.fc_diam_ini }}</td>
+                        <td>{{ form.fc_diam_fim }}</td>
+                        <td>{{ form.ff }}</td>
+                        <td>{{ form.ff_m_ini }}</td>
+                        <td>{{ form.ff_m_fim }}</td>
+                        <td>{{ form.fmp }}</td>
+                        <td>{{ form.furos }}</td>
+                        <td>{{ form.buraco }}</td>
+                        <td>{{ form.esp }}</td>
+                        <td>{{ form.prop }}</td>
+                        <td>{{ form.prop_obs }}</td>
+                        <td>{{ form.outros }}</td>
+                        <td>{{ form.obs }}</td>
+                        <td>{{ form.troca_nw }}</td>
+                    </tr>
                 </tbody>  
             </tbody>
         </table>
+        <p></p>
     </form>
-</div>
+    </div>
+  
 
-{% endblock %}
+    {% endblock %}
+                        
+                            
+              
+                    
+                            
+                            
+
+
                                 
                                 
                                 

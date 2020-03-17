@@ -1542,7 +1542,9 @@ def c_bobines(request, pk):
     if formset.is_valid():
         bobs = formset.save(commit=False)
         for bob in bobs:
-            bob.save()
+            if bob.estado == 'G':
+                print('ok')
+            # bob.save()
     
     context = {
         "formset": formset,
@@ -5033,13 +5035,58 @@ def bobinagem_classificacao(request, pk):
     if request.method == 'POST':
         formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
         if formset.is_valid():
+            index = 0
+            messages_count = 0
             for form in formset:
-                form.save()
-                # cd = form.cleaned_data
-                # estado = cd.get('estado')
-                # print(estado)
+                cd = form.cleaned_data
+                estado = cd.get('estado')
+                fc_diam_ini = cd.get('fc_diam_ini')
+                fc_diam_fim = cd.get('fc_diam_fim')
+                ff_m_ini = cd.get('ff_m_ini')
+                ff_m_fim = cd.get('ff_m_fim')
+                obs = cd.get('obs')
+                prop_obs = cd.get('prop_obs')
+            
+                defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
+                defeitos_validation = not any(defeitos)
+                index += 1
+                if estado == 'DM' and defeitos_validation == True:
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM é necessário atribuir pelo menos um defeito.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[12] == True and obs == '':
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Falha de MP: Preencher nas observações o motivo.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[14] == True and obs == '':
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[15] == True and prop_obs == '':
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
+                    messages_count += 1
+                elif estado == 'DM' and defeitos[16] == True and prop_obs == '':
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
+                    messages_count += 1
+                else:
+                    form.save()
+                    messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
+
+
+            # if messages_count == 0:
+            #     return redirect('producao:bobinestatus', pk=bobinagem.pk)
+
+                    
+                # if estado == 'DM':
+                #     messages.error(request, 'DM')
+                    
+                # form.save()
                 
-            return redirect('producao:bobinestatus', pk=bobinagem.pk)
+                
+            # return redirect('producao:bobinestatus', pk=bobinagem.pk)
               
 
 
@@ -5051,3 +5098,22 @@ def bobinagem_classificacao(request, pk):
         "bobines": bobines,
     }
     return render(request, template_name, context)
+
+def classificacao_bobines_dm(request, operation, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    form = ClasssificacaoBobineDm(request.POST or None)
+    template_name = 'bobine/bobinagem_classificacao_dm.html'
+    
+    if form.is_valid():
+        if operation == 'dm':
+            cd = form.cleaned_data
+            
+
+    context = {
+        "form": form, 
+        "bobinagem": bobinagem,
+        "operation": operation
+    }
+    return render(request, template_name, context)
+    

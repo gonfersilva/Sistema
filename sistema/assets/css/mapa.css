@@ -1204,3 +1204,20 @@ input[type=number] {
     font-size: 2em;
 
 }
+
+.error_classificacao {
+    background-color: rgb(250, 167, 167);
+    padding: 3px;
+    margin: 2px;
+    border: 2px solid rgb(250, 167, 167);
+    border-radius: 10px;
+}
+
+.success_classificacao {
+    background-color: rgb(166, 248, 144);
+    padding: 3px;
+    margin: 2px;
+
+    border: 2px solid rgb(166, 248, 144);
+    border-radius: 10px;
+}

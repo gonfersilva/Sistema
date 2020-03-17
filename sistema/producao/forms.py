@@ -400,6 +400,35 @@ class RececaoInsertNW(forms.Form):
     stack_num = forms.CharField(max_length=20, required=True)
 
 
+class ClasssificacaoBobineDm(forms.Form):
+    nok = forms.BooleanField(required=False)
+    con = forms.BooleanField(required=False)
+    descen = forms.BooleanField(required=False)
+    presa = forms.BooleanField(required=False)
+    diam_insuf = forms.BooleanField(required=False)
+    suj = forms.BooleanField(required=False)
+    car = forms.BooleanField(required=False)
+    lac = forms.BooleanField(required=False)
+    ncore = forms.BooleanField(required=False)
+    sbrt = forms.BooleanField(required=False)
+    fc = forms.BooleanField(required=False)
+    ff = forms.BooleanField(required=False)
+    fmp = forms.BooleanField(required=False)
+    furos = forms.BooleanField(required=False)
+    buraco = forms.BooleanField(required=False)
+    esp = forms.BooleanField(required=False)
+    prop = forms.BooleanField(required=False)
+    outros = forms.BooleanField(required=False)
+    troca_nw = forms.BooleanField(required=False)
+    prop_obs = forms.CharField(max_length=250, required=False, widget=forms.Textarea)
+    obs = forms.CharField(max_length=250, required=False, widget=forms.Textarea)
+    fc_diam_ini = forms.DecimalField(required=False)
+    fc_diam_fim = forms.DecimalField(required=False)
+    ff_m_ini = forms.DecimalField(required=False)
+    ff_m_fim = forms.DecimalField(required=False)
+
+    
+
 
 
 

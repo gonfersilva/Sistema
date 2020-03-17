@@ -35,10 +35,10 @@
                 <th>Área(m<sup>2</sup>)</th>
                 <th></th>
                 <!-- <th></th> -->
+                <!-- <th></th>
                 <th></th>
                 <th></th>
-                <th></th>
-                <th></th>
+                <th></th> -->
             </tr>
         </thead>
         <tbody>
@@ -56,16 +56,16 @@
                 <td>{{ b.comp_cli }}</td>
                 <td>{{ b.area }}</td>
                 {% if b.estado == 'LAB' %}
-                    <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='ap' %}" class="btn_list_g" role="button">Aprovar</a></td>
+                    <!-- <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='ap' %}" class="btn_list_g" role="button">Aprovar</a></td> -->
                     <!-- <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='dm' %}" class="btn_list_dm" role="button">DM</a></td> -->
-                    <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='rej' %}" class="btn_list_r" role="button">Rejeitar</a></td>
-                    <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='hold' %}" class="btn_list_hold" role="button">Hold</a></td>
+                    <!-- <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='rej' %}" class="btn_list_r" role="button">Rejeitar</a></td>
+                    <td><a href="{% url 'producao:classificacao_bobines_dm' pk=b.pk operation='hold' %}" class="btn_list_hold" role="button">Hold</a></td> -->
                     <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
                 {% else %}
-                    <td></td>
-                    <td></td>
                     <!-- <td></td> -->
-                    <td></td>
+                    <!-- <td></td> -->
+                    <!-- <td></td> -->
+                    <!-- <td></td> -->
                     <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
 
                 {% endif %}

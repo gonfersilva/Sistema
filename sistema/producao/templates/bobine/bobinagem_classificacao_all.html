@@ -3,15 +3,17 @@
 {% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
-    <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
+    <a href="{% url 'producao:bobinagem_classificacao' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
     
 </div>
 <div class="title_block-list">
-    <h1>Classificar Bobinagem</h1>
-    <h2>{{ bobinagem.nome }}</h2>
+    <h1>Classificar Bobinagem {{ bobinagem.nome }} como</h1>
     {% if operation == 'dm' %}
     <h3 id="estado_palete_dm">DM12</h3>
+    {% elif operation == 'rej' %}
+    <h3 id="estado_palete_r">R</h3>
     {% endif %}
+    <p id="estado_palete_r_p ">Só será aplicado o estado selecionado e os seus defeitos às bobines classificadas como LAB.</p>
 </div>
 {% if messages %}
     <div>
@@ -37,7 +39,7 @@
 <div>
     <form action='' method="post">
         {% csrf_token %}
-        <input type="submit" value="Validar" class="btn_create">
+        <input type="submit" value="Validar" id="validate-btn">
         <table class="content-table" id="defeitos">
             <thead>
                 <tr>

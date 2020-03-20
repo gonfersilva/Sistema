@@ -35,10 +35,11 @@
     <form action='' method="post">
         {% csrf_token %}
         {{ formset.management_form }}
-        <input type="submit" value="Validar" class="btn_create">
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a> -->
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a> -->
-        <!-- <a href="{% url 'producao:classificacao_bobines_dm' pk=bobinagem.pk operation='ap' %}" class="btn_g" role="button">Aprovar</a> -->
+        <input type="submit" value="Validar" id="validate-btn">
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='hold' %}" class="btn_hold" role="button">Hold</a>
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a>
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a>
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='ap' %}" class="btn_g" role="button">Aprovar</a>
         <table class="content-table" id="defeitos">
             <thead>
                 <tr>

@@ -5099,15 +5099,115 @@ def bobinagem_classificacao(request, pk):
     }
     return render(request, template_name, context)
 
-def classificacao_bobines_dm(request, operation, pk):
+def classificacao_bobines_all(request, operation, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     form = ClasssificacaoBobineDm(request.POST or None)
-    template_name = 'bobine/bobinagem_classificacao_dm.html'
-    
+    template_name = 'bobine/bobinagem_classificacao_all.html'
+    if operation == 'ap':
+        for bob in bobines:
+            if bob.estado == 'LAB' or bob.estado == 'HOLD':
+                bob.estado = 'G'
+                bob.save()
+        return redirect('producao:bobinestatus', pk=bobinagem.pk)        
+    elif operation == 'hold':
+        for bob in bobines:
+            if bob.estado == 'LAB':
+                bob.estado = 'HOLD'
+                bob.save()
+        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+
     if form.is_valid():
-        if operation == 'dm':
+        index = 0
+        if operation == 'dm' or operation == 'rej':
             cd = form.cleaned_data
+            fc_diam_ini = cd.get('fc_diam_ini')
+            fc_diam_fim = cd.get('fc_diam_fim')
+            ff_m_ini = cd.get('ff_m_ini')
+            ff_m_fim = cd.get('ff_m_fim')
+            obs = cd.get('obs')
+            prop_obs = cd.get('prop_obs')
+        
+            defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
+            defeitos_validation = not any(defeitos)
+            if defeitos_validation == True:
+                messages.error(request, 'Para classificar a bobinagem como ' + operation + ' é necessário atribuir pelo menos um defeito.')
+            elif defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
+                messages.error(request, 'Preencher inicio e fim da falha de corte.')
+            elif defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
+                messages.error(request, 'Preencher inicio e fim da falha de filme.')
+            elif defeitos[12] == True and obs == '':
+                messages.error(request, 'Falha de MP: Preencher nas observações o motivo.')
+            elif defeitos[14] == True and obs == '':
+                messages.error(request, 'Buracos: Preencher nas observações os metros de desbobinagem.')
+            elif defeitos[15] == True and prop_obs == '':
+                messages.error(request, 'Gramagem: Preencher nas Prop. Obs.')
+            elif defeitos[16] == True and prop_obs == '':
+                messages.error(request, 'Propriedades: Preencher nas Prop. Obs.')
+            else:
+                for bob in bobines:
+                    if bob.estado == 'LAB' and operation == 'dm':
+                        bob.estado = 'DM'
+                        bob.nok = cd.get('nok')
+                        bob.con = cd.get('con')
+                        bob.descen = cd.get('descen')
+                        bob.presa = cd.get('presa')
+                        bob.diam_insuf = cd.get('diam_insuf')
+                        bob.suj = cd.get('suj')
+                        bob.car = cd.get('car')
+                        bob.lac = cd.get('lac')
+                        bob.ncore = cd.get('ncore')
+                        bob.sbrt = cd.get('sbrt')
+                        bob.fc = cd.get('fc')
+                        bob.ff = cd.get('ff')
+                        bob.fmp = cd.get('fmp')
+                        bob.furos = cd.get('furos')
+                        bob.buraco = cd.get('buraco')
+                        bob.esp = cd.get('esp')
+                        bob.prop = cd.get('prop')
+                        bob.outros = cd.get('outros')
+                        bob.troca_nw = cd.get('troca_nw')
+                        bob.fc_diam_ini = cd.get('fc_diam_ini')
+                        bob.fc_diam_fim = cd.get('fc_diam_fim')
+                        bob.ff_m_ini = cd.get('ff_m_ini')
+                        bob.ff_m_fim = cd.get('ff_m_fim')
+                        bob.obs = cd.get('obs')
+                        bob.prop_obs = cd.get('prop_obs')
+                        bob.save()
+                    if bob.estado == 'LAB' and operation == 'rej':
+                        bob.estado = 'R'
+                        bob.nok = cd.get('nok')
+                        bob.con = cd.get('con')
+                        bob.descen = cd.get('descen')
+                        bob.presa = cd.get('presa')
+                        bob.diam_insuf = cd.get('diam_insuf')
+                        bob.suj = cd.get('suj')
+                        bob.car = cd.get('car')
+                        bob.lac = cd.get('lac')
+                        bob.ncore = cd.get('ncore')
+                        bob.sbrt = cd.get('sbrt')
+                        bob.fc = cd.get('fc')
+                        bob.ff = cd.get('ff')
+                        bob.fmp = cd.get('fmp')
+                        bob.furos = cd.get('furos')
+                        bob.buraco = cd.get('buraco')
+                        bob.esp = cd.get('esp')
+                        bob.prop = cd.get('prop')
+                        bob.outros = cd.get('outros')
+                        bob.troca_nw = cd.get('troca_nw')
+                        bob.fc_diam_ini = cd.get('fc_diam_ini')
+                        bob.fc_diam_fim = cd.get('fc_diam_fim')
+                        bob.ff_m_ini = cd.get('ff_m_ini')
+                        bob.ff_m_fim = cd.get('ff_m_fim')
+                        bob.obs = cd.get('obs')
+                        bob.prop_obs = cd.get('prop_obs')
+                        bob.save()
+                return redirect('producao:bobinestatus', pk=bobinagem.pk)
+        
+
+            #     form.save()
+                # messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
+
             
 
     context = {

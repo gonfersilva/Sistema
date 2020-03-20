@@ -403,6 +403,7 @@ header a:hover {
     display: inline-block;
     border-radius: 1em;
     font-size: 0.8em;
+    border: none;
 }
 
 .btn_back:hover {
@@ -1064,6 +1065,26 @@ input[type=number] {
     border: 2px #0099cc solid;
 }
 
+.btn_hold {
+    background-color: rgb(154, 52, 250);
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    float: right;
+}
+
+.btn_hold:hover {
+    background-color: rgb(204, 134, 241);
+    color: white;
+    margin: 8px;
+    border: 2px #0099cc solid;
+}
+
 .btn_list_g {
     background-color: rgb(20, 207, 20);
     color: white;
@@ -1202,6 +1223,18 @@ input[type=number] {
 #estado_palete_dm {
     color: rgb(219, 168, 26);
     font-size: 2em;
+
+}
+
+#estado_palete_r {
+    color: rgb(238, 55, 38);
+    font-size: 2em;
+
+}
+
+#estado_palete_r_p {
+    color: rgb(238, 55, 38);
+    font-size: 0.7em;
 
 }
 

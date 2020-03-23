@@ -660,7 +660,16 @@ class InventarioPaletesCliente(models.Model):
         verbose_name_plural = "Intentário Paletes Cliente"
 
 
-    
+class MovimentosBobines(models.Model):
+    bobine      = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+    palete      = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    timestamp   = models.DateTimeField() 
+    destino     = models.CharField(max_length=200, verbose_name="Destino", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Movimentos de Bobines"
+        ordering = ['-timestamp']  
+
 
 
 

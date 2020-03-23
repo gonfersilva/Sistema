@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
+from .models import MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
@@ -469,6 +469,7 @@ def add_bobine_palete(request, pk):
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
     bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')
+    movimentos_bobines = MovimentosBobines.objects.filter(palete=palete) 
     
 
     form = ImprimirEtiquetaPalete(request.POST or None)
@@ -485,12 +486,13 @@ def add_bobine_palete(request, pk):
 
 
          
-    context = {"palete": palete, 
-               "bobines": bobines,
-               "bobinagem": bobinagem,
-               "form": form          
-               
-                }
+    context = {
+        "movimentos_bobines": movimentos_bobines,
+        "palete": palete, 
+        "bobines": bobines,
+        "bobinagem": bobinagem,
+        "form": form          
+        }
     return render(request, template_name, context)
 
 
@@ -1255,6 +1257,7 @@ def bobine_details(request, pk):
     form = ImprimirEtiquetaBobine(request.POST or None)
     emenda = Emenda.objects.filter(bobinagem=bobine.bobinagem)
     etiqueta = get_object_or_404(EtiquetaRetrabalho, bobine=bobine.nome)
+    movimentos_bobine = MovimentosBobines.objects.filter(bobine=bobine)
 
     if form.is_valid():
         impressora = form['impressora'].value()
@@ -1267,6 +1270,7 @@ def bobine_details(request, pk):
 
     template_name = 'producao/bobine_details.html'
     context = {
+        "movimentos_bobine": movimentos_bobine,
         "bobine": bobine,
         "emenda": emenda,
         "form": form
@@ -1894,8 +1898,8 @@ def palete_rabrir(request, pk):
             b.palete == None
             b.save()
 
-        e_p.delete()
-        palete.delete()        
+        # e_p.delete()
+        # palete.delete()        
 
         return redirect('producao:palete_create_retrabalho')
 
@@ -1979,6 +1983,7 @@ def palete_picagem_dm(request, pk):
                         area_sum += bob.area
                         comp_total += bob.bobinagem.comp_cli 
                         bob.save()
+                        movimento_bobine = MovimentosBobines.objects.create(bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
 
                     e_p = EtiquetaPalete.objects.get(palete=palete)       
                     # for x in array_bobines:
@@ -3601,6 +3606,7 @@ def palete_picagem(request, pk):
                         area_sum += bob.area
                         comp_total += bob.bobinagem.comp_cli 
                         bob.save()
+                        movimento_bobine = MovimentosBobines.objects.create(bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
 
                     e_p = EtiquetaPalete.objects.get(palete=palete)       
                     for x in array_bobines:
@@ -5216,4 +5222,16 @@ def classificacao_bobines_all(request, operation, pk):
         "operation": operation
     }
     return render(request, template_name, context)
+
+
+def atualizar_movimentos(request):
+    paletes = Palete.objects.filter(estado='DM')
+    for pal in paletes:
+        if pal.num_bobines_act > 0:
+            bobines = Bobine.objects.filter(palete=pal)
+            for bob in bobines:                
+                movimento = MovimentosBobines.objects.create(bobine=bob, palete=pal, timestamp=pal.timestamp, destino=bob.destino)
+
+    return redirect('producao:producao_home')
+
     

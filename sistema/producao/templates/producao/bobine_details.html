@@ -225,5 +225,38 @@
     <div>{{ bobine.obs}}</div>
     {% endif %}
 </div>
-
+<div class="title_block-list">
+    <h3>Movimentos</h3>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Palete</th>
+                <th>Data de picagem</th>
+                <th>Destino</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tbody> 
+                {% for mov in movimentos_bobine %}   
+                <tr>
+                    <td>{{ mov.palete }}</td>
+                    <td>{{ mov.timestamp|date:"d-m-Y G:i" }}</td>
+                    <td>{{ mov.destino }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </tbody>
+        </table>
+</div>
+            
+                    
+                
+                
+                
+                
+                            
+                
+              
 {% endblock %}

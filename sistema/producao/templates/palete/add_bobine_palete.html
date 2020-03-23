@@ -3,13 +3,23 @@
 
 {% block content %}
 <div>
+    {% if palete.estado == 'G'%}
     <a href="{% url 'producao:palete_list_all' %}"  class="btn_back" role="button">Voltar</a>
+    {% elif palete.estado == 'DM' %}
+    <a href="{% url 'producao:paletes_retrabalho' %}"  class="btn_back" role="button">Voltar</a>
+    {% endif %}
 </div>
 <div class="title_block-list">
     <h1>Palete</h1>
     <h2>{{ palete.nome }}</h2>
     {% if palete.estado == 'G'%}<h3 id="estado_palete_g">GOOD</h3>{% elif palete.estado == 'DM' %}<h3 id="estado_palete_dm">DM12</h3>{% endif %}
 </div>
+{% if palete.num_bobines_act == 0 %}
+<div class="title_block-list">
+    <h1>Palete Vazia</h1>
+    
+</div>                 
+{% endif %}
 <div class="content_details">
     <div>
         <div><h3>Data: <span>{{ palete.data_pal|date:"d-n-Y" }}</span></h3></div>
@@ -52,7 +62,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tbody>    
+                
                     {% for b in bobines %}
                     <tr>
                         <td>{{ b.posicao_palete }}</td>
@@ -70,8 +80,9 @@
                         <td>{{ b.area }}</td>
                     </tr>
                     {% endfor %}
-                </tbody>  
-            </tbody>
+       
+                    
+                </tbody>
             </table>
     </div>
     <div>
@@ -86,214 +97,43 @@
 
     </div>
            
-</div>   
+</div>  
+
+{% if palete.estado == 'DM' %}
+<br>
+<br>
+<br>
+<div class="title_block-list">
+    <h3>Histórico de Bobines</h3>
+</div> 
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Bobine</th>
+                <th>Data de picagem</th>
+                <th>Destino</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tbody>    
+                {% for mov in movimentos_bobines %}   
+                <tr>
+                    <td>{{ mov.bobine }}</td>
+                    <td>{{ mov.timestamp|date:"d-m-Y G:i" }}</td>
+                    <td>{{ mov.destino }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </tbody>
+    </table>
+</div>  
+{% endif %}
                     
-                 
-                   
-<!--                             
     
-   
-<div class="container">
-    <div class="container">
-        {% if palete.estado == 'G' %}
-        <a href="{% url 'producao:palete_list_all' %}" class="btn btn-primary" role="button">Voltar</a>
-        {% elif palete.estado == 'DM' %}
-        <a href="{% url 'producao:paletes_retrabalho' %}" class="btn btn-primary" role="button">Voltar</a>
-        {% endif %}
-        {% if palete.estado == 'G'%}
-        <a href="{% url 'producao:palete_create' %}" class="btn btn-primary" role="button">Nova Palete</a>
-        {% endif %}
-    </div>
-    <div class="container">
-        {% if palete.estado != 'DM'%}
-        <div class="row">
-            <p id="palete_id" data-catid="{{ palete.id }}" hidden>{{ palete.id }}</p> 
-            <h1>Palete: {{ palete.nome }}</h1>
-            <h2>Cliente: {{ palete.cliente.nome}}</h2>
-            {% if palete.estado == 'G' %}
-                <h3 id="estado_good">Good</h3>
-            {% elif palete.estado == 'R' %}
-                <h3 id="estado_rejected">Rejected</h3>
-            {% elif palete.estado == 'DM' %}
-                <h3 id="estado_dm">DM12</h3>
-            {% endif %}
-            <div class="container col-md-6">
-                <h3>Bobines: {{ palete.num_bobines_act }} / {{ palete.num_bobines }}</h3>
-                <h3>Largura bobines: {{ palete.largura_bobines }}</h3>
-                {% if e_p.diam_min != Null or e_p.diam_max != Null %}
-                <h3>Diâmetro: {{ e_p.diam_min }} / {{ e_p.diam_max }}</h3>
-                {% endif %}
-                <h3>Core: {{ palete.core_bobines }}</h3>
-            </div>
-            <div class="container col-md-6">
-                <h2>Área: {{ palete.area }} m2</h2>
-                <h2>Comprimento total: {{ palete.comp_total }} m</h2>
-                {% if palete.destino == None %}
-                <h2>Carga: Sem carga </h2>
-                {% else %}
-                <h2>Carga: {{ palete.destino }}</h2>
-                {% endif %}
-            </div>
-        </div>
-        {% else %}
-        <div class="row">
-            <p id="palete_id" data-catid="{{ palete.id }}" hidden>{{ palete.id }}</p> 
-            <h1>Palete: {{ palete.nome }}</h1>
-            {% if palete.estado == 'G' %}
-                <h3 id="estado_good">Good</h3>
-            {% elif palete.estado == 'R' %}
-                <h3 id="estado_rejected">Rejected</h3>
-            {% elif palete.estado == 'DM' %}
-                <h3 id="estado_dm">DM12</h3>
-            {% endif %}
-            <div class="container col-md-6">
-                <h3>Bobines: {{ palete.num_bobines_act }}</h3>
-                
-            </div>
-            <div class="container col-md-6">
-                <h2>Área: {{ palete.area }} m2</h2>
-                <h2>Comprimento total: {{ palete.comp_total }} m</h2>
-                {% if palete.destino == None %}
-                <h2>Carga: Não tem carga atribuida.</h2>
-                {% else %}
-                <h2>Carga: {{ palete.destino }}</h2>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-     </div>
-    </br></br>
-    <div class="row">
-        <h3>Imprimir Palete {{ palete.nome }}</h3>
-            <form method="POST" action="#">
-                {% bootstrap_form form %}
-                {% csrf_token %}
-                <input type="submit" class="btn btn-primary" value="Imprimir">
-            </form>
-        </div>
 
-
-            
+    
            
-    
-    <div class="container">
-    <div class="row">
-            <div class="col container table-responsive ml-2">
                     
-                   
-                <h1 class="alert-success"><a href="{% url 'producao:palete_rabrir' pk=palete.pk %}"><button type="button" class="btn btn-danger pull-right">Refazer Palete</button></a></h1>
-                                   
-
-                        <table class="table fit" id="myTable">
-                            <thead>
-                                <tr>
-                                    <th>Bobine nº</th>
-                                    <th>Bobine</th>
-                                    <th>Estado</th>
-                                    <th>Largura</th>
-                                    <th>Diâmetro</th>
-                                    <th>Core</th>
-                                    <th>Área</th>
-                                    <th>Bobine Original 1</th>
-                                    <th>Bobine Original 2</th>
-                                    <th>Bobine Original 3</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bobines-palete">
-                                
-                            </tbody>
-                            
-                        </table>
-                </div>
-        </div>
-    </div>
-
-
-</div>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script>
-    $(window).load(function() {
-
-        var id = $("#palete_id").attr("data-catid");
-        $.ajax({ 
-            type: "GET",
-            dataType: "json",
-            url: "/api/palete/dm/" + id,
-            success: function(bobines){        
-                if(!bobines || bobines.length === 0) {
-                        return;
-                    }
-                var bobines_length = bobines.length
-                for ( i = 0; i < bobines_length; i++){
-                    
-                    
-
-                    var link = "/producao/bobine/details/" + bobines[i].id
-                    // var link_ap = "/producao/bobinagem/ap/" + data[i].id
-                    // var link_dm = "/producao/bobinagem/dm/" + data[i].id
-                    // var link_rej = "/producao/bobinagem/rej/" + data[i].id
-                    // var link_hold = "/producao/bobinagem/hold/" + data[i].id
-                    // var link_del = "/producao/bobinagem/delete/" + data[i].id
-                    
-                    
-                    var a1=$(document.createElement("a")).text(bobines[i].nome).attr('href', link), td1=$(document.createElement("td"));
-                    var td2=$(document.createElement("td")).attr('id', "center")
-                    if (bobines[i].estado === 'G'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_good")    
-                    }else if(bobines[i].estado === 'R'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_rejected")    
-                    }else if(bobines[i].estado === 'DM'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_dm")    
-                    }else if(bobines[i].estado === 'IND'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_ind")    
-                    }else if(bobines[i].estado === 'LAB'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_lab")    
-                    }else if(bobines[i].estado === 'BA'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_rejected")    
-                    }else if(bobines[i].estado === 'HOLD'){
-                        var td3=$(document.createElement("td")).attr('id', "estado_hold")    
-                    }
-                    
-                    var td4=$(document.createElement("td")).attr('id', "center")
-                    var td5=$(document.createElement("td")).attr('id', "center")
-                    var td6=$(document.createElement("td")).attr('id', "center")
-                    var td6=$(document.createElement("td")).attr('id', "center")
-                    var td7=$(document.createElement("td")).attr('id', "center")
-                   
-                                                        
-
-                    td1.append(a1);
-                    td2.text(bobines[i].posicao_palete);
-                    td3.text(bobines[i].estado);
-                    td4.text(bobines[i].largura.largura);
-                    td5.text(bobines[i].bobinagem.diam);
-                    td6.text(bobines[i].bobinagem.perfil.core);
-                    td7.text(bobines[i].area);
-                  
-                    var tr=$(document.createElement("tr"));
-                    var tr_total = tr.append(td2).append(td1).append(td3).append(td4).append(td5).append(td6).append(td7);
-                    
-                                            
-                        
-                    
-
-                    
-                    // if (data[i].perfil.retrabalho == false){
-                    //     a1.click(function () {
-                    //     window.location = link
-                        
-                    //     });
-                    // }
-                    
-                    
-                    $("#bobines-palete").append(tr);
-                }
-            }
-        }); 
-    });
-</script> -->
-
+ 
 {% endblock %}

@@ -20,6 +20,10 @@ admin.site.register(ArtigoCliente)
 admin.site.register(Rececao)
 admin.site.register(ArtigoNW)
 admin.site.register(EtiquetaNonwoven)
+admin.site.register(Reciclado)
+admin.site.register(ProdutoGranulado)
+admin.site.register(MovimentoMP)
+admin.site.register(EtiquetaReciclado)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']

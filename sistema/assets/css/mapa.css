@@ -984,6 +984,12 @@ table#defeitos td {
     
 }
 
+#estado_sc {
+    background-color: rgb(149, 255, 0);
+    color: black;
+    text-align: center;
+}
+
 table#defeitos td input {
     max-width: 40px;
     font-size: 0.9em;

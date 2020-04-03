@@ -121,7 +121,8 @@ urlpatterns = [
     url(r'^rececoes/imprimiretiquetanonwoven/(?P<pk>\d+)/$', carga_etiqueta_nonwoven, name='carga_etiqueta_nonwoven'),
     url(r'^rececoes/imprimiretiquetanonwovenrececao/(?P<pk>\d+)/$', carga_etiqueta_nonwoven_rececao, name='carga_etiqueta_nonwoven_rececao'),
     url(r'^artigonw/details/(?P<pk>\d+)/$', artigonw_details, name='artigonw_details'),
-    url(r'^atualizar/$', atualizar_movimentos, name='atualizar_movimentos'),
+    # url(r'^atualizar/$', atualizar_movimentos, name='atualizar_movimentos'),
+    url(r'^produtogranulado/list/$', produto_granulado_list, name='produto_granulado_list'),
     # url(r'^teste/bobinagem/create/$', bobinagem_create_v2, name='bobinagem_create_v2'),
   
   

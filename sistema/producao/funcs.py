@@ -235,6 +235,8 @@ def create_bobine(pk):
                 bob.estado = 'BA'
             elif bob.bobinagem.estado == 'IND':
                 bob.estado = 'IND'
+            elif bob.bobinagem.estado == 'SC':
+                bob.estado = 'SC'
             else:
                 bob.estado = 'LAB'
             bob.save() 

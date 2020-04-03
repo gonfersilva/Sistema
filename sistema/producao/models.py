@@ -132,7 +132,7 @@ class ArtigoCliente(models.Model):
 
 
 class Bobinagem(models.Model):
-    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD','HOLD'))
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD','HOLD'), ('SC','SC'))
     TIPONW = (('Suominen 25 gsm','Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP','Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE','BCN 70%PP/30%PE'), ('Sandler','Sandler'), ('PEGAS BICO 17gsm','PEGAS BICO 17gsm'), ('Suominen','Suominen'), ('BCN','BCN'), ('ORMA','ORMA'), ('PEGAS 22','PEGAS 22'), ('SAWASOFT','SAWASOFT'), ('SAWABOND','SAWABOND'), ('Teksis','Teksis'), ('Union','Union'),('Radici','Radici'),('Fitesa','Fitesa'),('ALBIS','ALBIS'),('Union Pillow','Union Pillow'),('Union UV','Union UV'))
     user = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     perfil = models.ForeignKey(Perfil, on_delete=models.PROTECT,verbose_name="Perfil")
@@ -374,7 +374,7 @@ class ConsumoNonwoven(models.Model):
 
 
 class Bobine(models.Model):
-    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'))
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     largura = models.ForeignKey(Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
     artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
@@ -669,6 +669,57 @@ class MovimentosBobines(models.Model):
     class Meta:
         verbose_name_plural = "Movimentos de Bobines"
         ordering = ['-timestamp']  
+
+class ProdutoGranulado(models.Model):
+    user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp       = models.DateTimeField(auto_now_add=True)
+    produto_granulado = models.CharField(max_length=15, verbose_name="Produto Granulado")
+
+    class Meta: 
+        verbose_name_plural = "Produto Granulado"
+        ordering = ['-timestamp']  
+
+class Reciclado(models.Model):
+    STATUS = (('G', 'G'),  ('R', 'R'), ('NOK', 'NOK'))
+    user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp       = models.DateTimeField(auto_now_add=True)
+    produto_granulado = models.ForeignKey(ProdutoGranulado, on_delete=models.PROTECT, verbose_name="Produto Granulado")
+    lote = models.CharField(max_length=15, unique=True)
+    estado = models.CharField(max_length=4, choices=STATUS, default='G', verbose_name="Estado")
+    peso   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
+    obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações") 
+
+    class Meta: 
+        verbose_name_plural = "Reciclado"
+        ordering = ['-timestamp']
+
+class MovimentoMP(models.Model):
+    TIPO = (('Entrada', 'Entrada'), ('NOK', 'NOK'))
+    user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp       = models.DateTimeField(auto_now_add=True)
+    lote = models.CharField(max_length=30, unique=False, verbose_name="Lote")
+    tipo = models.CharField(max_length=7, choices=TIPO, default='Entrada', verbose_name="Tipo de movimento")
+    motivo = models.TextField(max_length=500, null=True, blank=True, verbose_name="Motivo")
+
+    class Meta: 
+        verbose_name_plural = "Movimentos de MP"
+        ordering = ['-timestamp']
+
+class EtiquetaReciclado(models.Model):
+    user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
+    timestamp       = models.DateTimeField(auto_now_add=True)
+    inicio = models.DateTimeField()
+    fim = models.DateTimeField()
+    reciclado = models.ForeignKey(Reciclado, on_delete=models.PROTECT, verbose_name="Reciclado")
+    lote = models.CharField(max_length=30, unique=True, verbose_name="Lote de Reciclado")
+    produto_granulado = models.CharField(max_length=10, verbose_name="Produto Granulado")
+    peso   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
+    
+    
+
+
+
+
 
 
 

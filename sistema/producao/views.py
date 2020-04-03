@@ -7,7 +7,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
+from .models import ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
@@ -3525,7 +3525,9 @@ def palete_picagem(request, pk):
             array_cores = []
             array_larguras = []
             array_produtos = []
+            array_estados = []
             validation = True
+
 
             #Validação individual
             for f in formset:
@@ -3540,9 +3542,10 @@ def palete_picagem(request, pk):
                         array_cores.append(bobine.bobinagem.perfil.core)
                         array_larguras.append(bobine.largura.largura)
                         array_produtos.append(bobine.largura.designacao_prod)
+                        array_estados.append(bobine.estado)
 
-                        if bobine.estado != 'G' and bobine.estado != 'LAB':
-                            messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' não está em estado GOOD ou LAB.')
+                        if bobine.estado != 'G' and bobine.estado != 'LAB' and bobine.estado != 'SC':
+                            messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' não está em estado GOOD, LAB ou SC.')
                             validation = False
 
                         if bobine.palete:
@@ -3575,13 +3578,20 @@ def palete_picagem(request, pk):
                     messages.error(request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
                     validation = False
             
+            validation_estados = True
+            for estado in array_estados:
+                if estado == 'SC':
+                    validation_estados = False
+                    pass 
+
             #Validação global -> remover validação global de core e largura
-            
             if len(array_bobines) == palete.num_bobines and validation == True:
                 if len(array_bobines) > len(set(array_bobines)):
                     messages.error(request, 'A picagem contem bobines repetidas.')
                 elif len(set(array_produtos))!=1:
                     messages.error(request, 'As bobines picadas são produtos diferentes. Para que a palete seja válida todas as bobines têm de ser o mesmo produto.')
+                elif len(set(array_estados))!=1 and validation_estados == False:
+                    messages.error(request, 'Todas as bobines tem de ser classificadas como SC antes de validar esta palete.')
                 else:
                     c = 0
                     area_sum = 0
@@ -5233,5 +5243,36 @@ def atualizar_movimentos(request):
                 movimento = MovimentosBobines.objects.create(bobine=bob, palete=pal, timestamp=pal.timestamp, destino=bob.destino)
 
     return redirect('producao:producao_home')
+
+@login_required
+def produto_granulado_list(request):
+    produto_granulado_list = ProdutoGranulado.objects.all().order_by('-timestamp')
+    template_name = 'reciclado/produto_granulado_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        produto_granulado_list = ProdutoGranulado.objects.filter(produto_granulado__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(produto_granulado_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        produto_granulado = paginator.page(page)
+    except PageNotAnInteger:
+        produto_granulado = paginator.page(1)
+    except EmptyPage:
+        produto_granulado = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "produto_granulado": produto_granulado,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
 
     

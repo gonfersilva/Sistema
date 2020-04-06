@@ -250,7 +250,7 @@ class Palete(models.Model):
     lote            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nº Lote")
     num_bobines     = models.IntegerField(verbose_name="Bobines total")
     num_bobines_act = models.IntegerField(default=0) 
-    largura_bobines = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Largura das bobines", null=True, blank=True)
+    largura_bobines = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Largura das bobines", null=True, blank=True)
     diametro        = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Diâmetro das bobines", null=True, blank=True)
     core_bobines    = models.CharField(max_length=1, choices=CORE, default='3', verbose_name="Core das bobines")
     peso_bruto      = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Peso bruto")

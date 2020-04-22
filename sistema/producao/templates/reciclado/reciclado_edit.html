@@ -1,0 +1,46 @@
+{% extends "layout.html "%}
+
+{% load producao_tags %}
+
+
+{% block title %}Editar Reciclado | {{ block.super }}{% endblock %}
+{% block content %}
+      
+<div>
+    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+</div>
+<div class="title_block-list">
+    <h1>Editar Reciclado</h1>
+    <h2>{{ reciclado.lote }}</h2>
+</div>
+{% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+{% endif %}
+
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_cliente">Produto</label>{{ form.produto_granulado }}
+    <label for="id_cliente">Estado</label>{{ form.estado }}
+    <label for="id_cliente">Peso</label>{{ form.peso }}
+    <label for="id_cliente">Observações</label>{{ form.obs }}
+    <input type="submit" value="Guardar" id="validate-btn">
+</form>
+{% endblock %}

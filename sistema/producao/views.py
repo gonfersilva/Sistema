@@ -5234,15 +5234,21 @@ def classificacao_bobines_all(request, operation, pk):
     return render(request, template_name, context)
 
 
-def atualizar_movimentos(request):
-    paletes = Palete.objects.filter(estado='DM')
-    for pal in paletes:
-        if pal.num_bobines_act > 0:
-            bobines = Bobine.objects.filter(palete=pal)
-            for bob in bobines:                
-                movimento = MovimentosBobines.objects.create(bobine=bob, palete=pal, timestamp=pal.timestamp, destino=bob.destino)
+# def atualizar_movimentos(request):
+#     paletes = Palete.objects.filter(estado='DM')
+#     for pal in paletes:
+#         if pal.num_bobines_act > 0:
+#             bobines = Bobine.objects.filter(palete=pal)
+#             for bob in bobines:                
+#                 movimento = MovimentosBobines.objects.create(bobine=bob, palete=pal, timestamp=pal.timestamp, destino=bob.destino)
 
-    return redirect('producao:producao_home')
+#     return redirect('producao:producao_home')
+@login_required
+def reciclado_home(request):
+    template_name = 'reciclado/reciclado_home.html'
+    context = {}
+
+    return render(request, template_name, context)
 
 @login_required
 def produto_granulado_list(request):
@@ -5275,4 +5281,234 @@ def produto_granulado_list(request):
     }
     return render(request, template_name, context)
 
+@login_required
+def produto_granulado_create(request):
+    template_name = 'reciclado/produto_granulado_create.html'
+    form = ProdutoGranuladoCreateForm(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        produto = cd.get('produto_granulado')
+        produtos = ProdutoGranulado.objects.filter(produto_granulado=produto)
+        if produtos.exists():
+            messages.error(request, 'O produto ' + produto + ' já existe.')
+        else:
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+            return redirect('producao:produto_granulado_list')
+        
+
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+    
+@login_required
+def reciclado_list(request):
+    reciclado_list = Reciclado.objects.all().order_by('-timestamp')
+    template_name = 'reciclado/reciclado_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        reciclado_list = Reciclado.objects.filter(lote__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(reciclado_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        reciclado = paginator.page(page)
+    except PageNotAnInteger:
+        reciclado = paginator.page(1)
+    except EmptyPage:
+        reciclado = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "reciclado": reciclado,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def reciclado_create(request):
+    template_name = 'reciclado/reciclado_create.html'
+    form = RecicladoCreateForm(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        estado = cd.get('estado')
+        instance = form.save(commit=False)
+        data = datetime.now().strftime('%Y%m%d')
+        map(int, data)
+        if instance.num < 10:
+            lote = '%s-0%s' % (data[0:], str(instance.num))
+        elif instance.num < 100:
+            lote = '%s-%s' % (data[0:], str(instance.num))
+
+        try:
+            instance.lote = lote
+            instance.estado = estado
+            instance.user = request.user
+            instance.timestamp_edit = datetime.now()
+            instance.timestamp = datetime.now()
+            if estado == 'R' and instance.obs == '':
+                messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
+            else:
+                try:
+                    reciclado_latest = Reciclado.objects.all().latest('timestamp')
+                    instance.save()
+                    etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=reciclado_latest.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
+                    etiqueta_reciclado.save()
+                    return redirect('producao:reciclado_details', pk=instance.pk)
+                except:
+                    instance.save()
+                    etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=instance.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
+                    etiqueta_reciclado.save()
+                    return redirect('producao:reciclado_details', pk=instance.pk)
+              
+
+        except:
+            messages.error(request, 'O lote que pretende criar já existe.')
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
+
+@login_required
+def reciclado_edit(request, pk):
+    template_name = 'reciclado/reciclado_edit.html'
+    reciclado = get_object_or_404(Reciclado, pk=pk)
+    form = RecicladoEditForm(request.POST or None, instance=reciclado)
+    
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.timestamp_edit = datetime.now()
+        if (instance.estado == 'R' and instance.obs == '') or (instance.estado == 'NOK' and instance.obs == ''):
+            messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
+        else:
+            instance.save()
+            etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=instance)
+            etiqueta.produto_granulado = instance.produto_granulado.produto_granulado
+            etiqueta.peso = instance.peso
+            etiqueta.save()
+            return redirect('producao:reciclado_list')
+       
+
+    context = {
+        "form": form, 
+        "reciclado": reciclado
+    }
+    return render(request, template_name, context)
+
+@login_required
+def reciclado_details(request, pk):
+    reciclado = get_object_or_404(Reciclado, pk=pk)
+    etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=reciclado)
+    template_name = 'reciclado/reciclado_details.html'
+    form = ImprimirEtiquetaReciclado(request.POST or None)
+    if form.is_valid():
+        num_copias = int(form['num_copias'].value())
+        etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+        etiqueta.num_copias = num_copias
+        etiqueta.estado_impressao = True
+        etiqueta.save()     
+                
+
+    context = {
+        "reciclado": reciclado,
+        "etiqueta": etiqueta, 
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def movimentos_list(request):
+    movimentos_list = MovimentoMP.objects.all().order_by('-timestamp')
+    template_name = 'reciclado/movimento_list.html'
+        
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        # print(query)
+        movimentos_list = MovimentoMP.objects.filter(lote__icontains=query).order_by('-timestamp')
+
+
+    paginator = Paginator(movimentos_list, 14)
+    page = request.GET.get('page')
+    
+
+    try:
+        movimentos = paginator.page(page)
+    except PageNotAnInteger:
+        movimentos = paginator.page(1)
+    except EmptyPage:
+        movimentos = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "movimentos": movimentos,
+        "query": query,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def movimento_create(request):
+    template_name = 'reciclado/movimento_create.html'
+    form = MovimentoCreateForm(request.POST or None)
+    
+    if form.is_valid():
+        cd = form.cleaned_data
+        lote = cd.get('lote')
+        tipo = cd.get('tipo')
+        motivo = cd.get('motivo')
+        instance = form.save(commit=False)
+        instance.user = request.user
+        if tipo == 'NOK' and motivo == '':
+            messages.error(request, 'Para criar um movimento NOK é necessário escrever o motivo da mesma.')
+        else:
+            try:
+                lote = get_object_or_404(Reciclado, lote=lote)
+                if (lote.estado == 'R' or lote.estado == 'NOK'):
+                    messages.error(request, 'Não é possivel movimentar lote ' + lote.lote + ' porque o seu estado é R ou NOK.')
+                else:
+                    movimentos = MovimentoMP.objects.filter(lote=lote.lote)
+                    if movimentos.exists():
+                        if movimentos.count() == 2:
+                            messages.error(request, 'Não é possivel movimentar o lote ' + lote.lote + ' porque o lote selecionado ja tem um movimento de Entrada e um NOK.')
+                        if movimentos.count() == 1:
+                            for mov in movimentos:
+                                if tipo == mov.tipo:
+                                    messages.error(request, 'Não é possivel movimear o lote ' + lote.lote + ' porque o lote selecionado ja tem um movimento de ' + tipo + '.')
+                                else:      
+                                    instance.save()
+                                    return redirect('producao:movimentos_list')   
+
+                    
+                    else:  
+                        if tipo == 'NOK':
+                            messages.error(request, 'Não é possivel passar o lote ' + lote.lote + ' a NOK porque não Entrou em Linha.')
+                        else:
+                            instance.save()
+                            return redirect('producao:movimentos_list')            
+                
+                
+            except:
+                messages.error(request, 'O lote que picou não existe.')
+        
+
+    context = {
+        "form": form, 
+    }
+    return render(request, template_name, context)
     

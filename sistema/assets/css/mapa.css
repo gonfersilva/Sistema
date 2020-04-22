@@ -990,6 +990,12 @@ table#defeitos td {
     text-align: center;
 }
 
+#estado_nok {
+    background-color: rgb(255, 72, 0);
+    color: white;
+    text-align: center;
+}
+
 table#defeitos td input {
     max-width: 40px;
     font-size: 0.9em;

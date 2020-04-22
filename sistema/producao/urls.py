@@ -122,9 +122,15 @@ urlpatterns = [
     url(r'^rececoes/imprimiretiquetanonwovenrececao/(?P<pk>\d+)/$', carga_etiqueta_nonwoven_rececao, name='carga_etiqueta_nonwoven_rececao'),
     url(r'^artigonw/details/(?P<pk>\d+)/$', artigonw_details, name='artigonw_details'),
     # url(r'^atualizar/$', atualizar_movimentos, name='atualizar_movimentos'),
+    url(r'^reciclado/$', reciclado_home, name='reciclado_home'),
     url(r'^produtogranulado/list/$', produto_granulado_list, name='produto_granulado_list'),
-    # url(r'^teste/bobinagem/create/$', bobinagem_create_v2, name='bobinagem_create_v2'),
-  
+    url(r'^reciclado/list/$', reciclado_list, name='reciclado_list'),
+    url(r'^movimentos/list/$', movimentos_list, name='movimentos_list'),
+    url(r'^produtogranulado/create/$', produto_granulado_create, name='produto_granulado_create'),
+    url(r'^reciclado/create/$', reciclado_create, name='reciclado_create'),
+    url(r'^movimentos/create/$', movimento_create, name='movimento_create'),
+    url(r'^reciclado/edit/(?P<pk>\d+)/$', reciclado_edit, name='reciclado_edit'),
+    url(r'^reciclado/details/(?P<pk>\d+)/$', reciclado_details, name='reciclado_details'),
   
     
 ]

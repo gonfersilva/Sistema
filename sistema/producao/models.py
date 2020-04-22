@@ -12,7 +12,6 @@ from django.contrib.auth.models import User
 from decimal import *
 
 
-
 class Perfil(models.Model):
     CORE = (('3', '3'),('6', '6'))
     GSM = (('105' , '105 gsm'), ('100' , '100 gsm'), ('95' , '95 gsm'), ('90' , '90 gsm'), ('80' , '80 gsm'), ('57' , '57 gsm'), ('50' , '50 gsm'), ('48' , '48 gsm'))
@@ -669,25 +668,35 @@ class MovimentosBobines(models.Model):
     class Meta:
         verbose_name_plural = "Movimentos de Bobines"
         ordering = ['-timestamp']  
+        
 
 class ProdutoGranulado(models.Model):
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp       = models.DateTimeField(auto_now_add=True)
     produto_granulado = models.CharField(max_length=15, verbose_name="Produto Granulado")
+    
+    def __str__(self):
+        return self.produto_granulado 
 
     class Meta: 
         verbose_name_plural = "Produto Granulado"
-        ordering = ['-timestamp']  
+        ordering = ['-timestamp'] 
+
 
 class Reciclado(models.Model):
     STATUS = (('G', 'G'),  ('R', 'R'), ('NOK', 'NOK'))
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
-    timestamp       = models.DateTimeField(auto_now_add=True)
+    timestamp       = models.DateTimeField(verbose_name="Created")
+    timestamp_edit       = models.DateTimeField(verbose_name="Edited")
     produto_granulado = models.ForeignKey(ProdutoGranulado, on_delete=models.PROTECT, verbose_name="Produto Granulado")
     lote = models.CharField(max_length=15, unique=True)
+    num = models.PositiveIntegerField(verbose_name="Número", default=0)
     estado = models.CharField(max_length=4, choices=STATUS, default='G', verbose_name="Estado")
     peso   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
     obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações") 
+
+    def __str__(self):
+        return self.lote 
 
     class Meta: 
         verbose_name_plural = "Reciclado"
@@ -701,19 +710,29 @@ class MovimentoMP(models.Model):
     tipo = models.CharField(max_length=7, choices=TIPO, default='Entrada', verbose_name="Tipo de movimento")
     motivo = models.TextField(max_length=500, null=True, blank=True, verbose_name="Motivo")
 
+    def __str__(self):
+        return self.lote
+
     class Meta: 
         verbose_name_plural = "Movimentos de MP"
         ordering = ['-timestamp']
 
 class EtiquetaReciclado(models.Model):
+    # IMP = (('ARMAZEM_CAB_SQUIX_6.3_200', 'ARMAZEM'))
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     timestamp       = models.DateTimeField(auto_now_add=True)
     inicio = models.DateTimeField()
     fim = models.DateTimeField()
     reciclado = models.ForeignKey(Reciclado, on_delete=models.PROTECT, verbose_name="Reciclado")
     lote = models.CharField(max_length=30, unique=True, verbose_name="Lote de Reciclado")
-    produto_granulado = models.CharField(max_length=10, verbose_name="Produto Granulado")
+    produto_granulado = models.CharField(max_length=20, verbose_name="Produto Granulado")
     peso   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
+
+    def __str__(self):
+        return self.lote
     
     
 

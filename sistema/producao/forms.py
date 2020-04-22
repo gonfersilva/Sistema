@@ -1,6 +1,7 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW
+from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW, ProdutoGranulado, Reciclado,MovimentoMP
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
-import datetime, time
+from datetime import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -426,6 +427,54 @@ class ClasssificacaoBobineDm(forms.Form):
     fc_diam_fim = forms.DecimalField(required=False)
     ff_m_ini = forms.DecimalField(required=False)
     ff_m_fim = forms.DecimalField(required=False)
+
+class ProdutoGranuladoCreateForm(ModelForm):
+    class Meta:
+        model = ProdutoGranulado
+        fields = ['produto_granulado']
+
+class RecicladoCreateForm(ModelForm):
+    ESTADO = (('G', 'G'),('R', 'R'))
+    estado = forms.CharField(max_length=1, required=True, widget=forms.Select(choices=ESTADO))
+    class Meta:
+        model = Reciclado
+        fields = ['produto_granulado', 'num', 'peso', 'obs']
+
+    def __init__(self, *args, **kwargs):
+        reciclado = Reciclado.objects.all()
+        data = datetime.now().date()
+        try:
+            reciclado = reciclado.latest('timestamp')
+            data_reciclado = reciclado.timestamp.date()
+            if data == data_reciclado:
+                num = reciclado.num + 1
+            elif data > data_reciclado:
+                num = 1
+        except:
+            num = 1
+  
+        super(RecicladoCreateForm, self).__init__(*args, **kwargs)     
+        
+        self.fields['num'].initial = num
+
+class RecicladoEditForm(ModelForm):
+    ESTADO = (('G', 'G'),('R', 'R'))
+    estado = forms.CharField(max_length=1, required=True, widget=forms.Select(choices=ESTADO))
+    class Meta:
+        model = Reciclado
+        fields = ['produto_granulado', 'estado', 'peso', 'obs']
+
+class ImprimirEtiquetaReciclado(forms.Form):
+    num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=1, max_value=4, min_value=1)
+
+class MovimentoCreateForm(ModelForm):
+  
+    class Meta:
+        model = MovimentoMP
+        fields = ['lote', 'tipo', 'motivo']
+
+    
+    
 
     
 

@@ -1,0 +1,29 @@
+{% extends "layout.html "%}
+
+
+
+{% block title %}Produção{% endblock %}
+{% block content %}
+
+<div>
+    <a href="{% url 'producao:producao_home' %}" class="btn_back">Voltar</a>
+</div>
+<div class="title_block">
+    <h1>Reciclado</h1>
+</div>
+<div class="menu">
+    <div>
+        <a href="{% url 'producao:produto_granulado_list' %}">Produtos Granulado</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:reciclado_list' %}">Reciclado</a>
+    </div>
+    <div>
+        <a href="{% url 'producao:movimentos_list' %}">Movimentos MP</a>
+    </div>
+    
+    
+</div>
+
+
+{% endblock %}

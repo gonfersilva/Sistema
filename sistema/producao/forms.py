@@ -23,7 +23,8 @@ class LarguraForm(ModelForm):
 
 
 class BobinagemCreateForm(ModelForm):
-    
+    ESTADO = (('G', 'G'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD','HOLD'), ('SC','SC'))
+    estado = forms.CharField(max_length=4, required=True, widget=forms.Select(choices=ESTADO))
     class Meta:
        model = Bobinagem
        fields = ['data', 'num_bobinagem', 'perfil', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim', 'estado', 'obs']
@@ -49,6 +50,7 @@ class BobinagemCreateForm(ModelForm):
         self.fields['lotenwinf'].initial = lotenwinf
         self.fields['perfil'].initial = perfil
         self.fields['diam'].initial = diam
+        self.fields['estado'].initial = 'LAB'
 
 class BobinagemCreateFormV2(ModelForm):
     nonwoven_sup = forms.CharField(max_length=20, label='Nonwoven Superior', required=True)

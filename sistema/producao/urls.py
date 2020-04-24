@@ -131,6 +131,7 @@ urlpatterns = [
     url(r'^movimentos/create/$', movimento_create, name='movimento_create'),
     url(r'^reciclado/edit/(?P<pk>\d+)/$', reciclado_edit, name='reciclado_edit'),
     url(r'^reciclado/details/(?P<pk>\d+)/$', reciclado_details, name='reciclado_details'),
+    url(r'^bobinagem/exportbobines/$', export_bobine_to_excel, name='export_bobine_to_excel'),
   
     
 ]

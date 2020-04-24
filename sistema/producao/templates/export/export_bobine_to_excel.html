@@ -1,0 +1,45 @@
+{% extends "layout.html "%}
+
+{% load producao_tags %}
+
+
+{% block title %}Exportar para Excel | {{ block.super }}{% endblock %}
+{% block content %}
+      
+<div>
+    <a href="{% url 'producao:bobinagem_list_v3' %}"  class="btn_back" role="button">Voltar</a>
+</div>
+<div class="title_block-list">
+    <h1>Exportar Bobines para excel</h1>
+</div>
+{% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+{% endif %}
+
+<form action="" method="POST" class="submission-form">
+    {% csrf_token %}
+    <label for="id_cliente">Abreviatura Cliente:</label>{{ form.abv }}
+    <label for="id_data_inicial">De:</label>{{ form.data_inicial }}
+    <label for="id_data_final">A:</label>{{ form.data_final }}
+    
+    <input type="submit" value="Exportar" id="validate-btn">
+</form>
+{% endblock %}

@@ -41,12 +41,14 @@ class Perfil(models.Model):
     def __str__(self):
         larguras = Largura.objects.filter(perfil=self)
         nome = self.nome
-
-        if self.retrabalho == True:
-            for lar in larguras:
-                nome += ' - ' + lar.cliente.abv
-            return '%s' % nome 
-        else:
+        try:
+            if self.retrabalho == True:
+                for lar in larguras:
+                    nome += ' - ' + lar.cliente.abv
+                return '%s' % nome 
+            else:
+                return '%s' % (self.nome)
+        except:
             return '%s' % (self.nome)
     
     def get_absolute_url(self):

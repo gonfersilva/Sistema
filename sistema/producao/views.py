@@ -5525,64 +5525,86 @@ def export_bobine_to_excel(request):
         abv = cd.get('abv')
         data_inicial = cd.get('data_inicial')
         data_final = cd.get('data_final')
-        cliente = get_object_or_404(Cliente, abv=abv)
-        bobines = Bobine.objects.filter(largura__cliente=cliente, bobinagem__data__range=(data_inicial, data_final))
+
+        if abv != '' and data_inicial != '' and data_final != '':
+            try:
+                print('yeeeeeeeeeeeeees')
+                cliente = get_object_or_404(Cliente, abv=abv)
+                bobines = Bobine.objects.filter(largura__cliente=cliente, bobinagem__data__range=(data_inicial, data_final))
+                
+                output = io.BytesIO()
+                workbook = xlsxwriter.Workbook(output)
+                worksheet = workbook.add_worksheet()
+
+                row = 1
+                col = 0
+                for bob in bobines:
+                    data = bob.bobinagem.data.strftime('%d-%m-%Y')
+                    worksheet.write(row, col, bob.nome)
+                    worksheet.write(row, col + 1, data)
+                    worksheet.write(row, col + 2, bob.largura.cliente.nome)
+                    worksheet.write(row, col + 3, bob.largura.artigo.cod)
+                    worksheet.write(row, col + 4, bob.area)
+                    row += 1
+
+                worksheet.write('A1', 'Bobine')
+                worksheet.write('B1', 'Data')
+                worksheet.write('C1', 'Cliente')
+                worksheet.write('D1', 'Artigo')
+                worksheet.write('E1', 'SQM')
+
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+                return response
+            except:
+                messages.error(request, 'O cliente com abreviatura ' + abv + ' não existe')
+        elif abv == '' and data_inicial != '' and data_final != '':
+            bobines = Bobine.objects.filter(bobinagem__data__range=(data_inicial, data_final))
+            
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+
+            row = 1
+            col = 0
+            for bob in bobines:
+                data = bob.bobinagem.data.strftime('%d-%m-%Y')
+                worksheet.write(row, col, bob.nome)
+                worksheet.write(row, col + 1, data)
+                worksheet.write(row, col + 2, bob.largura.cliente.nome)
+                worksheet.write(row, col + 3, bob.largura.artigo.cod)
+                worksheet.write(row, col + 4, bob.area)
+                row += 1
+
+            worksheet.write('A1', 'Bobine')
+            worksheet.write('B1', 'Data')
+            worksheet.write('C1', 'Cliente')
+            worksheet.write('D1', 'Artigo')
+            worksheet.write('E1', 'SQM')
+
+            workbook.close()
+
+            output.seek(0)
+
+            filename = 'Bobines.xlsx'
+            response = HttpResponse(
+                output,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+            return response
+
         
-        output = io.BytesIO()
-     
-        workbook = xlsxwriter.Workbook(output)
-        worksheet = workbook.add_worksheet()
-
-        row = 1
-        col = 0
-        for bob in bobines:
-            data = bob.bobinagem.data.strftime('%d-%m-%Y')
-            worksheet.write(row, col, bob.nome)
-            worksheet.write(row, col + 1, data)
-            worksheet.write(row, col + 2, bob.largura.cliente.nome)
-            worksheet.write(row, col + 3, bob.largura.artigo.cod)
-            worksheet.write(row, col + 4, bob.area)
-            row += 1
-
-        worksheet.write('A1', 'Bobine')
-        worksheet.write('B1', 'Data')
-        worksheet.write('C1', 'Cliente')
-        worksheet.write('D1', 'Artigo')
-        worksheet.write('E1', 'SQM')
-
-        workbook.close()
-
-        output.seek(0)
-
-        filename = 'Bobines.xlsx'
-        response = HttpResponse(
-            output,
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
-
-        return response
-        
-
-        
-
-
-
-
-        # try:
-        #     cliente = get_object_or_404(Cliente, abv=abv)
-        #     bobines = Bobine.objects.filter(largura__cliente=cliente, bobinagem__data__range=(data_inicial, data_final))
-        #     response = HttpResponse(content_type='text/csv')
-        #     response['Content-Disposition'] = 'attachment; filename="Bobines List.csv"'
-        #     writer = csv.writer(response)
-        #     writer.writerow(['Bobine', 'Data', 'Cliente', 'Artigo'])
-        #     for bob in bobines:
-        #         writer.writerow([bob.nome, bob.bobinagem.data, bob.largura.cliente.nome, bob.largura.artigo.cod])
-        #     return response
-        # except:
-        #     messages.error(request, 'O cliente não existe.')
-
-
 
     context = {
         "form": form, 

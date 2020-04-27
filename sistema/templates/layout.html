@@ -26,7 +26,7 @@
             {% if user.is_authenticated %}
               <li><a href="{% url 'producao:planeamento_home' %}">Planeamento</a></li>
               <li><a href="{% url 'producao:producao_home' %}">Produção</a></li>
-              <li><a href="{% url 'producao:armazem_home' %}">Armazem</a></li>
+              <li><a href="{% url 'producao:armazem_home' %}">Armazém</a></li>
               <li>{{ user.first_name }} {{ user.last_name }}</li>
               <li><a href="{% url 'users:logout' %}" class="btn_log">Logout</a></li>
             {% else %}

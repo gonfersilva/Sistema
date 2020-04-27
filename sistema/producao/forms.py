@@ -478,7 +478,7 @@ class MovimentoCreateForm(ModelForm):
     
     
 class ExportBobinesToExcel(forms.Form):
-    abv = forms.CharField(max_length=3, required=True)
+    abv = forms.CharField(max_length=3, required=False)
     data_inicial = forms.DateField(required=False)
     data_final = forms.DateField(required=False)
     

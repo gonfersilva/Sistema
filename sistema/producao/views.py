@@ -5528,7 +5528,6 @@ def export_bobine_to_excel(request):
 
         if abv != '' and data_inicial != '' and data_final != '':
             try:
-                print('yeeeeeeeeeeeeees')
                 cliente = get_object_or_404(Cliente, abv=abv)
                 bobines = Bobine.objects.filter(largura__cliente=cliente, bobinagem__data__range=(data_inicial, data_final))
                 

@@ -722,7 +722,7 @@ class MovimentoMP(models.Model):
 class EtiquetaReciclado(models.Model):
     # IMP = (('ARMAZEM_CAB_SQUIX_6.3_200', 'ARMAZEM'))
     user            = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
-    timestamp       = models.DateTimeField(unique=False, null=True, blank=True)
+    # timestamp       = models.DateTimeField(unique=False, null=True, blank=True)
     inicio = models.DateTimeField()
     fim = models.DateTimeField()
     reciclado = models.ForeignKey(Reciclado, on_delete=models.PROTECT, verbose_name="Reciclado")

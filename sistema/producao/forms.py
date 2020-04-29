@@ -467,7 +467,7 @@ class RecicladoEditForm(ModelForm):
         fields = ['produto_granulado', 'estado', 'peso', 'obs']
 
 class ImprimirEtiquetaReciclado(forms.Form):
-    num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=1, max_value=4, min_value=1)
+    num_copias = forms.IntegerField(label="Nº de Cópias", required=True, initial=4, max_value=4, min_value=1)
 
 class MovimentoCreateForm(ModelForm):
   

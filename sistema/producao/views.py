@@ -5356,26 +5356,19 @@ def reciclado_create(request):
             lote = '%s-%s' % (data[0:], str(instance.num))
 
         try:
+            reciclado_latest = Reciclado.objects.all().latest('timestamp')
             instance.lote = lote
             instance.estado = estado
             instance.user = request.user
             instance.timestamp_edit = datetime.now()
             instance.timestamp = datetime.now()
+            instance.timestamp_inicio = reciclado_latest.timestamp
             if estado == 'R' and instance.obs == '':
                 messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
             else:
-                try:
-                    reciclado_latest = Reciclado.objects.all().latest('timestamp')
-                    instance.save()
-                    etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=reciclado_latest.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
-                    etiqueta_reciclado.save()
-                    return redirect('producao:reciclado_details', pk=instance.pk)
-                except:
-                    instance.save()
-                    etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=instance.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
-                    etiqueta_reciclado.save()
-                    return redirect('producao:reciclado_details', pk=instance.pk)
-              
+                instance.save()
+                return redirect('producao:reciclado_details', pk=instance.pk)
+                       
 
         except:
             messages.error(request, 'O lote que pretende criar já existe.')
@@ -5415,20 +5408,39 @@ def reciclado_edit(request, pk):
 @login_required
 def reciclado_details(request, pk):
     reciclado = get_object_or_404(Reciclado, pk=pk)
-    etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=reciclado)
     template_name = 'reciclado/reciclado_details.html'
     form = ImprimirEtiquetaReciclado(request.POST or None)
     if form.is_valid():
-        num_copias = int(form['num_copias'].value())
-        etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
-        etiqueta.num_copias = num_copias
-        etiqueta.estado_impressao = True
-        etiqueta.save()     
-                
+        try:
+            num_copias = int(form['num_copias'].value())
+            etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=reciclado)
+            etiqueta.delete()
+            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias = num_copias, inicio=reciclado.timestamp_inicio, fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
+        except:
+            num_copias = int(form['num_copias'].value())
+            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias = num_copias, inicio=reciclado.timestamp_inicio, fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
+
+    #     num_copias = int(form['num_copias'].value())
+    #     etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
+    #     etiqueta.num_copias = num_copias
+    #     etiqueta.estado_impressao = True
+    #     etiqueta.save()     
+        # try:
+        #     reciclado_latest = Reciclado.objects.all().latest('timestamp')
+        #     instance.save()
+        #     etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=reciclado_latest.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
+        #     etiqueta_reciclado.save()
+        #     return redirect('producao:reciclado_details', pk=instance.pk)
+        # except:
+        #     instance.save()
+        #     etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=instance.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
+        #     etiqueta_reciclado.save()
+        #     return redirect('producao:reciclado_details', pk=instance.pk)
+                       
 
     context = {
         "reciclado": reciclado,
-        "etiqueta": etiqueta, 
+        # "etiqueta": etiqueta, 
         "form": form
     }
 

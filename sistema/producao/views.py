@@ -5420,27 +5420,10 @@ def reciclado_details(request, pk):
             num_copias = int(form['num_copias'].value())
             etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias = num_copias, inicio=reciclado.timestamp_inicio, fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
 
-    #     num_copias = int(form['num_copias'].value())
-    #     etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
-    #     etiqueta.num_copias = num_copias
-    #     etiqueta.estado_impressao = True
-    #     etiqueta.save()     
-        # try:
-        #     reciclado_latest = Reciclado.objects.all().latest('timestamp')
-        #     instance.save()
-        #     etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=reciclado_latest.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
-        #     etiqueta_reciclado.save()
-        #     return redirect('producao:reciclado_details', pk=instance.pk)
-        # except:
-        #     instance.save()
-        #     etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, inicio=instance.timestamp, fim=instance.timestamp, reciclado=instance, lote=instance.lote, produto_granulado=instance.produto_granulado.produto_granulado, peso=instance.peso)
-        #     etiqueta_reciclado.save()
-        #     return redirect('producao:reciclado_details', pk=instance.pk)
-                       
+   
 
     context = {
         "reciclado": reciclado,
-        # "etiqueta": etiqueta, 
         "form": form
     }
 

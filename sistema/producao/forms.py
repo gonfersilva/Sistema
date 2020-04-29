@@ -474,8 +474,6 @@ class MovimentoCreateForm(ModelForm):
     class Meta:
         model = MovimentoMP
         fields = ['lote', 'tipo', 'motivo']
-
-    
     
 class ExportBobinesToExcel(forms.Form):
     abv = forms.CharField(max_length=3, required=False)

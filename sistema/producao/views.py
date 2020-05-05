@@ -103,7 +103,7 @@ def create_bobinagem(request):
             #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
             # if (total_inf > 7500):
 
-            if (total_inf > 7500  or total_sup > 7500):
+            if (total_inf > 7800  or total_sup > 7800):
                 messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido de 7500. Por favor verifique os valores introduzidos.')
             else:
                 instance.save()

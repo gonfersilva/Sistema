@@ -1266,3 +1266,33 @@ input[type=number] {
     border: 2px solid rgb(166, 248, 144);
     border-radius: 10px;
 }
+
+#calendar tr td {
+    border: 2px #0099cc solid;
+}
+.semana {
+    height: 80px;
+    
+}
+
+.semana td {
+    vertical-align: top;
+    text-align: right;
+    
+        
+}
+
+.semana td p {
+    margin-right: 5px;
+    margin-top: 4px;
+    color: black;
+    font-size: 1.2em;
+}
+
+div.legenda p#expedido {
+    color: red;
+}
+
+div.legenda p#previsao {
+    color: green;
+}

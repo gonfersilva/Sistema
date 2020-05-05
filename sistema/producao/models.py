@@ -198,7 +198,7 @@ class Encomenda(models.Model):
     estado              = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado")
     num_cargas_actual   = models.IntegerField(default=0) 
     num_cargas          = models.IntegerField(default=0) 
-    order_num           = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="Order Number")
+    order_num           = models.CharField(max_length=20, unique=False, null=True, blank=True, verbose_name="Order Number")
 
     def __str__(self):
         return self.eef
@@ -223,6 +223,10 @@ class Carga(models.Model):
     sqm                 = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Metros quadrados")
     metros              = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Metros lineares", default=0)
     tipo                = models.CharField(max_length=9, choices=TIPO, default='CONTENTOR', verbose_name="Tipo de Carga")
+    data_expedicao      = models.DateField(null=True, blank=True, verbose_name="Data de expedição")
+    hora_expedicao      = models.TimeField(auto_now_add=False, auto_now=False, verbose_name="Hora de expedição", null=True, blank=True)
+    data_prevista       = models.DateField(null=True, blank=True, verbose_name="Data prevista de expedição")
+    expedida            = models.BooleanField(default=False, verbose_name="Expedida")
 
     def __str__(self):
         return self.carga

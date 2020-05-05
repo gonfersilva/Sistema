@@ -612,26 +612,33 @@ def gerar_etiqueta_final(pk):
     num_palete_carga = palete.num_palete_carga
     artigo = bobine_1.artigo
     ult_cont = EtiquetaFinal.objects.latest('id').cont
-
+    
     cod_cliente_cliente = None
-    if cliente == 'ONTEX':
-        if largura_bobines == 140:
-            cod_cliente_cliente = 'G2.6592'
-        elif largura_bobines == 80:
-            cod_cliente_cliente = 'G2.6590'
-        elif largura_bobines == 70:
-            cod_cliente_cliente = 'G2.6589'
-        elif largura_bobines == 65:
-            cod_cliente_cliente = 'G2.6543'
-        elif largura_bobines == 130:
-            cod_cliente_cliente = 'G2.6591'
-    elif cliente == 'ABENA':
-        if largura_bobines == 150:
-            cod_cliente_cliente = '10000018848'
-    elif cliente == 'Paul Hartman':
-        if largura_bobines == 240:
-            cod_cliente_cliente = 'ELASTEK m16'
-    elif cliente == 'NUNEX' or cliente == 'Faderco SPA':
+    try:
+        artigo_cliente = ArtigoCliente.objects.get(artigo=bobine_1.artigo, cliente=palete.cliente)
+        cod_cliente_cliente = artigo_cliente.cod_client
+    except:
+        cod_cliente_cliente = None
+    
+
+    # if cliente == 'ONTEX':
+    #     if largura_bobines == 140:
+    #         cod_cliente_cliente = 'G2.6592'
+    #     elif largura_bobines == 80:
+    #         cod_cliente_cliente = 'G2.6590'
+    #     elif largura_bobines == 70:
+    #         cod_cliente_cliente = 'G2.6589'
+    #     elif largura_bobines == 65:
+    #         cod_cliente_cliente = 'G2.6543'
+    #     elif largura_bobines == 130:
+    #         cod_cliente_cliente = 'G2.6591'
+    # elif cliente == 'ABENA':
+    #     if largura_bobines == 150:
+    #         cod_cliente_cliente = '10000018848'
+    # elif cliente == 'Paul Hartman':
+    #     if largura_bobines == 240:
+    #         cod_cliente_cliente = 'ELASTEK m16'
+    if cliente == 'NUNEX' or cliente == 'Faderco SPA':
         area = (peso_liquido * 1000) / 100 
         comp_total = (Decimal(area) / ((Decimal(num_bobines) * Decimal(largura_bobines)) * Decimal(0.001))) * (Decimal(num_bobines))
 

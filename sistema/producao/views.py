@@ -27,6 +27,8 @@ import django.core.exceptions
 import csv
 import xlsxwriter
 import io
+from calendar import monthrange
+from datetime import date
 
 
 
@@ -5602,5 +5604,346 @@ def export_bobine_to_excel(request):
 
     context = {
         "form": form, 
+    }
+    return render(request, template_name, context)
+
+def calendario_expedicoes(request):
+    template_name = 'expedicoes/expedicao_calendar.html'
+    ano = datetime.now().strftime('%Y')
+    mes = datetime.now().strftime('%m')
+    month = monthrange(int(ano), int(mes))
+    # month = monthrange(2020, 3)
+    
+
+    num_dias = month[1]
+    primeiro_dia = month[0]
+    semana_1 = [None] * 7
+    semana_2 = [None] * 7
+    semana_3 = [None] * 7
+    semana_4 = [None] * 7
+    semana_5 = [None] * 7
+    semana_6 = [None] * 7
+
+    if primeiro_dia == 0:
+        semana_1[0] = 1
+        semana_1[1] = 2
+        semana_1[2] = 3
+        semana_1[3] = 4
+        semana_1[4] = 5
+        semana_1[5] = 6
+        semana_1[6] = 7
+
+        semana_2[0] = 8
+        semana_2[1] = 9
+        semana_2[2] = 10
+        semana_2[3] = 11
+        semana_2[4] = 12
+        semana_2[5] = 13
+        semana_2[6] = 14
+
+        semana_3[0] = 15
+        semana_3[1] = 16
+        semana_3[2] = 17
+        semana_3[3] = 18
+        semana_3[4] = 19
+        semana_3[5] = 20
+        semana_3[6] = 21
+
+        semana_4[0] = 22
+        semana_4[1] = 23
+        semana_4[2] = 24
+        semana_4[3] = 25
+        semana_4[4] = 26
+        semana_4[5] = 27
+        semana_4[6] = 28
+        if num_dias == 29: 
+            semana_5[0] = 29
+        elif num_dias == 30:
+            semana_5[0] = 29
+            semana_5[1] = 30
+        elif num_dias == 31:
+            semana_5[0] = 29
+            semana_5[1] = 30
+            semana_5[2] = 31
+        
+    elif primeiro_dia == 1:
+        semana_1[1] = 1
+        semana_1[2] = 2
+        semana_1[3] = 3
+        semana_1[4] = 4
+        semana_1[5] = 5
+        semana_1[6] = 5
+
+        semana_2[0] = 7
+        semana_2[1] = 8
+        semana_2[2] = 9
+        semana_2[3] = 10
+        semana_2[4] = 11
+        semana_2[5] = 12
+        semana_2[6] = 13
+
+        semana_3[0] = 14
+        semana_3[1] = 15
+        semana_3[2] = 16
+        semana_3[3] = 17
+        semana_3[4] = 18
+        semana_3[5] = 19
+        semana_3[6] = 20
+
+        semana_4[0] = 21
+        semana_4[1] = 22
+        semana_4[2] = 23
+        semana_4[3] = 24
+        semana_4[4] = 25
+        semana_4[5] = 26
+        semana_4[6] = 27
+
+        semana_5[0] = 28
+        if num_dias == 29: 
+            semana_5[1] = 29
+        elif num_dias == 30:
+            semana_5[1] = 29
+            semana_5[2] = 30
+        elif num_dias == 31:
+            semana_5[1] = 29
+            semana_5[2] = 30
+            semana_5[3] = 31
+        
+    elif primeiro_dia == 2:
+        semana_1[2] = 1
+        semana_1[3] = 2
+        semana_1[4] = 3
+        semana_1[5] = 4
+        semana_1[6] = 5
+
+        semana_2[0] = 6
+        semana_2[1] = 7
+        semana_2[2] = 8
+        semana_2[3] = 9
+        semana_2[4] = 10
+        semana_2[5] = 11
+        semana_2[6] = 12
+
+        semana_3[0] = 13
+        semana_3[1] = 16
+        semana_3[2] = 15
+        semana_3[3] = 16
+        semana_3[4] = 17
+        semana_3[5] = 18
+        semana_3[6] = 19
+
+        semana_4[0] = 20
+        semana_4[1] = 20
+        semana_4[2] = 22
+        semana_4[3] = 23
+        semana_4[4] = 24
+        semana_4[5] = 25
+        semana_4[6] = 26
+
+        semana_5[0] = 27
+        semana_5[1] = 28
+        if num_dias == 29: 
+            semana_5[2] = 29
+        elif num_dias == 30:
+            semana_5[2] = 29
+            semana_5[3] = 30
+        elif num_dias == 31:
+            semana_5[2] = 29
+            semana_5[3] = 30
+            semana_5[4] = 31
+       
+    elif primeiro_dia == 3:
+        semana_1[3] = 1
+        semana_1[4] = 2
+        semana_1[5] = 3
+        semana_1[6] = 4
+
+        semana_2[0] = 5
+        semana_2[1] = 6
+        semana_2[2] = 7
+        semana_2[3] = 8
+        semana_2[4] = 9
+        semana_2[5] = 10
+        semana_2[6] = 11
+
+        semana_3[0] = 12
+        semana_3[1] = 13
+        semana_3[2] = 14
+        semana_3[3] = 15
+        semana_3[4] = 16
+        semana_3[5] = 17
+        semana_3[6] = 18
+
+        semana_4[0] = 19
+        semana_4[1] = 20
+        semana_4[2] = 21
+        semana_4[3] = 22
+        semana_4[4] = 23
+        semana_4[5] = 24
+        semana_4[6] = 25
+
+        semana_5[0] = 26
+        semana_5[1] = 27
+        semana_5[2] = 28
+        if num_dias == 29: 
+            semana_5[3] = 29
+        elif num_dias == 30:
+            semana_5[3] = 29
+            semana_5[4] = 30
+        elif num_dias == 31:
+            semana_5[3] = 29
+            semana_5[4] = 30
+            semana_5[5] = 31
+
+      
+
+        
+    elif primeiro_dia == 4:
+        semana_1[4] = 1
+        semana_1[5] = 2
+        semana_1[6] = 3
+
+        semana_2[0] = 4
+        semana_2[1] = 5
+        semana_2[2] = 6
+        semana_2[3] = 7
+        semana_2[4] = 8
+        semana_2[5] = 9
+        semana_2[6] = 10
+
+        semana_3[0] = 11
+        semana_3[1] = 12
+        semana_3[2] = 13
+        semana_3[3] = 14
+        semana_3[4] = 15
+        semana_3[5] = 16
+        semana_3[6] = 17
+
+        semana_4[0] = 18
+        semana_4[1] = 19
+        semana_4[2] = 20
+        semana_4[3] = 21
+        semana_4[4] = 22
+        semana_4[5] = 23
+        semana_4[6] = 24
+
+        semana_5[0] = 25
+        semana_5[1] = 26
+        semana_5[2] = 27
+        semana_5[3] = 28
+        if num_dias == 29: 
+            semana_5[4] = 29
+        elif num_dias == 30:
+            semana_5[4] = 29
+            semana_5[5] = 30
+        elif num_dias == 31:
+            semana_5[4] = 29
+            semana_5[5] = 30
+            semana_5[6] = 31
+       
+    elif primeiro_dia == 5:
+        semana_1[5] = 1
+        semana_1[6] = 2
+
+        semana_2[0] = 3
+        semana_2[1] = 4
+        semana_2[2] = 5
+        semana_2[3] = 6
+        semana_2[4] = 7
+        semana_2[5] = 8
+        semana_2[6] = 9
+
+        semana_3[0] = 10
+        semana_3[1] = 11
+        semana_3[2] = 12
+        semana_3[3] = 13
+        semana_3[4] = 14
+        semana_3[5] = 15
+        semana_3[6] = 16
+
+        semana_4[0] = 17
+        semana_4[1] = 18
+        semana_4[2] = 19
+        semana_4[3] = 20
+        semana_4[4] = 21
+        semana_4[5] = 22
+        semana_4[6] = 23
+
+        semana_5[0] = 24
+        semana_5[1] = 25
+        semana_5[2] = 26
+        semana_5[3] = 27
+        semana_5[4] = 28
+        if num_dias == 29: 
+            semana_5[5] = 29
+        elif num_dias == 30:
+            semana_5[5] = 29
+            semana_5[6] = 30
+        elif num_dias == 31:
+            semana_5[5] = 29
+            semana_5[6] = 30
+            semana_6[0] = 31
+        
+        
+    elif primeiro_dia == 6:
+        
+        semana_1[6] = 1
+
+        semana_2[0] = 2
+        semana_2[1] = 3
+        semana_2[2] = 4
+        semana_2[3] = 5
+        semana_2[4] = 6
+        semana_2[5] = 7
+        semana_2[6] = 8
+
+        semana_3[0] = 9
+        semana_3[1] = 10
+        semana_3[2] = 11
+        semana_3[3] = 12
+        semana_3[4] = 13
+        semana_3[5] = 14
+        semana_3[6] = 15
+
+        semana_4[0] = 16
+        semana_4[1] = 17
+        semana_4[2] = 18
+        semana_4[3] = 19
+        semana_4[4] = 20
+        semana_4[5] = 21
+        semana_4[6] = 22
+
+        semana_5[0] = 23
+        semana_5[1] = 24
+        semana_5[2] = 25
+        semana_5[3] = 26
+        semana_5[4] = 27
+        semana_5[5] = 28
+        if num_dias == 29: 
+            semana_5[6] = 29
+        elif num_dias == 30:
+            semana_5[6] = 29
+            semana_6[0] = 30
+        elif num_dias == 31:
+            semana_5[6] = 29
+            semana_6[0] = 30
+            semana_6[1] = 31
+         
+             
+    
+  
+
+
+    context = {
+        "ano": ano,
+        "mes": mes,
+        "num_dias":num_dias,
+        "primeiro_dia":primeiro_dia,
+        "semana_1":semana_1,
+        "semana_2":semana_2,
+        "semana_3":semana_3,
+        "semana_4":semana_4,
+        "semana_5":semana_5,
+        "semana_6":semana_6,
     }
     return render(request, template_name, context)

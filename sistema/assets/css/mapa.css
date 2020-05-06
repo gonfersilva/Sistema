@@ -1289,10 +1289,10 @@ input[type=number] {
     font-size: 1.2em;
 }
 
-div.legenda p#expedido {
+p#expedido {
     color: red;
 }
 
-div.legenda p#previsao {
+p#previsao {
     color: green;
 }

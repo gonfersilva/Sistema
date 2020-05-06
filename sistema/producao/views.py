@@ -29,6 +29,7 @@ import xlsxwriter
 import io
 from calendar import monthrange
 from datetime import date
+from collections import defaultdict
 
 
 
@@ -103,7 +104,7 @@ def create_bobinagem(request):
             #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
             # if (total_inf > 7500):
 
-            if (total_inf > 7800  or total_sup > 7800):
+            if (total_inf > 15000  or total_sup > 15000):
                 messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido de 7500. Por favor verifique os valores introduzidos.')
             else:
                 instance.save()
@@ -5612,8 +5613,20 @@ def calendario_expedicoes(request):
     ano = datetime.now().strftime('%Y')
     mes = datetime.now().strftime('%m')
     month = monthrange(int(ano), int(mes))
+    data_inicial = '2020-04-01'
+    data_final = '2020-04-30'
     # month = monthrange(2020, 3)
+    cargas_previstas = Carga.objects.filter(data_prevista__range=(data_inicial, data_final))
+    # cargas_previstas_dia = {}
+    # for cp in cargas_previstas:
+    #     cp_int = (int(cp.data_prevista.strftime('%d')))
+    #     cargas_previstas_dia[cp_int] = cp.carga
+    cargas_previstas_dia = defaultdict(list)
+    for cp in cargas_previstas:
+        cp_int = (int(cp.data_prevista.strftime('%d')))
+        cargas_previstas_dia[cp_int].append(cp.carga)
     
+    print(cargas_previstas_dia)
 
     num_dias = month[1]
     primeiro_dia = month[0]
@@ -5945,5 +5958,7 @@ def calendario_expedicoes(request):
         "semana_4":semana_4,
         "semana_5":semana_5,
         "semana_6":semana_6,
+        "cargas_previstas": cargas_previstas,
+        "cargas_previstas_dia": cargas_previstas_dia
     }
     return render(request, template_name, context)

@@ -1289,10 +1289,13 @@ input[type=number] {
     font-size: 1.2em;
 }
 
-p#expedido {
+#expedido {
     color: red;
+    font-size: 0.6em;
 }
 
-p#previsao {
+#previsao {
     color: green;
+    font-size: 0.6em;
+
 }

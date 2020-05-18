@@ -5613,20 +5613,27 @@ def calendario_expedicoes(request):
     ano = datetime.now().strftime('%Y')
     mes = datetime.now().strftime('%m')
     month = monthrange(int(ano), int(mes))
-    data_inicial = '2020-04-01'
-    data_final = '2020-04-30'
-    # month = monthrange(2020, 3)
+    data_inicial = datetime.now().strftime('%Y-%m-' + str(1))
+    data_final = datetime.now().strftime('%Y-%m-' + str(month[1]))
     cargas_previstas = Carga.objects.filter(data_prevista__range=(data_inicial, data_final))
-    # cargas_previstas_dia = {}
-    # for cp in cargas_previstas:
-    #     cp_int = (int(cp.data_prevista.strftime('%d')))
-    #     cargas_previstas_dia[cp_int] = cp.carga
+    cargas_expedidas = Carga.objects.filter(expedida=True, data_expedicao__range=(data_inicial, data_final))
+    
     cargas_previstas_dia = defaultdict(list)
+    cargas_expedidas_dia = defaultdict(list)
+    
     for cp in cargas_previstas:
         cp_int = (int(cp.data_prevista.strftime('%d')))
-        cargas_previstas_dia[cp_int].append(cp.carga)
+        cargas_previstas_dia[cp_int].append(cp)
+    
+    for ce in cargas_expedidas:
+        ce_int = (int(ce.data_expedicao.strftime('%d')))
+        cargas_expedidas_dia[ce_int].append(ce)
+   
+    cargas_previstas_dia = dict(cargas_previstas_dia)
+    cargas_expedidas_dia = dict(cargas_expedidas_dia)
     
     print(cargas_previstas_dia)
+    print(cargas_expedidas_dia)
 
     num_dias = month[1]
     primeiro_dia = month[0]
@@ -5959,6 +5966,8 @@ def calendario_expedicoes(request):
         "semana_5":semana_5,
         "semana_6":semana_6,
         "cargas_previstas": cargas_previstas,
-        "cargas_previstas_dia": cargas_previstas_dia
+        "cargas_previstas_dia": cargas_previstas_dia,
+        "cargas_expedidas": cargas_expedidas,
+        "cargas_expedidas_dia": cargas_expedidas_dia
     }
     return render(request, template_name, context)

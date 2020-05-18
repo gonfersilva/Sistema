@@ -886,7 +886,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'FRONTAL TAPE 48': 'M', 
         'CAR PROTECTION SHEET 57': 'N', 
         'ELASTIC FILM': 'O',
-        'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)': 'P'
+        'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)': 'P',
+        'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE': 'Q'
     }
 
     gsm_dict = {
@@ -897,7 +898,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         '80': '5',
         '57': '6',
         '50': '7',
-        '48': '8'
+        '48': '8',
+        '75': '9'
     }
 
     token = '' + str(num_bobines) + produtos_dict.get(produto) + core 

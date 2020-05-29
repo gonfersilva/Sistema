@@ -5049,7 +5049,7 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
 @login_required
 def bobinagem_classificacao(request, pk):
-    BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt', 'fc', 'fc_diam_fim', 'fc_diam_ini', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs','outros','obs','troca_nw'), extra=0, can_delete=False)
+    BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt', 'fc',  'fc_diam_ini', 'fc_diam_fim', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs','outros','obs','troca_nw'), extra=0, can_delete=False)
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'bobine/bobinagem_classificacao.html'

@@ -5134,7 +5134,7 @@ def classificacao_bobines_all(request, operation, pk):
         return redirect('producao:bobinestatus', pk=bobinagem.pk)        
     elif operation == 'hold':
         for bob in bobines:
-            if bob.estado == 'LAB':
+            if bob.estado == 'LAB' or bob.estado == 'DM':
                 bob.estado = 'HOLD'
                 bob.save()
         return redirect('producao:bobinestatus', pk=bobinagem.pk)

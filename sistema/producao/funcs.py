@@ -887,7 +887,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'CAR PROTECTION SHEET 57': 'N', 
         'ELASTIC FILM': 'O',
         'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)': 'P',
-        'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE': 'Q'
+        'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE': 'Q',
+        'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT': 'R'
     }
 
     gsm_dict = {

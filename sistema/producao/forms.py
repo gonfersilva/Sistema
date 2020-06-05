@@ -214,6 +214,7 @@ class EncomendaCreateForm(forms.ModelForm):
     class Meta:
         model = Encomenda
         fields = ['cliente', 'data', 'eef', 'prf', 'sqm', 'num_cargas', 'order_num']
+        ordering = ('cliente')
 
     def __init__(self, *args, **kwargs):
         encomenda = Encomenda.objects.all().latest('id')
@@ -230,6 +231,7 @@ class EncomendaCreateForm(forms.ModelForm):
         self.fields['cliente'].initial = cliente
         self.fields['num_cargas'].initial = num_cargas
         self.fields['sqm'].initial = sqm
+        self.fields['cliente'].queryset = Cliente.objects.order_by('nome')
 
 
 

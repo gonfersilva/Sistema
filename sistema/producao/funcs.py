@@ -888,7 +888,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'ELASTIC FILM': 'O',
         'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)': 'P',
         'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE': 'Q',
-        'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT': 'R'
+        'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT': 'R',
+        'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE': 'S',
     }
 
     gsm_dict = {
@@ -900,7 +901,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         '57': '6',
         '50': '7',
         '48': '8',
-        '75': '9'
+        '75': '9',
+        '60': '10'
     }
 
     token = '' + str(num_bobines) + produtos_dict.get(produto) + core 

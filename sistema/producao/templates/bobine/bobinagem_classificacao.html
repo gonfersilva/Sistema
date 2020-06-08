@@ -79,7 +79,40 @@
                 </tr>
             </thead>
             <tbody>
-                <tbody>    
+                <tbody>   
+                    <!-- <tr>
+                        <td></td>
+                        <td></td>
+                        <td><input type="text" id="l_real" name="Largura Real"></td>
+                        <td><input type="checkbox" id="nok" name="Largura NOK"></td>
+                        <td><input type="checkbox" id="con" name="Cónico"></td>
+                        <td><input type="checkbox" id="desc" name="vehicle1"></td>
+                        <td><input type="checkbox" id="presa" name="vehicle1"></td>
+                        <td><input type="checkbox" id="diam" name="vehicle1"></td>
+                        <td><input type="checkbox" id="suj" name="vehicle1"></td>
+                        <td><input type="checkbox" id="car" name="vehicle1"></td>
+                        <td><input type="checkbox" id="lac" name="vehicle1"></td>
+                        <td><input type="checkbox" id="ncol" name="vehicle1"></td>
+                        <td><input type="checkbox" id="sbrt" name="vehicle1"></td>
+                        <td><input type="checkbox" id="fc" name="vehicle1"></td>
+                        <td><input type="text" id="fc_diam_ini" name="vehicle1"></td>
+                        <td><input type="text" id="fc_diam_fim" name="vehicle1"></td>
+                        <td><input type="checkbox" id="ff" name="vehicle1"></td>
+                        <td><input type="text" id="ff_m_ini" name="vehicle1"></td>
+                        <td><input type="text" id="ff_m_fim" name="vehicle1"></td>
+                        <td><input type="checkbox" id="fmp" name="Falha Matéria Prima"></td>
+                        <td><input type="checkbox" id="fur" name="Furos"></td>
+                        <td><input type="checkbox" id="bur" name="Buracos"></td>
+                        <td><input type="checkbox" id="esp" name="Gramagem"></td>
+                        <td><input type="checkbox" id="prop" name="Propriedades"></td>
+                        <td><input type="text" id="propobs" name="Propriedades Observações"></td>
+                        <td><input type="checkbox" id="out" name="Outros"></td>
+                        <td><input type="text" id="obs" name="Observações"></td>
+                        <td><input type="checkbox" id="trocanw" name="Troca NW"></td>
+                        
+                        
+                       
+                    </tr>  -->
                     <!-- {{ formset }} -->
                     {% for form in formset %}
                         <tr>
@@ -127,8 +160,59 @@
         </table>
     </form>
 </div>
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+<!-- <script>
+$(document).ready(function() {
+    
+    $('#nok').change(function() {
+        if( $('#nok').is(":checked")){
+            var n = 0
+            var rowCount = $('#defeitos tr').length - 2;
+            for(i = 0; i < rowCount; i++){
+                id_bobine = "#id_bobine_set-" + i + "-nok"
+                $(id_bobine).prop("checked", true);
+            }
+        } else {
+            var n = 0
+            var rowCount = $('#defeitos tr').length - 2;
+            for(i = 0; i < rowCount; i++){
+                id_bobine = "#id_bobine_set-" + i + "-nok"
+                $(id_bobine).prop("checked", false);
+            }
+        }
+    });
+    $('#con').change(function() {
+        if( $('#con').is(":checked")){
+            var n = 0
+            var rowCount = $('#defeitos tr').length - 2;
+            for(i = 0; i < rowCount; i++){
+                id_bobine = "#id_bobine_set-" + i + "-con"
+                $(id_bobine).prop("checked", true);
+            }
+        } else {
+            var n = 0
+            var rowCount = $('#defeitos tr').length - 2;
+            for(i = 0; i < rowCount; i++){
+                id_bobine = "#id_bobine_set-" + i + "-con"
+                $(id_bobine).prop("checked", false);
+            }
+        }
+    });
+
+});
+</script> -->
 
 {% endblock %}
+               
+
+
+            
+        
+        
+        
+            
                                 
                                 
                                 

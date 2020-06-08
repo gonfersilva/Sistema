@@ -891,8 +891,13 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT': 'R',
         'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE': 'S',
         'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT': 'T',
-    }
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B': 'U',
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A':'V',
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 23B': 'W',
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 23A': 'X'
 
+    }
+    
     gsm_dict = {
         '105': '1',
         '100': '2',
@@ -903,7 +908,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         '50': '7',
         '48': '8',
         '75': '9',
-        '60': '10'
+        '60': '10',
+        '45': '11',
     }
 
     token = '' + str(num_bobines) + produtos_dict.get(produto) + core 

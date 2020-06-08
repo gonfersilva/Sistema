@@ -5072,25 +5072,25 @@ def bobinagem_classificacao(request, pk):
                 defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
                 defeitos_validation = not any(defeitos)
                 index += 1
-                if estado == 'DM' and defeitos_validation == True:
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM é necessário atribuir pelo menos um defeito.')
+                if (estado == 'DM' or estado == 'R') and defeitos_validation == True:
+                    messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM ou R é necessário atribuir pelo menos um defeito.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
+                elif (estado == 'DM' or estado == 'R') and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
                     messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
+                elif (estado == 'DM' or estado == 'R') and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
                     messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[12] == True and obs == '':
+                elif (estado == 'DM' or estado == 'R') and defeitos[12] == True and obs == '':
                     messages.error(request, 'Bobine nº' + str(index) + ' - Falha de MP: Preencher nas observações o motivo.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[14] == True and obs == '':
+                elif (estado == 'DM' or estado == 'R') and defeitos[14] == True and obs == '':
                     messages.error(request, 'Bobine nº' + str(index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[15] == True and prop_obs == '':
+                elif (estado == 'DM' or estado == 'R') and defeitos[15] == True and prop_obs == '':
                     messages.error(request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
                     messages_count += 1
-                elif estado == 'DM' and defeitos[16] == True and prop_obs == '':
+                elif (estado == 'DM' or estado == 'R') and defeitos[16] == True and prop_obs == '':
                     messages.error(request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
                     messages_count += 1
                 else:

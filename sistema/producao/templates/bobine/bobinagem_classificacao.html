@@ -37,8 +37,8 @@
         {{ formset.management_form }}
         <input type="submit" value="Validar" id="validate-btn">
         <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='hold' %}" class="btn_hold" role="button">Hold</a>
-        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a>
-        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a>
+        <!-- <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a> -->
+        <!-- <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a> -->
         <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='ap' %}" class="btn_g" role="button">Aprovar</a>
         <table class="content-table" id="defeitos">
             <thead>
@@ -80,19 +80,30 @@
             </thead>
             <tbody>
                 <tbody>   
-                    <!-- <tr>
-                        <td></td>
-                        <td></td>
+                    <tr>
+                        <td>Geral</td>
+                        <td><select name="estado" id="estado">
+                                <option value="---">---</option>
+                                <option value="G">G</option>
+                                <option value="DM">DM12</option>
+                                <option value="R">R</option>
+                                <option value="BA">BA</option>
+                                <option value="LAB">LAB</option>
+                                <option value="IND">IND</option>
+                                <option value="HOLD">HOLD</option>
+                                <option value="SC">SC</option>
+                            </select>
+                        </td>
                         <td><input type="text" id="l_real" name="Largura Real"></td>
                         <td><input type="checkbox" id="nok" name="Largura NOK"></td>
                         <td><input type="checkbox" id="con" name="Cónico"></td>
-                        <td><input type="checkbox" id="desc" name="vehicle1"></td>
-                        <td><input type="checkbox" id="presa" name="vehicle1"></td>
-                        <td><input type="checkbox" id="diam" name="vehicle1"></td>
+                        <td><input type="checkbox" id="descen" name="Descentrada"></td>
+                        <td><input type="checkbox" id="presa" name="Presa"></td>
+                        <td><input type="checkbox" id="diam_insuf" name="Diêmetro Insuficiente"></td>
                         <td><input type="checkbox" id="suj" name="vehicle1"></td>
                         <td><input type="checkbox" id="car" name="vehicle1"></td>
                         <td><input type="checkbox" id="lac" name="vehicle1"></td>
-                        <td><input type="checkbox" id="ncol" name="vehicle1"></td>
+                        <td><input type="checkbox" id="ncore" name="vehicle1"></td>
                         <td><input type="checkbox" id="sbrt" name="vehicle1"></td>
                         <td><input type="checkbox" id="fc" name="vehicle1"></td>
                         <td><input type="text" id="fc_diam_ini" name="vehicle1"></td>
@@ -101,54 +112,25 @@
                         <td><input type="text" id="ff_m_ini" name="vehicle1"></td>
                         <td><input type="text" id="ff_m_fim" name="vehicle1"></td>
                         <td><input type="checkbox" id="fmp" name="Falha Matéria Prima"></td>
-                        <td><input type="checkbox" id="fur" name="Furos"></td>
-                        <td><input type="checkbox" id="bur" name="Buracos"></td>
+                        <td><input type="checkbox" id="furos" name="Furos"></td>
+                        <td><input type="checkbox" id="buraco" name="Buracos"></td>
                         <td><input type="checkbox" id="esp" name="Gramagem"></td>
                         <td><input type="checkbox" id="prop" name="Propriedades"></td>
-                        <td><input type="text" id="propobs" name="Propriedades Observações"></td>
-                        <td><input type="checkbox" id="out" name="Outros"></td>
+                        <td><input type="text" id="prop_obs" name="Propriedades Observações"></td>
+                        <td><input type="checkbox" id="outros" name="Outros"></td>
                         <td><input type="text" id="obs" name="Observações"></td>
-                        <td><input type="checkbox" id="trocanw" name="Troca NW"></td>
+                        <td><input type="checkbox" id="troca_nw" name="Troca NW"></td>
                         
                         
                        
-                    </tr>  -->
-                    <!-- {{ formset }} -->
+                    </tr> 
                     {% for form in formset %}
                         <tr>
                             <td>{{ forloop.counter}}</td>
                             {% for field in form %}
                             <td>{{ field }}</td>
                             {% endfor %}
-                            <!-- <td>{{ form.estado }}</td>
-                            <td>{{ form.l_real }}</td>
-                            <td>{{ form.con }}</td>
-                            <td>{{ form.descen }}</td>
-                            <td>{{ form.presa }}</td>
-                            <td>{{ form.diam_insuf }}</td>
-                            <td>{{ form.furos }}</td>
-                            <td>{{ form.buraco }}</td>
-                            <td>{{ form.esp }}</td>
-                            <td>{{ form.troca_nw }}</td>
-                            <td>{{ form.nok }}</td>
-                            <td>{{ form.fc }}</td>
-                            <td>{{ form.fc_diam_ini }}</td>
-                            <td>{{ form.fc_diam_fim }}</td>
-                            <td>{{ form.ff }}</td>
-                            <td>{{ form.ff_m_ini }}</td>
-                            <td>{{ form.ff_m_fim }}</td>
-                            <td>{{ form.fmp }}</td>
-                            <td>{{ form.suj }}</td>
-                            <td>{{ form.car }}</td>
-                            <td>{{ form.lac }}</td>
-                            <td>{{ form.ncore }}</td>
-                            <td>{{ form.sbrt }}</td>
-                            <td>{{ form.prop }}</td>
-                            <td>{{ form.prop_obs }}</td>
-                            <td>{{ form.outros }}</td>
-                            <td>{{ form.obs }}</td> -->
-                                  
-                        
+                                                  
                             
                             
                             
@@ -160,49 +142,62 @@
         </table>
     </form>
 </div>
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-<!-- <script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
 $(document).ready(function() {
     
-    $('#nok').change(function() {
-        if( $('#nok').is(":checked")){
+    $(':checkbox').change(function() {
+        var id = $(this).attr('id');
+        if( $('#' + id).is(":checked")){
             var n = 0
             var rowCount = $('#defeitos tr').length - 2;
             for(i = 0; i < rowCount; i++){
-                id_bobine = "#id_bobine_set-" + i + "-nok"
+                id_bobine = "#id_bobine_set-" + i + "-" + id
                 $(id_bobine).prop("checked", true);
             }
         } else {
             var n = 0
             var rowCount = $('#defeitos tr').length - 2;
             for(i = 0; i < rowCount; i++){
-                id_bobine = "#id_bobine_set-" + i + "-nok"
+                id_bobine = "#id_bobine_set-" + i + "-" + id
                 $(id_bobine).prop("checked", false);
             }
         }
     });
-    $('#con').change(function() {
-        if( $('#con').is(":checked")){
-            var n = 0
-            var rowCount = $('#defeitos tr').length - 2;
-            for(i = 0; i < rowCount; i++){
-                id_bobine = "#id_bobine_set-" + i + "-con"
-                $(id_bobine).prop("checked", true);
-            }
-        } else {
-            var n = 0
-            var rowCount = $('#defeitos tr').length - 2;
-            for(i = 0; i < rowCount; i++){
-                id_bobine = "#id_bobine_set-" + i + "-con"
-                $(id_bobine).prop("checked", false);
-            }
+    $(':text').keyup(function() {
+        var id = $(this).attr('id');
+        console.log(id)
+        var val = $('#' + id).val()
+        console.log(val)
+        var rowCount = $('#defeitos tr').length - 2;
+        for(i = 0; i < rowCount; i++){
+            id_bobine = "#id_bobine_set-" + i + "-" + id
+            $(id_bobine).val(val);
         }
+        
+        
+        
     });
+    $('select').change(function() {
+        var id = $(this).attr('id');
+        console.log(id)
+        var val = $('#' + id).val()
+        console.log(val)
+        var rowCount = $('#defeitos tr').length - 2;
+        for(i = 0; i < rowCount; i++){
+            id_bobine = "#id_bobine_set-" + i + "-" + id
+            $(id_bobine).val(val);
+        }
+        
+        
+        
+    });
+   
 
 });
-</script> -->
+</script>
 
 {% endblock %}
                

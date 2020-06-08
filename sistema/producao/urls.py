@@ -61,7 +61,6 @@ urlpatterns = [
     url(r'^etiqueta/palete/(?P<pk>\d+)/reabrir/$', reabrir_palete, name='reabrir_palete'),
     url(r'^palete/(?P<pk>\d+)/ordenar/$', ordenar_bobines, name='ordenar_bobines'),
     url(r'^palete/(?P<pk>\d+)/(?P<operation>.+)/$', ordenar_bobines_op, name='ordenar_bobines_op'),
-    # url(r'^bobinagem/(?P<pk>\d+)/classificacao/$', c_bobines, name='classificacao_bobines'),
     url(r'^palete/validate/(?P<pk>\d+)/(?P<id_bobines>[\w\-]+)/$', palete_confirmation, name='palete_confirmation'),
     url(r'^palete/reabrir/(?P<pk>\d+)/$', palete_rabrir, name='palete_rabrir'),
     url(r'^palete/dm/(?P<pk>\d+)/$', palete_picagem_dm, name='palete_picagem_dm'),

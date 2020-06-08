@@ -893,11 +893,11 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT': 'T',
         'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B': 'U',
         'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A':'V',
-        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 23B': 'W',
-        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 23A': 'X'
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B': 'W',
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A': 'X'
 
     }
-    
+
     gsm_dict = {
         '105': '1',
         '100': '2',

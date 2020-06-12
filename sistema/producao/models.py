@@ -121,7 +121,7 @@ class ArtigoCliente(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo")
     cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name="Cliente")
-    cod_client = models.CharField(max_length=200, unique=True, verbose_name="Cód. Cliente", null=True, blank=True)
+    cod_client = models.CharField(max_length=200, unique=False, verbose_name="Cód. Cliente", null=True, blank=True)
 
     
     class Meta:

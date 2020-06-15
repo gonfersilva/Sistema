@@ -894,7 +894,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B': 'U',
         'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A':'V',
         'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B': 'W',
-        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A': 'X'
+        'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A': 'X',
+        'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE': 'Y'
 
     }
 

@@ -247,7 +247,7 @@ class CargaCreateForm(forms.ModelForm):
         num_paletes = carga.num_paletes
         tipo = carga.tipo
         super(CargaCreateForm, self).__init__(*args, **kwargs)     
-        self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')  
+        self.fields['enc'].queryset = Encomenda.objects.filter(estado='A').order_by('-eef')
         self.fields['enc'].initial = enc
         self.fields['num_carga'].initial = num_carga
         self.fields['num_paletes'].initial = num_paletes

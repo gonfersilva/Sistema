@@ -1,0 +1,176 @@
+{% extends "layout.html "%} 
+{% load bootstrap3 %}
+{% load producao_tags %}
+{% block title %}Editar Bobinagem | {{ block.super }}{% endblock %}
+{% block content %}
+{% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
+<div>
+    <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
+    
+</div>
+<div class="title_block-list">
+    <h1>Editar Bobinagem</h1>
+    <h2>{{ bobinagem.nome }}</h2>
+    <h3>Atenção: Todas as Bobines desta Bobinagem serão editadas no momento da validação.</h3>
+</div>
+{% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+    {% endfor %}
+
+</div>
+{% endif %}
+<div>
+    {% if has_palete == False %}
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="content-form">
+            <div class="form_create_bobinagem_2">
+                <div><label for="id_inico">Início: </label>{{ form.inico }}</div>
+                <div><label for="id_fim">Fim: </label>{{ form.fim }}</div>
+                
+            </div>
+                    
+            <div class="form_create_bobinagem_2">
+                <div><label for="id_diam">Diâmetro: </label>{{ form.diam }}</div>
+                <div><label for="id_comp">Comp. Final: </label>{{ form.comp }}</div>
+                <div><label for="id_comp_par">Comp. Emenda: </label>{{ form.comp_par }}</div>
+            </div>
+            
+            <div class="title_block-list">
+                <h2>Nonwoven</h2>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><h3>Superior</h3></div>
+                <div><h3>Inferior</h3></div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_tiponwsup">Tipo: </label>{{ form.tiponwsup }}</div>
+                <div><label for="id_tiponwinf">Tipo: </label>{{ form.tiponwinf }}</div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_lotenwsup">Lote: </label>{{ form.lotenwsup }}</div>
+                <div><label for="id_lotenwinf">Lote: </label>{{ form.lotenwinf }}</div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_nwsup">Consumo: </label>{{ form.nwsup }}</div>
+                <div><label for="id_nwinf">Consumo: </label>{{ form.nwinf }}</div>
+            </div>
+            <div class="title_block-list">
+                <h2>Observações</h2>
+            </div>
+            <div class="content-form-2">
+                <div>{{ form.obs }}</div>
+            </div>
+            {% csrf_token %}
+            <a href="{% url 'producao:bobinagem_list_v3' %}"  class="btn_back" role="button">Voltar</a>
+            <input type="submit" id="validate-btn" value="Validar">
+        </div>
+    
+    </form>
+    {% else %}
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="content-form">
+            <div class="form_create_bobinagem_2">
+                <div><label for="id_inico">Início: </label>{{ form_has_palete.inico }}</div>
+                <div><label for="id_fim">Fim: </label>{{ form_has_palete.fim }}</div>
+                
+            </div>
+            <h3>Não é possével alterar as dimensões da bobingem porque uma ou mais bobines já se encontram atribuidas a Paletes para cliente.</h3>     
+            <div class="form_create_bobinagem_2">
+                <div><label>Diâmetro: </label>N/A</div>
+                <div><label>Comp. Final: </label>N/A</div>
+                <div><label>Comp. Emenda: </label>N/A</div>
+            </div>
+            
+            <div class="title_block-list">
+                <h2>Nonwoven</h2>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><h3>Superior</h3></div>
+                <div><h3>Inferior</h3></div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_tiponwsup">Tipo: </label>{{ form_has_palete.tiponwsup }}</div>
+                <div><label for="id_tiponwinf">Tipo: </label>{{ form_has_palete.tiponwinf }}</div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_lotenwsup">Lote: </label>{{ form_has_palete.lotenwsup }}</div>
+                <div><label for="id_lotenwinf">Lote: </label>{{ form_has_palete.lotenwinf }}</div>
+            </div>
+            <div class="form_create_bobinagem_3">
+                <div><label for="id_nwsup">Consumo: </label>{{ form_has_palete.nwsup }}</div>
+                <div><label for="id_nwinf">Consumo: </label>{{ form_has_palete.nwinf }}</div>
+            </div>
+            <div class="title_block-list">
+                <h2>Observações</h2>
+            </div>
+            <div class="content-form-2">
+                <div>{{ form_has_palete.obs }}</div>
+            </div>
+            {% csrf_token %}
+            <a href="{% url 'producao:bobinagem_list_v3' %}"  class="btn_back" role="button">Voltar</a>
+            <input type="submit" id="validate-btn" value="Validar">
+        </div>
+    
+    </form>
+    {% endif %}
+</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+</script>
+{% else %}
+<div class="title_block-list">
+    <h1>Acesso Restrito</h1>
+</div>
+{% endif %}
+
+
+
+{% endblock %}
+               
+
+
+            
+        
+        
+        
+            
+                                
+                                
+                                
+                  

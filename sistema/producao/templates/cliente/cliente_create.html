@@ -7,6 +7,7 @@
 <div>
     <a href="{% url 'producao:clientes' %}"  class="btn_back" role="button">Voltar</a>
 </div>
+{% if request.user|has_group:"Logistica Supervisor"%}
 <div class="title_block-list">
     <h1>Criar Cliente</h1>
 </div>
@@ -20,5 +21,8 @@
     <label for="id_diam_ref">Diâmetro de referência</label>{{ form.diam_ref }}
     <input type="submit" value="Validar" id="validate-btn">
 </form>
+{% else %}
+<h3>Acesso Restrito</h3>       
+{% endif %} 
 
 {% endblock %}

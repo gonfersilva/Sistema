@@ -1,13 +1,15 @@
 {% extends "layout.html " %} 
 {% load bootstrap3 %}
 {% load static %}
-
+{% load producao_tags %}
 {% block title %}Paletes | {{ block.super }}{% endblock %} 
 {% block content %}
 <div>
     <form>
         <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+        {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
         <a href="{% url 'producao:palete_create' %}"  class="btn_create" role="button">Criar Palete</a>
+        {% endif %}
 
     </form>
 </div>
@@ -53,7 +55,9 @@
                 <td>{{ pal.cliente }}</td>
                 <td>{{ pal.area }}</td>
                 <td>{{ pal.comp_total }}</td>
+                {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
                 <td class="td-icon"><a href="{% url 'producao:palete_delete' pk=pal.pk %}"><i class="fas fa-trash"></i></a></td>
+                {% endif %}
 
                 
             </tr>

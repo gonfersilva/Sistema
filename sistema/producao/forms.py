@@ -289,9 +289,9 @@ class AcompanhamentoDiarioSearchForm(forms.Form):
 
 
 class RetrabalhoFormEmendas(forms.Form):
-    bobine_1 = forms.CharField(max_length=14, label='Bobine original 1', required=True)
-    bobine_2 = forms.CharField(max_length=14, label='Bobine original 2', required=False)
-    bobine_3 = forms.CharField(max_length=14, label='Bobine original 3', required=False)
+    bobine_1 = forms.CharField(max_length=15, label='Bobine original 1', required=True)
+    bobine_2 = forms.CharField(max_length=15, label='Bobine original 2', required=False)
+    bobine_3 = forms.CharField(max_length=15, label='Bobine original 3', required=False)
     m_bobine_1 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 1', required=True)
     m_bobine_2 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 2', required=False)
     m_bobine_3 = forms.DecimalField(max_digits=6, decimal_places=2, label='Metros enrolados da bobine original 3', required=False)
@@ -481,6 +481,41 @@ class ExportBobinesToExcel(forms.Form):
     abv = forms.CharField(max_length=3, required=False)
     data_inicial = forms.DateField(required=False)
     data_final = forms.DateField(required=False)
+
+class BobinagemEditForm(ModelForm):
+    class Meta:
+        model = Bobinagem
+        fields = ['inico', 'fim', 'diam', 'comp', 'comp_par', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'obs']
+
+class BobinagemEditHasPaleteForm(ModelForm):
+    class Meta:
+        model = Bobinagem
+        fields = ['inico', 'fim', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'obs']
+
+class BobineEditForm(ModelForm):
+    CLIENTE = (
+        ('Novatis','Novatis'),('El Ghazou','El Ghazou'), ('CEPRO','CEPRO'),('SAH','SAH'),
+        ('PAKTEN SAGLIK URUNLERI','PAKTEN SAGLIK URUNLERI'),('BB DISTRIBE SAS','BB DISTRIBE SAS'),
+        ('Fine Hygienic Paper Co.','Fine Hygienic Paper Co.'),('Ali Bardi Paper Mill Co.','Ali Bardi Paper Mill Co.'),('Hygienic Paper Company Ltd','Hygienic Paper Company Ltd'),
+        ('ONTEX','ONTEX'),('ABENA','ABENA'),('NORSUDEX','NORSUDEX'),('HALK HYGIENE','HALK HYGIENE'),('MEDIANE','MEDIANE'),('PAUL HARTMANN AG','PAUL HARTMANN AG'),
+        ('PANAI S.A.L.','PANAI S.A.L.'),('NUNEX','NUNEX'),('Sanita S.A.L.','Sanita S.A.L.'),('PARMON','PARMON'),('ARKAN','ARKAN'),('MEGA DISPOSABLES S.A.','MEGA DISPOSABLES S.A.'),('National Pride','National Pride'),
+        ('Drylock Technologies SL','Drylock Technologies SL'),('Cleopatra Tissue Products (PTY) Ltd','Cleopatra Tissue Products (PTY) Ltd'),('Celluloses de Brocéliande','Celluloses de Brocéliande'),
+        ('Pozzani Disposables S.p.A.','Pozzani Disposables S.p.A.'),('SANCELLA TUNISIE','SANCELLA TUNISIE'),('Faderco SPA','Faderco SPA'),('MADAR GROUP','MADAR GROUP'),
+        ('Sté SOFAS S.A.R.L.','Sté SOFAS S.A.R.L.'),('PREMIUM HYGIENE','PREMIUM HYGIENE'),('DIATEC S.r.l','DIATEC S.r.l'),
+        ('ENKA HIJYEN','ENKA HIJYEN'),('Ontex Tuketim Urunleri San.ve TIC.A','Ontex Tuketim Urunleri San.ve TIC.A'),('FAS SOCIETA´ PER AZIONI','FAS SOCIETA´ PER AZIONI'),('NAPCO RIYADH PAPER PRODUCTS CO.','NAPCO RIYADH PAPER PRODUCTS CO.'),
+        ('Activ Medical Disposable','Activ Medical Disposable'),('Drylock Technologies Ltd','Drylock Technologies Ltd'),('Drylock Technologies sro','Drylock Technologies sro'),
+        ('NANO','NANO'),('ClotheUp','ClotheUp'),('Obviperiplo, Lda','Obviperiplo, Lda'),('Hospital Doutor Francisco Zagalo','Hospital Doutor Francisco Zagalo'),
+        ('MACONFIL, Unipessoal, Lda','MACONFIL, Unipessoal, Lda'),('NORTE EM AÇÃO (SAOM - Serviços de Assistência)','NORTE EM AÇÃO (SAOM - Serviços de Assistência)'),
+        ('Hospital Garcia de Orta','Hospital Garcia de Orta'),('Napco Consumer Products Co.','Napco Consumer Products Co.'),('National Paper Company Ltd.','National Paper Company Ltd.'),
+        ('SANITA CONSUMER PRODUCTS S.A.E.','SANITA CONSUMER PRODUCTS S.A.E.'))
+    cliente = forms.CharField(max_length=100, required=True, widget=forms.Select(choices=CLIENTE))
+    
+    class Meta:
+        model = Bobine
+        fields = ['cliente', 'artigo', 'designacao_prod', 'comp', 'diam']
+
+      
+
     
 
     

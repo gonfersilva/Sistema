@@ -9,7 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, TemplateView,
 from .forms import *
 from .models import ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.db.models.signals import pre_save, post_save
 from django.contrib import messages
@@ -3547,7 +3547,7 @@ def palete_picagem(request, pk):
                         array_bobines.append(bobine)
                         array_cores.append(bobine.bobinagem.perfil.core)
                         array_larguras.append(bobine.largura.largura)
-                        array_produtos.append(bobine.largura.designacao_prod)
+                        array_produtos.append(bobine.designacao_prod)
                         array_estados.append(bobine.estado)
 
                         if bobine.estado != 'G' and bobine.estado != 'LAB' and bobine.estado != 'SC':
@@ -3561,10 +3561,10 @@ def palete_picagem(request, pk):
                                 validation = False
                             
 
-                        if bobine.bobinagem.diam > cliente.limsup:
+                        if bobine.diam > cliente.limsup:
                             messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.') 
                             validation = False
-                        elif bobine.bobinagem.diam > cliente.limsup:
+                        elif bobine.diam > cliente.limsup:
                             messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
                             validation = False
 
@@ -3620,7 +3620,7 @@ def palete_picagem(request, pk):
                         bob.palete = palete
                         bob.posicao_palete = c
                         area_sum += bob.area
-                        comp_total += bob.bobinagem.comp_cli 
+                        comp_total += bob.comp
                         bob.save()
                         movimento_bobine = MovimentosBobines.objects.create(bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
 
@@ -3659,7 +3659,7 @@ def palete_picagem(request, pk):
                                         
                     for bn in bobines:
                         bobines_nome.append(bn.nome)
-                        d = bn.bobinagem.diam
+                        d = bn.diam
                         pos = bn.posicao_palete
                         bobine_posicao[pos] = bn.nome
                         if d_min == 0 and d_max == 0: 
@@ -3671,7 +3671,7 @@ def palete_picagem(request, pk):
                             d_max = d
 
                     bobine_produto = Bobine.objects.get(nome=bobines_nome[0])
-                    e_p.produto = bobine_produto.largura.designacao_prod
+                    e_p.produto = bobine_produto.designacao_prod
                     e_p.artigo = bobine_produto.artigo.des
                     artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine_produto.artigo)
                     e_p.cod_cliente = artigo_cliente.cod_client
@@ -5047,6 +5047,8 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
     return redirect('producao:rececao_list')
 
+
+    
 @login_required
 def bobinagem_classificacao(request, pk):
     BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt', 'fc',  'fc_diam_ini', 'fc_diam_fim', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs','outros','obs','troca_nw'), extra=0, can_delete=False)
@@ -5969,5 +5971,170 @@ def calendario_expedicoes(request):
         "cargas_previstas_dia": cargas_previstas_dia,
         "cargas_expedidas": cargas_expedidas,
         "cargas_expedidas_dia": cargas_expedidas_dia
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def bobinagem_edit(request, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    template_name = 'bobine/bobinagem_edit.html'
+
+    has_palete = False
+    for bob in bobines:
+        if bob.palete != None:
+            has_palete = True
+            break
+        else:
+            try:
+                if bob.palete.estado == 'G':
+                    has_palete = True
+                    break
+            except:
+                pass
+
+    form = BobinagemEditForm(request.POST or None, instance=bobinagem)
+    form_has_palete = BobinagemEditHasPaleteForm(request.POST or None, instance=bobinagem)
+    metros_nw_sup_now = bobinagem.nwsup
+    metros_nw_inf_now = bobinagem.nwinf
+    diam = bobinagem.diam
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+
+        sup = instance.lotenwsup
+        inf = instance.lotenwinf
+        metros_nwsup = instance.nwsup
+        metros_nwinf = instance.nwinf
+        instance.lotenwsup = sup.replace(" ", "")
+        instance.lotenwinf = inf.replace(" ", "")
+     
+        nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
+        nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
+
+        total_sup = instance.nwsup
+        total_inf = instance.nwinf
+        for ns in nonwovensup:
+            total_sup += ns.nwsup
+        for ni in nonwoveninf:
+            total_inf += ni.nwinf
+
+        total_sup -= metros_nw_sup_now
+        total_inf -= metros_nw_inf_now
+
+      
+        # if (total_sup > 7500):
+        #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
+        # if (total_inf > 7500):
+
+        if (total_inf > 8500  or total_sup > 8500):
+            messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
+        else:
+            instance.save()
+            desperdicio(instance.pk) 
+            tempo_duracao(instance.pk)
+            area_bobinagem(instance.pk) 
+            edit_bobine(instance.pk)
+
+            
+            if not instance.estado == 'LAB' or instance.estado == 'HOLD':
+                areas(instance.pk)
+
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)  
+
+    if form_has_palete.is_valid():
+        instance = form_has_palete.save(commit=False)
+        instance.user = request.user
+        instance.diam = diam
+
+        sup = instance.lotenwsup
+        inf = instance.lotenwinf
+        metros_nwsup = instance.nwsup
+        metros_nwinf = instance.nwinf
+        instance.lotenwsup = sup.replace(" ", "")
+        instance.lotenwinf = inf.replace(" ", "")
+     
+        nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
+        nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
+
+        total_sup = instance.nwsup
+        total_inf = instance.nwinf
+        for ns in nonwovensup:
+            total_sup += ns.nwsup
+        for ni in nonwoveninf:
+            total_inf += ni.nwinf
+
+        total_sup -= metros_nw_sup_now
+        total_inf -= metros_nw_inf_now
+
+      
+        # if (total_sup > 7500):
+        #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
+        # if (total_inf > 7500):
+
+        if (total_inf > 8500  or total_sup > 8500):
+            messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
+        else:
+            instance.save()
+            tempo_duracao(instance.pk)
+                  
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)   
+           
+
+    context = {
+       "bobinagem": bobinagem,
+       "form": form, 
+       "form_has_palete": form_has_palete, 
+       "has_palete": has_palete
+    }
+    return render(request, template_name, context)
+
+@login_required
+def bobine_edit(request, pk):
+    bobine = get_object_or_404(Bobine, pk=pk)
+    template_name = 'bobine/bobine_edit.html'
+    has_palete = False
+    
+    if bobine.palete != None:
+        has_palete = True
+    else:
+        try:
+            if bobine.palete.estado == 'G':
+                has_palete = True
+        except:
+            pass
+
+    form = BobineEditForm(request.POST or None, instance=bobine)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.comp_actual = instance.comp
+        largura = instance.largura.largura / 1000
+        instance.area = largura * instance.comp
+        instance.save()
+        etiqueta = get_object_or_404(EtiquetaRetrabalho, bobine=instance.nome)
+        etiqueta.diam = instance.diam
+        etiqueta.comp_total = instance.comp
+        etiqueta.area = instance.area
+        etiqueta.artigo = instance.artigo.des
+        etiqueta.produto = instance.designacao_prod
+        try:
+            artigo_cliente = ArtigoCliente.objects.get(artigo=instance.artigo, cliente__nome=instance.cliente)
+            etiqueta.cod_cliente = artigo_cliente.cod_client
+            etiqueta.save()
+        except:
+            etiqueta.cod_cliente = None
+            etiqueta.save()
+
+        return redirect('producao:bobine_details', pk=bobine.pk)  
+    else:
+        print('erro')
+
+    context = {
+       "bobine": bobine,
+       "form": form,
+       "has_palete": has_palete
     }
     return render(request, template_name, context)

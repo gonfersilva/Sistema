@@ -1,7 +1,9 @@
 {% extends "layout.html "%} 
 {% load bootstrap3 %}
+{% load producao_tags %}
 {% block title %}Classificar Bobinagem | {{ block.super }}{% endblock %}
 {% block content %}
+
 <div>
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
     

@@ -9,6 +9,7 @@
 <div>
     <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
+{% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
 <div class="title_block-list">
     <h1>Criar Palete para Cliente</h1>
 </div>
@@ -23,4 +24,7 @@
     <label for="id_destino">Destino</label>{{ form.destino }}
     <input type="submit" value="Criar" id="validate-btn">
 </form>
+{% else %}
+<h3>Acesso Restrito</h3>
+{% endif %}
 {% endblock %}

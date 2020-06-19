@@ -1,12 +1,14 @@
 {% extends "layout.html "%} 
 {% block title %}Bobinagens | {{ block.super }}{% endblock %}
-
+{% load producao_tags %}
 {% block content %}
 
 <div>
     
     <form>
+        {% if request.user|has_group:"Logistica Supervisor"%}
         <a href="{% url 'producao:encomenda_create' %}"  class="btn_create" role="button">Nova Encomenda</a>
+        {% endif %}
         <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
     </form>
 </div>

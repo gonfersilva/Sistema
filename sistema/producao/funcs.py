@@ -220,7 +220,7 @@ def create_bobine(pk):
         lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
         bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
         if not bob:
-            bob = Bobine.objects.create(bobinagem=instance, largura=lar, comp_actual=instance.comp, artigo=lar.artigo)
+            bob = Bobine.objects.create(bobinagem=instance, largura=lar, comp_actual=instance.comp, comp = instance.comp, artigo=lar.artigo, designacao_prod=lar.designacao_prod, diam=instance.diam, cliente=lar.cliente.nome)
             if num < 10:
                 bob.nome = '%s-0%s' % (instance.nome, num)
             else:
@@ -247,21 +247,21 @@ def create_bobine(pk):
 def tempo_duracao(pk):
     instance = Bobinagem.objects.get(pk=pk)
     if instance.inico or instance.fim:
-        if not instance.duracao:
-            fim = instance.fim
-            fim = fim.strftime('%H:%M')
-            inico = instance.inico
-            inico = inico.strftime('%H:%M')
-            (hf, mf) = fim.split(':')
-            (hi, mi) = inico.split(':')
-            if hf < hi: 
-                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
-            else:
-                result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
-            
-            result_str = strftime("%H:%M", gmtime(result))
-            instance.duracao = result_str
-            instance.save()
+        # if not instance.duracao:
+        fim = instance.fim
+        fim = fim.strftime('%H:%M')
+        inico = instance.inico
+        inico = inico.strftime('%H:%M')
+        (hf, mf) = fim.split(':')
+        (hi, mi) = inico.split(':')
+        if hf < hi: 
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+        else:
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
+        
+        result_str = strftime("%H:%M", gmtime(result))
+        instance.duracao = result_str
+        instance.save()
 
 def area_bobinagem(pk):
     instance = Bobinagem.objects.get(pk=pk)
@@ -942,4 +942,20 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         token = 'L1' + token
     
     return token
+
+def edit_bobine(pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+
+    for bob in bobines:
+        bob.comp = bobinagem.comp_cli
+        bob.comp_actual = bobinagem.comp_cli
+        largura = bob.largura.largura / 1000
+        bob.area = largura * bob.bobinagem.comp_cli
+        bob.save()
+        etiqueta = get_object_or_404(EtiquetaRetrabalho, bobine=bob.nome)
+        etiqueta.diam = bobinagem.diam
+        etiqueta.comp_total = bobinagem.comp_cli
+        etiqueta.area = bob.area
+        etiqueta.save()
 

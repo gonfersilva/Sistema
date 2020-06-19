@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% load bootstrap3 %}
-
+{% load producao_tags %}
 {% block content %}
 <div>
     {% if palete.estado == 'G'%}
@@ -86,6 +86,7 @@
             </table>
     </div>
     <div>
+        {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
         <form method="POST" action="#">
             <h3>Imprimir Etiquetas</h3>
             {% csrf_token %}
@@ -94,6 +95,7 @@
             <input type="submit" value="Imprimir" id="confirm-btn">
         </form>
         <a href="{% url 'producao:palete_rabrir' pk=palete.pk %}" type="button" class="btn_list_r">Refazer Palete</a>
+        {% endif %}
 
     </div>
            

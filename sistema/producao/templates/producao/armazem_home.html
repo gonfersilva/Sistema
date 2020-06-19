@@ -1,7 +1,5 @@
 {% extends "layout.html "%}
-
-
-
+{% load producao_tags %}
 {% block title %}Armazém{% endblock %}
 {% block content %}
 <div>
@@ -14,9 +12,11 @@
     <div>
         <a href="{% url 'producao:carga_list' %}">Cargas</a>
     </div>
+    {% if request.user|has_group:"Logistica Supervisor" or  request.user|has_group:"Logistica Operador"%}
     <div>
         <a href="{% url 'producao:palete_selecao' %}">Pesagem</a>
     </div>
+    {% endif %}
     <div>
         <a href="{% url 'producao:stock_list' %}">Stock</a>
     </div>

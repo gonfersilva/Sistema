@@ -1,12 +1,14 @@
 {% extends "layout.html " %} 
 {% load bootstrap3 %}
 {% load static %}
-
+{% load producao_tags %}
 {% block title %}Bobinagens Linha 1 | {{ block.super }}{% endblock %} 
 {% block content %}
 <div>
     <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
     <a href="{% url 'producao:bobinagem_create' %}"  class="btn_create" role="button">Criar Bobinagem</a>
+    {% endif %}                                                                                                                                                                                                 
     <a href="{% url 'producao:export_bobine_to_excel' %}"  class="btn_create" role="button">Export Bobines</a>
 
 </div>

@@ -1,12 +1,14 @@
 {% extends "layout.html " %} 
 {% load bootstrap3 %}
 {% load static %}
-
+{% load producao_tags %}
 {% block title %}Produto Granulado | {{ block.super }}{% endblock %} 
 {% block content %}
 <div>
     <a href="{% url 'producao:reciclado_home' %}"  class="btn_back" role="button">Voltar</a>
+    {% if request.user|has_group:"Produção Supervisor" %}
     <a href="{% url 'producao:produto_granulado_create' %}"  class="btn_create" role="button">Criar Produto Granulado</a>
+    {% endif %}
 </div>
 <div class="title_block-list">
     <h1>Produtos Granulado</h1>

@@ -24,6 +24,7 @@ admin.site.register(Reciclado)
 admin.site.register(ProdutoGranulado)
 admin.site.register(MovimentoMP)
 admin.site.register(EtiquetaReciclado)
+admin.site.register(Turno)
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']

@@ -1,11 +1,12 @@
 {% extends "layout.html "%}
 {% load bootstrap3 %}
-
+{% load producao_tags %}
 {% block title %}Criar Perfil DM | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
     <a href="{% url 'producao:perfil_list_v2' %}"  class="btn_back" role="button">Voltar</a>
 </div>
+{% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
 <div class="title_block-list">
     <h1>Criar Perfil DM</h1>
 </div>
@@ -48,6 +49,9 @@
     </div>
 </div>
 </form>   
+{% else %}
+<h3>Acesso Restrito</h3>       
+{% endif %}  
 
 
 {% endblock %}

@@ -1,7 +1,5 @@
 {% extends "layout.html "%}
-
-
-
+{% load producao_tags %}
 {% block title %}Planeamento{% endblock %}
 {% block content %}
 <div>
@@ -11,12 +9,15 @@
     <h1>Planeamento</h1>
 </div>
 <div class="menu">
+    
     <div>
         <a href="{% url 'producao:clientes' %}">Clientes</a>
     </div>
+   
     <!-- <div>
         <a href="{% url 'producao:fornecedor_list' %}">Fornecedores</a>
     </div> -->
+    
     <div>
         <a href="{% url 'producao:perfil_list_v2' %}">Perfis de Bobinagens</a>
     </div>

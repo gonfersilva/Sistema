@@ -1,5 +1,6 @@
 {% extends "layout.html "%}
 {% load bootstrap3 %}
+{% load producao_tags %}
 
 {% block title %}Bobine {{ bobine.nome }}{% endblock %}
 
@@ -10,7 +11,10 @@
     {% else %}
     <a href="{% url 'producao:bobinagem_list_v3' %}"  class="btn_back" role="button">Voltar</a>
     {% endif %} -->
-    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    <a href="{% url 'producao:bobinestatus' pk=bobine.bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
+    {% if request.user|has_group:"Produção Supervisor" %}
+    <a href="{% url 'producao:bobine_edit' pk=bobine.pk %}"  class="btn_create" role="button">Editar</a>
+    {% endif %}
 
 </div>
 <div class="title_block-list">
@@ -20,11 +24,12 @@
 <div class="content_details">
     <div>
         <div><h3>Data: <span>{{ bobine.bobinagem.data|date:"d-n-Y" }}</span></h3></div>
-        <div><h3>Comprimento: <span>{{ bobine.comp_actual }} / {{ bobine.bobinagem.comp_cli }} m</span></h3></div>
+        <div><h3>Comprimento: <span>{{ bobine.comp_actual }} / {{ bobine.comp }} m</span></h3></div>
         <div><h3>Diâmetro: <span>{{ bobine.bobinagem.diam }} mm</span></h3></div>
         <div><h3>Área: <span>{{ bobine.area }} m<sup>2</sup></span></h3></div>
         <div><h3>Artigo: <span>{{ bobine.artigo.des}}</span></h3></div>
-        <div><h3>Cliente: <span>{{ bobine.largura.cliente.nome }}</span></h3></div>
+        <div><h3>Cliente: <span>{{ bobine.cliente }}</span></h3></div>
+        <div><h3>Produto: <span>{{ bobine.designacao_prod }}</span></h3></div>
     </div>
     <div>
         <div><h3>Início: <span>{{ bobine.bobinagem.inico|date:"G:i" }}</span></h3></div>

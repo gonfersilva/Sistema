@@ -41,12 +41,14 @@
 <div class="content_details">
     <div></div>
     <div>
+        {% if request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Logistica Operador" %}
         <form method="POST" action="#">
             {% csrf_token %}
             <h3>Imprimir Etiqueta Final</h3>
             <label for="id_num_copias">Nº de Cópias: </label>{{ form.num_copias }}
             <input type="submit" value="Imprimir Todas" id="confirm-btn">
         </form>
+        {% endif %}
     </div>
 </div>
 <div class="title_block-list">
@@ -67,8 +69,10 @@
                 <th>Peso liquido(Kg)</th>
                 <th>Relação kg/m2</th>      
                 <th>Comp./Peso (m)</th>                               
-                <th>Área/Peso (m2)</th>   
-                <th>Imprimir</th>   
+                <th>Área/Peso (m2)</th> 
+                {% if request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Logistica Operador" %}  
+                <th>Imprimir</th>
+                {% endif %}   
 
             </tr>
         </thead>
@@ -87,7 +91,9 @@
                     <td>{{ relacoes|index:forloop.counter0 }}%</td>
                     <td>{{ realcoes_comp|index:forloop.counter0 }}</td>
                     <td>{{ relacoes_area|index:forloop.counter0 }}</td>
-                    <td class="td-icon"><a href="{% url 'producao:carga_etiqueta_palete' pk=pal.pk %}"><i class="fas fa-print"></i></a></td>                 
+                    {% if request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Logistica Operador" %}
+                    <td class="td-icon"><a href="{% url 'producao:carga_etiqueta_palete' pk=pal.pk %}"><i class="fas fa-print"></i></a></td>      
+                    {% endif %}           
                    
                 
                    

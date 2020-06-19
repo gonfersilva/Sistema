@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load producao_tags %}
 
 {% block head_title %}Bobinagem Detalhes{% endblock head_title %}
 {% block content %}
@@ -10,6 +11,10 @@
     <a href="{% url 'producao:bobinagem_list_v3' %}"  class="btn_back" role="button">Voltar</a>
     {% endif %}
     <!-- <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()"> -->
+    {% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
+    <a href="{% url 'producao:bobinagem_edit' pk=bobinagem.pk %}"  class="btn_create" role="button">Editar</a>
+    {% endif %}
+
 </div>
 <div class="title_block-list">
     <h1>Bobinagem</h1>
@@ -79,8 +84,9 @@
 </div>
 <div class="title_block-list">
     <h2>Bobines</h2>
-    
+    {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" or request.user|has_group:"Qualidade Supervisor" or request.user|has_group:"Qualidade Tecnico" %}
     <a href="{% url 'producao:bobinagem_classificacao' pk=bobinagem.pk%}"  class="btn_create" role="button">Classificar Bobinagem</a>
+    {% endif %}
 </div>
 <div>
     <table class="content-table" id="defeitos">

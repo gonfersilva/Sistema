@@ -1074,6 +1074,47 @@ def comprimento_bobine_original(pk):
 #     }
 
 #     return render(request, template_name, context)
+@login_required
+def bobinagem_retrabalho_finalizar(request, pk):
+    bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    template_name = 'retrabalho/retrabalho_finalizar.html'
+
+    form = BobinagemFinalizarForm(request.POST or None, instance=bobinagem)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        
+
+        fim = instance.fim
+        fim = fim.strftime('%H:%M')
+        inico = instance.inico
+        inico = inico.strftime('%H:%M')
+        (hf, mf) = fim.split(':')
+        (hi, mi) = inico.split(':')
+        if hf < hi: 
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+        else:
+            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
+        
+        result_str = strftime("%H:%M", gmtime(result))
+        instance.duracao = result_str
+        instance.save()
+
+        bobines = Bobine.objects.filter(bobinagem=bobinagem)
+        for bob in bobines:
+            bob.diam = instance.diam
+            bob.save()
+
+        return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)  
+
+    context = {
+        "bobinagem": bobinagem,
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+
 
 class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
     model = Bobinagem
@@ -1082,9 +1123,13 @@ class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
     success_url = '/producao/etiqueta/retrabalho/{id}/'
 
     def form_valid(self, form):
-        # bobinagem = Bobinagem.objects.get(pk=self.kwargs['pk'])
         b = form.save(commit=False)
-
+        bobinagem = Bobinagem.objects.get(pk=self.kwargs['pk'])
+        diam = b.diam
+        bobines = Bobine.objects.filter(bobinagem=bobinagem)
+        for bob in bobines:
+            bob.diam = diam
+            bob.save()
         fim = b.fim
         fim = fim.strftime('%H:%M')
         inico = b.inico

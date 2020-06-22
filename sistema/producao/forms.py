@@ -514,6 +514,13 @@ class BobineEditForm(ModelForm):
         model = Bobine
         fields = ['cliente', 'artigo', 'designacao_prod', 'comp', 'diam']
 
+
+class BobinagemFinalizarForm(ModelForm):
+
+    class Meta:
+        model = Bobinagem
+        fields = ['fim', 'diam']
+
       
 
     

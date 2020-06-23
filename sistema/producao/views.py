@@ -6141,15 +6141,9 @@ def bobine_edit(request, pk):
     template_name = 'bobine/bobine_edit.html'
     has_palete = False
     
-    if bobine.palete != None:
+    if bobine.palete != None and bobine.palete.estado == 'G':
         has_palete = True
-    else:
-        try:
-            if bobine.palete.estado == 'G':
-                has_palete = True
-        except:
-            pass
-
+    
     form = BobineEditForm(request.POST or None, instance=bobine)
 
     if form.is_valid():

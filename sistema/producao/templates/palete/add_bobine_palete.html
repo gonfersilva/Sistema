@@ -43,9 +43,9 @@
         {% endif %}
     </div>
 </div>
+{% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
 <div class="content_details"> 
     <div>
-        {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
         <form method="POST" action="#">
             <h3>Imprimir Etiquetas</h3>
             {% csrf_token %}
@@ -57,10 +57,10 @@
     <div>
         <a href="{% url 'producao:palete_rabrir' pk=palete.pk %}" type="button" class="btn_list_r">Refazer Palete</a>
     </div>
-    {% endif %}
-
-
+    
+    
 </div>
+{% endif %}
 
 <div>
     <h3>Bobines</h3>

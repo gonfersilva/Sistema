@@ -3502,25 +3502,26 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
                         
         if recycle_1 == True and b_1 != "N/A":
             b_1.recycle = True
-            # palete_1_id = b_1.palete.id
-            # print(palete_1_id) 
-            # palete1 = Palete.objects.get(id=palete_1_id)
-            # print(palete1)
-            # palete1.area -= b_1.area
-            # palete1.comp_total -= b_1.bobinagem.comp_cli
-            # palete1.num_bobines_act -= 1
-            # palete1.num_bobines -= 1
-            # palete1.save()
-            # b_1.palete = None
+            try:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_1, palete=b_1.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+            except:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_1, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_1.save()
           
-
         if recycle_2 == True and b_2 != "N/A":
             b_2.recycle = True
+            try:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_2, palete=b_2.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+            except:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_2, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_2.save()
 
         if recycle_3 == True and b_3 != "N/A":
             b_3.recycle = True
+            try:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_3, palete=b_3.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+            except:
+                movimento_bobine = MovimentosBobines.objects.create(bobine=b_3, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_3.save()
 
         for bob in bobines:

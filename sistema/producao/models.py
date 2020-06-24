@@ -681,7 +681,7 @@ class InventarioPaletesCliente(models.Model):
 
 class MovimentosBobines(models.Model):
     bobine      = models.ForeignKey(Bobine, on_delete=models.CASCADE, verbose_name="Bobine")
-    palete      = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete")
+    palete      = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete", null=True, blank=True)
     timestamp   = models.DateTimeField() 
     destino     = models.CharField(max_length=200, verbose_name="Destino", null=True, blank=True)
 

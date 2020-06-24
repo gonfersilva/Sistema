@@ -238,7 +238,7 @@
         <thead>
             <tr>
                 <th>Palete</th>
-                <th>Data de picagem</th>
+                <th>Data de movimento</th>
                 <th>Destino</th>
             </tr>
         </thead>
@@ -246,7 +246,11 @@
             <tbody> 
                 {% for mov in movimentos_bobine %}   
                 <tr>
+                    {% if mov.palete == None %}
+                    <td>N/A</td>
+                    {% else %}
                     <td>{{ mov.palete }}</td>
+                    {% endif %}
                     <td>{{ mov.timestamp|date:"d-m-Y G:i" }}</td>
                     <td>{{ mov.destino }}</td>
                 </tr>

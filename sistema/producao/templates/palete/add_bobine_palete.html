@@ -66,7 +66,7 @@
     <h3>Bobines</h3>
     <table class="content-table">
         <thead>
-            <tr>
+            <tr id="obs">
                 <th>Nº</th>
                 <th style="min-width: 120px;">Bobine</th>
                 <th>Estado</th>
@@ -93,7 +93,7 @@
         <tbody>
             
                 {% for b in bobines %}
-                <tr>
+                <tr id="obs">
                     <td>{{ b.posicao_palete }}</td>
                     <td><a href="{% url 'producao:bobine_details' pk=b.pk %}">{{ b.nome }}</a></td>
                     {% if b.estado == 'G' %}<td id="estado_good">{{ b.estado }}</td>

@@ -1366,3 +1366,7 @@ input[type=number] {
     color: rgba(255, 166, 0, 0.455);
     background-color: rgba(255, 166, 0, 0.455);
 }
+
+#obs {
+    font-size: 0.8em;
+}

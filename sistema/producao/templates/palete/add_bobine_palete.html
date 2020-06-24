@@ -110,7 +110,7 @@
                     <td>{{ b.destino }}</td>
                     <td>{{ b.obs }}</td>
                     {% for em in b.bobinagem.emenda_set.all %}
-                        <td>{{ em.bobine.nome }}</td>
+                        <td><a href="{% url 'producao:bobine_details' pk=b.pk %}">{{ em.bobine.nome }}</a></td>
                         <td>{{ em.bobine.destino }}</td>
                         <td>{{ em.bobine.obs }}</td>
                     {% endfor %}

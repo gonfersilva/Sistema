@@ -3595,6 +3595,13 @@ def palete_picagem(request, pk):
                         array_produtos.append(bobine.designacao_prod)
                         array_estados.append(bobine.estado)
 
+                        try:    
+                            artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine.artigo)
+                            pass
+                        except:
+                            messages.error(request, '(' + str(count) + ') O artigo da bobine ' + bobine.nome + ' não esta associado ao cliente ' + cliente.nome)
+                            validation = False
+
                         if bobine.estado != 'G' and bobine.estado != 'LAB' and bobine.estado != 'SC':
                             messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' não está em estado GOOD, LAB ou SC.')
                             validation = False

@@ -72,6 +72,57 @@
                     <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
 
                 {% endif %}
+                {% for bob in b.bobine_set.all %}
+                    {% if bob.estado == 'LAB'%}
+                    <td>
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="lab">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'DM'%}
+                    <td id="dm">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="dm">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'G'%}
+                    <td id="good">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="good">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'R'%}
+                    <td id="rejected">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="rejected">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'IND'%}
+                    <td id="ind">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="ind">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'BA'%}
+                    <td id="ba">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="ba">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'HOLD'%}
+                    <td id="hold">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="hold">|</div>
+                        </a>
+                    </td>
+                    {% elif bob.estado == 'SC'%}
+                    <td id="sc">
+                        <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
+                            <div style="height:100%;width:100%" id="sc">|</div>
+                        </a>
+                    </td>
+                    {% endif %}
+                {% endfor%}
                 
             </tr>
             {% endfor%}

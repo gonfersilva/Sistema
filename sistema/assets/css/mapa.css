@@ -1299,3 +1299,70 @@ input[type=number] {
     font-size: 0.6em;
 
 }
+
+#lab {
+    color: cyan;
+    background-color: cyan;
+}
+#lab:hover {
+    color: rgba(0, 255, 255, 0.292);
+    background-color:rgba(0, 255, 255, 0.285);
+}
+
+
+#good {
+    color: green;
+    background-color: green;
+}
+#good:hover {
+    color: rgba(0, 128, 0, 0.483);
+    background-color: rgba(0, 128, 0, 0.483);
+}
+#rejected {
+    color: red;
+    background-color: red;
+}
+#rejected:hover {
+    color: rgba(255, 0, 0, 0.347);
+    background-color: rgba(255, 0, 0, 0.347);
+}
+#ind {
+    color: blue;
+    background-color: blue;
+}
+#ind:hover {
+    color: rgba(0, 0, 255, 0.449);
+    background-color: rgba(0, 0, 255, 0.449);
+}
+#ba {
+    color: red;
+    background-color: red;
+}
+#ba:hover {
+    color: rgba(255, 0, 0, 0.347);
+    background-color: rgba(255, 0, 0, 0.347);
+}
+#hold {
+    color: #b237cc;
+    background-color: #b237cc;
+}
+#hold:hover {
+    color: #b337cc71;
+    background-color: #b337cc71;
+}
+#sc {
+    color: rgb(149, 255, 0);
+    background-color: rgb(149, 255, 0);
+}
+#sc:hover {
+    color: rgba(149, 255, 0, 0.238);
+    background-color: rgba(149, 255, 0, 0.238);
+}
+#dm {
+    color: orange;
+    background-color: orange 
+}
+#dm:hover {
+    color: rgba(255, 166, 0, 0.455);
+    background-color: rgba(255, 166, 0, 0.455);
+}

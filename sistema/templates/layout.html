@@ -28,6 +28,7 @@
               <li><a href="{% url 'producao:producao_home' %}">Produção</a></li>
               <li><a href="{% url 'producao:armazem_home' %}">Armazém</a></li>
               <li>{{ user.first_name }} {{ user.last_name }}</li>
+              <li>{{ user.turno.dep }}   {{ user.turno.turno }}</li>
               <li><a href="{% url 'users:logout' %}" class="btn_log">Logout</a></li>
             {% else %}
               <li><a href="{% url 'users:login' %}" class="btn_log">Login</a></li>

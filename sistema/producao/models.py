@@ -207,7 +207,7 @@ class Encomenda(models.Model):
     estado              = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado")
     num_cargas_actual   = models.IntegerField(default=0) 
     num_cargas          = models.IntegerField(default=0) 
-    order_num           = models.CharField(max_length=25, unique=False, null=True, blank=True, verbose_name="Order Number")
+    order_num           = models.CharField(max_length=100, unique=False, null=True, blank=True, verbose_name="Order Number")
 
     def __str__(self):
         return self.eef

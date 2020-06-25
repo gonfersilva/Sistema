@@ -3526,6 +3526,7 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
 
         for bob in bobines:
             bob.comp_actual = bobinagem.comp_cli
+            bob.comp = bobinagem.comp_cli
             bob.area = round(Decimal(bobinagem.comp_cli) * (Decimal(bob.largura.largura) * Decimal(0.001)), 2)
             bob.estado = 'G'
             bob.save()

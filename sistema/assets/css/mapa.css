@@ -1308,12 +1308,12 @@ input[type=number] {
 }
 
 #lab {
-    color: white;
+    color: black;
     font-size: 0.7em;
     background-color: cyan;
 }
 #lab:hover {
-    color: white;
+    color: black;
     background-color:rgba(0, 255, 255, 0.285);
 }
 
@@ -1355,30 +1355,30 @@ input[type=number] {
     background-color: rgba(255, 0, 0, 0.347);
 }
 #hold {
-    color: white;
+    color: white ;
     font-size: 0.8em;
     background-color: #b237cc;
 }
 #hold:hover {
-    color: white;
+    color: white ;
     background-color: #b337cc71;
 }
 #sc {
-    color: white;
+    color: black;
     font-size: 0.8em;
     background-color: rgb(149, 255, 0);
 }
 #sc:hover {
-    color: white;
+    color: black;
     background-color: rgba(149, 255, 0, 0.238);
 }
 #dm {
-    color: white;
+    color: black;
     font-size: 0.8em;
     background-color: orange 
 }
 #dm:hover {
-    color: white;
+    color: black;
     background-color: rgba(255, 166, 0, 0.455);
 }
 

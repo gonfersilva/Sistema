@@ -76,49 +76,49 @@
                     {% if bob.estado == 'LAB'%}
                     <td>
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="lab">|</div>
+                            <div style="height:100%;width:100%" id="lab">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'DM'%}
                     <td id="dm">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="dm">|</div>
+                            <div style="height:100%;width:100%" id="dm">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'G'%}
                     <td id="good">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="good">|</div>
+                            <div style="height:100%;width:100%" id="good">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'R'%}
                     <td id="rejected">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="rejected">|</div>
+                            <div style="height:100%;width:100%" id="rejected">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'IND'%}
                     <td id="ind">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="ind">|</div>
+                            <div style="height:100%;width:100%" id="ind">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'BA'%}
                     <td id="ba">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="ba">|</div>
+                            <div style="height:100%;width:100%" id="ba">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'HOLD'%}
                     <td id="hold">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="hold">|</div>
+                            <div style="height:100%;width:100%" id="hold">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% elif bob.estado == 'SC'%}
                     <td id="sc">
                         <a href="{% url 'producao:bobine_details' pk=bob.pk %}">
-                            <div style="height:100%;width:100%" id="sc">|</div>
+                            <div style="height:100%;width:100%" id="sc">{{ bob.largura.num_bobine }}</div>
                         </a>
                     </td>
                     {% endif %}

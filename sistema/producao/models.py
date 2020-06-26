@@ -143,6 +143,7 @@ class ArtigoCliente(models.Model):
 
 class Bobinagem(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD','HOLD'), ('SC','SC'))
+    TIPODESP = (('R', 'R'), ('BA', 'BA'))
     TIPONW = (('Suominen 25 gsm','Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP','Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE','BCN 70%PP/30%PE'), ('Sandler','Sandler'), ('PEGAS BICO 17gsm','PEGAS BICO 17gsm'), ('Suominen','Suominen'), ('BCN','BCN'), ('ORMA','ORMA'), ('PEGAS 22','PEGAS 22'), ('SAWASOFT','SAWASOFT'), ('SAWABOND','SAWABOND'), ('Teksis','Teksis'), ('Union','Union'),('Radici','Radici'),('Fitesa','Fitesa'),('ALBIS 23','ALBIS 23'),('ALBIS 16','ALBIS 16'),('Union Pillow','Union Pillow'),('Union UV','Union UV'),('Jacob Holm','Jacob Holm'))
     user = models.ForeignKey(User, on_delete=models.PROTECT,verbose_name="Username")
     perfil = models.ForeignKey(Perfil, on_delete=models.PROTECT,verbose_name="Perfil")
@@ -162,6 +163,7 @@ class Bobinagem(models.Model):
     comp_par = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento Emenda", null=True, blank=True, default=0)
     comp_cli = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento Cliente", default=0)
     desper = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Desperdício", default=0)
+    tipo_desp = models.CharField(max_length=4, choices=TIPODESP, default=None, verbose_name="Tipo de desperdício", null=True, blank=True)
     diam = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro", null=True, blank=True)
     area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área", null=True, blank=True)
     inico = models.TimeField(auto_now_add=False, auto_now=False, verbose_name="Início", null=True, blank=True)
@@ -390,6 +392,7 @@ class ConsumoNonwoven(models.Model):
 class Bobine(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
     PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'),('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'),('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'),('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'),('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'))
+    TIPODESP = (('R', 'R'), ('BA', 'BA'))
     bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     largura = models.ForeignKey(Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
     artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
@@ -431,6 +434,8 @@ class Bobine(models.Model):
     fc_diam_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de corte fim", null=True, blank=True)
     ff_m_ini = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de filme inicio", null=True, blank=True)
     ff_m_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de fimle fim", null=True, blank=True)
+    desp = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Desperdício", null=True, blank=True)
+    tipo_desp = models.CharField(max_length=4, choices=TIPODESP, default=None, verbose_name="Tipo de desperdício", null=True, blank=True)
 
 
     def __str__(self):

@@ -31,10 +31,11 @@
             <div><label for="id_num_bobinagem">Bobinagem nº: </label>{{ form.num_bobinagem }}</div>
             <div><label for="id_estado">Estado: </label>{{ form.estado }}</div>
         </div>
-        <div class="form_create_bobinagem_2">
+        <div class="form_create_bobinagem_4">
             <div><label for="id_diam">Diâmetro: </label>{{ form.diam }}</div>
             <div><label for="id_comp">Comp. Final: </label>{{ form.comp }}</div>
             <div><label for="id_comp_par">Comp. Emenda: </label>{{ form.comp_par }}</div>
+            <div><label for="id_tipo_desp">Tipo Desperdício: </label>{{ form.tipo_desp }}</div>
         </div>
         <div class="title_block-list">
             <h2>Nonwoven</h2>
@@ -67,5 +68,30 @@
     </div>
 
 </form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    
+    $("#id_comp_par").change(function() {
+        var comp_par = $("#id_comp_par").val();
+        var comp = $("#id_comp").val();
+        
+        var desp = comp - comp_par
+        var x = comp_par * 0.05
+        if (desp > x) {
+            $('#id_tipo_desp').css("visibility", "visible");
 
+        } else {
+            $('#id_tipo_desp').css("visibility", "hidden");
+        }
+        
+    
+
+    });
+   
+
+});
+</script>
 {% endblock %}

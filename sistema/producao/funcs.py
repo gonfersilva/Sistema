@@ -216,6 +216,7 @@ def bobinagem_create_retrabalho(pk):
 def create_bobine(pk):
     instance = Bobinagem.objects.get(pk=pk)
     num = 1
+    desp_bobine = instance.desper / Decimal(instance.perfil.num_bobines)
     for i in range(instance.perfil.num_bobines):
         lar = Largura.objects.get(perfil=instance.perfil, num_bobine=num)
         bob = Bobine.objects.filter(bobinagem=instance, largura=lar)
@@ -239,6 +240,14 @@ def create_bobine(pk):
                 bob.estado = 'SC'
             else:
                 bob.estado = 'LAB'
+
+            if instance.tipo_desp == 'R':
+                bob.tipo_desp = 'R'
+                bob.desp = desp_bobine
+            elif instance.tipo_desp == 'BA':
+                bob.tipo_desp = 'BA'
+                bob.desp = desp_bobine
+
             bob.save() 
             area_bobine(bob.pk)
         num += 1
@@ -946,12 +955,20 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
 def edit_bobine(pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
+    desp_bobine = bobinagem.desper / Decimal(bobinagem.perfil.num_bobines)
 
     for bob in bobines:
         bob.comp = bobinagem.comp_cli
         bob.comp_actual = bobinagem.comp_cli
         largura = bob.largura.largura / 1000
         bob.area = largura * bob.bobinagem.comp_cli
+
+        if bobinagem.tipo_desp == 'R':
+            bob.tipo_desp = 'R'
+            bob.desp = desp_bobine
+        elif bobinagem.tipo_desp == 'BA':
+            bob.tipo_desp = 'BA'
+            bob.desp = desp_bobine
         bob.save()
         etiqueta = get_object_or_404(EtiquetaRetrabalho, bobine=bob.nome)
         etiqueta.diam = bobinagem.diam

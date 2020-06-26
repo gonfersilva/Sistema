@@ -1188,6 +1188,13 @@ input[type=number] {
     padding: 10px;
 }
 
+.form_create_bobinagem_4 {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    margin: 10px;
+    padding: 10px;
+}
+
 .form_create_bobinagem_3 {
     display: grid;
     grid-template-columns: 50% 50%;
@@ -1301,72 +1308,84 @@ input[type=number] {
 }
 
 #lab {
-    color: cyan;
+    color: white;
+    font-size: 0.7em;
     background-color: cyan;
 }
 #lab:hover {
-    color: rgba(0, 255, 255, 0.292);
+    color: white;
     background-color:rgba(0, 255, 255, 0.285);
 }
 
 
 #good {
-    color: green;
+    color: white;
+    font-size: 0.8em;
     background-color: green;
 }
 #good:hover {
-    color: rgba(0, 128, 0, 0.483);
+    color: white;
     background-color: rgba(0, 128, 0, 0.483);
 }
 #rejected {
-    color: red;
+    color: white;
+    font-size: 0.8em;
     background-color: red;
 }
 #rejected:hover {
-    color: rgba(255, 0, 0, 0.347);
+    color: white;
     background-color: rgba(255, 0, 0, 0.347);
 }
 #ind {
-    color: blue;
+    color: white;
+    font-size: 0.8em;
     background-color: blue;
 }
 #ind:hover {
-    color: rgba(0, 0, 255, 0.449);
+    color: white;
     background-color: rgba(0, 0, 255, 0.449);
 }
 #ba {
-    color: red;
+    color: white;
+    font-size: 0.8em;
     background-color: red;
 }
 #ba:hover {
-    color: rgba(255, 0, 0, 0.347);
+    color: white;
     background-color: rgba(255, 0, 0, 0.347);
 }
 #hold {
-    color: #b237cc;
+    color: white;
+    font-size: 0.8em;
     background-color: #b237cc;
 }
 #hold:hover {
-    color: #b337cc71;
+    color: white;
     background-color: #b337cc71;
 }
 #sc {
-    color: rgb(149, 255, 0);
+    color: white;
+    font-size: 0.8em;
     background-color: rgb(149, 255, 0);
 }
 #sc:hover {
-    color: rgba(149, 255, 0, 0.238);
+    color: white;
     background-color: rgba(149, 255, 0, 0.238);
 }
 #dm {
-    color: orange;
+    color: white;
+    font-size: 0.8em;
     background-color: orange 
 }
 #dm:hover {
-    color: rgba(255, 166, 0, 0.455);
+    color: white;
     background-color: rgba(255, 166, 0, 0.455);
 }
 
 #obs {
     font-size: 0.8em;
+}
+
+#id_tipo_desp {
+    visibility: hidden;
 }

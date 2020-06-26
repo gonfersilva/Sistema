@@ -53,10 +53,11 @@
                 
             </div>
                     
-            <div class="form_create_bobinagem_2">
+            <div class="form_create_bobinagem_4">
                 <div><label for="id_diam">Diâmetro: </label>{{ form.diam }}</div>
                 <div><label for="id_comp">Comp. Final: </label>{{ form.comp }}</div>
                 <div><label for="id_comp_par">Comp. Emenda: </label>{{ form.comp_par }}</div>
+                <div><label for="id_tipo_desp">Tipo Desperdício: </label>{{ form.tipo_desp }}</div>
             </div>
             
             <div class="title_block-list">
@@ -151,7 +152,32 @@
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
+$(document).ready(function() {
+    // var tipo_desp = $('#id_tipo_desp').val()
+    // console.log(tipo_desp)
 
+    if ($('#id_tipo_desp').val() === 'R' || $('#id_tipo_desp').val() === 'BA' ) {
+        $('#id_tipo_desp').css("visibility", "visible");
+    }
+    $("#id_comp_par").change(function() {
+        var comp_par = $("#id_comp_par").val();
+        var comp = $("#id_comp").val();
+        
+        var desp = comp - comp_par
+        var x = comp_par * 0.05
+        if (desp > x) {
+            $('#id_tipo_desp').css("visibility", "visible");
+
+        } else {
+            $('#id_tipo_desp').css("visibility", "hidden");
+        }
+        
+    
+
+    });
+   
+
+});
 </script>
 {% else %}
 <div class="title_block-list">

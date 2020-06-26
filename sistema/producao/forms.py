@@ -27,7 +27,7 @@ class BobinagemCreateForm(ModelForm):
     estado = forms.CharField(max_length=4, required=True, widget=forms.Select(choices=ESTADO))
     class Meta:
        model = Bobinagem
-       fields = ['data', 'num_bobinagem', 'perfil', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim', 'estado', 'obs']
+       fields = ['data', 'num_bobinagem', 'perfil', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim', 'estado', 'obs', 'tipo_desp']
 
     def __init__(self, *args, **kwargs):
         bobinagem = Bobinagem.objects.filter(perfil__retrabalho=False)
@@ -485,7 +485,7 @@ class ExportBobinesToExcel(forms.Form):
 class BobinagemEditForm(ModelForm):
     class Meta:
         model = Bobinagem
-        fields = ['inico', 'fim', 'diam', 'comp', 'comp_par', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'obs']
+        fields = ['inico', 'fim', 'diam', 'comp', 'comp_par', 'tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'obs', 'tipo_desp']
 
 class BobinagemEditHasPaleteForm(ModelForm):
     class Meta:

@@ -38,6 +38,11 @@
         <div><h3>Perfil: <span>{{ bobine.bobinagem.perfil.nome }}</span></h3></div>
         <div><h3>Core: <span>{{ bobine.bobinagem.perfil.core }}"</span></h3></div>
         <div><h3>Palete: <span>{{ bobine.palete.nome }}</span></h3></div>
+        {% if bobine.desp == None%}
+        <div><h3>Desperdicio: <span>0 m<sup>2</sup></span></h3></div>
+        {% else %}
+        <div><h3>Desperdicio: <span>{{ bobine.desp }} m<sup>2</sup> - {{ bobine.tipo_desp }}</span></h3></div>
+        {% endif %}
     </div>
 
     

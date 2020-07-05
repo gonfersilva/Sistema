@@ -644,6 +644,7 @@ class EtiquetaFinal(models.Model):
     num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
     estado_impressao = models.BooleanField(default=False,verbose_name="Imprimir")
     order_num = models.CharField(max_length=20, null=True, blank=True, verbose_name="Order Number")
+    turno = models.CharField(max_length=1, null=True, blank=True, verbose_name="Turno")
 
     
     def __str__(self):

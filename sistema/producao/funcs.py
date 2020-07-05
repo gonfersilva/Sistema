@@ -1,5 +1,6 @@
 from producao.models import *
 import datetime
+from django.contrib.sessions.models import Session
 
 
 def areas(pk):
@@ -621,7 +622,19 @@ def gerar_etiqueta_final(pk):
     num_palete_carga = palete.num_palete_carga
     artigo = bobine_1.artigo
     ult_cont = EtiquetaFinal.objects.latest('id').cont
+
+
+    palete_hora_str = palete.timestamp.strftime('%H')
+    palete_hora = int(palete_hora_str)
+    turno = ''
     
+    if palete_hora >= 8 and palete_hora < 16:
+        turno = 'A'
+    elif palete_hora >= 16 and palete_hora <= 23:
+        turno = 'B'
+    elif palete_hora >= 0 and palete_hora < 8:
+        turno = 'C'
+            
     cod_cliente_cliente = None
     try:
         artigo_cliente = ArtigoCliente.objects.get(artigo=bobine_1.artigo, cliente=palete.cliente)
@@ -684,9 +697,9 @@ def gerar_etiqueta_final(pk):
 
     
     if cod_cliente_cliente is not None:
-        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, cod_cliente_cliente=cod_cliente_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num, turno=turno)
     else:
-        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num)
+        e_f = EtiquetaFinal.objects.create(cont=cont, gtin=gtin, palete=palete, palete_nome=palete_nome, produto=produto, largura_bobine=largura_bobines, diam_min=diam_min, diam_max=diam_max, cod_cliente=cod_cliente, core=core_bobines, area=area, comp=comp_total, prf=prf, num_bobines=num_bobines, palete_num=num_palete_carga, palete_total=num_paletes_total, peso_liquido=peso_liquido, peso_bruto=peso_bruto, data_prod=data_prod, data_validade=data_validade, gsm=gsm, order_num=order_num, turno=turno)
         
 
 def add_artigo_to_bobine(pk):
@@ -975,4 +988,10 @@ def edit_bobine(pk):
         etiqueta.comp_total = bobinagem.comp_cli
         etiqueta.area = bob.area
         etiqueta.save()
+
+
+
+# def delete_sessions():
+#     if datetime.now() == '12:54':
+#         Session.objects.all().delete()
 

@@ -16,3 +16,6 @@ class LogoutView(LoginRequiredMixin, generic.FormView):
     def form_valid(self, form):
         logout(self.request)
         return HttpResponseRedirect(reverse('home'))
+
+
+

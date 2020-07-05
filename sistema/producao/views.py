@@ -30,6 +30,7 @@ import io
 from calendar import monthrange
 from datetime import date
 from collections import defaultdict
+from django.contrib.sessions.models import Session
 
 
 
@@ -132,6 +133,7 @@ def perfil_list(request):
     # page = request.GET.get('page')
     template_name = 'perfil/perfil_home.html'
     
+
     # try:
     #     perfil = paginator.page(page)
     # except PageNotAnInteger:
@@ -1299,7 +1301,7 @@ def producao_home(request):
 def planeamento_home(request):
     template_name = 'producao/planeamento_home.html'
     context = {}
-
+    
     return render(request, template_name, context)
 
 @login_required

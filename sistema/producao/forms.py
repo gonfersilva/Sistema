@@ -317,7 +317,7 @@ class ClassificacaoBobines(forms.Form):
     esp = forms.BooleanField(initial=False, label='', required=False)
     troca_nw = forms.BooleanField(initial=False, label='', required=False)
     outros = forms.BooleanField(initial=False, label='', required=False)
-    obs = forms.CharField(max_length=200, label='', required=False)
+    obs = forms.CharField(max_length=500, label='', required=False)
     l_real = forms.IntegerField(required=False)
 
 class ImprimirEtiquetaBobine(forms.Form):

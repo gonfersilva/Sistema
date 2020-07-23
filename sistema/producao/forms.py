@@ -439,10 +439,13 @@ class ProdutoGranuladoCreateForm(ModelForm):
 
 class RecicladoCreateForm(ModelForm):
     ESTADO = (('G', 'G'),('R', 'R'))
+    TARA = (('15 kg', '15 kg'),('30 kg', '30 kg'))
     estado = forms.CharField(max_length=1, required=True, widget=forms.Select(choices=ESTADO))
+    tara = forms.CharField(max_length=5, required=True, widget=forms.Select(choices=TARA))
+
     class Meta:
         model = Reciclado
-        fields = ['produto_granulado', 'num', 'peso', 'obs']
+        fields = ['produto_granulado', 'num', 'peso', 'tara', 'obs']
 
     def __init__(self, *args, **kwargs):
         reciclado = Reciclado.objects.all()
@@ -454,6 +457,7 @@ class RecicladoCreateForm(ModelForm):
                 num = reciclado.num + 1
             elif data > data_reciclado:
                 num = 1
+
         except:
             num = 1
   

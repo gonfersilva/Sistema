@@ -5424,6 +5424,18 @@ def reciclado_create(request):
             instance.timestamp_edit = datetime.now()
             instance.timestamp = datetime.now()
             instance.timestamp_inicio = reciclado_latest.timestamp
+            
+            print(instance.peso)
+
+            if instance.tara == '30 kg':
+                instance.peso -= 30
+            elif instance.tara == '15 kg':
+                instance.peso -= 15
+            
+            print(instance.tara)
+            print(instance.peso)
+
+
             if estado == 'R' and instance.obs == '':
                 messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
             else:

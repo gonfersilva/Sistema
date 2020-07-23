@@ -717,6 +717,7 @@ class Reciclado(models.Model):
     timestamp_edit    = models.DateTimeField(verbose_name="Edited")
     produto_granulado = models.ForeignKey(ProdutoGranulado, on_delete=models.PROTECT, verbose_name="Produto Granulado")
     lote = models.CharField(max_length=15, unique=True)
+    tara = models.CharField(max_length=5, unique=False)
     num = models.PositiveIntegerField(verbose_name="Número", default=0)
     estado = models.CharField(max_length=4, choices=STATUS, default='G', verbose_name="Estado")
     peso   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")

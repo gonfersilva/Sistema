@@ -15,7 +15,7 @@
     <div>
         <div><h3>Produto: <span>{{ reciclado.produto_granulado.produto_granulado }}</span></h3></div>
         <div><h3>Estado: <span>{{ reciclado.estado }}</span></h3></div>
-        <div><h3>Peso: <span>{{ reciclado.peso }}</span></h3></div>
+        <div><h3>Peso: <span>{{ reciclado.peso }} Kg</span></h3></div>
         <div><h3>Observações: <span>{{ reciclado.obs }}</span></h3></div>
         
     </div>
@@ -23,6 +23,7 @@
         <div><h3>Data e Hora de Registo: <span>{{ reciclado.timestamp|date:"d-n-Y G:i" }}</span></h3></div>
         <div><h3>Inicio: <span>{{ reciclado.timestamp_inicio|date:"d-n-Y G:i" }}</span></h3></div>
         <div><h3>Fim: <span>{{ reciclado.timestamp|date:"d-n-Y G:i" }}</span></h3></div>
+        <div><h3>Tara: <span>{{ reciclado.tara }}</span></h3></div>
         
         
     </div>

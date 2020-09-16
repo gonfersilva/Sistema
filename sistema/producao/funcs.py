@@ -475,7 +475,8 @@ def palete_nome(pk):
         else:
             if instance.retrabalhada == False:
                 e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
-                e_p.cliente = instance.cliente.nome
+                if instance.cliente != None:
+                    e_p.cliente = instance.cliente.nome
             else:
                e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
             e_p.save()
@@ -933,6 +934,7 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         '75': '9',
         '60': '10',
         '45': '11',
+        '25': '12',
     }
 
     token = '' + str(num_bobines) + produtos_dict.get(produto) + core 

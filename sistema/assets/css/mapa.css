@@ -1,283 +1,4 @@
 
-/* #content {
-    margin-top: 70px;
-}
-
-.pt {
-   padding-top: 10px; 
-}
-
-.table td.fit, .table.fit {
-    white-space: nowrap;
-    width: 1%;
-    
-}
-
-.table td.check {
-    text-align: center;
-}
-
-.table th.check {
-    text-align: center;
-}
-
-
-#estado_good {
-    background-color: green;
-    color: white;
-    text-align: center;
-   
-    
-}
-
-
-#estado_rejected {
-    background-color: red;
-    color: white;
-    text-align: center;
-}
-#estado_dm {
-    background-color: orange;
-    color: white;
-    text-align: center;
-}
-
-.estado_dm {
-    background-color: orange;
-    color: white;
-    text-align: center;
-}
-
-#estado_ba {
-    background-color:red;
-    color: white;
-    text-align: center;
-}
-
-#estado_lab {
-    background-color: cyan;
-    color: black;
-    text-align: center;
-}
-
-#estado_ind {
-    background-color: blue;
-    color: yellow;
-    text-align: center;
-}
-
-#estado_hold {
-    background-color: #b237cc;
-    color:black;
-    text-align: center;
-}
-
-.bobines {
-    height: 400px;
-}
-
-.size-table {
-    height: 950px;
-}
-.size-table2 {
-    height: 350px;
-}
-.size-table3 {
-    height: 700px;
-}
-
-#center{
-    text-align: center;
-}
-
-#right  {
-    float: right;
-}
-
-#error {
-    color: red;
-}
-
-#success {
-    color: green;
-}
-
-#white {
-    color: white;
-}
-
-.btn-lg {
-    width: 250px;
-    height: 125px;
-    
-}
-
-.center-text {
-    text-align: center;
-}
-
-.estado_boot_class {
-    width: 100px;
-}
-
-.popup-picagem-bobines{
-    visibility: hidden;
-    position:absolute;
-    background:#ffffff;
-    
-    width:50%;
-    height:50%;
-    left:25%;
-}
-
-.popup-picagem-bobines.active{
-    visibility: visible;
-}
-
-.erro{
-    color: red;
-}
-
-.btn span.glyphicon {    			
-	opacity: 0;				
-}
-.btn.active span.glyphicon {				
-	opacity: 1;				
-}
-
-p#atencao {
-    color:red
-}
-
-#span_details_perfil {
-    font-size: 0.8em;
-} */
-
-/* #search_form {
-    display: none;
-} */
-
-/* .table__table {
-    width: 100%;
-    overflow-x: scroll;
-    display: block;
-    
-}
-
-.table__table th:first {
-    position: absolute;
-}
-
-.table__header {
-    border-bottom: 4px solid grey;
-    
-   
-}
-
-.table__body tr{
-    border-bottom: 1px solid grey;
-    
-}
-.table__header th {
-    text-align: center;
-    padding: 0px 50px 0px 0px;
-;
-    
-}
-.table__body td {
-    text-align: center;
-    padding: 15px 50px 0px 0px;
-    
-}
-*/
-/* .table__estado {
-    padding-top: 10px;
-}
-
-.table__checkbox {
-    font-size: 0em;
-    
-} 
-
-.table__table {
-    position: relative;
-    width: 1450px;
-    overflow: hidden;
-    border-collapse: collapse;
-  }
-   */
-  
-/* 
-.table__header {
-    position: relative;
-    display: block; 
-    width: 120px;
-    overflow: visible;
-    background-color: white;
-}
-  
-  .table__header th {
-    min-width: 120px;
-    height: 32px;
-    text-align: center;
-
-  }
-  
-  .table__header th:nth-child(1) {
-    position: relative;
-    display: block; 
-    overflow: hidden;
-    background-color: white;
-    height: 40px;
-    text-align: center;
-    padding-top: 18px;
-    min-width: 150px;
-  }
-  
-  
-
-  .table__body {
-    position: relative;
-    display: block; 
-    width: 1450px;
-    height: 445px;
-    overflow: scroll;
-
-  }
-  
-  .table__body td {
-    min-width: 120px;
-    text-align: center;
-    
-  }
-  
-  .table__body tr td:nth-child(1) {  
-    position: relative;
-    display: block; 
-    height: 49px;
-    opacity: 1;
-    overflow: hidden;
-   
-    min-width: 150px;
-    padding-top: 10px;
-  }
-
-  .table__body tr:nth-child(even) td:nth-child(1) { 
-    background-color: #e7e4e4;
-    
-  }
-
-  .table__body tr:nth-child(odd) td:nth-child(1) {  
-    background-color: white;
-    
-  }
-
- 
-  .table__body tr:nth-child(even) {
-    background-color: #e7e4e4;
-  }  */
-
-
 /* New Layout */
 * {
     padding: 0;
@@ -738,6 +459,13 @@ header a:hover {
 
 .fa-pencil-alt {
     color: rgb(84, 163, 233);
+}
+
+.fa-arrow-right {
+    color: green;
+}
+.fa-arrow-left {
+    color: red;
 }
 #td_produto {
     min-width:350px;
@@ -1389,3 +1117,130 @@ input[type=number] {
 #id_tipo_desp {
     visibility: hidden;
 }
+
+.flex-container {
+    display: flex;
+    justify-content: space-around;   
+    
+  
+    
+}
+
+.flex-container td {
+    text-align: center;
+}
+
+.border {
+    border: 2px solid #0099cc;
+    margin: 5px;
+  
+    
+}
+
+.flex-container h2 {
+    text-align: center;
+}
+
+
+.flex-container input {
+    float: right;
+    width: 90%;
+    text-align: right;
+    
+  }
+.flex-container select {
+    float: right;
+    width: 90%;
+    
+}
+
+.flex-container textarea {
+    resize: none;
+    height: 50px;
+    text-align: left;
+}
+
+.flex-container .content-table td {
+    text-align: right;
+}
+
+.flex-container div.ordem-aguardar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 60px;
+    background-color: orange;
+}
+.flex-container div.ordem-finalizada {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 60px;
+    background-color: red;
+}
+.flex-container div.ordem-ativa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 60px;
+    background-color: green;
+}
+
+.iniciar-ordem {
+    background-color: green;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+}
+
+.iniciar-ordem:hover {
+    background-color: rgb(47, 255, 89);
+    color: black;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+    
+}
+
+.cancelar-ordem {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+}
+
+.cancelar-ordem:hover {
+    background-color: rgb(236, 92, 92);
+    color: black;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+    
+}
+
+

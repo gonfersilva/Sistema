@@ -12,7 +12,11 @@
         <br>
         <h1>Palete: {{ palete.num }}-2020</h1>
         {% if palete.estado == 'G'%}<h3 id="estado_palete_g">GOOD</h3>{% elif palete.estado == 'DM' %}<h3 id="estado_palete_dm">DM12</h3>{% endif %}
+        {% if palete.cliente != None %}
         <h3>Cliente: {{ palete.cliente.nome }}</h3>
+        {% else %}
+        <h3>STOCK</h3>
+        {% endif %}
         <h3>Nº de bobines total: {{ palete.num_bobines }}</h3>
         <h3>Largura das bobines: {{ palete.largura_bobines }}</h3>
         <h3>Core das bobines: {{ palete.core_bobines }}</h3>

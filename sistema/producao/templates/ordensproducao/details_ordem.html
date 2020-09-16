@@ -1,0 +1,305 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+{% block title %}Criar Ordem de Produção | {{ block.super }}{% endblock %}
+{% block content %}
+<div>
+    <a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a>
+    {% if ordem.retrabalho == False %}
+    <a href="{% url 'planeamento:ordem_add_stock' pk=ordem.pk %}"  class="btn_create" role="button">Adicionar Paletes em Stock</a>
+    {% else %}
+    <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn_create" role="button">Paletes a retrabalhar</a>
+    {% endif %}
+    <!-- <a href="#"  class="btn_create" role="button">Editar Ordem de Produção</a> -->
+    <!-- {% if ordem.ativa == True and  ordem.completa == False  and request.user|has_group:"Logistica Supervisor" and ordem.num_paletes_stock != 0 %} -->
+    <!-- {% elif ordem.ativa == False and ordem.completa == True and request.user|has_group:"Produção Supervisor" %} -->
+    <!-- {% endif %} -->
+   
+</div>
+<div class="title_block-list">
+    <h1>Ordem de Produção</h1>
+    <h2>{{ ordem }}</h2>
+</div>
+<br>
+<div class="flex-container">
+    <div>
+        {% if ordem.completa == True and ordem.ativa == False %}
+        <div class="ordem-finalizada"><h2>Ordem Finalizada</h2></div>
+        {% elif ordem.ativa == True and ordem.completa == False %}
+        <div class="ordem-ativa"><h2>Em Progresso</h2> {% if request.user|has_group:"Produção Supervisor"  and num_paletes == 0  %}<a href="{% url 'planeamento:ordem_cancelar' pk=ordem.pk %}"  class="cancelar-ordem" role="button">Cancelar</a>{% endif %}</div>
+        {% elif ordem.ativa == False and ordem.completa == False %}
+        <div class="ordem-aguardar"><h2>Aguardando Início</h2> {% if request.user|has_group:"Produção Supervisor" %}<a href="{% url 'planeamento:ordem_iniciar' pk=ordem.pk %}"  class="iniciar-ordem" role="button">Iniciar</a>{% endif %}</div>
+       
+        {% endif %}
+    </div>
+</div>
+ <br>
+
+<div class="content-form">
+    <div class="flex-container border">
+        <div>
+            {% if ordem.enc != None and ordem.cliente != None %}
+            <div><h2>Encomenda</h2></div>
+            <div><h3>Encomenda:</h3> {{ ordem.enc }}</div>             
+            <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>  
+            {% elif ordem.enc == None and ordem.cliente != None %}   
+            <div><h2>Encomenda</h2></div>
+            <div><h3>Encomenda:</h3> S/ Encomenda atribuida</div>             
+            <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>          
+            {% endif %}
+            <div><h3>Artigo:</h3> {{ ordem.artigo }}</div>   
+            <div><h3>Data prevista de início:</h3> {{ ordem.data_prevista_inicio }}</div>   
+            <div><h3>Data prevista de fim:</h3> {{ ordem.data_prevista_fim }}</div> 
+            {% if ordem.inicio == None %}  
+            <div><h3>Data de inicio:</h3> Por iniciar</div>   
+            {% else %}
+            <div><h3>Data de inicio:</h3> {{ ordem.inicio }}</div>   
+            {% endif %}
+            <div><h3>Largura:</h3> {{ ordem.largura }}</div>   
+            <div><h3>Diâmetro mínimo:</h3> {{ ordem.diam_min }}</div>   
+            <div><h3>Diâmetro máximo:</h3> {{ ordem.diam_max }}</div>   
+            <div><h3>Core("):</h3> {{ ordem.core }}</div>   
+            <div><h3>Nº Paletes Produzir:</h3> {{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</div>   
+            {% if ordem.retrabalho == False %}
+            <div><h3>Nº Paletes stock:</h3> {{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</div>  
+            {% endif %}  
+            <div><h3>Nº Paletes Total:</h3> {{ ordem.num_paletes_total }}</div>  
+            <div><h3>Emendas:</h3> {{ ordem.emendas }}</div>  
+            
+        </div>
+        <div>
+            <div><h2>Requisitos</h2></div>
+            {% if ordem.retrabalho == False %}
+            <div><h3>Nonwoven Superior:</h3> {{ ordem.nwsup }}</div>           
+            <div><h3>Nonwoven Inferior:</h3> {{ ordem.nwinf }}</div>
+            {% endif %} 
+            <div><h3>Tipo de Palete:</h3> {{ ordem.tipo_paletes }}</div>
+            <div><h3>Paletes por palete:</h3> {{ ordem.palete_por_palete }}</div> 
+            <div><h3>Bobines por palete:</h3> {{ ordem.bobines_por_palete }}</div>
+            <div><h3>Sentido Enrolamento:</h3> {{ ordem.enrolamento }}</div> 
+            <div><h3>Folha identificação Palete:</h3> {% if ordem.folha_id == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>  
+            <div><h3>Frequência amostragem(p/ Bobinagem):</h3> {{ ordem.freq_amos }}</div>  
+            {% if b.nok == True %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td></td>{% endif %}
+
+            <div><h3>Stock:</h3> {% if ordem.stock == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>  
+        </div>
+        
+    </div>
+    {% if ordem.retrabalho == False %}
+    <div class="flex-container border">
+        <div>
+            <div><h2>Limites</h2></div>
+            <div><h3>Descentrado:</h3> {{ ordem.limite_desc }} mm</div>            
+            <div><h3>Cónico:</h3> {{ ordem.limite_con }} mm</div>  
+            
+            
+        </div>
+        
+        
+    </div>
+    
+    
+    <br>
+    <div class="flex-container">
+        <div>
+            <table class="content-table">
+                <h2>Características Técnicas (à saída de produção)</h2>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Inferior</th>
+                        <th>Superior</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Basis weight (gsm)</td>
+                        <td>{{ ordem.ct.ctinf.basis_weight }}</td>
+                        <td>{{ ordem.ct.ctsup.basis_weight }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tensile at peak CD (N/25mm)</td>
+                        <td>{{ ordem.ct.ctinf.tensile_peak }}</td>
+                        <td>{{ ordem.ct.ctsup.tensile_peak }}</td>
+                    </tr>
+                    <tr>
+                        <td>Elongation at break CD (%)</td>
+                        <td>{{ ordem.ct.ctinf.elong_break_cd }}</td>
+                        <td>{{ ordem.ct.ctsup.elong_break_cd }}</td>
+                    </tr>
+                    <tr>
+                        <td>Elongation at 9.81N CD (%)</td>
+                        <td>{{ ordem.ct.ctinf.elong_n_cd }}</td>
+                        <td>{{ ordem.ct.ctsup.elong_n_cd }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 5% elongation 1st cycle CD (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_five }}</td>
+                        <td>{{ ordem.ct.ctsup.load_five }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 10% elongation 1st cycle CD (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_ten }}</td>
+                        <td>{{ ordem.ct.ctsup.load_ten }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 20% elongation 1st cycle CD (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_twenty }}</td>
+                        <td>{{ ordem.ct.ctsup.load_twenty }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 50% elongation 1st cycle CD (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_fifty }}</td>
+                        <td>{{ ordem.ct.ctsup.load_fifty }}</td>
+                    </tr>
+                    <tr>
+                        <td>Permanent set 2nd cycle (%)</td>
+                        <td>{{ ordem.ct.ctinf.perm_set_second }}</td>
+                        <td>{{ ordem.ct.ctsup.perm_set_second }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 100% elongation 2nd cycle (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_hundred_second }}</td>
+                        <td>{{ ordem.ct.ctsup.load_hundred_second }}</td>
+                    </tr>
+                    <tr>
+                        <td>Permanent set 3rd cycle (%)</td>
+                        <td>{{ ordem.ct.ctinf.perm_set_third }}</td>
+                        <td>{{ ordem.ct.ctsup.perm_set_third }}</td>
+                    </tr>
+                    <tr>
+                        <td>Load at 100% elongation 3rd cycle (N/50 mm)</td>
+                        <td>{{ ordem.ct.ctinf.load_hundred_third }}</td>
+                        <td>{{ ordem.ct.ctsup.load_hundred_third }}</td>
+                    </tr>
+                    <tr>
+                        <td>Lamination strenght (CD) (N/25 mm)</td>
+                        <td>{{ ordem.ct.ctinf.lamination_str }}</td>
+                        <td>{{ ordem.ct.ctsup.lamination_str }}</td>
+                    </tr>
+                </tbody>
+            </table> 
+            
+            
+        </div>
+        
+        
+    </div>
+    
+    <br>
+    <br>
+    <div class="flex-container border">
+        <div><h3>Fichas de Processo:</h3> {{ ordem.ficha_processo }}</div>           
+        <div><h3>CoA de aprovação:</h3> {{ ordem.coa_aprov }}</div>
+    </div>
+    {% endif %} 
+    <div class="flex-container border">
+        
+        <div>
+            <div><h2>Esquema de Paletização</h2></div>
+            {% if ordem.retrabalho == False %}
+            <div><h3>Tipo de transporte:</h3> {{ ordem.tipo_transporte }}</div>
+            <div><h3>Nº Paletes / Camião:</h3> {{ ordem.paletes_camiao }}</div>
+            {% endif %}
+            <div><h3>Altura máx. Palete:</h3> {{ ordem.altura_max }}</div>
+            <div><h3>Paletes Sobrepostas:</h3> {% if ordem.paletes_sobre == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
+            <div><h3>Cintas:</h3> {% if ordem.cintas == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
+        </div>             
+        <div>
+            <div><h2>Palete</h2></div>
+            <div><h3>Topo:</h3> {{ ordem.topo }}</div>
+            <div><h3>Embalamento:</h3> {{ ordem.embal }}</div>
+            <div><h3>Base:</h3> {{ ordem.base }}</div>
+        </div> 
+    </div>
+    <div class="flex-container border">
+        <div>
+            <div><h2>Etiquetas</h2></div>
+            <div><h3>Bobine:</h3> {{ ordem.etiqueta_bobine }}</div>            
+            <div><h3>Palete:</h3> {{ ordem.etiqueta_palete }}</div>
+            <div><h3>Final:</h3> {{ ordem.etiqueta_final }}</div>
+        </div>
+    </div>
+    
+    <div>
+        <h2>Paletes Produzidas</h2>
+        <table class="content-table">
+            <thead>
+                <tr>
+                    <th id="designacao">Palete</th>
+                    <th>Nº</th>
+                    <th>Data</th>
+                    <th>Estado</th>
+                    <th>Bobines</th>
+                    <th>Core</th>
+                    <th>Largura</th>
+                    <th>Área (m<sup>2</sup>)</th>
+                    <th>Comprimento (m)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pal in palete %}
+                <tr>
+                    
+                    <td id="designacao"><a href="{% url 'producao:addbobinepalete' pk=pal.pk %}">{{ pal.nome }}</a></td>
+                    <td>{{ pal.num }}</td>
+                    <td>{{ pal.data_pal|date:"d-n-Y" }}</td>
+                    {% if pal.estado == 'G' %}<td id="estado_good">{{ pal.estado }}</td>
+                    {% elif pal.estado == 'DM' %}<td id="estado_dm">{{ pal.estado }}</td>{% endif %}
+                    <td>{{ pal.num_bobines_act }} / {{ pal.num_bobines }}</td>
+                    <td>{{ pal.core_bobines }}</td>
+                    <td>{{ pal.largura_bobines }}</td>
+                    <td>{{ pal.area }}</td>
+                    <td>{{ pal.comp_total }}</td>
+                    {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
+                    {% endif %}
+    
+                    
+                </tr>
+                {% endfor%}
+            </tbody>
+            </table>
+    </div>
+    {% if ordem.retrabalho == True %}
+    <div>
+        <h2>Bobines a retrabalhar</h2>
+        <table class="content-table">
+            <thead>
+                <tr>
+                    <th id="designacao">Bobine</th>
+                    <th>Palete</th>
+                    <th>Retrabalhar</th>
+                    <th>Utilizada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bob in bobines_para_retrabalho %}
+                <tr>
+                    
+                    <td id="designacao">{{ bob.bobine.nome }}</td>
+                    <td>{{ bob.bobine.palete.nome }}</td>
+                    {% if bob.retrabalhar == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}
+                    {% if bob.bobine.recycle == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}
+                    
+    
+                    
+                </tr>
+                {% endfor%}
+            </tbody>
+            </table>
+    </div>
+    {% endif %}
+    
+    
+    
+    
+</div>
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+</script>
+{% endblock %}

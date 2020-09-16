@@ -34,6 +34,7 @@
                 <th>Bobines</th>
                 <th>Core</th>
                 <th>Largura</th>
+                <th>Ordem de Produção</th>
                 <th>Cliente</th>
                 <th>Área (m<sup>2</sup>)</th>
                 <th>Comprimento (m)</th>
@@ -52,7 +53,16 @@
                 <td>{{ pal.num_bobines_act }} / {{ pal.num_bobines }}</td>
                 <td>{{ pal.core_bobines }}</td>
                 <td>{{ pal.largura_bobines }}</td>
+                {% if pal.ordem != None %}
+                <td>{{ pal.ordem }}</td>
+                {% else %}
+                <td>Sem ordem de produção</td>
+                {% endif %}
+                {% if pal.cliente != None %}
                 <td>{{ pal.cliente }}</td>
+                {% else %}
+                <td>Stock</td>
+                {% endif %}
                 <td>{{ pal.area }}</td>
                 <td>{{ pal.comp_total }}</td>
                 {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}

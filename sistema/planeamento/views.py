@@ -1,3 +1,393 @@
 from django.shortcuts import render
+from .forms import *
+from .models import *
+from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect, reverse, HttpResponse
+from django.contrib.auth.decorators import login_required, user_passes_test
+from producao.models import *
+from django.forms.models import modelformset_factory, inlineformset_factory
+import datetime
+from django.contrib import messages
+from datetime import datetime
 
-# Create your views here.
+
+
+def encomendas_list(request):
+    template_name = 'encomendaV2/encomenda_list.html'
+              
+
+    context = {
+       
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def create_ordem(request):
+    
+    template_name = 'ordensproducao/create_ordem.html'
+    form = OrdemProducaoCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        cd = form.cleaned_data
+        basis_weight_sup = cd.get('basis_weight_sup')
+        tensile_peak_sup = cd.get('tensile_peak_sup')
+        elong_break_cd_sup = cd.get('elong_break_cd_sup')
+        elong_n_cd_sup = cd.get('elong_n_cd_sup')
+        load_five_sup = cd.get('load_five_sup')
+        load_ten_sup = cd.get('load_ten_sup')
+        load_twenty_sup = cd.get('load_twenty_sup')
+        load_fifty_sup = cd.get('load_fifty_sup')
+        perm_set_second_sup = cd.get('perm_set_second_sup')
+        load_hundred_second_sup = cd.get('load_hundred_second_sup')
+        perm_set_third_sup = cd.get('perm_set_third_sup')
+        load_hundred_third_sup = cd.get('load_hundred_third_sup')
+        lamination_str_sup = cd.get('lamination_str_sup')
+        basis_weight_inf = cd.get('basis_weight_inf')
+        tensile_peak_inf = cd.get('tensile_peak_inf')
+        elong_break_cd_inf = cd.get('elong_break_cd_inf')
+        elong_n_cd_inf = cd.get('elong_n_cd_inf')
+        load_five_inf = cd.get('load_five_inf')
+        load_ten_inf = cd.get('load_ten_inf')
+        load_twenty_inf = cd.get('load_twenty_inf')
+        load_fifty_inf = cd.get('load_fifty_inf')
+        perm_set_second_inf = cd.get('perm_set_second_inf')
+        load_hundred_second_inf = cd.get('load_hundred_second_inf')
+        perm_set_third_inf = cd.get('perm_set_third_inf')
+        load_hundred_third_inf = cd.get('load_hundred_third_inf')
+        lamination_str_inf = cd.get('lamination_str_inf')
+        
+        instance.user = request.user
+        ctsup = CTSup.objects.create(basis_weight=basis_weight_sup,tensile_peak=tensile_peak_sup, elong_break_cd=elong_break_cd_sup, elong_n_cd=elong_n_cd_sup, 
+        load_five=load_five_sup, load_ten=load_ten_sup, load_twenty=load_twenty_sup, load_fifty=load_fifty_sup, perm_set_second=perm_set_second_sup, 
+        load_hundred_second=load_hundred_second_sup, perm_set_third=perm_set_third_sup, load_hundred_third=load_hundred_third_sup, lamination_str=lamination_str_sup)
+        ctinf = CTInf.objects.create(basis_weight=basis_weight_inf,tensile_peak=tensile_peak_inf, elong_break_cd=elong_break_cd_inf, elong_n_cd=elong_n_cd_inf, 
+        load_five=load_five_inf, load_ten=load_ten_inf, load_twenty=load_twenty_inf, load_fifty=load_fifty_inf, perm_set_second=perm_set_second_inf, 
+        load_hundred_second=load_hundred_second_inf, perm_set_third=perm_set_third_inf, load_hundred_third=load_hundred_third_inf, lamination_str=lamination_str_inf)
+        ct = CaracteristicasTecnicas.objects.create(user=request.user, ctsup=ctsup, ctinf=ctinf)
+        instance.ct = ct
+        if instance.enc != None and instance.stock == False:
+            enc = Encomenda.objects.get(pk=instance.enc.pk)
+            ordens = OrdemProducao.objects.filter(enc=instance.enc)
+            num_paletes_total_ordens = 0
+            for o in ordens:
+                num_paletes_total_ordens += o.num_paletes_total
+
+            if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
+                messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+            else:
+                count = OrdemProducao.objects.filter(enc=instance.enc).count()
+                instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
+                instance.save()
+                return redirect('planeamento:list_ordem')
+        elif instance.enc == None and instance.stock == True:
+            count = OrdemProducao.objects.filter(stock=True).count()
+            instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
+            instance.enc = None
+            instance.save()
+            return redirect('planeamento:list_ordem')
+        elif instance.enc != None and instance.stock == True:
+            messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
+        
+   
+
+    context = {
+       "form": form
+    }
+    return render(request, template_name, context)
+
+@login_required
+def list_ordem(request):
+    ordens_list = OrdemProducao.objects.all().order_by('-ativa', 'completa', '-timestamp')
+    template_name = 'ordensproducao/list_ordem.html'
+            
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        ordens_list = OrdemProducao.objects.filter(op__icontains=query).order_by('-ativa', 'completa')
+
+
+    paginator = Paginator(ordens_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        ordens = paginator.page(page)
+    except PageNotAnInteger:
+        ordens = paginator.page(1)
+    except EmptyPage:
+        ordens = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "ordens": ordens,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def details_ordem(request, pk):
+    ordem = OrdemProducao.objects.get(pk=pk)
+    palete = Palete.objects.filter(ordem=ordem)
+    num_paletes = Palete.objects.filter(ordem=ordem).count()
+    template_name = 'ordensproducao/details_ordem.html'
+    bobines_para_retrabalho = 0
+
+    if ordem.retrabalho == True:
+        bobines_para_retrabalho = BobinesARetrabalhar.objects.filter(ordem=ordem).order_by('-bobine__palete')
+
+    
+
+    context = {
+        "ordem": ordem,
+        "palete":palete,
+        "num_paletes": num_paletes,
+        "bobines_para_retrabalho": bobines_para_retrabalho
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def ordem_add_stock(request, pk):
+    ordem = OrdemProducao.objects.get(pk=pk)
+    paletes_stock = Palete.objects.filter((Q(stock=True) & Q(cliente=ordem.cliente)) | (Q(stock=True) & Q(cliente=None)))
+    paletes_ordem = Palete.objects.filter(ordem=ordem)
+    template_name = 'ordensproducao/ordem_add_stock.html'
+    num_paletes_total = Palete.objects.filter(ordem=ordem).count() 
+    paletes_em_falta = ordem.num_paletes_stock - ordem.num_paletes_stock_in
+    
+  
+
+    context = {
+        "ordem": ordem,
+        "paletes_stock": paletes_stock,
+        "paletes_ordem": paletes_ordem,
+        "num_paletes_total": num_paletes_total,
+        "paletes_em_falta": paletes_em_falta
+    }
+    return render(request, template_name, context)
+    
+
+    
+       
+@login_required
+def ordem_iniciar(request, pk):
+    ordem = OrdemProducao.objects.get(pk=pk)
+    ordem.ativa = True
+    ordem.inicio = datetime.now()
+    ordem.save()
+    
+
+    return redirect('planeamento:details_ordem', pk=ordem.pk)
+
+@login_required
+def ordem_cancelar(request, pk):
+    ordem = OrdemProducao.objects.get(pk=pk)
+    ordem.ativa = False
+    ordem.inicio = None
+    ordem.save()
+    
+
+    return redirect('planeamento:details_ordem', pk=ordem.pk)
+
+
+@login_required
+def palete_inserir_ordem(request, pk_palete, pk_ordem):
+    ordem = OrdemProducao.objects.get(pk=pk_ordem)
+    palete = Palete.objects.get(pk=pk_palete)
+    num_paletes_ordem = Palete.objects.filter(pk=pk_ordem)
+    if ordem.num_paletes_stock == ordem.num_paletes_stock_in:
+        messages.error(request, 'Não é possivel inserir mais Paletes de stock na ordem de fabrico porque já foi atingido o limite.') 
+    else:
+        palete.ordem = ordem
+        palete.stock = False
+        palete.cliente = ordem.enc.cliente
+        ordem.num_paletes_stock_in += 1
+        ordem.save() 
+        palete.save()
+
+    return redirect('planeamento:ordem_add_stock', pk=ordem.pk)
+    
+@login_required
+def palete_remover_ordem(request, pk_palete, pk_ordem):
+    ordem = OrdemProducao.objects.get(pk=pk_ordem)
+    palete = Palete.objects.get(pk=pk_palete)
+    num_paletes_ordem = Palete.objects.filter(pk=pk_ordem)
+    try:
+        palete.ordem = OrdemProducao.objects.get(op=palete.ordem_original)
+    except:
+        palete.ordem = None
+
+    palete.cliente = None
+    ordem.num_paletes_stock_in -= 1
+    palete.stock = True
+    palete.save()
+    ordem.save()
+
+    return redirect('planeamento:ordem_add_stock', pk=ordem.pk)
+
+
+@login_required
+def create_ordem_dm(request):
+    
+    template_name = 'ordensproducao/create_ordem_dm.html'
+    form = OrdemProducaoDMCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.retrabalho = True
+
+        if instance.enc != None and instance.stock == False:
+            enc = Encomenda.objects.get(pk=instance.enc.pk)
+            if instance.enc.cliente != instance.cliente:
+                messages.error(request, 'O cliente que introduziu não condiz com o cliente referente à encomenda.') 
+            else:
+                ordens = OrdemProducao.objects.filter(enc=instance.enc, retrabalho=True)
+                num_paletes_total_ordens = 0
+                for o in ordens:
+                    num_paletes_total_ordens += o.num_paletes_total
+
+                if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
+                    messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+                else:
+                    count = OrdemProducao.objects.filter(enc=instance.enc).count()
+                    instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-DM-' + str(count + 1)
+                    instance.num_paletes_total = instance.num_paletes_produzir
+                    instance.save()
+                    return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
+        elif instance.enc == None and instance.stock == True and instance.cliente != None:
+            count = OrdemProducao.objects.filter(stock=True, retrabalho=True, cliente=instance.cliente).count()
+            instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(instance.cliente.nome)+ '-DM-' + str(count + 1)
+            instance.enc = None
+            instance.num_paletes_total = instance.num_paletes_produzir
+            instance.save()
+            return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
+        elif instance.enc != None and instance.stock == True:
+            messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
+        elif instance.enc == None and instance.cliente != None and instance.stock == False:
+            messages.error(request, 'Não é possivel criar uma ordem de produçaõ DM para cliente sem encomenda e sem ser para Stock.') 
+        
+        
+   
+
+    context = {
+       "form": form
+    }
+    return render(request, template_name, context)
+
+@login_required
+def add_paletes_retrabalho(request, pk):
+    op = get_object_or_404(OrdemProducao, pk=pk)
+    paletes_dm = Palete.objects.filter(estado='DM', num_bobines_act__gte=1)
+    paletes_ordem = PaletesARetrabalhar.objects.filter(ordem=op)
+    
+    template_name = 'ordensproducao/add_paletes_ordem.html'
+
+    context = {
+       "op": op,
+       "paletes_dm": paletes_dm,
+       "paletes_ordem": paletes_ordem
+    }
+    return render(request, template_name, context)
+
+@login_required
+def add_palete_retrabalho(request, pk_ordem, pk_palete):
+    op = get_object_or_404(OrdemProducao, pk=pk_ordem)
+    palete = get_object_or_404(Palete, pk=pk_palete)
+
+    if PaletesARetrabalhar.objects.filter(ordem=op, palete=palete).exists():
+        messages.error(request, 'A palete ' + palete.nome + ' já foi adicionada.')
+    else:
+        add = PaletesARetrabalhar.objects.create(palete=palete, ordem=op)
+    
+
+    return redirect('planeamento:add_paletes_retrabalho', pk=op.pk)
+
+@login_required
+def remove_palete_retrabalho(request, pk):
+    palete_a_remover = PaletesARetrabalhar.objects.get(pk=pk)
+    op = get_object_or_404(OrdemProducao, pk=palete_a_remover.ordem.pk)
+
+    palete_a_remover.delete()
+    
+
+    return redirect('planeamento:add_paletes_retrabalho', pk=op.pk)
+
+@login_required
+def submit_paletes_para_retrabalho(request, pk):
+    op = get_object_or_404(OrdemProducao, pk=pk)
+    paletes_a_retrabalhar = PaletesARetrabalhar.objects.filter(ordem=op)
+    for palete_a_retrabalhar in paletes_a_retrabalhar:
+        palete = Palete.objects.get(pk=palete_a_retrabalhar.palete.pk)
+        bobines = Bobine.objects.filter(palete=palete)
+        for bob in bobines:
+            bob.para_retrabalho = True
+            bob.save()
+        
+    return redirect('planeamento:add_bobines_para_retrabalho', pk=op.pk)
+
+@login_required
+def add_bobines_para_retrabalho(request, pk):
+    template_name = 'ordensproducao/add_bobines_para_retrabalho.html'
+    op = get_object_or_404(OrdemProducao, pk=pk)
+    paletes_a_retrabalhar = PaletesARetrabalhar.objects.filter(ordem=op)
+            
+    context = {
+       "op": op,
+       "paletes_a_retrabalhar": paletes_a_retrabalhar
+       
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def change_status_bobine_retrabalho(request, pk, pk_ordem):
+    op = OrdemProducao.objects.get(pk=pk_ordem)
+    bobine = Bobine.objects.get(pk=pk)
+    if bobine.para_retrabalho == True:
+        bobine.para_retrabalho = False
+        bobine.save()
+    else:
+        bobine.para_retrabalho = True
+        bobine.save()
+   
+
+    return redirect('planeamento:add_bobines_para_retrabalho', pk=op.pk)
+
+@login_required
+def reset_status_bobine_retrabalho(request, pk_ordem):
+    op = OrdemProducao.objects.get(pk=pk_ordem)
+    paletes_a_retrabalhar = PaletesARetrabalhar.objects.filter(ordem=op)
+    for palete_a_retrabalhar in paletes_a_retrabalhar:
+        palete = Palete.objects.get(pk=palete_a_retrabalhar.palete.pk)
+        bobines = Bobine.objects.filter(palete=palete)
+        for bob in bobines:
+            bob.para_retrabalho = True
+            bob.save()
+
+    return redirect('planeamento:add_bobines_para_retrabalho', pk=op.pk)
+
+@login_required
+def finalizar_ordem_retrabalho_dm(request, pk):
+    op = OrdemProducao.objects.get(pk=pk)
+    paletes_a_retrabalhar = PaletesARetrabalhar.objects.filter(ordem=op)
+    for palete_a_retrabalhar in paletes_a_retrabalhar:
+        palete = Palete.objects.get(pk=palete_a_retrabalhar.palete.pk)
+        bobines = Bobine.objects.filter(palete=palete)
+        for bob in bobines:
+            if bob.para_retrabalho == True:
+                bobine_a_retrabalhar = BobinesARetrabalhar.objects.create(bobine=bob, ordem=op, retrabalhar=True)
+                bob.para_retrabalho = False
+                bob.save()
+            else:
+                bobine_a_retrabalhar = BobinesARetrabalhar.objects.create(bobine=bob, ordem=op, retrabalhar=False)
+  
+    return redirect('planeamento:details_ordem', pk=op.pk)
+
+
+
+
+

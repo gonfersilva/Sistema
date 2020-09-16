@@ -6,8 +6,8 @@ from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente, Encomend
 from .serializers import PaleteListSerializer, PaleteDetailSerializer, CargaListSerializer, PaletesCargaSerializer, CargasEncomendaSerializer, CargaDetailSerializer, BobineSerializer, EncomendaListSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-# class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
-#     queryset = Palete.objects.all().order_by('-data_pal', '-num')[:100]
+# class PaleteListStockAPIView(LoginRequiredMixin, ListAPIView):
+#     queryset = Palete.objects.filter(stock=True)
 #     serializer_class = PaleteListSerializer
 
 # class PaleteListHistoricoAPIView(LoginRequiredMixin, ListAPIView):

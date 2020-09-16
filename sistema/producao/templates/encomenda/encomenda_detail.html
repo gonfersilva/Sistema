@@ -1,6 +1,6 @@
 {% extends "layout.html "%}
 
-{% block title %}Bobine {{ bobine.nome }}{% endblock %}
+{% block title %}Detalhes Encomenda{% endblock %}
 
 {% block content %}
 <div>
@@ -17,11 +17,12 @@
         <div><h3>Proforma: <span>{{ enc.prf }}</span></h3></div>
         <div><h3>Order Number: {% if enc.order_num != None %}<span>{{ enc.order_num }}</span>{% else %}<span>N/A</span>{% endif %}</h3></div>
         <div><h3>M<sup>2</sup>: <span>{{ enc.sqm }}</span></h3></div>
+        <div><h3>Nº de Paletes: <span>{{ enc.num_paletes_actual }} / {{ enc.num_paletes }}</span></h3></div>
     </div>
     <div>
         <div><h3>Data: <span>{{ enc.data|date:"d-n-Y" }}</span></h3></div>
         <div><h3>Cliente: <span>{{ enc.cliente }}</span></h3></div>
-        <div><h3>Nº de Cargas: <span>{{ enc.num_cargas_actual }} / {{ enc.num_cargas }}</span></h3></div>
+        <div><h3>Nº de Cargas: <span>{{ enc.num_cargas_actual }}</span></h3></div>
     </div>
 </div>
 <div class="title_block-list">

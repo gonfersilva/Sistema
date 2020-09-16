@@ -32,6 +32,7 @@
                 <th>Data</th>
                 <th>M<sup>2</sup></th>    
                 <th>Nº de Cargas</th>                              
+                <th>Nº de Paletes</th>                              
                 <th>Estado</th>
             </tr>
         </thead>
@@ -43,7 +44,8 @@
                 <td>{{ e.prf }}</td>
                 <td>{{ e.data|date:"d-n-Y" }}</td>
                 <td>{{ e.sqm }}</td>
-                <td>{{ e.num_cargas_actual }} / {{ e.num_cargas }}</td>
+                <td>{{ e.num_cargas_actual }}</td>
+                <td>{{ e.num_paletes_actual }} / {{ e.num_paletes }}</td>
                 {% if e.estado == 'A' %}
                     <td class="td-icon"><i class="fas fa-box-open"></i></td>
                 {% else %}

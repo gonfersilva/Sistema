@@ -16,11 +16,12 @@
 <form action="" method="POST" class="submission-form">
     {% csrf_token %}
     <label for="id_data">Data</label>{{ form.data }}
+    <label for="id_data_prevista">Data prevista de conclusão</label>{{ form.data_prevista }}
     <label for="id_eef">Encomenda</label>{{ form.eef }}
     <label for="id_prf">Proforma</label>{{ form.prf }}
     <label for="id_cliente">Cliente</label>{{ form.cliente }}
     <label for="id_sqm">Metros Quadrados</label>{{ form.sqm }}
-    <label for="id_num_cargas">Nº de Cargas</label>{{ form.num_cargas }}
+    <label for="id_num_paletes">Nº de Paletes Total</label>{{ form.num_paletes }}
     <label for="id_order_num">Order Number</label>{{ form.order_num }}
     <input type="submit" value="Validar" id="validate-btn">
 </form>

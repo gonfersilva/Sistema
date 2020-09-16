@@ -1,0 +1,3 @@
+function onLoadAlert(){
+    alert("Olá")
+}

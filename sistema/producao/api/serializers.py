@@ -266,3 +266,8 @@ class PaletesCargaSerializer(ModelSerializer):
     class Meta:
         model = Palete
         fields = "__all__"
+
+class PaleteStockSerializer(ModelSerializer):
+    class Meta:
+        model = Palete
+        fields = ['nome', 'stock', 'ordem', 'cliente']

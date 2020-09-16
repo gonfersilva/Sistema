@@ -13,9 +13,30 @@
 <div class="title_block-list">
     <h1>Criar Palete para Cliente</h1>
 </div>
+{% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+    {% endfor %}
+
+</div>
+{% endif %}
 <form action="" method="POST" class="submission-form">
     {% csrf_token %}
-    <label for="id_cliente">Cliente</label>{{ form.cliente }}
+    <label for="id_ordem">Ordem de Produção</label>{{ form.ordem }}
     <label for="id_num">Palete Nº</label>{{ form.num }}
     <label for="id_data_pal">Data</label>{{ form.data_pal }}
     <label for="id_num_bobines">Bobines Total</label>{{ form.num_bobines }}

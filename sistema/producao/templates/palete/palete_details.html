@@ -17,7 +17,11 @@
             {% if palete.estado != 'DM'%}
             <div class="row">
                 <h1 id="id_palete" data-catid="{{ palete.id }}">Palete: {{ palete.nome }}</h1>
+                {% if palete.cliente != None %}
                 <h2>Cliente: {{ palete.cliente.nome}}</h2>
+                {% else %}
+                <h2>Cliente: Sem cliente atribuido</h2>
+                {% endif %}
                 {% if palete.estado == 'G' %}
                     <h3 id="estado_good">Good</h3>
                 {% elif palete.estado == 'R' %}

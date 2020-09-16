@@ -31,6 +31,7 @@ from calendar import monthrange
 from datetime import date
 from collections import defaultdict
 from django.contrib.sessions.models import Session
+from planeamento.models import *
 
 
 
@@ -373,10 +374,47 @@ def create_palete(request):
         if Palete.objects.filter(nome=nome_s_r).exists() or Palete.objects.filter(nome=nome_c_r).exists():
             messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
         else:
-            instance.save()
-            palete_nome(instance.pk)
-            return redirect('producao:palete_picagem', pk=instance.pk)
-
+            if instance.ordem != None:
+                ordem = OrdemProducao.objects.get(pk=instance.ordem.pk)
+                instance.ordem_original = ordem.op
+                try:
+                    encomenda = Encomenda.objects.get(pk=ordem.enc.pk)
+                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
+                    if num_paletes_ordem < ordem.num_paletes_total:
+                        ordem.num_paletes_produzidas += 1
+                        encomenda.num_paletes_actual += 1 
+                        instance.cliente = encomenda.cliente
+                        ordem.save()
+                        encomenda.save()
+                        instance.save()
+                        if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
+                            ordem.ativa = False
+                            ordem.completa = True
+                            ordem.save()
+                        palete_nome(instance.pk)
+                        return redirect('producao:palete_picagem', pk=instance.pk)
+                    else:
+                        messages.error(request, 'A ordem que selecinou encontra-se completa')
+                except:
+                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
+                    instance.ordem_original_stock = True
+                    if num_paletes_ordem < ordem.num_paletes_total:
+                        ordem.num_paletes_produzidas += 1
+                        ordem.save()
+                        instance.save()
+                        if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
+                            ordem.ativa = False
+                            ordem.completa = True
+                            ordem.save()
+                        instance.stock = True
+                        instance.save()
+                        palete_nome(instance.pk)
+                        return redirect('producao:palete_picagem', pk=instance.pk)
+            else:
+                messages.error(request, 'Não é possivel criar uma palete sem ordem de produção associada. Por favor selecione uma Ordem de produção em progresso.')
+            
+               
+               
     context = {
         "form": form
     }
@@ -819,12 +857,37 @@ def palete_delete(request, pk):
     bobine = Bobine.objects.filter(palete=obj)
     e_p = EtiquetaPalete.objects.get(palete=obj)
     if request.method == "POST":
-        obj.delete()
-        e_p.delete()
+        num_bobines = Bobine.objects.filter(palete=obj).count()
         if obj.estado == 'G':
-            return redirect('producao:palete_list_all')
+            if num_bobines != 0:
+                messages.error(request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.') 
+            elif obj.ordem != None and obj.carga == None:
+                ordem = OrdemProducao.objects.get(pk=obj.ordem.pk)
+                enc = Encomenda.objects.get(pk=ordem.enc.pk)
+                enc.num_paletes_actual -= 1
+                ordem.num_paletes_produzidas -= 1
+                if ordem.ativa == False and ordem.completa == True:
+                    ordem.ativa = True
+                    ordem.completa = False
+                enc.save()
+                ordem.save()            
+                obj.delete()
+                e_p.delete()
+                return redirect('producao:palete_list_all')
+            elif obj.ordem == None and obj.carga == None:
+                obj.delete()
+                e_p.delete()
+                return redirect('producao:palete_list_all')
         else:
-            return redirect('producao:paletes_retrabalho')    
+            if num_bobines != 0:
+                messages.error(request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.') 
+            else:
+                obj.delete()
+                e_p.delete()
+                return redirect('producao:paletes_retrabalho')   
+            
+        
+   
     context = {
         "object": obj,
         "bobine": bobine
@@ -2588,47 +2651,36 @@ def carga_create(request):
         encomenda = get_object_or_404(Encomenda, eef=enc)
         cargas = Carga.objects.all()
         prf = encomenda.prf
-        if num_carga > encomenda.num_cargas:
-            return redirect('producao:carga_create')
-
+        
         if num_carga < 10:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
                 carga = prf + "-CON00" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON00" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CAM00" + num_carga + "-" + str(encomenda.cliente.abv)
         elif num_carga < 100:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
                 carga = prf + "-CON0" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON0" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CAM0" + num_carga + "-" + str(encomenda.cliente.abv)
         elif num_carga < 1000:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
                 carga = prf + "-CON" + num_carga + "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CON" + num_carga + "-" + str(encomenda.cliente.abv)
-
-        for c in cargas:
-            if c.carga == carga:
-                return redirect('producao:carga_create')
-        
-          
+                carga = prf + "-CAM" + num_carga + "-" + str(encomenda.cliente.abv)
 
         instance.carga = carga    
         instance.save()
 
         encomenda.num_cargas_actual += 1
-        if (encomenda.num_cargas_actual == encomenda.num_cargas):
-            encomenda.estado = 'F'
-        encomenda.save()
-
-        
-        
+        encomenda.num_cargas += 1
+        encomenda.save()   
+               
         return redirect('producao:carga_list')
 
     context = {
@@ -2790,7 +2842,6 @@ def palete_pesagem(request, pk=None):
     template_name = 'palete/palete_pesagem.html'
     palete = get_object_or_404(Palete, pk=pk)
     bobines = Bobine.objects.filter(palete=palete)
-
     form = PaletePesagemForm(request.POST or None, instance=instance)
     tem_artigo = True
 
@@ -2806,194 +2857,12 @@ def palete_pesagem(request, pk=None):
             messages.error(request, 'As bobines da palete ' + palete.nome + ' não têm artigo atribuido. Por favor contacte o Administrador.') 
         else:  
             instance = form.save(commit=False)
-            carga_nome = str(form.cleaned_data['carga'])  
-            if Carga.objects.filter(carga=carga_nome).exists():
-                carga = get_object_or_404(Carga, carga=carga_nome)
-                
-                if carga.num_paletes > carga.num_paletes_actual and instance.stock == False:
-                    if palete.carga == None:
-                        instance.carga = carga
-                        instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                        # palete_carga_num(carga.pk, instance.pk)
-                        paletes_carga_1 = Palete.objects.filter(carga=carga)
-                        cont = 0
-                        array_num_palete = []
-                            
-                        for p1 in paletes_carga_1:
-                            array_num_palete.append(p1.num_palete_carga)
-                            # array_num_palete[cont] = p1.num_palete_carga
-                            # cont += 1
-
-                        if len(array_num_palete) == 0:
-                            instance.num_palete_carga = 1
-                        else:
-                            array_num_palete.sort()
-                            cont2 = 0
-                            for a in array_num_palete:
-                                if a != cont2 + 1:
-                                    instance.num_palete_carga = cont2 + 1
-                                    break
-                                elif len(array_num_palete) == cont2 + 1:
-                                    instance.num_palete_carga = cont2 + 2
-                                    break 
-                                cont2 += 1
-
-                        carga.num_paletes_actual += 1
-                        if carga.num_paletes == carga.num_paletes_actual:
-                            carga.estado = 'C'
-                        
-                        carga.sqm += instance.area 
-                        carga.metros += instance.comp_total
-                        carga.save()
-                        instance.save()
-                        gerar_etiqueta_final(instance.pk)
-                    else:
-                        carga_antiga = get_object_or_404(Carga, pk=palete.carga.pk)    
-                        if carga_antiga != carga:                                
-                            if carga.num_paletes_actual < carga.num_paletes:
-                                carga_antiga.num_paletes_actual -= 1
-                                if carga_antiga.num_paletes_actual < carga_antiga.num_paletes:
-                                    carga_antiga.estado = 'I'
-                                
-                                carga.num_paletes_actual += 1
-                                if carga.num_paletes_actual == carga.num_paletes:
-                                    carga.estado = "C"
-
-                                carga_antiga.sqm -= palete.area
-                                carga_antiga.metros -= palete.comp_total
-                                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                                
-                                paletes_carga_1 = Palete.objects.filter(carga=carga)
-                                cont = 0
-                                array_num_palete = []
-                                    
-                                for p1 in paletes_carga_1:
-                                    array_num_palete.append(p1.num_palete_carga)
-                                    
-                                if len(array_num_palete) == 0:
-                                    instance.num_palete_carga = 1
-                                else:
-                                    array_num_palete.sort()
-                                    cont2 = 0
-                                    for a in array_num_palete:
-                                        if a != cont2 + 1:
-                                            instance.num_palete_carga = cont2 + 1
-                                            break
-                                        elif len(array_num_palete) == cont2 + 1:
-                                            instance.num_palete_carga = cont2 + 2
-                                            break 
-                                        cont2 += 1
-
-                                
-                                carga.sqm += instance.area 
-                                carga.metros += instance.comp_total
-
-                                carga.save()
-                                carga_antiga.save()
-                                instance.save()
-                                gerar_etiqueta_final(instance.pk)
-                            else:
-                                return redirect('producao:palete_pesagem', pk=instance.pk)
-
-                        elif carga_antiga == carga:
-                            if carga.num_paletes_actual < carga.num_paletes:
-                                                
-                                carga.sqm -= palete.area
-                                carga.metros -= palete.comp_total
-                                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                                                                
-                                carga.sqm += instance.area 
-                                carga.metros += instance.comp_total
-
-                                carga.save()
-                                instance.save()
-                                gerar_etiqueta_final(instance.pk)
-
-                elif carga.num_paletes == carga.num_paletes_actual and instance.stock == False:
-                    carga_antiga = get_object_or_404(Carga, pk=palete.carga.pk)
-                    if carga_antiga == carga:
-                        carga.sqm -= palete.area
-                        carga.metros -= palete.comp_total
-                        instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                                                            
-                        carga.sqm += instance.area 
-                        carga.metros += instance.comp_total
-
-                        carga.save()
-                        instance.save()
-                        gerar_etiqueta_final(instance.pk)
-                    
-                    elif carga_antiga != carga:
-                        if carga.num_paletes_actual < carga.num_paletes:
-                            carga_antiga.num_paletes_actual -= 1
-                            if carga_antiga.num_paletes_actual < carga_antiga.num_paletes:
-                                carga_antiga.estado = 'I'
-                            
-                            carga.num_paletes_actual += 1
-                            if carga.num_paletes_actual == carga.num_paletes:
-                                carga.estado = "C"
-
-                            carga_antiga.sqm -= palete.area
-                            carga_antiga.metros -= palete.comp_total
-                            instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                            
-                            paletes_carga_1 = Palete.objects.filter(carga=carga)
-                            cont = 0
-                            array_num_palete = []
-                                
-                            for p1 in paletes_carga_1:
-                                array_num_palete.append(p1.num_palete_carga)
-                                
-                            if len(array_num_palete) == 0:
-                                instance.num_palete_carga = 1
-                            else:
-                                array_num_palete.sort()
-                                cont2 = 0
-                                for a in array_num_palete:
-                                    if a != cont2 + 1:
-                                        instance.num_palete_carga = cont2 + 1
-                                        break
-                                    elif len(array_num_palete) == cont2 + 1:
-                                        instance.num_palete_carga = cont2 + 2
-                                        break 
-                                    cont2 += 1
-
-                            
-                            carga.sqm += instance.area 
-                            carga.metros += instance.comp_total
-
-                            carga.save()
-                            carga_antiga.save()
-                            instance.save()
-                            gerar_etiqueta_final(instance.pk)
-                    else:
-                        redirect('producao:palete_pesagem', pk=instance.pk)
-
-
-                else:
-                    return redirect('producao:palete_pesagem', pk=instance.pk)
-
-            elif instance.stock == True:
-                if palete.carga == None:
-                    instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                    instance.save()
-                else:
-                    carga = get_object_or_404(Carga, pk=palete.carga.pk)
-                    carga.num_paletes_actual -= 1
-                    carga.sqm -= palete.area
-                    carga.metros -= palete.comp_total
-                    if carga.num_paletes_actual < carga.num_paletes:
-                        carga.estado = 'I'
-                    carga.save()
-                    instance.num_palete_carga = None
-                    instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-                    instance.save()
-            else:
-                return redirect('producao:palete_pesagem', pk=instance.pk)
-        
-            
-            
+            instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
+            instance.save()
             return redirect('producao:palete_selecao')
+                
+            
+            
 
     context = {
         "form": form,
@@ -3575,6 +3444,7 @@ def palete_picagem(request, pk):
     if request.method == 'POST':
         formset = PicagemBobinesFormSet(request.POST)
         if formset.is_valid():
+            cliente = 0
             count = 0
             array_bobines = []
             array_cores = []
@@ -3582,6 +3452,8 @@ def palete_picagem(request, pk):
             array_produtos = []
             array_estados = []
             validation = True
+            if palete.cliente != None:
+                cliente = palete.cliente
 
 
             #Validação individual
@@ -3598,13 +3470,13 @@ def palete_picagem(request, pk):
                         array_larguras.append(bobine.largura.largura)
                         array_produtos.append(bobine.designacao_prod)
                         array_estados.append(bobine.estado)
-
-                        try:    
-                            artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine.artigo)
-                            pass
-                        except:
-                            messages.error(request, '(' + str(count) + ') O artigo da bobine ' + bobine.nome + ' não esta associado ao cliente ' + cliente.nome)
-                            validation = False
+                        if cliente != 0:
+                            try:    
+                                artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine.artigo)
+                                pass
+                            except:
+                                messages.error(request, '(' + str(count) + ') O artigo da bobine ' + bobine.nome + ' não esta associado ao cliente ' + cliente.nome)
+                                validation = False
 
                         if bobine.estado != 'G' and bobine.estado != 'LAB' and bobine.estado != 'SC':
                             messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' não está em estado GOOD, LAB ou SC.')
@@ -3616,13 +3488,13 @@ def palete_picagem(request, pk):
                                 messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' encontra-se noutra palete GOOD.')
                                 validation = False
                             
-
-                        if bobine.diam > cliente.limsup:
-                            messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.') 
-                            validation = False
-                        elif bobine.diam > cliente.limsup:
-                            messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
-                            validation = False
+                        if cliente != 0:
+                            if bobine.diam > cliente.limsup:
+                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.') 
+                                validation = False
+                            elif bobine.diam > cliente.limsup:
+                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
+                                validation = False
 
                         if bobine.largura.largura != palete.largura_bobines:
                             messages.error(request, '(' + str(count) + ') A largura de ' + bobine.nome +  ' (' + str(bobine.largura.largura) + ' mm) não corresponde a largura definida na palete de ' + str(palete.largura_bobines) + ' mm.') 
@@ -3729,8 +3601,9 @@ def palete_picagem(request, pk):
                     bobine_produto = Bobine.objects.get(nome=bobines_nome[0])
                     e_p.produto = bobine_produto.designacao_prod
                     e_p.artigo = bobine_produto.artigo.des
-                    artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine_produto.artigo)
-                    e_p.cod_cliente = artigo_cliente.cod_client
+                    if cliente != 0:
+                        artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine_produto.artigo)
+                        e_p.cod_cliente = artigo_cliente.cod_client
                     
                     e_p.bobine1 = bobine_posicao[1]
                     e_p.bobine2 = bobine_posicao[2]
@@ -3797,17 +3670,7 @@ def palete_picagem(request, pk):
                     e_p.save()
 
                     return redirect('producao:addbobinepalete', pk=palete.pk)
-
-
-
-
-                    # if(len(set(array_larguras))==1):
-                    #     if(len(set(array_cores))==1):
-                    #         messages.error(request, 'As larguras e os cores condizem')
-                    #     else:
-                    #         messages.error(request, 'Os cores das bobines picadas não condizem.')
-                    # else:
-                    #     messages.error(request, 'As larguras das bobines picadas não condizem.')
+                  
                
     else:
         formset = PicagemBobinesFormSet()
@@ -6200,3 +6063,102 @@ def bobine_edit(request, pk):
        "has_palete": has_palete
     }
     return render(request, template_name, context)
+
+@login_required
+def carga_carregar(request, pk):
+    carga = get_object_or_404(Carga, pk=pk)
+    enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
+    cliente = enc.cliente
+    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) | (Q(stock=True) & Q(cliente=cliente)) & ~Q(carga=carga)).order_by('nome')
+    paletes_carga = Palete.objects.filter(carga=carga)
+    template_name = 'carga/carga_carregar.html'
+   
+
+    context = {
+       "carga": carga,
+       "enc": enc,
+       "paletes_enc": paletes_enc,
+       "paletes_carga": paletes_carga
+    }
+    return render(request, template_name, context)
+
+    # Q(hide=False) & Q(deleted=False),
+    # Q(stock=False) | Q(quantity__gte=1))
+
+@login_required
+def add_palete_carga(request, pk_carga, pk_palete):
+    carga = Carga.objects.get(pk=pk_carga)
+    palete = Palete.objects.get(pk=pk_palete)
+    if carga.num_paletes_actual >= carga.num_paletes:
+        messages.error(request, 'Carga completa. Não é possivel adiconar mais paletes a esta carga.')
+    else:
+        carga.num_paletes_actual += 1
+        palete.carga=carga
+        palete.save()
+        carga.save()
+
+    return redirect('producao:carga_carregar', pk=carga.pk)  
+
+@login_required
+def remove_palete_carga(request, pk_carga, pk_palete):
+    carga = Carga.objects.get(pk=pk_carga)
+    palete = Palete.objects.get(pk=pk_palete)
+    carga.num_paletes_actual -= 1
+    palete.carga=None
+    palete.save()
+    carga.save()
+
+    return redirect('producao:carga_carregar', pk=carga.pk)  
+
+@login_required
+def finalizar_carga(request, pk):
+    carga = Carga.objects.get(pk=pk)
+    paletes = Palete.objects.filter(carga=carga)
+    paletes_count = Palete.objects.filter(carga=carga).count()
+    
+    sqm = 0
+    metros = 0
+    num_palete_carga = 0
+
+    if paletes_count == carga.num_paletes:
+        for pal in paletes:
+            metros += pal.comp_total
+            sqm += pal.area
+            pal.num_palete_carga = num_palete_carga + 1
+            num_palete_carga += 1
+            pal.save()
+            gerar_etiqueta_final(pal.pk)    
+
+        enc = carga.enc
+        enc.num_paletes_actual += paletes_count
+        enc.save()
+        carga.estado = 'C'
+        carga.metros = metros    
+        carga.sqm = sqm
+        carga.save()    
+        return redirect('producao:carga_detail', pk=carga.pk)  
+    else:
+        messages.error(request, 'Carga incompleta. Não é possivel finalizar carga.')
+        return redirect('producao:carga_carregar', pk=carga.pk)  
+
+
+@login_required
+def carga_expedir(request, pk):
+    carga = get_object_or_404(Carga, pk=pk)
+    enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
+
+    hora_expedicao = timezone.now() 
+    hora_expedicao = timezone.localtime(hora_expedicao, timezone.get_fixed_timezone(60))
+    carga.data_expedicao = date.today()
+    carga.hora_expedicao = timezone.localtime(hora_expedicao, timezone.get_fixed_timezone(60))
+    carga.expedida = True
+    carga.save()
+
+    return redirect('producao:carga_list_completa')  
+
+
+
+    
+
+
+

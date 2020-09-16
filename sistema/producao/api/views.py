@@ -3,8 +3,10 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
 from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente, Encomenda, Carga
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, CargaListSerializer, PaletesCargaSerializer, CargasEncomendaSerializer, CargaDetailSerializer, BobineSerializer, EncomendaListSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
+from .serializers import PaleteStockSerializer, PaleteListSerializer, PaleteDetailSerializer, CargaListSerializer, PaletesCargaSerializer, CargasEncomendaSerializer, CargaDetailSerializer, BobineSerializer, EncomendaListSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework import status
+from rest_framework.decorators import api_view
 
 class PaleteListAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Palete.objects.all().order_by('-data_pal', '-num')[:100]
@@ -121,5 +123,9 @@ class CargaPaletesAPIView(LoginRequiredMixin, APIView):
 class StockListAPIView(LoginRequiredMixin, ListAPIView):
     queryset = Palete.objects.filter(stock=True)
     serializer_class = PaleteListSerializer
-    
-   
+
+class PaleteListStockAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Palete.objects.filter(stock=True)
+    serializer_class = PaleteStockSerializer
+
+

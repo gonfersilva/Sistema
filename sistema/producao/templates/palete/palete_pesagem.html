@@ -15,6 +15,11 @@
     {% else %}
     <h3>Carga: <span>{{ instance.carga }}</span></h3>
     {% endif %}
+    {% if instance.enc == None %}
+    <h3>Encomenda: Sem encomenda atribuida </h3>
+    {% else %}
+    <h3>Encomenda: <span>{{ instance.enc }}</span></h3>
+    {% endif %}
 </div>
 {% if messages %}
     <ul class="messages">
@@ -30,7 +35,6 @@
 </div>
 <form action="" method="POST" class="submission-form">
     {% csrf_token %}
-    <h3><label for="id_carga">Carga</label>{{ form.carga }}</h3>
     <h3><label for="id_peso_bruto">Peso Bruto</label>{{ form.peso_bruto }}</h3>
     <h3><label for="id_peso_palete">Peso Palete</label>{{ form.peso_palete }}</h3>
     <h3><label for="id_stock">Stock</label>{{ form.stock }}</h3>

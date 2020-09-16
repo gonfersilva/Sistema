@@ -1,7 +1,7 @@
 from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho,Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW, ProdutoGranulado, Reciclado,MovimentoMP
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 from datetime import datetime
-
+from planeamento.models import *
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -75,9 +75,7 @@ class BobinagemCreateFormV2(ModelForm):
         self.fields['inico'].initial = fim
         self.fields['perfil'].initial = perfil
         self.fields['diam'].initial = diam
-  
-     
-         
+        
 
 
 class RetrabalhoCreateForm(ModelForm):
@@ -101,9 +99,6 @@ class RetrabalhoCreateForm(ModelForm):
         self.fields['perfil'].initial = perfil
         self.fields['inico'].widget.attrs['readonly'] = True
         self.fields['inico'].initial = fim
-        
-        
-
 
 
        
@@ -111,18 +106,17 @@ class PaleteCreateForm(ModelForm):
     
     class Meta:
        model = Palete
-       fields = ['cliente', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines', 'destino']
+       fields = ['ordem', 'num', 'data_pal', 'num_bobines', 'largura_bobines', 'core_bobines', 'destino']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(estado='G', data_pal__year='2020').latest('num')
-        cliente = palete.cliente
         num_bobines = palete.num_bobines
         largura_bobines = palete.largura_bobines
         core_bobines = palete.core_bobines
         num = palete.num
         destino = palete.destino
-        super(PaleteCreateForm, self).__init__(*args, **kwargs)      
-        self.fields['cliente'].initial = cliente
+        super(PaleteCreateForm, self).__init__(*args, **kwargs)  
+        self.fields['ordem'].queryset = OrdemProducao.objects.filter(Q(ativa=True) & Q(completa=False))
         self.fields['num_bobines'].initial = num_bobines
         self.fields['largura_bobines'].initial = largura_bobines
         self.fields['core_bobines'].initial = core_bobines
@@ -213,7 +207,7 @@ class EncomendaCreateForm(forms.ModelForm):
         
     class Meta:
         model = Encomenda
-        fields = ['cliente', 'data', 'eef', 'prf', 'sqm', 'num_cargas', 'order_num']
+        fields = ['cliente', 'data', 'data_prevista', 'eef', 'prf', 'sqm', 'num_paletes', 'order_num']
         ordering = ('cliente')
 
     def __init__(self, *args, **kwargs):
@@ -221,7 +215,6 @@ class EncomendaCreateForm(forms.ModelForm):
         prf = encomenda.prf
         eef = encomenda.eef
         cliente = encomenda.cliente
-        num_cargas = encomenda.num_cargas
         sqm = encomenda.sqm
         
         super(EncomendaCreateForm, self).__init__(*args, **kwargs) 
@@ -229,7 +222,6 @@ class EncomendaCreateForm(forms.ModelForm):
         self.fields['eef'].initial = eef
         self.fields['prf'].initial = prf
         self.fields['cliente'].initial = cliente
-        self.fields['num_cargas'].initial = num_cargas
         self.fields['sqm'].initial = sqm
         self.fields['cliente'].queryset = Cliente.objects.order_by('nome')
 
@@ -238,7 +230,7 @@ class EncomendaCreateForm(forms.ModelForm):
 class CargaCreateForm(forms.ModelForm):
     class Meta:
         model = Carga
-        fields = ['enc', 'data', 'num_carga', 'num_paletes', 'tipo']
+        fields = ['enc', 'data', 'data_prevista', 'num_carga', 'num_paletes', 'tipo']
     
     def __init__(self, *args, **kwargs):
         carga = Carga.objects.all().latest('id')
@@ -255,18 +247,14 @@ class CargaCreateForm(forms.ModelForm):
         
 
 class SelecaoPaleteForm(forms.Form):
-    palete = forms.CharField(max_length=10)
+    palete = forms.CharField(max_length=11)
     
         
     
 class PaletePesagemForm(ModelForm):
     class Meta:
         model = Palete
-        fields = [ 'carga', 'stock', 'peso_bruto', 'peso_palete']
-
-    def __init__(self, *args, **kwargs):
-        super(PaletePesagemForm, self).__init__(*args, **kwargs)     
-        self.fields['carga'].queryset = Carga.objects.filter(estado='I')  
+        fields = [ 'stock', 'peso_bruto', 'peso_palete']
     
 
 class AddPalateStockForm(ModelForm):
@@ -347,7 +335,7 @@ class PerfilDMForm(ModelForm):
     largura_original = forms.DecimalField(required=True)
     class Meta:
         model = Perfil
-        fields = [ 'produto', 'num_bobines', 'core', 'gramagem']
+        fields = ['produto', 'num_bobines', 'core', 'gramagem']
 
 class SearchPerfil(forms.Form):
     CORE = ((None, '---------'), ('3', '3"'),('6', '6"'))

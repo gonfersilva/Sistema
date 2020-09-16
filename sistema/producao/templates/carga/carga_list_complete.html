@@ -35,6 +35,7 @@
                 <th>Data e Hora de expedição</sup></th>
                 <th>Expedida</th>
                 <th>Estado</th>
+                <th></th>
                 
             </tr>
         </thead>
@@ -56,7 +57,11 @@
                 {% endif %}
                 {% if ca.expedida == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td></td>{% endif %}
                 <td><i class="fas fa-truck"></i></td>
-                
+                {% if ca.expedida == False %}
+                <td><a href="{% url 'producao:carga_expedir' pk=ca.pk %}">Expedir</a></td>
+                {% else %}
+                <td><a href="#">Reverter</a></td>
+                {% endif %}
                 
             </tr>
             {% endfor%}

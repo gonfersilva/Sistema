@@ -1,0 +1,215 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+{% block title %}Criar Ordem de Produção | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="title_block-list">
+    <h1>Criar Ordem de Produção</h1>
+</div>
+<br>
+<form method="POST" action="">
+    {% csrf_token %}
+    {% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+    {% endfor %}
+
+</div>
+{% endif %}
+    <div class="content-form">
+        <div class="flex-container">
+            <div>
+                <div><h2>Encomenda</h2></div>
+                <div><div>Encomenda:</div> <div>{{ form.enc }}</div></div>             
+                <div><div>Artigo:</div> <div>{{ form.artigo }}</div></div>   
+                <div><div>Data prevista de início:</div> <div>{{ form.data_prevista_inicio }}</div></div>   
+                <div><div>Data Prevista de fim:</div> <div>{{ form.data_prevista_fim }}</div></div>   
+                <div><div>Largura:</div> <div>{{ form.largura }}</div></div>   
+                <div><div>Diâmetro mínimo:</div><div>{{ form.diam_min }}</div></div>   
+                <div><div>Diâmetro máximo:</div><div>{{ form.diam_max }}</div></div>   
+                <div><div>Core("):</div> <div>{{ form.core }}</div></div>   
+                <div><div>Paletes Produzir:</div> <div>{{ form.num_paletes_produzir }}</div></div>   
+                <div><div>Paletes stock:</div> <div>{{ form.num_paletes_stock }}</div></div>   
+                <div><div>Paletes Total:</div> <div>{{ form.num_paletes_total }}</div></div>   
+                <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>   
+                <div><div>Emendas:</div><div>{{ form.emendas }}</div></div>   
+                
+            </div>
+            <div>
+                <div><h2>Requisitos</h2></div>
+                <div><div>Nonwoven Superior:</div> <div>{{ form.nwsup }}</div></div>             
+                <div><div>Nonwoven Inferior:</div> <div>{{ form.nwinf }}</div></div>   
+                <div><div>Tipo de Palete:</div> <div>{{ form.tipo_paletes }}</div></div>   
+                <div><div>Paletes por palete:</div><div>{{ form.palete_por_palete }}</div></div>   
+                <div><div>Bobines por palete:</div><div>{{ form.bobines_por_palete }}</div></div>   
+                <div><div>Sentido Enrolamento:</div> <div>{{ form.enrolamento }}</div></div>   
+                <div><div>Folha identificação Palete:</div> <div>{{ form.folha_id }}</div></div>   
+                <div><div>Frequência amostragem(p/ Bobinagem):</div> <div>{{ form.freq_amos }}</div></div>   
+                <div><div>Stock:</div> <div>{{ form.stock }}</div></div>   
+            </div>
+            
+        </div>
+        <br>
+        <div class="flex-container">
+            <div>
+                <div><h2>Limites</h2></div>
+                <div><div>Descentrado:</div> <div>{{ form.limite_desc }}</div></div>             
+                <div><div>Cónico:</div> <div>{{ form.limite_con }}</div></div>   
+                
+                
+            </div>
+            
+            
+        </div>
+        
+        <br>
+        <div class="flex-container">
+            <div>
+                <table class="content-table">
+                    <h2>Características Técnicas (à saída de produção)</h2>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Inferior</th>
+                            <th>Superior</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Basis weight (gsm)</td>
+                            <td>{{ form.basis_weight_inf }}</td>
+                            <td>{{ form.basis_weight_sup}}</td>
+                        </tr>
+                        <tr>
+                            <td>Tensile at peak CD (N/25mm)</td>
+                            <td>{{ form.tensile_peak_inf }}</td>
+                            <td>{{ form.tensile_peak_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Elongation at break CD (%)</td>
+                            <td>{{ form.elong_break_cd_inf }}</td>
+                            <td>{{ form.elong_break_cd_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Elongation at 9.81N CD (%)</td>
+                            <td>{{ form.elong_n_cd_inf }}</td>
+                            <td>{{ form.elong_n_cd_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 5% elongation 1st cycle CD (N/50 mm)</td>
+                            <td>{{ form.load_five_inf }}</td>
+                            <td>{{ form.load_five_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 10% elongation 1st cycle CD (N/50 mm)</td>
+                            <td>{{ form.load_ten_inf }}</td>
+                            <td>{{ form.load_ten_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 20% elongation 1st cycle CD (N/50 mm)</td>
+                            <td>{{ form.load_twenty_inf }}</td>
+                            <td>{{ form.load_twenty_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 50% elongation 1st cycle CD (N/50 mm)</td>
+                            <td>{{ form.load_fifty_inf }}</td>
+                            <td>{{ form.load_fifty_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Permanent set 2nd cycle (%)</td>
+                            <td>{{ form.perm_set_second_inf }}</td>
+                            <td>{{ form.perm_set_second_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 100% elongation 2nd cycle (N/50 mm)</td>
+                            <td>{{ form.load_hundred_second_inf }}</td>
+                            <td>{{ form.load_hundred_second_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Permanent set 3rd cycle (%)</td>
+                            <td>{{ form.perm_set_third_inf }}</td>
+                            <td>{{ form.perm_set_third_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Load at 100% elongation 3rd cycle (N/50 mm)</td>
+                            <td>{{ form.load_hundred_third_inf }}</td>
+                            <td>{{ form.load_hundred_third_sup }}</td>
+                        </tr>
+                        <tr>
+                            <td>Lamination strenght (CD) (N/25 mm)</td>
+                            <td>{{ form.lamination_str_inf }}</td>
+                            <td>{{ form.lamination_str_sup }}</td>
+                        </tr>
+                    </tbody>
+                </table> 
+                
+                
+            </div>
+            
+            
+        </div>
+        <br>
+        <br>
+        <div class="flex-container">
+            <div><div>Fichas de Processo:</div> <div>{{ form.ficha_processo }}</div></div>             
+            <div><div>CoA de aprovação:</div> <div>{{ form.coa_aprov }}</div></div> 
+        </div>
+        <br>
+        <br>
+        <div class="flex-container">
+            
+            <div>
+                <div><h2>Esquema de Paletização</h2></div>
+                <div>Tipo de transporte:</div> <div>{{ form.tipo_transporte }}</div>
+                <div>Nº Paletes / Camião:</div> <div>{{ form.paletes_camiao }}</div>
+                <div>Altura máx. Palete:</div> <div>{{ form.altura_max }}</div>
+                <div>Paletes Sobrepostas:</div> <div>{{ form.paletes_sobre }}</div>
+                <div>Cintas:</div> <div>{{ form.cintas }}</div>
+            </div>             
+            <div>
+                <div><h2>Palete</h2></div>
+                <div>Topo:</div> <div>{{ form.topo }}</div>
+                <div>Embalamento:</div> <div>{{ form.embal }}</div>
+                <div>Base:</div> <div>{{ form.base }}</div>
+            </div> 
+        </div>
+        <div class="flex-container">
+            <div>
+                <div><h2>Etiquetas</h2></div>
+                <div><div>Bobine:</div> <div>{{ form.etiqueta_bobine }}</div></div>             
+                <div><div>Palete:</div> <div>{{ form.etiqueta_palete }}</div></div> 
+                <div><div>Final:</div> <div>{{ form.etiqueta_final }}</div></div> 
+            </div>
+        </div>
+       
+        
+        
+        <div class="flex-container">
+            <div><a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a></div>
+            <div><input type="submit" id="validate-btn" value="Criar"></div>
+        </div>
+        
+    </div>
+
+</form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+</script>
+{% endblock %}

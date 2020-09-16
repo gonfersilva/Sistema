@@ -1,0 +1,105 @@
+{% extends "layout.html "%}
+{% load producao_tags %}
+{% block title %}Criar Ordem de Produção DM | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="title_block-list">
+    <h1>Criar Ordem de Produção DM</h1>
+</div>
+<br>
+<form method="POST" action="">
+    {% csrf_token %}
+    {% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+    {% endfor %}
+
+</div>
+{% endif %}
+    <div class="content-form">
+        <div class="flex-container">
+            <div>
+                <div><h2>Encomenda</h2></div>
+                <div><div>Cliente:</div> <div>{{ form.cliente }}</div></div>             
+                <div><div>Encomenda:</div> <div>{{ form.enc }}</div></div>             
+                <div><div>Artigo:</div> <div>{{ form.artigo }}</div></div>   
+                <div><div>Data prevista de início:</div> <div>{{ form.data_prevista_inicio }}</div></div>   
+                <div><div>Data Prevista de fim:</div> <div>{{ form.data_prevista_fim }}</div></div>   
+                <div><div>Largura:</div> <div>{{ form.largura }}</div></div>   
+                <div><div>Diâmetro mínimo:</div><div>{{ form.diam_min }}</div></div>   
+                <div><div>Diâmetro máximo:</div><div>{{ form.diam_max }}</div></div>   
+                <div><div>Core("):</div> <div>{{ form.core }}</div></div>   
+                <div><div>Paletes Produzir:</div> <div>{{ form.num_paletes_produzir }}</div></div>   
+                <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>   
+                <div><div>Emendas:</div><div>{{ form.emendas }}</div></div>   
+                
+            </div>
+            <div>
+                <div><h2>Requisitos</h2></div>
+                <div><div>Tipo de Palete:</div> <div>{{ form.tipo_paletes }}</div></div>   
+                <div><div>Paletes por palete:</div><div>{{ form.palete_por_palete }}</div></div>   
+                <div><div>Bobines por palete:</div><div>{{ form.bobines_por_palete }}</div></div>   
+                <div><div>Sentido Enrolamento:</div> <div>{{ form.enrolamento }}</div></div>   
+                <div><div>Stock:</div> <div>{{ form.stock }}</div></div>   
+            </div>
+            
+        </div>
+        <br>
+        
+        <br>
+        <br>
+        
+        <div class="flex-container">
+            
+            <div>
+                <div><h2>Esquema de Paletização</h2></div>
+                <div>Altura máx. Palete:</div> <div>{{ form.altura_max }}</div>
+                <div>Paletes Sobrepostas:</div> <div>{{ form.paletes_sobre }}</div>
+                <div>Cintas:</div> <div>{{ form.cintas }}</div>
+            </div>             
+            <div>
+                <div><h2>Palete</h2></div>
+                <div>Topo:</div> <div>{{ form.topo }}</div>
+                <div>Embalamento:</div> <div>{{ form.embal }}</div>
+                <div>Base:</div> <div>{{ form.base }}</div>
+            </div> 
+        </div>
+        <div class="flex-container">
+            <div>
+                <div><h2>Etiquetas</h2></div>
+                <div><div>Bobine:</div> <div>{{ form.etiqueta_bobine }}</div></div>             
+                <div><div>Palete:</div> <div>{{ form.etiqueta_palete }}</div></div> 
+                <div><div>Final:</div> <div>{{ form.etiqueta_final }}</div></div> 
+            </div>
+        </div>
+       
+        
+        
+        <div class="flex-container">
+            <div><a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a></div>
+            <div><input type="submit" id="validate-btn" value="Criar"></div>
+        </div>
+        
+    </div>
+
+</form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+</script>
+{% endblock %}

@@ -23,73 +23,128 @@ def encomendas_list(request):
     }
     return render(request, template_name, context)
 
+# @login_required
+# def create_ordem(request):
+    
+#     template_name = 'ordensproducao/create_ordem.html'
+#     form = OrdemProducaoCreateForm(request.POST or None)
+
+#     if form.is_valid():
+#         instance = form.save(commit=False)
+#         cd = form.cleaned_data
+#         basis_weight_sup = cd.get('basis_weight_sup')
+#         tensile_peak_sup = cd.get('tensile_peak_sup')
+#         elong_break_cd_sup = cd.get('elong_break_cd_sup')
+#         elong_n_cd_sup = cd.get('elong_n_cd_sup')
+#         load_five_sup = cd.get('load_five_sup')
+#         load_ten_sup = cd.get('load_ten_sup')
+#         load_twenty_sup = cd.get('load_twenty_sup')
+#         load_fifty_sup = cd.get('load_fifty_sup')
+#         perm_set_second_sup = cd.get('perm_set_second_sup')
+#         load_hundred_second_sup = cd.get('load_hundred_second_sup')
+#         perm_set_third_sup = cd.get('perm_set_third_sup')
+#         load_hundred_third_sup = cd.get('load_hundred_third_sup')
+#         lamination_str_sup = cd.get('lamination_str_sup')
+#         basis_weight_inf = cd.get('basis_weight_inf')
+#         tensile_peak_inf = cd.get('tensile_peak_inf')
+#         elong_break_cd_inf = cd.get('elong_break_cd_inf')
+#         elong_n_cd_inf = cd.get('elong_n_cd_inf')
+#         load_five_inf = cd.get('load_five_inf')
+#         load_ten_inf = cd.get('load_ten_inf')
+#         load_twenty_inf = cd.get('load_twenty_inf')
+#         load_fifty_inf = cd.get('load_fifty_inf')
+#         perm_set_second_inf = cd.get('perm_set_second_inf')
+#         load_hundred_second_inf = cd.get('load_hundred_second_inf')
+#         perm_set_third_inf = cd.get('perm_set_third_inf')
+#         load_hundred_third_inf = cd.get('load_hundred_third_inf')
+#         lamination_str_inf = cd.get('lamination_str_inf')
+        
+#         instance.user = request.user
+#         ctsup = CTSup.objects.create(basis_weight=basis_weight_sup,tensile_peak=tensile_peak_sup, elong_break_cd=elong_break_cd_sup, elong_n_cd=elong_n_cd_sup, 
+#         load_five=load_five_sup, load_ten=load_ten_sup, load_twenty=load_twenty_sup, load_fifty=load_fifty_sup, perm_set_second=perm_set_second_sup, 
+#         load_hundred_second=load_hundred_second_sup, perm_set_third=perm_set_third_sup, load_hundred_third=load_hundred_third_sup, lamination_str=lamination_str_sup)
+#         ctinf = CTInf.objects.create(basis_weight=basis_weight_inf,tensile_peak=tensile_peak_inf, elong_break_cd=elong_break_cd_inf, elong_n_cd=elong_n_cd_inf, 
+#         load_five=load_five_inf, load_ten=load_ten_inf, load_twenty=load_twenty_inf, load_fifty=load_fifty_inf, perm_set_second=perm_set_second_inf, 
+#         load_hundred_second=load_hundred_second_inf, perm_set_third=perm_set_third_inf, load_hundred_third=load_hundred_third_inf, lamination_str=lamination_str_inf)
+#         ct = CaracteristicasTecnicas.objects.create(user=request.user, ctsup=ctsup, ctinf=ctinf)
+#         instance.ct = ct
+#         if instance.enc != None and instance.stock == False:
+#             enc = Encomenda.objects.get(pk=instance.enc.pk)
+#             ordens = OrdemProducao.objects.filter(enc=instance.enc)
+#             num_paletes_total_ordens = 0
+#             for o in ordens:
+#                 num_paletes_total_ordens += o.num_paletes_total
+
+#             if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
+#                 messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+#             else:
+#                 count = OrdemProducao.objects.filter(enc=instance.enc).count()
+#                 instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
+#                 instance.save()
+#                 return redirect('planeamento:list_ordem')
+#         elif instance.enc == None and instance.stock == True:
+#             count = OrdemProducao.objects.filter(stock=True).count()
+#             instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
+#             instance.enc = None
+#             instance.save()
+#             return redirect('planeamento:list_ordem')
+#         elif instance.enc != None and instance.stock == True:
+#             messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
+        
+   
+
+#     context = {
+#        "form": form
+#     }
+#     return render(request, template_name, context)
+
 @login_required
 def create_ordem(request):
     
     template_name = 'ordensproducao/create_ordem.html'
     form = OrdemProducaoCreateForm(request.POST or None)
+    if request.method == 'POST':
+        form = OrdemProducaoCreateForm(request.POST, request.FILES)
 
-    if form.is_valid():
-        instance = form.save(commit=False)
-        cd = form.cleaned_data
-        basis_weight_sup = cd.get('basis_weight_sup')
-        tensile_peak_sup = cd.get('tensile_peak_sup')
-        elong_break_cd_sup = cd.get('elong_break_cd_sup')
-        elong_n_cd_sup = cd.get('elong_n_cd_sup')
-        load_five_sup = cd.get('load_five_sup')
-        load_ten_sup = cd.get('load_ten_sup')
-        load_twenty_sup = cd.get('load_twenty_sup')
-        load_fifty_sup = cd.get('load_fifty_sup')
-        perm_set_second_sup = cd.get('perm_set_second_sup')
-        load_hundred_second_sup = cd.get('load_hundred_second_sup')
-        perm_set_third_sup = cd.get('perm_set_third_sup')
-        load_hundred_third_sup = cd.get('load_hundred_third_sup')
-        lamination_str_sup = cd.get('lamination_str_sup')
-        basis_weight_inf = cd.get('basis_weight_inf')
-        tensile_peak_inf = cd.get('tensile_peak_inf')
-        elong_break_cd_inf = cd.get('elong_break_cd_inf')
-        elong_n_cd_inf = cd.get('elong_n_cd_inf')
-        load_five_inf = cd.get('load_five_inf')
-        load_ten_inf = cd.get('load_ten_inf')
-        load_twenty_inf = cd.get('load_twenty_inf')
-        load_fifty_inf = cd.get('load_fifty_inf')
-        perm_set_second_inf = cd.get('perm_set_second_inf')
-        load_hundred_second_inf = cd.get('load_hundred_second_inf')
-        perm_set_third_inf = cd.get('perm_set_third_inf')
-        load_hundred_third_inf = cd.get('load_hundred_third_inf')
-        lamination_str_inf = cd.get('lamination_str_inf')
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
         
-        instance.user = request.user
-        ctsup = CTSup.objects.create(basis_weight=basis_weight_sup,tensile_peak=tensile_peak_sup, elong_break_cd=elong_break_cd_sup, elong_n_cd=elong_n_cd_sup, 
-        load_five=load_five_sup, load_ten=load_ten_sup, load_twenty=load_twenty_sup, load_fifty=load_fifty_sup, perm_set_second=perm_set_second_sup, 
-        load_hundred_second=load_hundred_second_sup, perm_set_third=perm_set_third_sup, load_hundred_third=load_hundred_third_sup, lamination_str=lamination_str_sup)
-        ctinf = CTInf.objects.create(basis_weight=basis_weight_inf,tensile_peak=tensile_peak_inf, elong_break_cd=elong_break_cd_inf, elong_n_cd=elong_n_cd_inf, 
-        load_five=load_five_inf, load_ten=load_ten_inf, load_twenty=load_twenty_inf, load_fifty=load_fifty_inf, perm_set_second=perm_set_second_inf, 
-        load_hundred_second=load_hundred_second_inf, perm_set_third=perm_set_third_inf, load_hundred_third=load_hundred_third_inf, lamination_str=lamination_str_inf)
-        ct = CaracteristicasTecnicas.objects.create(user=request.user, ctsup=ctsup, ctinf=ctinf)
-        instance.ct = ct
-        if instance.enc != None and instance.stock == False:
-            enc = Encomenda.objects.get(pk=instance.enc.pk)
-            ordens = OrdemProducao.objects.filter(enc=instance.enc)
-            num_paletes_total_ordens = 0
-            for o in ordens:
-                num_paletes_total_ordens += o.num_paletes_total
+            if instance.enc != None and instance.stock == False:
+                enc = Encomenda.objects.get(pk=instance.enc.pk)
+                ordens = OrdemProducao.objects.filter(enc=instance.enc)
+                num_paletes_total_ordens = 0
+                for o in ordens:
+                    num_paletes_total_ordens += o.num_paletes_total
 
-            if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
-                messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
-            else:
-                count = OrdemProducao.objects.filter(enc=instance.enc).count()
-                instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
+                if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
+                    messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+                else:
+                    count = OrdemProducao.objects.filter(enc=instance.enc).count()
+                    instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
+                    instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
+                    if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
+                        dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                        dt += timedelta(hours=instance.horas_previstas_producao)
+                        instance.data_prevista_fim = dt.date()
+                        instance.hora_prevista_fim = dt.time()
+                    # print(instance.data_prevista_inicio, instance.hora_prevista_inicio, instance.horas_previstas_producao, dt, instance.data_prevista_fim, instance.hora_prevista_fim)
+                    instance.save()
+                    return redirect('planeamento:list_ordem')
+            elif instance.enc == None and instance.stock == True:
+                count = OrdemProducao.objects.filter(stock=True).count()
+                instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
+                instance.enc = None
+                instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
+                if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
+                        dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                        dt += timedelta(hours=instance.horas_previstas_producao)
+                        instance.data_prevista_fim = dt.date()
+                        instance.hora_prevista_fim = dt.time()
                 instance.save()
                 return redirect('planeamento:list_ordem')
-        elif instance.enc == None and instance.stock == True:
-            count = OrdemProducao.objects.filter(stock=True).count()
-            instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
-            instance.enc = None
-            instance.save()
-            return redirect('planeamento:list_ordem')
-        elif instance.enc != None and instance.stock == True:
-            messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
+            elif instance.enc != None and instance.stock == True:
+                messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
         
    
 
@@ -185,8 +240,17 @@ def ordem_iniciar(request, pk):
 @login_required
 def ordem_cancelar(request, pk):
     ordem = OrdemProducao.objects.get(pk=pk)
+    paletes = Palete.objects.filter(ordem=ordem)
+    for palete in paletes:
+        palete.ordem = None
+        palete.palete_original = ordem.op
+        palete.stock = True
+        palete.save()
+    ordem.num_paletes_produzidas = 0
     ordem.ativa = False
     ordem.inicio = None
+    ordem.completa = True
+
     ordem.save()
     
 

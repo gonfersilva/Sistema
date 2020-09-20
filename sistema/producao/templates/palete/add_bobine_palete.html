@@ -23,6 +23,14 @@
 <div class="content_details">
     <div>
         <div><h3>Data: <span>{{ palete.data_pal|date:"d-n-Y" }}</span></h3></div>
+        {% if palete.ordem == None %}
+        <div><h3>Ordem de Fabrico: <span>S/ ordem de fabrico associada</span></h3></div>
+        {% else%}
+        <div><h3>Ordem de Fabrico: <span>{{ palete.ordem }}</span></h3></div>
+        {% endif %}
+        {% if palete.ordem_original != None %}
+        <div><h3>Ordem de Fabrico original: <span>{{ palete.ordem_original }}</span></h3></div>
+        {% endif %}
         <div><h3>Comprimento: <span>{{ palete.comp_total }} m</span></h3></div>
         <div><h3>Área: <span>{{ palete.area }} m<sup>2</sup></span></h3></div>
         <div><h3>Bobines: <span>{{ palete.num_bobines_act }} / {{ palete.num_bobines }}</span></h3></div>

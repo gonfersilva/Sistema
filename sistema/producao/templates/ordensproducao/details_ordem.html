@@ -1,6 +1,6 @@
 {% extends "layout.html "%}
 {% load producao_tags %}
-{% block title %}Criar Ordem de Produção | {{ block.super }}{% endblock %}
+{% block title %}Detalhes Ordem de Fabrico | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
     <a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a>
@@ -16,7 +16,7 @@
    
 </div>
 <div class="title_block-list">
-    <h1>Ordem de Produção</h1>
+    <h1>Ordem de Fabrico</h1>
     <h2>{{ ordem }}</h2>
 </div>
 <br>
@@ -25,10 +25,22 @@
         {% if ordem.completa == True and ordem.ativa == False %}
         <div class="ordem-finalizada"><h2>Ordem Finalizada</h2></div>
         {% elif ordem.ativa == True and ordem.completa == False %}
-        <div class="ordem-ativa"><h2>Em Progresso</h2> {% if request.user|has_group:"Produção Supervisor"  and num_paletes == 0  %}<a href="{% url 'planeamento:ordem_cancelar' pk=ordem.pk %}"  class="cancelar-ordem" role="button">Cancelar</a>{% endif %}</div>
+        <div class="ordem-ativa"><h2>Em Progresso</h2> {% if request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:ordem_cancelar' pk=ordem.pk %}"  class="cancelar-ordem" role="button">Cancelar</a>{% endif %}</div>
         {% elif ordem.ativa == False and ordem.completa == False %}
         <div class="ordem-aguardar"><h2>Aguardando Início</h2> {% if request.user|has_group:"Produção Supervisor" %}<a href="{% url 'planeamento:ordem_iniciar' pk=ordem.pk %}"  class="iniciar-ordem" role="button">Iniciar</a>{% endif %}</div>
        
+        {% endif %}
+    </div>
+    <div>
+        <div><h2>Documentos</h2></div>
+        {% if ordem.ficha_processo != None %}
+        <a href="{{ ordem.ficha_processo.url }}" class="btn_create" role="button" target="_blank">Ficha de processo</a>
+        {% endif %}
+        {% if ordem.ficha_tecnica != None %}
+        <a href="{{ ordem.ficha_tecnica.url }}" class="btn_create" role="button" target="_blank">Ficha Técnica</a>
+        {% endif %}
+        {% if ordem.of != None %}
+        <a href="{{ ordem.of.url }}" class="btn_create" role="button" target="_blank">OF</a>
         {% endif %}
     </div>
 </div>
@@ -47,13 +59,20 @@
             <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>          
             {% endif %}
             <div><h3>Artigo:</h3> {{ ordem.artigo }}</div>   
-            <div><h3>Data prevista de início:</h3> {{ ordem.data_prevista_inicio }}</div>   
-            <div><h3>Data prevista de fim:</h3> {{ ordem.data_prevista_fim }}</div> 
+            <div><h3>Data prevista de início:</h3> {{ ordem.data_prevista_inicio|date:"d-n-Y" }} {{ ordem.hora_prevista_inicio|date:"G:i" }}</div>   
+            <div><h3>Data prevista de fim:</h3> {{ ordem.data_prevista_fim|date:"d-n-Y" }} {{ ordem.hora_prevista_fim|date:"G:i" }}</div> 
             {% if ordem.inicio == None %}  
             <div><h3>Data de inicio:</h3> Por iniciar</div>   
             {% else %}
             <div><h3>Data de inicio:</h3> {{ ordem.inicio }}</div>   
             {% endif %}
+            {% if ordem.fim == None %}  
+            <div><h3>Data de fim:</h3> Em progresso</div>   
+            {% else %}
+            <div><h3>Data de fim:</h3> {{ ordem.fim }}</div>   
+            {% endif %}
+            
+
             <div><h3>Largura:</h3> {{ ordem.largura }}</div>   
             <div><h3>Diâmetro mínimo:</h3> {{ ordem.diam_min }}</div>   
             <div><h3>Diâmetro máximo:</h3> {{ ordem.diam_max }}</div>   
@@ -84,7 +103,7 @@
         </div>
         
     </div>
-    {% if ordem.retrabalho == False %}
+    <!-- {% if ordem.retrabalho == False %}
     <div class="flex-container border">
         <div>
             <div><h2>Limites</h2></div>
@@ -192,7 +211,7 @@
         <div><h3>Fichas de Processo:</h3> {{ ordem.ficha_processo }}</div>           
         <div><h3>CoA de aprovação:</h3> {{ ordem.coa_aprov }}</div>
     </div>
-    {% endif %} 
+    {% endif %}  -->
     <div class="flex-container border">
         
         <div>
@@ -202,24 +221,24 @@
             <div><h3>Nº Paletes / Camião:</h3> {{ ordem.paletes_camiao }}</div>
             {% endif %}
             <div><h3>Altura máx. Palete:</h3> {{ ordem.altura_max }}</div>
-            <div><h3>Paletes Sobrepostas:</h3> {% if ordem.paletes_sobre == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
-            <div><h3>Cintas:</h3> {% if ordem.cintas == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
+            <!-- <div><h3>Paletes Sobrepostas:</h3> {% if ordem.paletes_sobre == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
+            <div><h3>Cintas:</h3> {% if ordem.cintas == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div> -->
         </div>             
-        <div>
+        <!-- <div>
             <div><h2>Palete</h2></div>
             <div><h3>Topo:</h3> {{ ordem.topo }}</div>
             <div><h3>Embalamento:</h3> {{ ordem.embal }}</div>
             <div><h3>Base:</h3> {{ ordem.base }}</div>
-        </div> 
+        </div>  -->
     </div>
-    <div class="flex-container border">
+    <!-- <div class="flex-container border">
         <div>
             <div><h2>Etiquetas</h2></div>
             <div><h3>Bobine:</h3> {{ ordem.etiqueta_bobine }}</div>            
             <div><h3>Palete:</h3> {{ ordem.etiqueta_palete }}</div>
             <div><h3>Final:</h3> {{ ordem.etiqueta_final }}</div>
         </div>
-    </div>
+    </div> -->
     
     <div>
         <h2>Paletes Produzidas</h2>

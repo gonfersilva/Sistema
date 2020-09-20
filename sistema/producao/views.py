@@ -6069,7 +6069,7 @@ def carga_carregar(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
     cliente = enc.cliente
-    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) | (Q(stock=True) & Q(cliente=cliente)) & ~Q(carga=carga)).order_by('nome')
+    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) & ~Q(peso_liquido=0) & Q(carga__isnull=True) | (Q(stock=True) & Q(cliente=cliente)) & Q(carga__isnull=True) & ~Q(peso_liquido=0)).order_by('nome')
     paletes_carga = Palete.objects.filter(carga=carga)
     template_name = 'carga/carga_carregar.html'
    

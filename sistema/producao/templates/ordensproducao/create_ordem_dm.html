@@ -6,7 +6,7 @@
     <h1>Criar Ordem de Produção DM</h1>
 </div>
 <br>
-<form method="POST" action="">
+<form method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %}
     {% if messages %}
     <div>
@@ -37,7 +37,8 @@
                 <div><div>Encomenda:</div> <div>{{ form.enc }}</div></div>             
                 <div><div>Artigo:</div> <div>{{ form.artigo }}</div></div>   
                 <div><div>Data prevista de início:</div> <div>{{ form.data_prevista_inicio }}</div></div>   
-                <div><div>Data Prevista de fim:</div> <div>{{ form.data_prevista_fim }}</div></div>   
+                <div><div>Hora prevista de início:</div> <div>{{ form.hora_prevista_inicio }}</div></div>   
+                <div><div>Horas previstas de Produção:</div> <div>{{ form.horas_previstas_producao }}</div></div>     
                 <div><div>Largura:</div> <div>{{ form.largura }}</div></div>   
                 <div><div>Diâmetro mínimo:</div><div>{{ form.diam_min }}</div></div>   
                 <div><div>Diâmetro máximo:</div><div>{{ form.diam_max }}</div></div>   
@@ -62,27 +63,13 @@
         <br>
         <br>
         
-        <div class="flex-container">
-            
-            <div>
-                <div><h2>Esquema de Paletização</h2></div>
-                <div>Altura máx. Palete:</div> <div>{{ form.altura_max }}</div>
-                <div>Paletes Sobrepostas:</div> <div>{{ form.paletes_sobre }}</div>
-                <div>Cintas:</div> <div>{{ form.cintas }}</div>
-            </div>             
-            <div>
-                <div><h2>Palete</h2></div>
-                <div>Topo:</div> <div>{{ form.topo }}</div>
-                <div>Embalamento:</div> <div>{{ form.embal }}</div>
-                <div>Base:</div> <div>{{ form.base }}</div>
-            </div> 
-        </div>
+        
         <div class="flex-container">
             <div>
-                <div><h2>Etiquetas</h2></div>
-                <div><div>Bobine:</div> <div>{{ form.etiqueta_bobine }}</div></div>             
-                <div><div>Palete:</div> <div>{{ form.etiqueta_palete }}</div></div> 
-                <div><div>Final:</div> <div>{{ form.etiqueta_final }}</div></div> 
+                <div><h2>Documentos</h2></div>           
+                <div>Ficha de Processo:</div> <div>{{ form.ficha_processo }}</div>           
+                <div>Ficha Técnica:</div> <div>{{ form.ficha_tecnica }}</div>            
+                <div>OF:</div> <div>{{ form.of }}</div>            
             </div>
         </div>
        

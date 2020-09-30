@@ -128,7 +128,6 @@ def create_ordem(request):
                         dt += timedelta(hours=instance.horas_previstas_producao)
                         instance.data_prevista_fim = dt.date()
                         instance.hora_prevista_fim = dt.time()
-                    # print(instance.data_prevista_inicio, instance.hora_prevista_inicio, instance.horas_previstas_producao, dt, instance.data_prevista_fim, instance.hora_prevista_fim)
                     instance.save()
                     return redirect('planeamento:list_ordem')
             elif instance.enc == None and instance.stock == True:
@@ -298,42 +297,54 @@ def create_ordem_dm(request):
     
     template_name = 'ordensproducao/create_ordem_dm.html'
     form = OrdemProducaoDMCreateForm(request.POST or None)
-
-    if form.is_valid():
-        instance = form.save(commit=False)
-        instance.user = request.user
-        instance.retrabalho = True
-
-        if instance.enc != None and instance.stock == False:
-            enc = Encomenda.objects.get(pk=instance.enc.pk)
-            if instance.enc.cliente != instance.cliente:
-                messages.error(request, 'O cliente que introduziu não condiz com o cliente referente à encomenda.') 
-            else:
-                ordens = OrdemProducao.objects.filter(enc=instance.enc, retrabalho=True)
-                num_paletes_total_ordens = 0
-                for o in ordens:
-                    num_paletes_total_ordens += o.num_paletes_total
-
-                if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
-                    messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
-                else:
-                    count = OrdemProducao.objects.filter(enc=instance.enc).count()
-                    instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-DM-' + str(count + 1)
-                    instance.num_paletes_total = instance.num_paletes_produzir
-                    instance.save()
-                    return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
-        elif instance.enc == None and instance.stock == True and instance.cliente != None:
-            count = OrdemProducao.objects.filter(stock=True, retrabalho=True, cliente=instance.cliente).count()
-            instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(instance.cliente.nome)+ '-DM-' + str(count + 1)
-            instance.enc = None
-            instance.num_paletes_total = instance.num_paletes_produzir
-            instance.save()
-            return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
-        elif instance.enc != None and instance.stock == True:
-            messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
-        elif instance.enc == None and instance.cliente != None and instance.stock == False:
-            messages.error(request, 'Não é possivel criar uma ordem de produçaõ DM para cliente sem encomenda e sem ser para Stock.') 
+    if request.method == 'POST':
+        form = OrdemProducaoDMCreateForm(request.POST, request.FILES)
+        if form.is_valid():
         
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.retrabalho = True
+
+            if instance.enc != None and instance.stock == False:
+                enc = Encomenda.objects.get(pk=instance.enc.pk)
+                if instance.enc.cliente != instance.cliente:
+                    messages.error(request, 'O cliente que introduziu não condiz com o cliente referente à encomenda.') 
+                else:
+                    ordens = OrdemProducao.objects.filter(enc=instance.enc, retrabalho=True)
+                    num_paletes_total_ordens = 0
+                    for o in ordens:
+                        num_paletes_total_ordens += o.num_paletes_total
+
+                    if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
+                        messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+                    else:
+                        count = OrdemProducao.objects.filter(enc=instance.enc).count()
+                        instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-DM-' + str(count + 1)
+                        instance.num_paletes_total = instance.num_paletes_produzir
+                        if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
+                            dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                            dt += timedelta(hours=instance.horas_previstas_producao)
+                            instance.data_prevista_fim = dt.date()
+                            instance.hora_prevista_fim = dt.time()
+                        instance.save()
+                        return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
+            elif instance.enc == None and instance.stock == True and instance.cliente != None:
+                count = OrdemProducao.objects.filter(stock=True, retrabalho=True, cliente=instance.cliente).count()
+                instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(instance.cliente.nome)+ '-DM-' + str(count + 1)
+                instance.enc = None
+                instance.num_paletes_total = instance.num_paletes_produzir
+                if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
+                    dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                    dt += timedelta(hours=instance.horas_previstas_producao)
+                    instance.data_prevista_fim = dt.date()
+                    instance.hora_prevista_fim = dt.time()
+                instance.save()
+                return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
+            elif instance.enc != None and instance.stock == True:
+                messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 
+            elif instance.enc == None and instance.cliente != None and instance.stock == False:
+                messages.error(request, 'Não é possivel criar uma ordem de produçaõ DM para cliente sem encomenda e sem ser para Stock.') 
+            
         
    
 

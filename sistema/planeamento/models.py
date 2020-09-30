@@ -121,7 +121,7 @@ class OrdemProducao(models.Model):
     coa_aprov               = models.FileField(upload_to='media/docs/coa/', null=True, blank=True)
     tipo_transporte         = models.CharField(max_length=20, unique=False, choices= TIPOTRANS, verbose_name="Tipo de Transporte", null=True, blank=True)
     paletes_camiao          = models.IntegerField(default=0, verbose_name="Paletes por camião", null=True, blank=True)
-    altura_max              = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Altura máxima")
+    altura_max              = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Altura máxima", default=0)
     paletes_sobre           = models.BooleanField(default=False, verbose_name="Paletes Sobrepostas")
     cintas                  = models.BooleanField(default=False, verbose_name="Cintas")
     topo                    = models.CharField(max_length=50, choices=EMBAL_T, unique=False, verbose_name="Topo", null=True, blank=True)

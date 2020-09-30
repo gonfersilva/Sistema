@@ -35,6 +35,7 @@
                 <th>Core</th>
                 <th>Largura</th>
                 <th>Ordem de Produção</th>
+                <th>Nº de palete da ordem</th>
                 <th>Cliente</th>
                 <th>Área (m<sup>2</sup>)</th>
                 <th>Comprimento (m)</th>
@@ -55,6 +56,11 @@
                 <td>{{ pal.largura_bobines }}</td>
                 {% if pal.ordem != None %}
                 <td>{{ pal.ordem }}</td>
+                {% else %}
+                <td>Sem ordem de produção</td>
+                {% endif %}
+                {% if pal.num_palete_ordem != None %}
+                <td>{{ pal.num_palete_ordem }} / {{ pal.ordem.num_paletes_total }}</td>
                 {% else %}
                 <td>Sem ordem de produção</td>
                 {% endif %}

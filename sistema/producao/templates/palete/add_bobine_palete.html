@@ -28,6 +28,11 @@
         {% else%}
         <div><h3>Ordem de Fabrico: <span>{{ palete.ordem }}</span></h3></div>
         {% endif %}
+        {% if palete.num_palete_ordem != None %}
+        <div><h3>Nº Palete da Ordem: <span>{{ palete.num_palete_ordem }}</span></h3></div>
+        {% else %}
+        <div><h3>Nº Palete da Ordem: <span>S/ ordem de fabrico associada</span></h3></div>
+        {% endif %}
         {% if palete.ordem_original != None %}
         <div><h3>Ordem de Fabrico original: <span>{{ palete.ordem_original }}</span></h3></div>
         {% endif %}
@@ -45,12 +50,16 @@
             {% if palete.cliente != None %}
                 <div><h3>Cliente: <span>{{ palete.cliente }}</span></h3></div>
             {% else %}
-                <div><h3>Cliente: <span>Sem cliente atribuido</span></h3></div>
-            {% endif %}        
+                <div><h3>Cliente: <span>S/cliente atribuido</span></h3></div>
+            {% endif %}  
+            {% if palete.destino != None %}      
             <div><h3>Destino: <span>{{ palete.destino }}</span></h3></div>
+            {% else %}
+            <div><h3>Destino: <span>S/ destino atribuido</span></h3></div>
+            {% endif %}
             {% if palete.peso_bruto == None %}<div><h3>Peso Bruto: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Bruto: <span>{{ palete.peso_bruto }}</span></h3></div>{% endif %}
             {% if palete.peso_liquido == None %}<div><h3>Peso Liquido: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Liquido: <span>{{ palete.peso_liquido }}</span></h3></div>{% endif %}
-            {% if palete.carga == None %}<div><h3>Carga: <span>Sem carga atribuida</span></h3></div>{% else %}<div><h3>Carga: <span>{{ palete.carga.carga }}</span></h3></div>{% endif %}
+            {% if palete.carga == None %}<div><h3>Carga: <span>S/ carga atribuida</span></h3></div>{% else %}<div><h3>Carga: <span>{{ palete.carga.carga }}</span></h3></div>{% endif %}
             {% if palete.stock == False %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-times"></i></span></h3></div>{% else %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-check"></i></span></h3></div>{% endif %}
         {% endif %}
     </div>

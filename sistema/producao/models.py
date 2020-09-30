@@ -263,6 +263,7 @@ class Palete(models.Model):
     nome            = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Palete")
     num             = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Palete nº")
     num_palete_carga = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Nº Palete Carga")
+    num_palete_ordem = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Nº Palete Ordem")
     estado          = models.CharField(max_length=2, choices=STATUSP, default='G', verbose_name="Estado")
     area            = models.DecimalField(max_digits=11, decimal_places=1, verbose_name="Área palete")
     comp_total      = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento palete")

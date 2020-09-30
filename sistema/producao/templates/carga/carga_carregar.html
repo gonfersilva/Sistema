@@ -3,7 +3,7 @@
 {% block title %}Carregar carga | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
-    <a href="#"  class="btn_back" role="button">Cancelar</a>
+    <a href="{% url 'producao:carga_detail' pk=carga.pk %}"  class="btn_back" role="button">Voltar</a>
     <a href="{% url 'producao:finalizar_carga' pk=carga.pk %}"  class="btn_create" role="button">Finalizar</a>
     <a href="#"  class="btn_create" role="button">Reset</a>
 </div>

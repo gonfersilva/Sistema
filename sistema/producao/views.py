@@ -383,7 +383,13 @@ def create_palete(request):
                     if num_paletes_ordem < ordem.num_paletes_total:
                         ordem.num_paletes_produzidas += 1
                         encomenda.num_paletes_actual += 1 
+                        if num_paletes_ordem == 0:
+                            instance.num_palete_ordem = 1
+                        else:
+                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                            instance.num_palete_ordem = last_palete.num_palete_ordem + 1
                         instance.cliente = encomenda.cliente
+                        instance.destino = encomenda.cliente.nome + ' L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
                         ordem.save()
                         encomenda.save()
                         instance.save()
@@ -400,6 +406,12 @@ def create_palete(request):
                     instance.ordem_original_stock = True
                     if num_paletes_ordem < ordem.num_paletes_total:
                         ordem.num_paletes_produzidas += 1
+                        if num_paletes_ordem == 0:
+                            instance.num_palete_ordem = 1
+                        else:
+                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                            instance.num_palete_ordem = last_palete.num_palete_ordem + 1
+                        instance.destino = 'STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
                         ordem.save()
                         instance.save()
                         if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
@@ -2561,12 +2573,14 @@ def encomenda_create(request):
 def encomenda_detail(request, pk):
     enc = get_object_or_404(Encomenda, pk=pk)
     cargas = Carga.objects.filter(enc=enc)
+    paletes = Palete.objects.filter(ordem__enc=enc)
 
     template_name = 'encomenda/encomenda_detail.html'
 
     context = {
         "enc": enc,
         "cargas": cargas,
+        "paletes": paletes,
     }
 
     return render(request, template_name, context)

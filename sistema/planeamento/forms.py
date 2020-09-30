@@ -90,11 +90,11 @@ class OrdemProducaoDMCreateForm(ModelForm):
     emendas                     = forms.CharField(widget=forms.Textarea)
     class Meta:
         model  = OrdemProducao
-        fields = ['cliente', 'enc', 'artigo','data_prevista_inicio', 'data_prevista_fim', 'largura', 'core', 'num_paletes_produzir', 'tipo_emenda', 'emendas', 'tipo_paletes', 'palete_por_palete',
-         'bobines_por_palete', 'enrolamento', 'diam_min', 'diam_max', 'stock', 'altura_max', 'paletes_sobre', 'cintas', 'topo', 'base', 'embal', 'etiqueta_bobine', 'etiqueta_palete', 'etiqueta_final']
+        fields = ['cliente', 'enc', 'artigo','data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'tipo_emenda', 'emendas', 'tipo_paletes', 'palete_por_palete',
+         'bobines_por_palete', 'enrolamento', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'ficha_tecnica', 'of']
+         
 
     def __init__(self, *args, **kwargs):
-       
         super(OrdemProducaoDMCreateForm, self).__init__(*args, **kwargs)  
         self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')
         

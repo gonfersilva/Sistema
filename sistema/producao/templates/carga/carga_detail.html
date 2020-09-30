@@ -7,7 +7,9 @@
 <div>
     <a href="{% url 'producao:carga_list' %}"  class="btn_back" role="button">Voltar</a>
     {% if request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Logistica Operador" %}
-    <a href="{% url 'producao:carga_carregar' pk=carga.pk %}"  class="btn_create" role="button">Carregar</a>
+        {% if carga.estado == 'I' %}
+        <a href="{% url 'producao:carga_carregar' pk=carga.pk %}"  class="btn_create" role="button">Carregar</a>
+        {% endif %}
     {% endif %}
 </div>
 <div class="title_block-list">

@@ -69,28 +69,47 @@
         </table>
 
 </div>
-<!-- <div class="pagination">
-    {% if encomenda.has_other_pages %}
-    <div>
-        <span>
-            {% if encomenda.has_previous %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.previous_page_number }}"><</a>
-            {% endif %}
-    
-            <span>
-                Pág. {{ encomenda.number }} de {{ encomenda.paginator.num_pages }}
-            </span>
-    
-            {% if encomenda.has_next %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.next_page_number }}">></a>
-                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ encomenda.paginator.num_pages }}">>></a>
-            {% endif %}
-        </span>
-    </div>
-    {% endif %}
+<div class="title_block-list">
+    <h2>Paletes Produzidas</h2>
+</div>
+<div>
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th id="designacao">Palete</th>
+                <th>Ordem de Fabrico</th>
+                <th>Data</th>
+                <th>Core(")</th>   
+                <th>Largura(mm)</th>
+                <th>Comprimento(m)</th>    
+                <th>Área(m<sup>2</sup>)</th>
+                <th>Carga</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for pal in paletes %}
+            <tr>
+                <td id="designacao"><a href="#">{{ pal.nome }}</a></td>
+                <td>{{ pal.ordem }}</td>
+                <td>{{ pal.data_pal|date:"d-n-Y" }}</td>
+                <td>{{ pal.core_bobines }}</td>
+                <td>{{ pal.largura_bobines }}</td>
+                <td>{{ pal.comp_total }}</td>
+                <td>{{ pal.area }}</td>
+                {% if pal.carga == None%}
+                <td>s/ carga atribuida</td>
+                {% else %}
+                <td>{{ pal.carga }}</td>
+                {% endif %}
+                
+            </tr>
+            {% endfor%}
+        </tbody>
+        </table>
 
-</div> -->
+</div>
+
 
   
 

@@ -109,6 +109,7 @@ def create_ordem(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+            
         
             if instance.enc != None and instance.stock == False:
                 enc = Encomenda.objects.get(pk=instance.enc.pk)
@@ -464,5 +465,9 @@ def finalizar_ordem_retrabalho_dm(request, pk):
 
 
 
-
-
+def load_artigos(request):
+    enc_id = request.GET.get('enc_id')
+    enc = Encomenda.objects.get(id=enc_id)
+    cliente = Cliente.objects.get(id=enc.cliente.id)
+    artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente).order_by('artigo')
+    return render(request, 'ordensproducao/dropdown_options.html', {'artigos_cliente': artigos_cliente})     

@@ -59,6 +59,8 @@ from django.db.models import Q
 
 class OrdemProducaoCreateForm(ModelForm):
     emendas                     = forms.CharField(widget=forms.Textarea)
+    
+
 
     class Meta:
         model = OrdemProducao
@@ -67,19 +69,18 @@ class OrdemProducaoCreateForm(ModelForm):
          'altura_max', 'ficha_tecnica', 'of']
 
     def __init__(self, *args, **kwargs):
-        # palete = Palete.objects.filter(estado='G', data_pal__year='2020').latest('num')
-        # num_bobines = palete.num_bobines
-        # largura_bobines = palete.largura_bobines
-        # core_bobines = palete.core_bobines
-        # num = palete.num
-        # destino = palete.destino
         super(OrdemProducaoCreateForm, self).__init__(*args, **kwargs)  
         self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')
-        # self.fields['num_bobines'].initial = num_bobines
-        # self.fields['largura_bobines'].initial = largura_bobines
-        # self.fields['core_bobines'].initial = core_bobines
-        # self.fields['num'].initial = num + 1
-        # self.fields['destino'].initial = destino
+        self.fields['artigo'].queryset = Artigo.objects.none()
+
+        if 'artigo' in self.data:
+            try:
+                artigo_id = int(self.data.get('artigo'))
+                self.fields['artigo'].queryset = Artigo.objects.filter(id=artigo_id).order_by('artigo')
+               
+            except(ValueError, TypeError):
+                pass
+        
 
 class AddStockForm(ModelForm):
     class Meta:

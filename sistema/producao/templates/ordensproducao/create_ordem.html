@@ -6,7 +6,7 @@
     <h1>Criar Ordem de Fabrico</h1>
 </div>
 <br>
-<form method="POST" action="" enctype="multipart/form-data">
+<form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" action="" enctype="multipart/form-data">
     {% csrf_token %}
     {% if messages %}
     <div>
@@ -212,6 +212,29 @@
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
+   
 
+
+
+$("#id_enc").change(function () {
+    var url = $("#ordemForm").attr("data-artigos-url");  
+    var encId = $(this).val();  
+    
+    $.ajax({                       
+        url: url,                   
+        data: {
+            'enc_id': encId      
+        },
+        success: function (data) { 
+            
+            $("#id_artigo").html(data);  
+            console.log(data)
+        }
+    });
+
+});
+
+    
+   
 </script>
 {% endblock %}

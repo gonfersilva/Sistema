@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^ordemdeproducao/status/(?P<pk>\d+)/(?P<pk_ordem>\d+)/$', change_status_bobine_retrabalho, name='change_status_bobine_retrabalho'),
     url(r'^ordemdeproducao/reset/(?P<pk_ordem>\d+)/$', reset_status_bobine_retrabalho, name='reset_status_bobine_retrabalho'),
     url(r'^ordemdeproducao/finalizar/(?P<pk>\d+)/$', finalizar_ordem_retrabalho_dm, name='finalizar_ordem_retrabalho_dm'),
+    url(r'^ajax/artigos-cliente/$', load_artigos, name='load_artigos'),
 ]
   
   

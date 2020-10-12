@@ -84,7 +84,7 @@ class OrdemProducao(models.Model):
     ct                      = models.ForeignKey(CaracteristicasTecnicas, on_delete=models.CASCADE, verbose_name="Caracteristicas Técnicas", null=True, blank=True)
     timestamp               = models.DateTimeField(auto_now_add=True)
     data_prevista_inicio    = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today, verbose_name="Data Prevista de Início")
-    hora_prevista_inicio    = models.TimeField(auto_now_add=False, auto_now=False, null=True, blank=True, verbose_name="Hora prevista de inicio")
+    hora_prevista_inicio    = models.TimeField(auto_now_add=False, auto_now=False, null=True, blank=True, verbose_name="Hora prevista de inicio", default="00:00")
     data_prevista_fim       = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Data Prevista de Fim", null=True, blank=True)
     hora_prevista_fim       = models.TimeField(auto_now_add=False, auto_now=False, null=True, blank=True, verbose_name="Hora prevista de fim")
     horas_previstas_producao= models.IntegerField(default=0, verbose_name="Horas previstas de produção", null=True, blank=True,)

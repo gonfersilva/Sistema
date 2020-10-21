@@ -120,6 +120,8 @@ def create_ordem(request):
 
                 if instance.num_paletes_total > (enc.num_paletes - num_paletes_total_ordens):
                     messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
+                elif (instance.bobines_por_palete == 0 or instance.palete_por_palete == 1 and instance.bobines_por_palete_inf != 0 or instance.palete_por_palete == 2 and instance.bobines_por_palete_inf == 0):
+                    messages.error(request, 'Número de bobines por palete incorreto. Verifique valores inseridos.') 
                 else:
                     count = OrdemProducao.objects.filter(enc=instance.enc).count()
                     instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
@@ -132,16 +134,19 @@ def create_ordem(request):
                     instance.save()
                     return redirect('planeamento:list_ordem')
             elif instance.enc == None and instance.stock == True:
-                count = OrdemProducao.objects.filter(stock=True).count()
-                instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
-                instance.enc = None
-                instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
-                if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
-                        dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
-                        dt += timedelta(hours=instance.horas_previstas_producao)
-                        instance.data_prevista_fim = dt.date()
-                        instance.hora_prevista_fim = dt.time()
-                instance.save()
+                if (instance.bobines_por_palete == 0 or instance.palete_por_palete == 1 and instance.bobines_por_palete_inf != 0 or instance.palete_por_palete == 2 and instance.bobines_por_palete_inf == 0):
+                    messages.error(request, 'Número de bobines por palete incorreto. Verifique valores inseridos.') 
+                else:
+                    count = OrdemProducao.objects.filter(stock=True).count()
+                    instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
+                    instance.enc = None
+                    instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
+                    if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
+                            dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                            dt += timedelta(hours=instance.horas_previstas_producao)
+                            instance.data_prevista_fim = dt.date()
+                            instance.hora_prevista_fim = dt.time()
+                    instance.save()
                 return redirect('planeamento:list_ordem')
             elif instance.enc != None and instance.stock == True:
                 messages.error(request, 'Não pode ser criada uma Ordem de Produção para uma encomenda e em simultâneo para stock.') 

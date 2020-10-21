@@ -60,12 +60,11 @@ from django.db.models import Q
 class OrdemProducaoCreateForm(ModelForm):
     emendas                     = forms.CharField(widget=forms.Textarea)
     
-
-
     class Meta:
         model = OrdemProducao
-        fields =['enc', 'artigo','data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'num_paletes_stock', 'emendas', 'nwsup', 'nwinf', 'tipo_paletes', 'palete_por_palete',
-         'bobines_por_palete', 'enrolamento', 'folha_id', 'freq_amos', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'tipo_transporte', 'paletes_camiao', 
+        fields =['enc', 'artigo', 'data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'num_paletes_stock', 'emendas', 'nwsup', 'nwinf', 
+        'tipo_paletes', 'palete_por_palete', 
+         'bobines_por_palete', 'bobines_por_palete_inf', 'enrolamento', 'folha_id', 'freq_amos', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'tipo_transporte', 'paletes_camiao', 
          'altura_max', 'ficha_tecnica', 'of']
 
     def __init__(self, *args, **kwargs):
@@ -76,7 +75,7 @@ class OrdemProducaoCreateForm(ModelForm):
         if 'artigo' in self.data:
             try:
                 artigo_id = int(self.data.get('artigo'))
-                self.fields['artigo'].queryset = Artigo.objects.filter(id=artigo_id).order_by('artigo')
+                self.fields['artigo'].queryset = Artigo.objects.filter(id=artigo_id)
                
             except(ValueError, TypeError):
                 pass

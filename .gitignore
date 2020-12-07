@@ -7,7 +7,11 @@ __pycache__/
 *.so
 
 # Media
-assets/img/media/
+assets/img/media/coa/
+assets/img/media/of/
+assets/img/media/packlist/
+assets/img/media/process/
+assets/img/media/tecnic/
 
 # Distribution / packaging
 .Python

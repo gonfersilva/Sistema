@@ -131,6 +131,7 @@ def create_ordem(request):
                         dt += timedelta(hours=instance.horas_previstas_producao)
                         instance.data_prevista_fim = dt.date()
                         instance.hora_prevista_fim = dt.time()
+                    instance.cliente = instance.enc.cliente
                     instance.save()
                     return redirect('planeamento:list_ordem')
             elif instance.enc == None and instance.stock == True:
@@ -155,6 +156,42 @@ def create_ordem(request):
 
     context = {
        "form": form
+    }
+    return render(request, template_name, context)
+
+@login_required
+def edit_ordem(request, pk):
+    
+    context = {
+       
+    }
+    return render(request, template_name, context)
+
+@login_required
+def delete_ordem(request, pk):
+    template_name = 'ordensproducao/delete_ordem.html'
+    ordem = get_object_or_404(OrdemProducao, pk=pk)
+    if request.method == "POST":
+        if ordem.ativa == False and ordem.completa == False:
+            if ordem.retrabalho == True:
+                paletes_a_retrabalhar = PaletesARetrabalhar.objects.filter(ordem=ordem)
+                bobines_a_retrabalhar = BobinesARetrabalhar.objects.filter(ordem=ordem)
+                for palete in paletes_a_retrabalhar:
+                    palete.delete()
+                for bobine in bobines_a_retrabalhar:
+                    bobine.delete()
+                ordem.delete()
+            else:
+                ordem.delete()
+            return redirect('planeamento:list_ordem')
+        else:
+            messages.error(request, 'A ordem de fabrico selecionada não pode ser apagada porque está em progresso ou finalizada.')
+
+         
+
+
+    context = {
+       "ordem": ordem
     }
     return render(request, template_name, context)
 
@@ -476,3 +513,11 @@ def load_artigos(request):
     cliente = Cliente.objects.get(id=enc.cliente.id)
     artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente).order_by('artigo')
     return render(request, 'ordensproducao/dropdown_options.html', {'artigos_cliente': artigos_cliente})     
+
+@login_required
+def load_encomendas(request):
+    cliente = request.GET.get('cliente_id')
+    cliente_obj = get_object_or_404(Cliente, pk=cliente) 
+    encomendas = Encomenda.objects.filter(cliente=cliente_obj)
+    
+    return render(request, 'perfil/dropdown_enc.html', {'encomendas': encomendas})  

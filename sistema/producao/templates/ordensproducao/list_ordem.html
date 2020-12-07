@@ -29,6 +29,7 @@
                 <th>Paletes Produzidas</th>
                 <th>Paletes de Stock</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,10 @@
                 <td id="estado_dm">Aguardando Inicio</td>   
                 {% elif ordem.ativa == False and ordem.completa == True %} 
                 <td id="estado_ba">Finalizada</td>                 
+                {% endif %}
+                {% if ordem.ativa == False and ordem.completa == False %}
+                <td class="td-icon"><a href="{% url 'planeamento:delete_ordem' pk=ordem.pk %}"><i class="fas fa-trash"></i></a></td>
+
                 {% endif %}
 
             </tr>

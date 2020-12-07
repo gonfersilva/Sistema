@@ -1,13 +1,12 @@
 {% extends "layout.html "%}
 {% load producao_tags %}
-{% block title %}Criar Ordem de Produção DM | {{ block.super }}{% endblock %}
+{% block title %}Editar Ordem de Fabrico | {{ block.super }}{% endblock %}
 {% block content %}
 <div class="title_block-list">
-    <h1>Criar Ordem de Produção DM</h1>
+    <h1>Editar Ordem de Fabrico</h1>
 </div>
 <br>
-<form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" data-encomendas-url="{% url 'planeamento:load_encomendas' %}" action="" enctype="multipart/form-data">
-
+<form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" action="" enctype="multipart/form-data">
     {% csrf_token %}
     {% if messages %}
     <div>
@@ -34,38 +33,55 @@
         <div class="flex-container">
             <div>
                 <div><h2>Encomenda</h2></div>
-                <div><div>Cliente:</div> <div>{{ form.cliente }}</div></div>             
                 <div><div>Encomenda:</div> <div>{{ form.enc }}</div></div>             
                 <div><div>Artigo:</div> <div>{{ form.artigo }}</div></div>   
                 <div><div>Data prevista de início:</div> <div>{{ form.data_prevista_inicio }}</div></div>   
                 <div><div>Hora prevista de início:</div> <div>{{ form.hora_prevista_inicio }}</div></div>   
-                <div><div>Horas previstas de Produção:</div> <div>{{ form.horas_previstas_producao }}</div></div>     
+                <div><div>Horas previstas de Produção:</div> <div>{{ form.horas_previstas_producao }}</div></div>   
                 <div><div>Largura:</div> <div>{{ form.largura }}</div></div>   
                 <div><div>Diâmetro mínimo:</div><div>{{ form.diam_min }}</div></div>   
                 <div><div>Diâmetro máximo:</div><div>{{ form.diam_max }}</div></div>   
                 <div><div>Core("):</div> <div>{{ form.core }}</div></div>   
                 <div><div>Paletes Produzir:</div> <div>{{ form.num_paletes_produzir }}</div></div>   
-                <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>   
+                <div><div>Paletes stock:</div> <div>{{ form.num_paletes_stock }}</div></div>   
+                <!-- <div><div>Paletes Total:</div> <div>{{ form.num_paletes_total }}</div></div>    -->
+                <!-- <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>    -->
                 <div><div>Emendas:</div><div>{{ form.emendas }}</div></div>   
                 
             </div>
             <div>
                 <div><h2>Requisitos</h2></div>
+                <div><div>Nonwoven Superior:</div> <div>{{ form.nwsup }}</div></div>             
+                <div><div>Nonwoven Inferior:</div> <div>{{ form.nwinf }}</div></div>   
                 <div><div>Tipo de Palete:</div> <div>{{ form.tipo_paletes }}</div></div>   
                 <div><div>Paletes por palete:</div><div>{{ form.palete_por_palete }}</div></div>   
                 <div><div>Bobines por palete Superior ou Única:</div><div>{{ form.bobines_por_palete }}</div></div>   
                 <div id="palete_inferior" class="visible"><div>Bobines por palete Inferior:</div><div>{{ form.bobines_por_palete_inf }}</div></div>   
                 <div><div>Sentido Enrolamento:</div> <div>{{ form.enrolamento }}</div></div>   
+                <div><div>Folha identificação Palete:</div> <div>{{ form.folha_id }}</div></div>   
+                <div><div>Frequência amostragem(p/ Bobinagem):</div> <div>{{ form.freq_amos }}</div></div>   
                 <div><div>Stock:</div> <div>{{ form.stock }}</div></div>   
             </div>
             
         </div>
         <br>
-        
+     
+        </div> -->
         <br>
         <br>
-        
-        
+        <div class="flex-container">
+            
+            <div>
+                <div><h2>Esquema de Paletização</h2></div>
+                <div>Tipo de transporte:</div> <div>{{ form.tipo_transporte }}</div>
+                <div>Nº Paletes / Camião:</div> <div>{{ form.paletes_camiao }}</div>
+                <div>Altura máx. Palete:</div> <div>{{ form.altura_max }}</div>
+                
+            </div>             
+            
+        </div>
+        <br>
+        <br>
         <div class="flex-container">
             <div>
                 <div><h2>Documentos</h2></div>           
@@ -75,12 +91,15 @@
                 <div>Packing List:</div> <div>{{ form.pack_list }}</div>            
             </div>
         </div>
-       
+        <br>
+        <br>
+        
+     
         
         
         <div class="flex-container">
             <div><a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a></div>
-            <div><input type="submit" id="validate-btn" value="Criar"></div>
+            <div><input type="submit" id="validate-btn" value="Guardar"></div>
         </div>
         
     </div>
@@ -93,22 +112,7 @@
    
 
 
-$("#id_cliente").change(function () {
-    var url = $("#ordemForm").attr("data-encomendas-url");  
-    var clienteId = $(this).val();  
-    
-    $.ajax({                       
-        url: url,                   
-        data: {
-            'cliente_id': clienteId      
-        },
-        success: function (data) { 
-            $("#id_enc").html(data);  
-            // console.log(data)
-        }
-    });
 
-});
 $("#id_enc").change(function () {
     var url = $("#ordemForm").attr("data-artigos-url");  
     var encId = $(this).val();  
@@ -125,6 +129,7 @@ $("#id_enc").change(function () {
     });
 
 });
+            
 
 $("#id_palete_por_palete").change(function() {
     var element = $("#palete_inferior")

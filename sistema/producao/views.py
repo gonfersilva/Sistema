@@ -2519,13 +2519,13 @@ def delete_bobinagem_dm(request, pk):
 
 @login_required
 def encomenda_list(request):
-    encomenda_list = Encomenda.objects.all().order_by('-timestamp')
+    encomenda_list = Encomenda.objects.all().order_by('-eef')
     template_name = 'encomenda/encomenda_list.html'
        
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
-        encomenda_list = encomenda_list.filter(eef__icontains=query).order_by('-timestamp')
+        encomenda_list = encomenda_list.filter(eef__icontains=query).order_by('-eef')
 
 
     paginator = Paginator(encomenda_list, 12)
@@ -3966,7 +3966,6 @@ def perfil_larguras_v2(request, pk):
     bobinagem = Bobinagem.objects.filter(perfil=perfil)
     can_edit = True
     valid = True
-    print(valid)
     if bobinagem.exists():
         can_edit = False
     
@@ -3988,8 +3987,9 @@ def perfil_larguras_v2(request, pk):
                 artigos.append(artigo)
                 artigo_obj = Artigo.objects.get(id= artigo.id)
                 
-                
-                if designacao_prod != artigo_obj.produto or gsm != artigo_obj.gsm or largura != artigo_obj.lar:
+                if artigo_obj.cod == 'EEEEFTACPAAR000181':
+                    pass 
+                elif designacao_prod != artigo_obj.produto or gsm != artigo_obj.gsm or largura != artigo_obj.lar:
                     valid = False
 
             if valid == False:
@@ -4481,8 +4481,13 @@ def load_artigos_cliente(request):
     produto = request.GET.get('produto')
     gsm = request.GET.get('gsm')
     cliente_obj = get_object_or_404(Cliente, pk=cliente) 
-    artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj, artigo__lar=largura, artigo__produto=produto, artigo__gsm=gsm).order_by('artigo')
+    if cliente_obj.cod == 0:
+        artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj).order_by('artigo')
+    else:
+        artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj, artigo__lar=largura, artigo__produto=produto, artigo__gsm=gsm).order_by('artigo')
     return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})       
+
+     
 
 
 @login_required
@@ -4995,7 +5000,6 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
     return redirect('producao:rececao_list')
 
-
     
 @login_required
 def bobinagem_classificacao(request, pk):
@@ -5003,49 +5007,61 @@ def bobinagem_classificacao(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'bobine/bobinagem_classificacao.html'
-
+    valid = True
+    user = request.user
+    for b in bobines:
+        if b.estado == 'HOLD':
+            valid = False
+        else:
+            pass
+    
     if request.method == 'POST':
-        formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
-        if formset.is_valid():
-            index = 0
-            messages_count = 0
-            for form in formset:
-                cd = form.cleaned_data
-                estado = cd.get('estado')
-                fc_diam_ini = cd.get('fc_diam_ini')
-                fc_diam_fim = cd.get('fc_diam_fim')
-                ff_m_ini = cd.get('ff_m_ini')
-                ff_m_fim = cd.get('ff_m_fim')
-                obs = cd.get('obs')
-                prop_obs = cd.get('prop_obs')
-            
-                defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
-                defeitos_validation = not any(defeitos)
-                index += 1
-                if (estado == 'DM' or estado == 'R') and defeitos_validation == True:
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM ou R é necessário atribuir pelo menos um defeito.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[12] == True and obs == '':
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Falha de MP: Preencher nas observações o motivo.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[14] == True and obs == '':
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[15] == True and prop_obs == '':
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
-                    messages_count += 1
-                elif (estado == 'DM' or estado == 'R') and defeitos[16] == True and prop_obs == '':
-                    messages.error(request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
-                    messages_count += 1
-                else:
-                    form.save()
-                    messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
+        if not user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and valid == False:
+            messages.error(request, 'Não tem permissões para modificar o estado de uma bobinagem em HOLD.')
+        else:
+            formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
+            if formset.is_valid():
+                index = 0
+                messages_count = 0
+                for form in formset:
+                    cd = form.cleaned_data
+                    estado = cd.get('estado')
+                    fc_diam_ini = cd.get('fc_diam_ini')
+                    fc_diam_fim = cd.get('fc_diam_fim')
+                    ff_m_ini = cd.get('ff_m_ini')
+                    ff_m_fim = cd.get('ff_m_fim')
+                    obs = cd.get('obs')
+                    prop_obs = cd.get('prop_obs')
+                    if not user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and estado == 'HOLD':
+                        messages.error(request, 'Não tem permissões para modificar o estado de uma bobine em HOLD')
+                    else:                                
+                        defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
+                        defeitos_validation = not any(defeitos)
+                        index += 1
+                        if (estado == 'DM' or estado == 'R') and defeitos_validation == True:
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM ou R é necessário atribuir pelo menos um defeito.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[12] == True and obs == '':
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Falha de MP: Preencher nas observações o motivo.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[14] == True and obs == '':
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[15] == True and prop_obs == '':
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
+                            messages_count += 1
+                        elif (estado == 'DM' or estado == 'R') and defeitos[16] == True and prop_obs == '':
+                            messages.error(request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
+                            messages_count += 1
+                        else:
+                            form.save()
+                            messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
 
 
             # if messages_count == 0:
@@ -5076,18 +5092,22 @@ def classificacao_bobines_all(request, operation, pk):
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     form = ClasssificacaoBobineDm(request.POST or None)
     template_name = 'bobine/bobinagem_classificacao_all.html'
+    user = request.user
     if operation == 'ap':
         for bob in bobines:
-            if bob.estado == 'LAB' or bob.estado == 'HOLD':
+            if bob.estado == 'LAB' or (user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and bob.estado == 'HOLD'):
                 bob.estado = 'G'
                 bob.save()
-        return redirect('producao:bobinestatus', pk=bobinagem.pk)        
+            else:
+                messages.error(request, 'Não tem permissões para aprovar uma bobine em HOLD')
+                
+        return redirect('producao:bobinagem_classificacao', pk=bobinagem.pk)       
     elif operation == 'hold':
         for bob in bobines:
             if bob.estado == 'LAB' or bob.estado == 'DM':
                 bob.estado = 'HOLD'
                 bob.save()
-        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+        return redirect('producao:bobinagem_classificacao', pk=bobinagem.pk)
 
     if form.is_valid():
         index = 0
@@ -5302,6 +5322,7 @@ def reciclado_create(request):
         estado = cd.get('estado')
         instance = form.save(commit=False)
         data = datetime.now().strftime('%Y%m%d')
+        print(data)
         map(int, data)
         if instance.num < 10:
             lote = '%s-0%s' % (data[0:], str(instance.num))

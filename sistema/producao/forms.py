@@ -430,6 +430,7 @@ class RecicladoCreateForm(ModelForm):
     TARA = (('15 kg', '15 kg'),('30 kg', '30 kg'))
     estado = forms.CharField(max_length=1, required=True, widget=forms.Select(choices=ESTADO))
     tara = forms.CharField(max_length=5, required=True, widget=forms.Select(choices=TARA))
+    
 
     class Meta:
         model = Reciclado
@@ -437,7 +438,8 @@ class RecicladoCreateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         reciclado = Reciclado.objects.all()
-        data = datetime.now().date()
+        # data = datetime.now().date()
+        data = datetime.date.today()
         try:
             reciclado = reciclado.latest('timestamp')
             data_reciclado = reciclado.timestamp.date()

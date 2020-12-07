@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from producao.api.views import PaleteListStockAPIView, PaleteListAPIView, CargaListAPIView, PaleteListHistoricoAPIView, BobinagemListHistoricoAPIView, CargaPaletesAPIView, StockListAPIView, BobineListDmAPIView, CargaDetailAPIView, EncomendaCargaAPIView, CargaDetailSerializer, EncomendaListAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
+from producao.api.views import ArtigoDetailAPIView, PaleteListStockAPIView, PaleteListAPIView, CargaListAPIView, PaleteListHistoricoAPIView, BobinagemListHistoricoAPIView, CargaPaletesAPIView, StockListAPIView, BobineListDmAPIView, CargaDetailAPIView, EncomendaCargaAPIView, CargaDetailSerializer, EncomendaListAPIView, BobinagemListDmAPIView, BobinagemCreateDmAPIView, BobineListAPIView, PaleteDetailAPIView, BobineList, EmendaListAPIView, EmendaCreateAPIView, PaleteDmBobinesAPIView, BobinagemListAPIView, BobineDetailAPIView, BobineListAllAPIView,ClienteDetailAPIView,BobinesBobinagemAPIView,PaleteDmAPIView
 
 app_name="producao" 
 
@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^carga/paletes/(?P<pk>\d+)/$', CargaPaletesAPIView.as_view(), name='carga-paletes-list'),
     url(r'^stock/$', StockListAPIView.as_view(), name='stock-list'),
     url(r'^palete/stock/$', PaleteListStockAPIView.as_view(), name='palete-stock-list'),
+    url(r'^artigo/(?P<pk>\d+)/$', ArtigoDetailAPIView.as_view(), name='artigo-detail'),
     
     
     

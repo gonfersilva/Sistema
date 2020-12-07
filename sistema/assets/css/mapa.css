@@ -1244,3 +1244,7 @@ input[type=number] {
 }
 
 
+.visible {
+    display: none;
+}
+

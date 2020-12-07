@@ -65,7 +65,7 @@ class OrdemProducaoCreateForm(ModelForm):
         fields =['enc', 'artigo', 'data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'num_paletes_stock', 'emendas', 'nwsup', 'nwinf', 
         'tipo_paletes', 'palete_por_palete', 
          'bobines_por_palete', 'bobines_por_palete_inf', 'enrolamento', 'folha_id', 'freq_amos', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'tipo_transporte', 'paletes_camiao', 
-         'altura_max', 'ficha_tecnica', 'of']
+         'altura_max', 'ficha_tecnica', 'of', 'pack_list']
 
     def __init__(self, *args, **kwargs):
         super(OrdemProducaoCreateForm, self).__init__(*args, **kwargs)  
@@ -91,11 +91,12 @@ class OrdemProducaoDMCreateForm(ModelForm):
     class Meta:
         model  = OrdemProducao
         fields = ['cliente', 'enc', 'artigo','data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'tipo_emenda', 'emendas', 'tipo_paletes', 'palete_por_palete',
-         'bobines_por_palete', 'enrolamento', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'ficha_tecnica', 'of']
+         'bobines_por_palete', 'enrolamento', 'diam_min', 'diam_max', 'stock', 'ficha_processo', 'ficha_tecnica', 'of', 'pack_list', 'bobines_por_palete_inf']
          
 
     def __init__(self, *args, **kwargs):
         super(OrdemProducaoDMCreateForm, self).__init__(*args, **kwargs)  
         self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')
+
         
 

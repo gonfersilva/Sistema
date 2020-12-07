@@ -4,11 +4,13 @@
 {% block content %}
 <div>
     <a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a>
+    
     {% if ordem.retrabalho == False %}
     <a href="{% url 'planeamento:ordem_add_stock' pk=ordem.pk %}"  class="btn_create" role="button">Adicionar Paletes em Stock</a>
     {% else %}
     <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn_create" role="button">Paletes a retrabalhar</a>
     {% endif %}
+    {% if ordem.ativa == False and ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>{% endif %}
     <!-- <a href="#"  class="btn_create" role="button">Editar Ordem de Produção</a> -->
     <!-- {% if ordem.ativa == True and  ordem.completa == False  and request.user|has_group:"Logistica Supervisor" and ordem.num_paletes_stock != 0 %} -->
     <!-- {% elif ordem.ativa == False and ordem.completa == True and request.user|has_group:"Produção Supervisor" %} -->
@@ -33,14 +35,17 @@
     </div>
     <div>
         <div><h2>Documentos</h2></div>
-        {% if ordem.ficha_processo != None %}
+        {% if ordem.ficha_processo %}
         <a href="{{ ordem.ficha_processo.url }}" class="btn_create" role="button" target="_blank">Ficha de processo</a>
         {% endif %}
-        {% if ordem.ficha_tecnica != None %}
+        {% if ordem.ficha_tecnica %}
         <a href="{{ ordem.ficha_tecnica.url }}" class="btn_create" role="button" target="_blank">Ficha Técnica</a>
         {% endif %}
-        {% if ordem.of != None %}
+        {% if ordem.of %}
         <a href="{{ ordem.of.url }}" class="btn_create" role="button" target="_blank">OF</a>
+        {% endif %}
+        {% if ordem.pack_list %}
+        <a href="{{ ordem.pack_list.url }}" class="btn_create" role="button" target="_blank">Packing List</a>
         {% endif %}
     </div>
 </div>
@@ -55,7 +60,7 @@
             <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>  
             {% elif ordem.enc == None and ordem.cliente != None %}   
             <div><h2>Encomenda</h2></div>
-            <div><h3>Encomenda:</h3> S/ Encomenda atribuida</div>             
+            <div><h3>Encomenda:</h3> S/ Encomenda atribuida</div>    3         
             <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>          
             {% endif %}
             <div><h3>Artigo:</h3> {{ ordem.artigo }}</div>   

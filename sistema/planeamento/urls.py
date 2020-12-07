@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^encomendas/$', encomendas_list, name='encomendas_list'),
     url(r'^ordemdeproducao/list/$', list_ordem, name='list_ordem'),
     url(r'^ordemdeproducao/create/$', create_ordem, name='create_ordem'),
+    url(r'^ordemdeproducao/edit/(?P<pk>\d+)/$', edit_ordem, name='edit_ordem'),
+    url(r'^ordemdeproducao/delete/(?P<pk>\d+)/$', delete_ordem, name='delete_ordem'),
     url(r'^ordemdeproducao/create_dm/$', create_ordem_dm, name='create_ordem_dm'),
     url(r'^ordemdeproducao/details/(?P<pk>\d+)/$', details_ordem, name='details_ordem'),
     url(r'^ordemdeproducao/iniciar/(?P<pk>\d+)/$', ordem_iniciar, name='ordem_iniciar'),
@@ -24,6 +26,7 @@ urlpatterns = [
     url(r'^ordemdeproducao/reset/(?P<pk_ordem>\d+)/$', reset_status_bobine_retrabalho, name='reset_status_bobine_retrabalho'),
     url(r'^ordemdeproducao/finalizar/(?P<pk>\d+)/$', finalizar_ordem_retrabalho_dm, name='finalizar_ordem_retrabalho_dm'),
     url(r'^ajax/artigos-cliente/$', load_artigos, name='load_artigos'),
+    url(r'^ajax/cliente-encomenda/$', load_encomendas, name='load_encomendas'),
 ]
   
   

@@ -1,5 +1,7 @@
+from django.db.models import fields
+from django.db.models.base import ModelState
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
-from producao.models import Palete, Bobine, Largura, Perfil, Emenda, Bobinagem, Cliente, Encomenda, Carga, Encomenda
+from producao.models import Artigo, Palete, Bobine, Largura, Perfil, Emenda, Bobinagem, Cliente, Encomenda, Carga, Encomenda
 
 
 class PerfilSerializer(ModelSerializer):
@@ -271,3 +273,8 @@ class PaleteStockSerializer(ModelSerializer):
     class Meta:
         model = Palete
         fields = ['nome', 'stock', 'ordem', 'cliente']
+
+class ArtigoDetailSerializer(ModelSerializer):
+    class Meta:
+        model = Artigo
+        fields = '__all__'

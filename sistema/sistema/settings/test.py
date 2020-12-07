@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'rest_framework',
     'planeamento',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [

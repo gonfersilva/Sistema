@@ -63,6 +63,7 @@ coverage.xml
 local.py
 production.py
 base.py
+test.py
 db.sqlite3
 
 # Flask stuff:

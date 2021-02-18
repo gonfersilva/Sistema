@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy, resolve
 from django.forms.models import modelformset_factory, inlineformset_factory
@@ -7,7 +8,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao,ArtigoNW
+from .models import CoreLargura, PerfilEmbalamento, ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao, ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
@@ -32,6 +33,10 @@ from datetime import date
 from collections import defaultdict
 from django.contrib.sessions.models import Session
 from planeamento.models import *
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.conf import settings
+from django.contrib.staticfiles import finders
 
 
 
@@ -39,26 +44,27 @@ from planeamento.models import *
 #     template_name = 'perfil/perfil_create.html'
 #     form_class = PerfilCreateForm
 #     success_url = '/producao/perfil/{id}/'
-     
+
 #     def form_valid(self, form):
 #         form.instance.user = self.request.user
 #         return super().form_valid(form)
 
 @login_required
 def create_perfil(request):
-    
+
     template_name = 'perfil/perfil_create.html'
     form = PerfilCreateForm(request.POST or None)
-           
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
         instance.save()
-        
+
         for i in range(instance.num_bobines):
-            lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
+            lar = Largura.objects.create(
+                perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
             lar.save()
-        
+
         return redirect('producao:perfil_details', pk=instance.pk)
 
     context = {
@@ -70,12 +76,12 @@ def create_perfil(request):
 
 @login_required
 def create_bobinagem(request):
-    
+
     template_name = 'producao/bobinagem_create.html'
     form = BobinagemCreateForm(request.POST or None)
-    
+
     # form = BobinagemCreateForm(initial=num)
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -90,7 +96,8 @@ def create_bobinagem(request):
         instance.lotenwinf = inf.replace(" ", "")
 
         if (instance.estado == 'R' and instance.obs == ''):
-            messages.error(request, 'Para Rejeitar a bobinagem é necessario indicar motivo nas observações.')
+            messages.error(
+                request, 'Para Rejeitar a bobinagem é necessario indicar motivo nas observações.')
         else:
             nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
             nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
@@ -106,12 +113,13 @@ def create_bobinagem(request):
             #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
             # if (total_inf > 7500):
 
-            if (total_inf > 8500  or total_sup > 8500):
-                messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
+            if (total_inf > 8500 or total_sup > 8500):
+                messages.error(
+                    request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
             else:
                 instance.save()
                 bobinagem_create(instance.pk)
-        
+
                 if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                     areas(instance.pk)
 
@@ -127,13 +135,11 @@ def create_bobinagem(request):
     return render(request, template_name, context)
 
 
-
 def perfil_list(request):
     perfil = Perfil.objects.all()
     # paginator = Paginator(perfil, 15)
     # page = request.GET.get('page')
     template_name = 'perfil/perfil_home.html'
-    
 
     # try:
     #     perfil = paginator.page(page)
@@ -160,11 +166,10 @@ def perfil_detail(request, pk):
     return render(request, template_name, context)
 
 
-   
 # class BobinagemListView(LoginRequiredMixin, ListView):
 #     model = Bobinagem
 #     template_name = 'producao/bobinagem_home.html'
-    
+
 #     def get_context_data(self, **kwargs):
 #         context = super().get_context_data(**kwargs)
 #         context['now'] = timezone.now()
@@ -173,33 +178,30 @@ def perfil_detail(request, pk):
 def bobinagem_list(request):
     now = datetime.datetime.now()
     bobinagem = Bobinagem.objects.all()
-        
+
     template_name = 'producao/bobinagem_home.html'
     bobine = Bobine.objects.all()
-  
-
-    
 
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
         "now": now
-        
+
     }
-    return render (request, template_name, context)
+    return render(request, template_name, context)
+
 
 def bobinagem_historico(request):
     bobinagem = Bobinagem.objects.all()
     s = request.GET.get("s")
     if s:
-        bobinagem = Bobinagem.objects.filter(Q(nome__icontains=s) | Q(data__icontains=s))
-        
+        bobinagem = Bobinagem.objects.filter(
+            Q(nome__icontains=s) | Q(data__icontains=s))
 
     paginator = Paginator(bobinagem, 17)
     page = request.GET.get('page')
     template_name = 'producao/bobinagem_all.html'
     bobine = Bobine.objects.all()
-  
 
     try:
         bobinagem = paginator.page(page)
@@ -211,11 +213,10 @@ def bobinagem_historico(request):
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
-        
-        
-    }
-    return render (request, template_name, context)
 
+
+    }
+    return render(request, template_name, context)
 
 
 @login_required
@@ -245,23 +246,24 @@ def bobinagem_status(request, pk):
                 etiqueta.save()
                 # messages.warning(request, 'SUCESSO')
         else:
-            messages.warning(request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
-            
-
+            messages.warning(
+                request, 'Impressão em curso noutro posto. Tente de novo em 10 segundos.')
 
     context = {
         "bobinagem": bobinagem,
         "bobine": bobine,
-        "emenda":emenda,
+        "emenda": emenda,
         "form": form
     }
 
-    return render(request, template_name, context) 
+    return render(request, template_name, context)
+
 
 class LarguraUpdate(LoginRequiredMixin, UpdateView):
     model = Largura
     fields = ['largura', 'designacao_prod', 'gsm']
     template_name = 'perfil/largura_update.html'
+
 
 def update_bobine(request, pk=None):
 
@@ -276,37 +278,40 @@ def update_bobine(request, pk=None):
     }
     if form.is_valid():
         instance = form.save(commit=False)
-        
+
         if (instance.estado == 'DM'):
             if (instance.con == False and instance.furos == False and instance.descen == False and instance.esp == False and instance.presa == False and instance.troca_nw == False and instance.diam_insuf == False and instance.buraco == False and instance.outros == False and instance.nok == False):
-                messages.error(request, 'Para classificar a bobine como estado DM, é necessário atribuir-lhe pelo menos um motivo.')
+                messages.error(
+                    request, 'Para classificar a bobine como estado DM, é necessário atribuir-lhe pelo menos um motivo.')
             elif (instance.outros == True and instance.obs == ''):
-                messages.error(request, 'Obrigatório escrever motivo nas observações')
+                messages.error(
+                    request, 'Obrigatório escrever motivo nas observações')
             else:
                 update_areas_bobine(instance.pk, estado_anterior)
                 instance.save()
                 return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
         elif (instance.estado == 'R' and instance.obs == ''):
-            messages.error(request, 'Obrigatório escrever o motivo da rejeição nas observações')
+            messages.error(
+                request, 'Obrigatório escrever o motivo da rejeição nas observações')
         else:
             instance.save()
             update_areas_bobine(instance.pk, estado_anterior)
             return redirect('producao:bobinestatus', pk=instance.bobinagem.pk)
 
-   
-
     return render(request, template_name, context)
+
 
 class BobinagemUpdate(LoginRequiredMixin, UpdateView):
     model = Bobinagem
-    fields = ['tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf', 'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim']
+    fields = ['tiponwsup', 'tiponwinf', 'lotenwsup', 'lotenwinf',
+              'nwsup', 'nwinf', 'comp', 'comp_par', 'diam', 'inico', 'fim']
     template_name = 'producao/bobinagem_update.html'
-    
-    
+
+
 # class PaleteListView(LoginRequiredMixin, ListView):
 #     model = Palete
 #     template_name = 'palete/palete_home.html'
-    
+
 #     def get_context_data(self, **kwargs):
 #         context = super().get_context_data(**kwargs)
 #         context['now'] = timezone.now()
@@ -319,7 +324,7 @@ def pelete_list(request):
     # paginator = Paginator(palete, 15)
     # page = request.GET.get('page')
     template_name = 'palete/palete_home.html'
-    
+
     # try:
     #     palete = paginator.page(page)
     # except PageNotAnInteger:
@@ -331,7 +336,7 @@ def pelete_list(request):
         "palete": palete,
         "e_p": e_p
     }
-    return render (request, template_name, context)
+    return render(request, template_name, context)
 
 
 # class PaleteCreateView(LoginRequiredMixin, CreateView):
@@ -346,7 +351,7 @@ def pelete_list(request):
 def create_palete(request):
     form = PaleteCreateForm(request.POST or None)
     template_name = "palete/palete_create.html"
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         nome_s_r = ''
@@ -372,24 +377,29 @@ def create_palete(request):
             nome_c_r = 'R%s-%s' % (instance.num, ano)
 
         if Palete.objects.filter(nome=nome_s_r).exists() or Palete.objects.filter(nome=nome_c_r).exists():
-            messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
+            messages.error(request, 'A palete nº' +
+                           str(instance.num) + ' de ' + str(ano) + ' já existe.')
         else:
             if instance.ordem != None:
                 ordem = OrdemProducao.objects.get(pk=instance.ordem.pk)
                 instance.ordem_original = ordem.op
                 try:
                     encomenda = Encomenda.objects.get(pk=ordem.enc.pk)
-                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
+                    num_paletes_ordem = Palete.objects.filter(
+                        ordem=instance.ordem).count()
                     if num_paletes_ordem < ordem.num_paletes_total:
                         ordem.num_paletes_produzidas += 1
-                        encomenda.num_paletes_actual += 1 
+                        encomenda.num_paletes_actual += 1
                         if num_paletes_ordem == 0:
                             instance.num_palete_ordem = 1
                         else:
-                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                            last_palete = Palete.objects.filter(
+                                ordem=instance.ordem).latest('num_palete_ordem')
                             instance.num_palete_ordem = last_palete.num_palete_ordem + 1
                         instance.cliente = encomenda.cliente
-                        instance.destino = encomenda.cliente.nome + ' L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
+                        instance.destino = encomenda.cliente.nome + ' L' + \
+                            str(int(instance.largura_bobines)) + \
+                            ' ' + str(instance.num_palete_ordem)
                         ordem.save()
                         encomenda.save()
                         instance.save()
@@ -400,18 +410,23 @@ def create_palete(request):
                         palete_nome(instance.pk)
                         return redirect('producao:palete_picagem', pk=instance.pk)
                     else:
-                        messages.error(request, 'A ordem que selecinou encontra-se completa')
+                        messages.error(
+                            request, 'A ordem que selecinou encontra-se completa')
                 except:
-                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
+                    num_paletes_ordem = Palete.objects.filter(
+                        ordem=instance.ordem).count()
                     instance.ordem_original_stock = True
                     if num_paletes_ordem < ordem.num_paletes_total:
                         ordem.num_paletes_produzidas += 1
                         if num_paletes_ordem == 0:
                             instance.num_palete_ordem = 1
                         else:
-                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                            last_palete = Palete.objects.filter(
+                                ordem=instance.ordem).latest('num_palete_ordem')
                             instance.num_palete_ordem = last_palete.num_palete_ordem + 1
-                        instance.destino = 'STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
+                        instance.destino = 'STOCK L' + \
+                            str(int(instance.largura_bobines)) + \
+                            ' ' + str(instance.num_palete_ordem)
                         ordem.save()
                         instance.save()
                         if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
@@ -423,16 +438,14 @@ def create_palete(request):
                         palete_nome(instance.pk)
                         return redirect('producao:palete_picagem', pk=instance.pk)
             else:
-                messages.error(request, 'Não é possivel criar uma palete sem ordem de produção associada. Por favor selecione uma Ordem de produção em progresso.')
-            
-               
-               
+                messages.error(
+                    request, 'Não é possivel criar uma palete sem ordem de produção associada. Por favor selecione uma Ordem de produção em progresso.')
+
     context = {
         "form": form
     }
 
     return render(request, template_name, context)
-
 
 
 def ordenar_bobines_op(request, pk, operation):
@@ -447,15 +460,14 @@ def ordenar_bobines_op(request, pk, operation):
     if Bobine.objects.filter(posicao_palete=pos-1, palete=palete).exists():
         bobine_up = Bobine.objects.get(posicao_palete=pos-1, palete=palete)
         pos_up = bobine_up.posicao_palete
-    
+
     if Bobine.objects.filter(posicao_palete=pos+1, palete=palete).exists():
         bobine_down = Bobine.objects.get(posicao_palete=pos+1, palete=palete)
         pos_down = bobine_down.posicao_palete
-   
-    
+
     if operation == 'up':
         bobine.posicao_palete = pos - 1
-        bobine_up.posicao_palete =  pos_up + 1
+        bobine_up.posicao_palete = pos_up + 1
         bobine.save()
         bobine_up.save()
     elif operation == 'down':
@@ -463,14 +475,12 @@ def ordenar_bobines_op(request, pk, operation):
         bobine_down.posicao_palete = pos_down - 1
         bobine.save()
         bobine_down.save()
-        
 
     return redirect('producao:addbobinepalete', pk=palete.pk)
-    
-    
+
 
 def create_palete_retrabalho(request):
-    
+
     form = PaleteRetrabalhoForm(request.POST or None)
     template_name = "retrabalho/palete_retrabalho_create.html"
 
@@ -495,29 +505,29 @@ def create_palete_retrabalho(request):
             nome = 'DM0%s-%s' % (instance.num, ano)
         else:
             nome = 'DM%s-%s' % (instance.num, ano)
-        
+
         # print(nome, ano, instance.num)
         if Palete.objects.filter(nome=nome).exists():
-            messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
+            messages.error(request, 'A palete nº' +
+                           str(instance.num) + ' de ' + str(ano) + ' já existe.')
         else:
             instance.save()
             palete_nome(instance.pk)
-                  
+
             if EtiquetaPalete.objects.filter(palete=instance).exists():
                 return redirect('producao:palete_picagem_dm', pk=instance.pk)
             else:
-                e_p = EtiquetaPalete.objects.create(palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
+                e_p = EtiquetaPalete.objects.create(
+                    palete=instance, palete_nome=instance.nome, largura_bobine=instance.largura_bobines)
                 e_p.save()
                 return redirect('producao:palete_picagem_dm', pk=instance.pk)
-                    
+
             return redirect('producao:palete_picagem_dm', pk=instance.pk)
 
-        
     context = {
-        "form": form, 
-        }
+        "form": form,
+    }
     return render(request, template_name, context)
-
 
 
 @login_required
@@ -527,8 +537,13 @@ def add_bobine_palete(request, pk):
     bobinagem = Bobinagem.objects.filter(diam=palete.diametro)
     bobine = Bobine.objects.all().order_by('posicao_palete')
     bobines = Bobine.objects.filter(palete=palete).order_by('posicao_palete')
-    movimentos_bobines = MovimentosBobines.objects.filter(palete=palete) 
-    
+    movimentos_bobines = MovimentosBobines.objects.filter(palete=palete)
+    has_carga = False
+    try:
+        carga = Carga.objects.get(id=palete.carga.id)
+        has_carga = True
+    except:
+        pass
 
     form = ImprimirEtiquetaPalete(request.POST or None)
 
@@ -541,67 +556,62 @@ def add_bobine_palete(request, pk):
         etiqueta.estado_impressao = True
         etiqueta.save()
 
-
-
-         
     context = {
+        "has_carga": has_carga,
         "movimentos_bobines": movimentos_bobines,
-        "palete": palete, 
+        "palete": palete,
         "bobines": bobines,
         "bobinagem": bobinagem,
-        "form": form          
-        }
+        "form": form
+    }
     return render(request, template_name, context)
 
 
 @login_required
 def palete_change(request, operation, pk_bobine, pk_palete):
-    
+
     palete = Palete.objects.get(pk=pk_palete)
     bobine = Bobine.objects.get(pk=pk_bobine)
-    
+
     if operation == 'add':
         Bobine.add_bobine(palete.pk, bobine.pk)
     elif operation == 'remove':
         Bobine.remove_bobine(palete.pk, bobine.pk)
-                 
-    
+
     return redirect('producao:addbobinepalete', pk=palete.pk)
 
 
-
 class RetrabalhoCreateView(LoginRequiredMixin, CreateView):
-     form_class = RetrabalhoCreateForm
-     template_name = 'retrabalho/retrabalho_create.html'
-     success_url = "/producao/retrabalho/filter/{id}"
-    
-     def form_valid(self, form):
-         form.instance.user = self.request.user
-         return super().form_valid(form)
+    form_class = RetrabalhoCreateForm
+    template_name = 'retrabalho/retrabalho_create.html'
+    success_url = "/producao/retrabalho/filter/{id}"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
 @login_required
 def create_bobinagem_retrabalho(request):
     template_name = 'retrabalho/retrabalho_create.html'
     form = RetrabalhoCreateForm(request.POST or None)
-        
+
     if form.is_valid():
         instance = form.save(commit=False)
-        
-        bobinagem_nome = bobinagem_retrabalho_nome(instance.data, instance.num_bobinagem)
+
+        bobinagem_nome = bobinagem_retrabalho_nome(
+            instance.data, instance.num_bobinagem)
 
         if Bobinagem.objects.filter(nome=bobinagem_nome[0]).exists() or Bobinagem.objects.filter(nome=bobinagem_nome[1]).exists():
-            messages.error(request, 'A bobinagem que deseja criar já existe. por favor verifique o numero da bobinagem.')
+            messages.error(
+                request, 'A bobinagem que deseja criar já existe. por favor verifique o numero da bobinagem.')
         else:
             instance.user = request.user
             instance.nome = bobinagem_nome[0]
             instance.save()
-            area_bobinagem(instance.pk) 
-            create_bobine(instance.pk) 
-            return redirect('producao:retrabalho_v2', pk=instance.pk)       
-   
-            
-            
-        
+            area_bobinagem(instance.pk)
+            create_bobine(instance.pk)
+            return redirect('producao:retrabalho_v2', pk=instance.pk)
 
     context = {
         "form": form
@@ -612,40 +622,40 @@ def create_bobinagem_retrabalho(request):
 
 @login_required
 def picagem_retrabalho(request, pk):
-    
+
     bobinagem = Bobinagem.objects.get(pk=pk)
     palete = Palete.objects.filter(estado="DM")
     bobine = Bobine.objects.all()
     emenda = Emenda.objects.filter(bobinagem=pk)
 
     q_largura = request.GET.get("l")
-   
+
     if q_largura:
         palete = palete.filter(largura_bobines__gte=q_largura)
-        
+
     template_name = 'retrabalho/retrabalho_inicio.html'
     context = {
-        
+
         "palete": palete,
         "bobine": bobine,
         "bobinagem": bobinagem,
         "emenda": emenda
-        
+
     }
 
     return render(request, template_name, context)
 
+
 @login_required
 def picagem_retrabalho_add(request, pk):
-    
+
     bobinagem = Bobinagem.objects.get(pk=pk)
-    
+
     q_bobine = request.POST.get('b')
     q_metros = int(request.POST.get('m'))
     # else:
     #     messages.error(request, 'Por favor introduza a bobine desejada e os metros a retrabalhar.')
     #     return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
-    
 
     try:
         bobine = Bobine.objects.get(nome=q_bobine)
@@ -653,14 +663,16 @@ def picagem_retrabalho_add(request, pk):
         messages.error(request, 'A bobine selecionada não existe.')
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
 
-    
     if bobine:
         if bobine.estado != 'DM':
-            messages.error(request, 'O estado da bobine selecionada não permite efectuar esta operação.')
+            messages.error(
+                request, 'O estado da bobine selecionada não permite efectuar esta operação.')
         elif q_metros > bobine.comp_actual:
-            messages.error(request, 'A bobine selecionada não tem comprimento suficiente para efectuar esta operação.')
+            messages.error(
+                request, 'A bobine selecionada não tem comprimento suficiente para efectuar esta operação.')
         else:
-            emenda = Emenda.objects.create(bobinagem=bobinagem, bobine=bobine, metros=q_metros)
+            emenda = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=bobine, metros=q_metros)
             bobine.comp_actual -= emenda.metros
             bobine.save()
             emenda.num_emenda = bobinagem.num_emendas + 1
@@ -674,46 +686,47 @@ def picagem_retrabalho_add(request, pk):
                     emenda.emenda = emenda.metros
                     emenda.save()
                 elif emenda_num == 2:
-                    emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=1)
-                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                    emenda_ul_bob = Emenda.objects.get(
+                        bobinagem=bobinagem, num_emenda=1)
+                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros
                     emenda.save()
                 elif emenda_num == 3:
-                    emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=2)
-                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                    emenda_ul_bob = Emenda.objects.get(
+                        bobinagem=bobinagem, num_emenda=2)
+                    emenda.emenda = emenda_ul_bob.emenda + emenda.metros
                     emenda.save()
-            
-            bobinagem.num_emendas += 1 
+
+            bobinagem.num_emendas += 1
             data = bobinagem.data
             data = data.strftime('%Y%m%d')
             map(int, data)
             if bobinagem.perfil.retrabalho == True and bobinagem.num_emendas > 1:
                 if bobinagem.num_bobinagem < 10:
-                    bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                    bobinagem.nome = '3%s-0%s' % (data[1:],
+                                                  bobinagem.num_bobinagem)
                     bobinagem_pk = bobinagem.pk
                     bobine_nome(bobinagem_pk)
                 else:
-                    bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
+                    bobinagem.nome = '3%s-%s' % (data[1:],
+                                                 bobinagem.num_bobinagem)
             elif bobinagem.perfil.retrabalho == True and bobinagem.num_emendas == 0:
                 if bobinagem.num_bobinagem < 10:
-                    bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                    bobinagem.nome = '4%s-0%s' % (data[1:],
+                                                  bobinagem.num_bobinagem)
                 else:
-                    bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
-            
+                    bobinagem.nome = '4%s-%s' % (data[1:],
+                                                 bobinagem.num_bobinagem)
+
             bobinagem.comp = bobinagem.comp + q_metros
             bobinagem.save()
 
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
 
 
-
-
-
 class ClienteCreateView(LoginRequiredMixin, CreateView):
-     form_class = ClienteCreateForm
-     template_name = 'cliente/cliente_create.html'
-     success_url = "/producao/clientes/"
-    
- 
+    form_class = ClienteCreateForm
+    template_name = 'cliente/cliente_create.html'
+    success_url = "/producao/clientes/"
 
 
 @login_required
@@ -733,41 +746,45 @@ def picagem(request, pk):
                 # return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                 return redirect('producao:addbobinepalete', pk=palete.pk)
             else:
-                messages.error(request, 'A bobine já faz parte de outra palate.')
+                messages.error(
+                    request, 'A bobine já faz parte de outra palate.')
                 # erro = 5
                 # return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                 return redirect('producao:addbobinepalete', pk=palete.pk)
         else:
             if (bobine.estado == 'G' or bobine.estado == 'LAB') and palete.estado != 'DM':
                 if palete.num_bobines_act == palete.num_bobines:
-                    messages.error(request, 'A palete já se encontra completa.')
+                    messages.error(
+                        request, 'A palete já se encontra completa.')
                     #  erro = 3
                     #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
                     return redirect('producao:addbobinepalete', pk=palete.pk)
                 else:
-                     if (bobine.bobinagem.diam == palete.diametro or palete.cliente.limsup >= bobine.bobinagem.diam >= palete.cliente.liminf) and bobine.bobinagem.perfil.core == palete.core_bobines and bobine.largura.largura == palete.largura_bobines:
-                         Bobine.add_bobine(palete.pk, bobine.pk)
+                    if (bobine.bobinagem.diam == palete.diametro or palete.cliente.limsup >= bobine.bobinagem.diam >= palete.cliente.liminf) and bobine.bobinagem.perfil.core == palete.core_bobines and bobine.largura.largura == palete.largura_bobines:
+                        Bobine.add_bobine(palete.pk, bobine.pk)
                         #  etiqueta_add_bobine(palete.pk, bobine.pk)
-                         return redirect('producao:addbobinepalete', pk=palete.pk)
-                     else:
-                         messages.error(request, 'A bobine selecionada está fora de especificações.')
+                        return redirect('producao:addbobinepalete', pk=palete.pk)
+                    else:
+                        messages.error(
+                            request, 'A bobine selecionada está fora de especificações.')
                         #  erro = 1
                         #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
-                         return redirect('producao:addbobinepalete', pk=palete.pk)
+                        return redirect('producao:addbobinepalete', pk=palete.pk)
             elif (bobine.estado == 'DM' or bobine.estado == 'G' or bobine.estado == 'IND' or bobine.estado == 'HOLD') and palete.estado == 'DM':
-                  Bobine.add_bobine(palete.pk, bobine.pk)
+                Bobine.add_bobine(palete.pk, bobine.pk)
                 #   etiqueta_add_bobine(palete.pk, bobine.pk)
-                  return redirect('producao:addbobinepalete', pk=palete.pk) 
-            else:
-                messages.error(request, 'A bobine selecionada está fora de especificações.')
                 return redirect('producao:addbobinepalete', pk=palete.pk)
-            
+            else:
+                messages.error(
+                    request, 'A bobine selecionada está fora de especificações.')
+                return redirect('producao:addbobinepalete', pk=palete.pk)
+
     else:
         messages.error(request, 'A bobine selecionada não existe.')
         #  erro = 2
-        #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)  
-        return redirect('producao:addbobinepalete', pk=palete.pk)        
-            
+        #  return redirect('producao:addbobinepaleteerro', pk=palete.pk, e=erro)
+        return redirect('producao:addbobinepalete', pk=palete.pk)
+
 
 @login_required
 def reabrir_palete(request, pk):
@@ -778,23 +795,22 @@ def reabrir_palete(request, pk):
     etiqueta.diam_max = 0
     etiqueta.diam_min = 0
     etiqueta.save()
-    
 
     return redirect('producao:addbobinepalete', pk=palete.pk)
 
-   
+
 @login_required
 def add_bobine_palete_erro(request, pk, e):
     template_name = 'palete/add_bobine_erro.html'
     palete = Palete.objects.get(pk=pk)
-    
+
     erro = e
-    
-    context = {"palete":palete, "erro":erro}
-    
+
+    context = {"palete": palete, "erro": erro}
+
     return render(request, template_name, context)
 
-    
+
 @login_required
 def perfil_delete(request, pk):
     obj = get_object_or_404(Perfil, pk=pk)
@@ -802,11 +818,12 @@ def perfil_delete(request, pk):
     if request.method == "POST":
         obj.delete()
         return redirect('producao:perfil')
-            
+
     context = {
         "object": obj,
     }
     return render(request, "perfil/perfil_delete.html", context)
+
 
 @login_required
 def bobinagem_delete(request, pk):
@@ -821,7 +838,7 @@ def bobinagem_delete(request, pk):
                 pal = True
                 break
             else:
-                pal = False 
+                pal = False
 
         if pal == False:
             if obj.perfil.retrabalho == True:
@@ -852,9 +869,9 @@ def bobinagem_delete(request, pk):
                     return redirect('producao:bobinagem_retrabalho_list_v2')
 
         else:
-            messages.error(request, 'A bobinagem não pode ser apagada porque existem bobines atribuidas a paletes.') 
+            messages.error(
+                request, 'A bobinagem não pode ser apagada porque existem bobines atribuidas a paletes.')
 
-            
     context = {
         "object": obj,
         "bobine": bobine,
@@ -872,7 +889,8 @@ def palete_delete(request, pk):
         num_bobines = Bobine.objects.filter(palete=obj).count()
         if obj.estado == 'G':
             if num_bobines != 0:
-                messages.error(request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.') 
+                messages.error(
+                    request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.')
             elif obj.ordem != None and obj.carga == None:
                 ordem = OrdemProducao.objects.get(pk=obj.ordem.pk)
                 enc = Encomenda.objects.get(pk=ordem.enc.pk)
@@ -882,7 +900,7 @@ def palete_delete(request, pk):
                     ordem.ativa = True
                     ordem.completa = False
                 enc.save()
-                ordem.save()            
+                ordem.save()
                 obj.delete()
                 e_p.delete()
                 return redirect('producao:palete_list_all')
@@ -892,20 +910,20 @@ def palete_delete(request, pk):
                 return redirect('producao:palete_list_all')
         else:
             if num_bobines != 0:
-                messages.error(request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.') 
+                messages.error(
+                    request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.')
             else:
                 obj.delete()
                 e_p.delete()
-                return redirect('producao:paletes_retrabalho')   
-            
-        
-   
+                return redirect('producao:paletes_retrabalho')
+
     context = {
         "object": obj,
         "bobine": bobine
     }
     return render(request, "palete/palete_delete.html", context)
-    
+
+
 @login_required
 def status_bobinagem(request, operation, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
@@ -914,7 +932,8 @@ def status_bobinagem(request, operation, pk):
         bobinagem.save()
         num = 1
         for i in range(bobinagem.perfil.num_bobines):
-            largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
+            largura = Largura.objects.get(
+                perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
             if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'G'
@@ -926,7 +945,8 @@ def status_bobinagem(request, operation, pk):
         bobinagem.save()
         num = 1
         for i in range(bobinagem.perfil.num_bobines):
-            largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
+            largura = Largura.objects.get(
+                perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
             if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'R'
@@ -938,7 +958,8 @@ def status_bobinagem(request, operation, pk):
         bobinagem.save()
         num = 1
         for i in range(bobinagem.perfil.num_bobines):
-            largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
+            largura = Largura.objects.get(
+                perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
             if bobine.estado == 'LAB' or bobine.estado == 'HOLD':
                 bobine.estado = 'DM'
@@ -950,7 +971,8 @@ def status_bobinagem(request, operation, pk):
         bobinagem.save()
         num = 1
         for i in range(bobinagem.perfil.num_bobines):
-            largura = Largura.objects.get(perfil=bobinagem.perfil, num_bobine=num)
+            largura = Largura.objects.get(
+                perfil=bobinagem.perfil, num_bobine=num)
             bobine = Bobine.objects.get(bobinagem=bobinagem, largura=largura)
             if bobine.estado == 'LAB' or bobine.estado == 'DM':
                 bobine.estado = 'HOLD'
@@ -958,25 +980,24 @@ def status_bobinagem(request, operation, pk):
             num += 1
         areas(pk)
 
-       
-            
     return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
 
 @login_required
 def palete_retrabalho(request):
-    palete_list = Palete.objects.filter(estado='DM').order_by('-data_pal','-num')
+    palete_list = Palete.objects.filter(
+        estado='DM').order_by('-data_pal', '-num')
     template_name = 'palete/palete_retrabalho.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        palete_list = Palete.objects.filter(nome__icontains=query,estado='DM').order_by('-data_pal','-num')
+        palete_list = Palete.objects.filter(
+            nome__icontains=query, estado='DM').order_by('-data_pal', '-num')
 
     paginator = Paginator(palete_list, 11)
     page = request.GET.get('page')
-    
 
     try:
         palete = paginator.page(page)
@@ -984,21 +1005,22 @@ def palete_retrabalho(request):
         palete = paginator.page(1)
     except EmptyPage:
         palete = paginator.page(paginator.num_pages)
-             
 
     context = {
         "palete": palete,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
-   
+
 
 @login_required
 def palete_create_retrabalho(request):
-    palete = Palete.objects.create(estado="DM", num_bobines=0, largura_bobines=0, diametro=0, core_bobines='3', user=request.user)   
+    palete = Palete.objects.create(
+        estado="DM", num_bobines=0, largura_bobines=0, diametro=0, core_bobines='3', user=request.user)
     palete.save()
     return redirect('producao:addbobinepalete', pk=palete.pk)
+
 
 @login_required
 def retrabalho_home(request):
@@ -1006,14 +1028,14 @@ def retrabalho_home(request):
     bobine = Bobine.objects.all()
     bobinagem = Bobinagem.objects.all()
     template_name = 'retrabalho/retrabalho_home.html'
-    
-  
+
     context = {
         "palete": palete,
         "bobine": bobine,
         "bobinagem": bobinagem,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def retrabalho_filter(request, pk):
@@ -1025,20 +1047,22 @@ def retrabalho_filter(request, pk):
     #     palete = palete.filter(largura_bobines__gte=q_largura)
     # bobinagem = Bobinagem.objects.get(pk=pk)
     form = EmendasCreateForm
-    
+
     if request.method == "POST":
         form = EmendasCreateForm(request.POST)
-               
+
         if form.is_valid():
             bobine_ori = int(form['bobine'].value())
             comp_bobine_ori = int(form['metros'].value())
             bobine = Bobine.objects.get(pk=bobine_ori)
             if comp_bobine_ori > bobine.comp_actual:
-                messages.error(request, 'A bobine selecionada não tem comprimento suficiente para efectuar esta operação.')
+                messages.error(
+                    request, 'A bobine selecionada não tem comprimento suficiente para efectuar esta operação.')
                 # redirect('producao:retrabalho_filter', pk=bobinagem.pk)
             else:
-                emenda = Emenda.objects.create(**form.cleaned_data, bobinagem=bobinagem)
-                bobine.comp_actual = bobine.comp_actual - emenda.metros 
+                emenda = Emenda.objects.create(
+                    **form.cleaned_data, bobinagem=bobinagem)
+                bobine.comp_actual = bobine.comp_actual - emenda.metros
                 bobine.save()
                 emenda.num_emenda = bobinagem.num_emendas + 1
                 emenda.save()
@@ -1052,64 +1076,65 @@ def retrabalho_filter(request, pk):
                         emenda.emenda = emenda.metros
                         emenda.save()
                     elif emenda_num == 2:
-                        emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=1)
-                        emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                        emenda_ul_bob = Emenda.objects.get(
+                            bobinagem=bobinagem, num_emenda=1)
+                        emenda.emenda = emenda_ul_bob.emenda + emenda.metros
                         emenda.save()
                     elif emenda_num == 3:
-                        emenda_ul_bob = Emenda.objects.get(bobinagem=bobinagem, num_emenda=2)
-                        emenda.emenda = emenda_ul_bob.emenda + emenda.metros 
+                        emenda_ul_bob = Emenda.objects.get(
+                            bobinagem=bobinagem, num_emenda=2)
+                        emenda.emenda = emenda_ul_bob.emenda + emenda.metros
                         emenda.save()
 
-                bobinagem.num_emendas += 1 
+                bobinagem.num_emendas += 1
                 data = bobinagem.data
                 data = data.strftime('%Y%m%d')
                 map(int, data)
                 if bobinagem.perfil.retrabalho == True and bobinagem.num_emendas > 1:
                     if bobinagem.num_bobinagem < 10:
                         # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
-                        bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                        bobinagem.nome = '3%s-0%s' % (
+                            data[1:], bobinagem.num_bobinagem)
                         bobinagem_pk = bobinagem.pk
                         bobine_nome(bobinagem_pk)
                     else:
-                        bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                        bobinagem.nome = '3%s-0%s' % (
+                            data[1:], bobinagem.num_bobinagem)
                 elif bobinagem.perfil.retrabalho == True and bobinagem.num_emendas == 0:
                     if bobinagem.num_bobinagem < 10:
-                        bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                        bobinagem.nome = '4%s-0%s' % (
+                            data[1:], bobinagem.num_bobinagem)
                     else:
-                        bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
-                
-
+                        bobinagem.nome = '4%s-%s' % (data[1:],
+                                                     bobinagem.num_bobinagem)
 
                 comp_parcial = int(form['metros'].value())
                 bobinagem.comp = bobinagem.comp + comp_parcial
                 bobinagem.save()
 
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
-         
 
     palete = Palete.objects.filter(estado="DM")
     bobine = Bobine.objects.all()
     emenda = Emenda.objects.filter(bobinagem=pk)
 
     q_largura = request.GET.get("l")
-    
 
     if q_largura:
         palete = palete.filter(largura_bobines__gte=q_largura)
-        
+
     template_name = 'retrabalho/retrabalho_inicio.html'
     context = {
-        
+
         "palete": palete,
         "bobine": bobine,
         "form": form,
         "bobinagem": bobinagem,
         "emenda": emenda
-        
+
     }
 
     return render(request, template_name, context)
-
 
 
 # Funções de apoio
@@ -1122,16 +1147,18 @@ def bobine_nome(pk):
         data = data.strftime('%Y%m%d')
         map(int, data)
         if bobinagem.num_bobinagem < 10 and b.largura.num_bobine < 10:
-            b.nome = '3%s-0%s-0%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
+            b.nome = '3%s-0%s-0%s' % (data[1:],
+                                      bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
         elif bobinagem.num_bobinagem >= 10 and b.largura.num_bobine < 10:
-            b.nome = '3%s-%s-0%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
+            b.nome = '3%s-%s-0%s' % (data[1:],
+                                     bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
         elif bobinagem.num_bobinagem > 10 and b.largura.num_bobine >= 10:
-            b.nome = '3%s-%s-%s' % (data[1:], bobinagem.num_bobinagem, b.largura.num_bobine)
+            b.nome = '3%s-%s-%s' % (data[1:],
+                                    bobinagem.num_bobinagem, b.largura.num_bobine)
             b.save()
 
-            
 
 def comprimento_bobine_original(pk):
     pass
@@ -1160,7 +1187,6 @@ def bobinagem_retrabalho_finalizar(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
-        
 
         fim = instance.fim
         fim = fim.strftime('%H:%M')
@@ -1168,11 +1194,13 @@ def bobinagem_retrabalho_finalizar(request, pk):
         inico = inico.strftime('%H:%M')
         (hf, mf) = fim.split(':')
         (hi, mi) = inico.split(':')
-        if hf < hi: 
-            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+        if hf < hi:
+            result = (int(hf) * 3600 + int(mf) * 60) - \
+                (int(hi) * 3600 + int(mi) * 60) + 86400
         else:
-            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
-        
+            result = (int(hf) * 3600 + int(mf) * 60) - \
+                (int(hi) * 3600 + int(mi) * 60)
+
         result_str = strftime("%H:%M", gmtime(result))
         instance.duracao = result_str
         instance.save()
@@ -1182,7 +1210,7 @@ def bobinagem_retrabalho_finalizar(request, pk):
             bob.diam = instance.diam
             bob.save()
 
-        return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)  
+        return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)
 
     context = {
         "bobinagem": bobinagem,
@@ -1190,7 +1218,6 @@ def bobinagem_retrabalho_finalizar(request, pk):
     }
 
     return render(request, template_name, context)
-
 
 
 class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
@@ -1213,11 +1240,13 @@ class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
         inico = inico.strftime('%H:%M')
         (hf, mf) = fim.split(':')
         (hi, mi) = inico.split(':')
-        if hf < hi: 
-            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) + 86400
+        if hf < hi:
+            result = (int(hf) * 3600 + int(mf) * 60) - \
+                (int(hi) * 3600 + int(mi) * 60) + 86400
         else:
-            result = (int(hf) * 3600 + int(mf) * 60) - (int(hi) * 3600 + int(mi) * 60) 
-        
+            result = (int(hf) * 3600 + int(mf) * 60) - \
+                (int(hi) * 3600 + int(mi) * 60)
+
         result_str = strftime("%H:%M", gmtime(result))
         b.duracao = result_str
 
@@ -1235,9 +1264,10 @@ class BobinagemRetrabalhoFinalizar(LoginRequiredMixin, UpdateView):
         # b.area = b.comp_cli * cont
 
         b.save()
-            
+
         return super(BobinagemRetrabalhoFinalizar, self).form_valid(form)
-   
+
+
 def finalizar_retarbalho(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     form = BobinagemCreateForm(request.POST or None, instance=bobinagem)
@@ -1265,52 +1295,63 @@ def emenda_delete(request, pk):
     if request.method == "POST":
         bobinagem.num_emendas -= 1
         bobinagem.comp -= emenda.metros
-        bobine.comp_actual += emenda.metros 
+        bobine.comp_actual += emenda.metros
         data = bobinagem.data
         data = data.strftime('%Y%m%d')
         map(int, data)
         if bobinagem.perfil.retrabalho == True and bobinagem.num_emendas > 1:
             if bobinagem.num_bobinagem < 10:
                 # instance.nome = '3%s-0%s' % (data, instance.num_bobinagem)
-                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '3%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
                 for b in bob:
                     if b.largura.num_bobine < 10:
-                        b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-0%s' % (bobinagem.nome,
+                                             b.largura.num_bobine)
                         b.save()
                     else:
-                        b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-%s' % (bobinagem.nome,
+                                            b.largura.num_bobine)
                         b.save()
             else:
-                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '3%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
                 for b in bob:
                     if b.largura.num_bobine < 10:
-                        b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-0%s' % (bobinagem.nome,
+                                             b.largura.num_bobine)
                         b.save()
                     else:
-                        b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-%s' % (bobinagem.nome,
+                                            b.largura.num_bobine)
                         b.save()
-                
+
         elif bobinagem.perfil.retrabalho == True and (bobinagem.num_emendas == 0 or bobinagem.num_emendas == 1):
             if bobinagem.num_bobinagem < 10:
-                bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '4%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
                 for b in bob:
                     if b.largura.num_bobine < 10:
-                        b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-0%s' % (bobinagem.nome,
+                                             b.largura.num_bobine)
                         b.save()
                     else:
-                        b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-%s' % (bobinagem.nome,
+                                            b.largura.num_bobine)
                         b.save()
-                
+
             else:
                 bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
                 for b in bob:
                     if b.largura.num_bobine < 10:
-                        b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-0%s' % (bobinagem.nome,
+                                             b.largura.num_bobine)
                         b.save()
                     else:
-                        b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
+                        b.nome = '%s-%s' % (bobinagem.nome,
+                                            b.largura.num_bobine)
                         b.save()
-                
+
         bobinagem.save()
         # bobinagem_pk = bobinagem.pk
         # bobine_nome(bobinagem_pk)
@@ -1318,30 +1359,30 @@ def emenda_delete(request, pk):
         emenda.delete()
         return redirect('producao:retrabalho_filter', pk=emenda.bobinagem.pk)
 
-    template_name =  'retrabalho/emenda_delete.html'    
+    template_name = 'retrabalho/emenda_delete.html'
     context = {
-           "emenda": emenda,
-           "bobinagem": bobinagem,
-           "bobine":bobine
+        "emenda": emenda,
+        "bobinagem": bobinagem,
+        "bobine": bobine
     }
     return render(request, template_name, context)
+
 
 @login_required
 def cliente_home(request):
 
     cliente_list = Cliente.objects.all().order_by('-timestamp')
     template_name = 'cliente/cliente_home.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        cliente_list = Cliente.objects.filter(nome__icontains=query).order_by('-timestamp')
-
+        cliente_list = Cliente.objects.filter(
+            nome__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(cliente_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         cliente = paginator.page(page)
@@ -1349,18 +1390,16 @@ def cliente_home(request):
         cliente = paginator.page(1)
     except EmptyPage:
         cliente = paginator.page(paginator.num_pages)
-             
 
     context = {
         "cliente": cliente,
         # "query": query,
-        
+
     }
     return render(request, template_name, context)
 
-    
     context = {
-        "cliente":cliente
+        "cliente": cliente
     }
     return render(request, template_name, context)
 
@@ -1372,12 +1411,14 @@ def producao_home(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def planeamento_home(request):
     template_name = 'producao/planeamento_home.html'
     context = {}
-    
+
     return render(request, template_name, context)
+
 
 @login_required
 def bobine_details(request, pk):
@@ -1395,7 +1436,6 @@ def bobine_details(request, pk):
         etiqueta.estado_impressao = True
         etiqueta.save()
 
-
     template_name = 'producao/bobine_details.html'
     context = {
         "movimentos_bobine": movimentos_bobine,
@@ -1405,13 +1445,14 @@ def bobine_details(request, pk):
     }
     return render(request, template_name, context)
 
+
 @login_required
 def relatorio_diario(request):
     inicio_data = request.GET.get("id")
     fim_data = request.GET.get("fd")
     inicio_hora = request.GET.get("fd")
     fim_hora = request.GET.get("fd")
-    
+
     bobinagem = []
 
     area_g = 0
@@ -1419,28 +1460,30 @@ def relatorio_diario(request):
     area_dm = 0
     area_ind = 0
     area_ba = 0
-  
+
     if inicio_data and fim_data:
-         bobinagem = Bobinagem.objects.filter(data__range=(inicio_data, fim_data))
-         for bob in bobinagem:
-             area_g += bob.area_g
-             area_r += bob.area_r
-             area_dm += bob.area_dm
-             area_ind += bob.area_ind
-             area_ba += bob.area_ba
+        bobinagem = Bobinagem.objects.filter(
+            data__range=(inicio_data, fim_data))
+        for bob in bobinagem:
+            area_g += bob.area_g
+            area_r += bob.area_r
+            area_dm += bob.area_dm
+            area_ind += bob.area_ind
+            area_ba += bob.area_ba
 
     template_name = 'relatorio/relatorio_diario_linha.html'
-    context = {     
+    context = {
         "bobinagem": bobinagem,
-        "area_g":area_g,
-        "area_dm":area_dm,
-        "area_r":area_r,
-        "area_ba":area_ba,
-        "area_ind":area_ind,
-              
+        "area_g": area_g,
+        "area_dm": area_dm,
+        "area_r": area_r,
+        "area_ba": area_ba,
+        "area_ind": area_ind,
+
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def relatorio_consumos(request):
@@ -1448,16 +1491,17 @@ def relatorio_consumos(request):
     fim_data = request.GET.get("fd")
     inicio_hora = request.GET.get("fd")
     fim_hora = request.GET.get("fd")
-      
+
     bobinagem = []
     c_sup_total = 0
     c_inf_total = 0
     c_sup = 0
     c_inf = 0
-           
+
     if inicio_data and fim_data:
-        bobinagem = Bobinagem.objects.filter(data__range=(inicio_data, fim_data))
-        
+        bobinagem = Bobinagem.objects.filter(
+            data__range=(inicio_data, fim_data))
+
         for bob in bobinagem:
             if bob.perfil.retrabalho == False:
                 c_sup = bob.nwsup
@@ -1466,14 +1510,15 @@ def relatorio_consumos(request):
                 c_inf_total += c_inf
 
     template_name = 'relatorio/relatorio_consumos.html'
-    context = {     
+    context = {
         "bobinagem": bobinagem,
         "c_sup_total": c_sup_total,
         "c_inf_total": c_inf_total,
-             
+
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def relatorio_paletes(request):
@@ -1481,31 +1526,30 @@ def relatorio_paletes(request):
     fim_data = request.GET.get("fd")
     inicio_hora = request.GET.get("fd")
     fim_hora = request.GET.get("fd")
-      
+
     palete = []
     num_paletes = 0
     area_total = 0
-    
-           
+
     if inicio_data and fim_data:
-        palete = Palete.objects.filter(data_pal__range=(inicio_data, fim_data), estado='G')
-        
+        palete = Palete.objects.filter(
+            data_pal__range=(inicio_data, fim_data), estado='G')
+
         for p in palete:
             area_total += p.area
             num_paletes += 1
 
-
-
     template_name = 'relatorio/relatorio_paletes.html'
-    context = {     
+    context = {
         "palete": palete,
         "num_paletes": num_paletes,
         "area_total": area_total,
-        
-             
+
+
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def relatorio_home(request):
@@ -1514,19 +1558,22 @@ def relatorio_home(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def etiqueta_retrabalho(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobine = Bobine.objects.filter(bobinagem=bobinagem)
 
     if EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem).exists():
-        
-            return redirect('producao:bobinestatus', pk=bobinagem.pk)
-           
+
+        return redirect('producao:bobinestatus', pk=bobinagem.pk)
+
     else:
         for b in bobine:
-            artigo_cliente = ArtigoCliente.objects.get(cliente=b.largura.cliente, artigo=b.artigo)
-            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem, largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area, cod_cliente=artigo_cliente.cod_client, artigo=b.artigo.des)
+            artigo_cliente = ArtigoCliente.objects.get(
+                cliente=b.largura.cliente, artigo=b.artigo)
+            e_r = EtiquetaRetrabalho.objects.create(bobinagem=bobinagem, bobine=b.nome, data=bobinagem.data, produto=b.largura.designacao_prod, largura_bobinagem=bobinagem.perfil.largura_bobinagem,
+                                                    largura_bobine=b.largura.largura, diam=bobinagem.diam, comp_total=bobinagem.comp_cli, area=b.area, cod_cliente=artigo_cliente.cod_client, artigo=b.artigo.des)
             if Emenda.objects.filter(bobinagem=bobinagem).exists():
                 emenda = Emenda.objects.filter(bobinagem=bobinagem)
                 for e in emenda:
@@ -1549,6 +1596,7 @@ def etiqueta_retrabalho(request, pk):
         else:
             return redirect('producao:bobinagem_list_v3')
 
+
 @login_required
 def etiqueta_palete(request, pk):
     palete = Palete.objects.get(pk=pk)
@@ -1558,7 +1606,7 @@ def etiqueta_palete(request, pk):
     d_max = 0
     e_p.produto = bobine[0].bobinagem.perfil.produto
     bobines = [None] * 61
-    
+
     for b in bobine:
         pos = b.posicao_palete
         bobines[pos] = b.nome
@@ -1570,7 +1618,7 @@ def etiqueta_palete(request, pk):
         elif d_min == 0:
             d_min = d
         elif d < d_min:
-            d_min = d 
+            d_min = d
 
     e_p.bobine1 = bobines[1]
     e_p.bobine2 = bobines[2]
@@ -1635,9 +1683,8 @@ def etiqueta_palete(request, pk):
     e_p.diam_min = d_min
     e_p.diam_max = d_max
     e_p.save()
-                
-    return redirect('producao:addbobinepalete', pk=palete.pk)
 
+    return redirect('producao:addbobinepalete', pk=palete.pk)
 
 
 @login_required
@@ -1645,10 +1692,12 @@ def error_500(request):
     data = {}
     return render(request, 'error/error_500.html', data)
 
+
 @login_required
 def ordenar_bobines(request, pk):
     template_name = "palete/ordenar_bobines_formset.html"
-    OrdenarBobinesFormSet = modelformset_factory(Bobine, form=OrdenarBobines, extra=0)
+    OrdenarBobinesFormSet = modelformset_factory(
+        Bobine, form=OrdenarBobines, extra=0)
     palete = Palete.objects.get(pk=pk)
     bobines = Bobine.objects.filter(palete=palete)
     formset = OrdenarBobinesFormSet(request.POST or None, queryset=bobines)
@@ -1659,43 +1708,44 @@ def ordenar_bobines(request, pk):
 
     context = {
         "formset": formset,
-        "bobines":bobines
+        "bobines": bobines
     }
 
     return render(request, template_name, context)
 
+
 @login_required
 def c_bobines(request, pk):
     template_name = "producao/classificacao_bobines_formset.html"
-    ClassificacaoBobinesFormSet = modelformset_factory(Bobine, form=ClassificacaoBobines, extra=0)
+    ClassificacaoBobinesFormSet = modelformset_factory(
+        Bobine, form=ClassificacaoBobines, extra=0)
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
-    formset = ClassificacaoBobinesFormSet(request.POST or None, queryset=bobines)
+    formset = ClassificacaoBobinesFormSet(
+        request.POST or None, queryset=bobines)
     if formset.is_valid():
         bobs = formset.save(commit=False)
         for bob in bobs:
             if bob.estado == 'G':
                 print('ok')
             # bob.save()
-    
+
     context = {
         "formset": formset,
-        "bobines": bobines, 
+        "bobines": bobines,
         "bobinagem": bobinagem
-        
+
     }
 
     return render(request, template_name, context)
 
 
-
 @login_required
 def retrabalho(request):
     template_name = 'retrabalho/retrabalho_formset.html'
-    RetrabalhoFormSet = modelformset_factory(Emenda, form=RetrabalhoForm, extra=3)
+    RetrabalhoFormSet = modelformset_factory(
+        Emenda, form=RetrabalhoForm, extra=3)
     formset = RetrabalhoFormSet(request.POST or None)
-
-    
 
     for f in formset:
         bobine = f['bobine'].value()
@@ -1703,24 +1753,20 @@ def retrabalho(request):
         bobine = Bobine.objects.get(nome=bobine)
         f.bobine = bobine.id
 
-
         print(f.bobine)
-        
 
-    
-   
     if formset.is_valid():
         retrabalho = formset.save(commit=False)
         for r in retrabalho:
             r.save()
 
-
     context = {
         "formset": formset,
-             
+
     }
 
     return render(request, template_name, context)
+
 
 def destruir_bobine(request, pk_bobinagem, pk_bobine):
     bobine = Bobine.objects.get(pk=pk_bobine)
@@ -1736,34 +1782,32 @@ def destruir_bobine(request, pk_bobinagem, pk_bobine):
         return redirect('producao:retrabalho_filter', pk=bobinagem.pk)
 
 
-
-
 @login_required
 def bobinagem_list_all(request):
-    
+
     bobinagem = Bobinagem.objects.all()
-   
-        
+
     template_name = 'producao/bobinagem_list_all.html'
     context = {
-               
+
         "bobinagem": bobinagem,
-              
+
     }
 
     return render(request, template_name, context)
 
+
 @login_required
 def bobinagem_list_all_historico(request):
-    
+
     bobinagem = Bobinagem.objects.all()
-         
+
     template_name = 'producao/bobinagem_list_all_historico.html'
-   
+
     context = {
-               
+
         "bobinagem": bobinagem,
-              
+
     }
 
     return render(request, template_name, context)
@@ -1771,18 +1815,19 @@ def bobinagem_list_all_historico(request):
 
 @login_required
 def palete_list_all(request):
-    palete_list = Palete.objects.filter(estado='G').order_by('-data_pal','-num')
+    palete_list = Palete.objects.filter(
+        estado='G').order_by('-data_pal', '-num')
     template_name = 'palete/palete_list.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        palete_list = Palete.objects.filter(nome__icontains=query,estado='G').order_by('-data_pal','-num')
+        palete_list = Palete.objects.filter(
+            nome__icontains=query, estado='G').order_by('-data_pal', '-num')
 
     paginator = Paginator(palete_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         palete = paginator.page(page)
@@ -1790,33 +1835,29 @@ def palete_list_all(request):
         palete = paginator.page(1)
     except EmptyPage:
         palete = paginator.page(paginator.num_pages)
-             
 
     context = {
         "palete": palete,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
-    
- 
-           
-   
+
 
 @login_required
 def palete_list_all_historico(request):
-    
+
     palete = Palete.objects.all()
-   
-        
+
     template_name = 'palete/palete_list_all_historico.html'
     context = {
-               
+
         "palete": palete,
-              
+
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def palete_details(request, pk):
@@ -1824,13 +1865,11 @@ def palete_details(request, pk):
 
     template_name = 'palete/palete_details.html'
 
-
     context = {
-        "palete":palete,
+        "palete": palete,
     }
 
     return render(request, template_name, context)
-
 
 
 @login_required
@@ -1849,7 +1888,7 @@ def palete_confirmation(request, pk, id_bobines):
         if bobine.palete != None:
             palete_o = Palete.objects.get(id=bobine.palete.id)
             palete_o.area -= bobine.area
-            palete_o.comp_total -= bobine.bobinagem.comp 
+            palete_o.comp_total -= bobine.bobinagem.comp
             palete_o.num_bobines_act -= 1
             palete_o.num_bobines -= 1
             palete_o.save()
@@ -1859,37 +1898,34 @@ def palete_confirmation(request, pk, id_bobines):
         area += bobine.area
         bobine.save()
         num += 1
-                 
 
-        
     palete.num_bobines_act = num - 1
     palete.area = area
     palete.comp_total = comp
     palete.save()
-        
+
     d_min = 0
     d_max = 0
-    
+
     b = int(bobines_array[0])
     bobine_produto = Bobine.objects.get(pk=b)
     e_p.produto = bobine_produto.largura.designacao_prod
     bobine_posicao = [None] * 61
-    
+
     for x in bobines_array:
         id_b = int(x)
         bobine = Bobine.objects.get(pk=id_b)
         pos = bobine.posicao_palete
         bobine_posicao[pos] = bobine.nome
         d = bobine.bobinagem.diam
-        
-        if d_min == 0 and d_max == 0: 
+
+        if d_min == 0 and d_max == 0:
             d_min = d
             d_max = d
         elif d <= d_min:
             d_min = d
         elif d >= d_max:
             d_max = d
-      
 
     e_p.bobine1 = bobine_posicao[1]
     e_p.bobine2 = bobine_posicao[2]
@@ -1959,54 +1995,55 @@ def palete_confirmation(request, pk, id_bobines):
         id_b = int(x)
         bobine = Bobine.objects.get(pk=id_b)
         if bobine.bobinagem.perfil.retrabalho == True:
-            
+
             ano = palete.data_pal
             ano = ano.strftime('%Y')
             num = palete.num
-            if num < 10:    
-                palete.nome = 'R000%s-%s' % (num, ano)  
+            if num < 10:
+                palete.nome = 'R000%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
             elif num < 100:
                 palete.nome = 'R00%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
-            elif num < 1000: 
+            elif num < 1000:
                 palete.nome = 'R0%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
-            else: 
+            else:
                 palete.nome = 'R%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
-            
+
             palete.save()
             e_p.save()
             break
-    
+
     add_artigo_to_bobine(pk)
-          
+
     return redirect('producao:addbobinepalete', pk=palete.pk)
-    
+
+
 @login_required
 def palete_rabrir(request, pk):
     palete = Palete.objects.get(pk=pk)
 
-    if palete.estado == 'G':    
+    if palete.estado == 'G':
         bobines = Bobine.objects.filter(palete=palete)
         e_p = EtiquetaPalete.objects.get(palete=palete)
-        e_p.diam_min = 0  
-        e_p.diam_max = 0 
+        e_p.diam_min = 0
+        e_p.diam_max = 0
         if palete.estado == 'G':
             ano = palete.data_pal
             ano = ano.strftime('%Y')
             num = palete.num
-            if num < 10:    
-                palete.nome = 'P000%s-%s' % (num, ano)  
+            if num < 10:
+                palete.nome = 'P000%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
             elif num < 100:
                 palete.nome = 'P00%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
-            elif num < 1000: 
+            elif num < 1000:
                 palete.nome = 'P0%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
-            else: 
+            else:
                 palete.nome = 'P%s-%s' % (num, ano)
                 e_p.palete_nome = palete.nome
 
@@ -2016,7 +2053,7 @@ def palete_rabrir(request, pk):
         for b in bobines:
             b.palete = None
             b.save()
-        
+
         return redirect('producao:palete_picagem', pk=palete.pk)
 
     elif palete.estado == 'DM':
@@ -2027,7 +2064,7 @@ def palete_rabrir(request, pk):
             b.save()
 
         # e_p.delete()
-        # palete.delete()        
+        # palete.delete()
 
         return redirect('producao:palete_create_retrabalho')
 
@@ -2060,7 +2097,7 @@ def palete_picagem_dm(request, pk):
             count = 0
             array_bobines = []
             validation = True
-            
+
             for f in formset:
                 count += 1
                 cd = f.cleaned_data
@@ -2072,21 +2109,25 @@ def palete_picagem_dm(request, pk):
 
                         if bobine.palete:
                             if bobine.palete.estado == 'G':
-                                messages.error(request, 'A bobine ' + b + ' encontra-se numa palete para cliente. Por favor verifique.')  
+                                messages.error(
+                                    request, 'A bobine ' + b + ' encontra-se numa palete para cliente. Por favor verifique.')
                             elif bobine.palete.estado == 'DM':
                                 validation = True
-                     
+
                     except:
-                        messages.error(request, '(' + str(count) + ') A bobine ' + b + ' não existe.')  
+                        messages.error(
+                            request, '(' + str(count) + ') A bobine ' + b + ' não existe.')
                         validation = False
 
                 else:
-                    messages.error(request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
+                    messages.error(
+                        request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
                     validation = False
 
             if len(array_bobines) == palete.num_bobines and validation == True:
                 if len(array_bobines) > len(set(array_bobines)):
-                    messages.error(request, 'A picagem contem bobines repetidas.')
+                    messages.error(
+                        request, 'A picagem contem bobines repetidas.')
                 else:
                     c = 0
                     area_sum = 0
@@ -2095,10 +2136,11 @@ def palete_picagem_dm(request, pk):
                     for y in array_bobines:
                         y_b = get_object_or_404(Bobine, nome=y)
                         if y_b.palete:
-                            y_p = get_object_or_404(Palete, pk = y_b.palete.pk)
+                            y_p = get_object_or_404(Palete, pk=y_b.palete.pk)
                             if y_p.estado == 'DM':
-                                y_p.area -= Decimal(y_b.area) 
-                                y_p.comp_total -= Decimal(y_b.bobinagem.comp_cli)
+                                y_p.area -= Decimal(y_b.area)
+                                y_p.comp_total -= Decimal(
+                                    y_b.bobinagem.comp_cli)
                                 y_p.num_bobines -= 1
                                 y_p.num_bobines_act -= 1
                                 y_p.save()
@@ -2109,49 +2151,47 @@ def palete_picagem_dm(request, pk):
                         bob.palete = palete
                         bob.posicao_palete = c
                         area_sum += bob.area
-                        comp_total += bob.bobinagem.comp_cli 
+                        comp_total += bob.bobinagem.comp_cli
                         bob.save()
-                        movimento_bobine = MovimentosBobines.objects.create(bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
+                        movimento_bobine = MovimentosBobines.objects.create(
+                            bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
 
-                    e_p = EtiquetaPalete.objects.get(palete=palete)       
+                    e_p = EtiquetaPalete.objects.get(palete=palete)
                     # for x in array_bobines:
                     #     bobine = Bobine.objects.get(nome=x)
                     #     if bobine.bobinagem.perfil.retrabalho == True:
                     #         ano = palete.data_pal
                     #         ano = ano.strftime('%Y')
                     #         num = palete.num
-                    #         if num < 10:    
-                    #             palete.nome = 'R000%s-%s' % (num, ano)  
+                    #         if num < 10:
+                    #             palete.nome = 'R000%s-%s' % (num, ano)
                     #         elif num < 100:
                     #             palete.nome = 'R00%s-%s' % (num, ano)
-                    #         elif num < 1000: 
+                    #         elif num < 1000:
                     #             palete.nome = 'R0%s-%s' % (num, ano)
-                    #         else: 
+                    #         else:
                     #             palete.nome = 'R%s-%s' % (num, ano)
                     #         palete.save()
                     #         e_p.palete_nome = palete.nome
                     #         break
-                 
-
 
                     palete.num_bobines_act = c
                     palete.area = area_sum
                     palete.comp_total = comp_total
                     palete.save()
 
-                    
                     bobines = Bobine.objects.filter(palete=palete)
                     bobines_nome = []
                     d_min = 0
                     d_max = 0
                     bobine_posicao = [None] * 61
-                                        
+
                     for bn in bobines:
                         bobines_nome.append(bn.nome)
                         d = bn.bobinagem.diam
                         pos = bn.posicao_palete
                         bobine_posicao[pos] = bn.nome
-                        if d_min == 0 and d_max == 0: 
+                        if d_min == 0 and d_max == 0:
                             d_min = d
                             d_max = d
                         elif d <= d_min:
@@ -2161,7 +2201,7 @@ def palete_picagem_dm(request, pk):
 
                     # bobine_produto = Bobine.objects.get(nome=bobines_nome[0])
                     # e_p.produto = bobine_produto.largura.designacao_prod
-                    
+
                     e_p.bobine1 = bobine_posicao[1]
                     e_p.bobine2 = bobine_posicao[2]
                     e_p.bobine3 = bobine_posicao[3]
@@ -2230,20 +2270,16 @@ def palete_picagem_dm(request, pk):
 
                     return redirect('producao:addbobinepalete', pk=palete.pk)
 
-            
-   
     else:
         formset = PicagemBobinesFormSet()
-            
 
     context = {
-        "palete":palete,
+        "palete": palete,
         "formset": formset,
     }
 
     return render(request, template_name, context)
 
-    
 
 @login_required
 def validate_palete_dm(request, pk, id_bobines):
@@ -2261,42 +2297,40 @@ def validate_palete_dm(request, pk, id_bobines):
         bobine.palete = palete
         bobine.posicao_palete = num
         comp += bobine.comp_actual
-        
-            
+
         area += bobine.area
         bobine.save()
         num += 1
-    
+
     palete.num_bobines_act = num - 1
     if palete.retrabalhada == True:
         palete.num_bobines = palete.num_bobines_act
     palete.area = area
     palete.comp_total = comp
     palete.save()
-       
+
     d_min = 0
     d_max = 0
-    
+
     b = int(bobines_array[0])
     bobine_produto = Bobine.objects.get(pk=b)
     e_p.produto = bobine_produto.bobinagem.perfil.produto
     bobine_posicao = [None] * 61
-    
+
     for x in bobines_array:
         id_b = int(x)
         bobine = Bobine.objects.get(pk=id_b)
         pos = bobine.posicao_palete
         bobine_posicao[pos] = bobine.nome
         d = bobine.bobinagem.diam
-        
-        if d_min == 0 and d_max == 0: 
+
+        if d_min == 0 and d_max == 0:
             d_min = d
             d_max = d
         elif d <= d_min:
             d_min = d
         elif d >= d_max:
             d_max = d
-      
 
     e_p.bobine1 = bobine_posicao[1]
     e_p.bobine2 = bobine_posicao[2]
@@ -2362,31 +2396,29 @@ def validate_palete_dm(request, pk, id_bobines):
     e_p.diam_max = d_max
     e_p.save()
 
-    
-       
     return redirect('producao:addbobinepalete', pk=palete.pk)
+
 
 @login_required
 def retrabalho_dm(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
 
     template_name = 'retrabalho/retrabalho_dm.html'
-    
-
 
     context = {
         "bobinagem": bobinagem,
-        
+
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
 
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
-    
+
     bobines_originais = id_bobines
     metros_bobines = metros
     recycle_bobines = recycle
@@ -2396,25 +2428,23 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
     recycle_value = 0
     bobines_array = bobines_originais.split("--")
     metros_array = metros_bobines.split("-")
-    recycle_array = recycle_bobines.split("-")  
+    recycle_array = recycle_bobines.split("-")
     bobines_length = len(bobines_array)
-    
 
     for x in bobines_array:
         bobine = Bobine.objects.get(nome=x)
-        comp_actual = bobine.comp_actual 
+        comp_actual = bobine.comp_actual
         comp_actual -= Decimal(metros_array[cont])
         bobine.comp_actual = comp_actual
         comp_total += Decimal(metros_array[cont])
-        bobine.recycle = recycle_array[recycle_value].capitalize() 
+        bobine.recycle = recycle_array[recycle_value].capitalize()
         bobine.save()
-        recycle_value += 1 
+        recycle_value += 1
         cont += 1
         emendas += 1
-        emenda = Emenda.objects.create(bobinagem=bobinagem, bobine=bobine, metros=Decimal(metros_array[cont-1]), emenda=comp_total, num_emenda=cont)
+        emenda = Emenda.objects.create(bobinagem=bobinagem, bobine=bobine, metros=Decimal(
+            metros_array[cont-1]), emenda=comp_total, num_emenda=cont)
         emenda.save()
-
-      
 
     bobinagem.num_emendas = emendas - 1
     bobinagem.comp = comp_total
@@ -2439,7 +2469,8 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
             data = data.strftime('%Y%m%d')
             map(int, data)
             if bobinagem.num_bobinagem < 10:
-                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '3%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
                 bobinagem_pk = bobinagem.pk
                 bobine_nome(bobinagem_pk)
                 bobinagem.save()
@@ -2448,11 +2479,11 @@ def validate_bobinagem_dm(request, pk, id_bobines, metros, recycle):
                 bobinagem_pk = bobinagem.pk
                 bobine_nome(bobinagem_pk)
                 bobinagem.save()
-    
-    
+
     return redirect('producao:finalizar_retrabalho', pk=bobinagem.pk)
 
-@login_required   
+
+@login_required
 def refazer_bobinagem_dm(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
@@ -2465,7 +2496,7 @@ def refazer_bobinagem_dm(request, pk):
         bobinagem.nome = '4%s-0%s' % (data[1:], bobinagem.num_bobinagem)
     else:
         bobinagem.nome = '4%s-%s' % (data[1:], bobinagem.num_bobinagem)
-    
+
     num = 1
     for b in bobines:
         if num < 10:
@@ -2474,7 +2505,7 @@ def refazer_bobinagem_dm(request, pk):
             b.nome = '%s-%s' % (bobinagem.nome, num)
         num += 1
         b.area = 0
-        b.comp_actual = 0 
+        b.comp_actual = 0
         b.save()
 
     for e in emendas:
@@ -2483,7 +2514,7 @@ def refazer_bobinagem_dm(request, pk):
         if bobine_original.recycle == True:
             bobine_original.recycle = False
         bobine_original.save()
-        e.delete() 
+        e.delete()
 
     etiquetas = EtiquetaRetrabalho.objects.filter(bobinagem=bobinagem)
     for eti in etiquetas:
@@ -2505,7 +2536,8 @@ def refazer_bobinagem_dm(request, pk):
     bobinagem.save()
     return redirect('producao:retrabalho_v2', pk=bobinagem.pk)
 
-@login_required       
+
+@login_required
 def delete_bobinagem_dm(request, pk):
     bobinagem = Bobinagem.objects.get(pk=pk)
     bobines = Bobines.objects.filter(bobinagem=bobinagem)
@@ -2517,35 +2549,34 @@ def delete_bobinagem_dm(request, pk):
     bobinagem.delete()
     pass
 
+
 @login_required
 def encomenda_list(request):
     encomenda_list = Encomenda.objects.all().order_by('-eef')
     template_name = 'encomenda/encomenda_list.html'
-       
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
-        encomenda_list = encomenda_list.filter(eef__icontains=query).order_by('-eef')
-
+        encomenda_list = encomenda_list.filter(
+            eef__icontains=query).order_by('-eef')
 
     paginator = Paginator(encomenda_list, 12)
     page = request.GET.get('page')
-    
 
     try:
-        encomenda= paginator.page(page)
+        encomenda = paginator.page(page)
     except PageNotAnInteger:
         encomenda = paginator.page(1)
     except EmptyPage:
         encomenda = paginator.page(paginator.num_pages)
-             
 
     context = {
         "encomenda": encomenda,
         "query": query,
-        
+
     }
-    return render(request, template_name, context) 
+    return render(request, template_name, context)
 
 
 @login_required
@@ -2553,13 +2584,12 @@ def encomenda_create(request):
 
     template_name = 'encomenda/encomenda_create.html'
     form = EncomendaCreateForm(request.POST or None)
-        
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
         instance.save()
-                    
-        
+
         return redirect('producao:encomenda_list')
 
     context = {
@@ -2585,21 +2615,21 @@ def encomenda_detail(request, pk):
 
     return render(request, template_name, context)
 
+
 @login_required
 def carga_list(request):
     carga_list = Carga.objects.filter(estado='I').order_by('-data')
     template_name = 'carga/carga_list.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        carga_list = Carga.objects.filter(carga__icontains=query, estado='I').order_by('-data',)
-
+        carga_list = Carga.objects.filter(
+            carga__icontains=query, estado='I').order_by('-data',)
 
     paginator = Paginator(carga_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         carga = paginator.page(page)
@@ -2607,31 +2637,29 @@ def carga_list(request):
         carga = paginator.page(1)
     except EmptyPage:
         carga = paginator.page(paginator.num_pages)
-             
 
     context = {
         "carga": carga,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
-   
+
 
 @login_required
 def carga_list_completa(request):
     carga_list = Carga.objects.filter(estado='C').order_by('-data')
     template_name = 'carga/carga_list_complete.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        carga_list = Carga.objects.filter(carga__icontains=query, estado='C').order_by('-data',)
-
+        carga_list = Carga.objects.filter(
+            carga__icontains=query, estado='C').order_by('-data',)
 
     paginator = Paginator(carga_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         carga = paginator.page(page)
@@ -2639,22 +2667,21 @@ def carga_list_completa(request):
         carga = paginator.page(1)
     except EmptyPage:
         carga = paginator.page(paginator.num_pages)
-             
 
     context = {
         "carga": carga,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
-    
+
 
 @login_required
 def carga_create(request):
 
     template_name = 'carga/carga_create.html'
     form = CargaCreateForm(request.POST or None)
-        
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -2665,36 +2692,42 @@ def carga_create(request):
         encomenda = get_object_or_404(Encomenda, eef=enc)
         cargas = Carga.objects.all()
         prf = encomenda.prf
-        
+
         if num_carga < 10:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON00" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CON00" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CAM00" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CAM00" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
         elif num_carga < 100:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON0" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CON0" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CAM0" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CAM0" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
         elif num_carga < 1000:
             if tipo == "CONTENTOR":
                 num_carga = str(num_carga)
-                carga = prf + "-CON" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CON" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
             else:
                 num_carga = str(num_carga)
-                carga = prf + "-CAM" + num_carga + "-" + str(encomenda.cliente.abv)
+                carga = prf + "-CAM" + num_carga + \
+                    "-" + str(encomenda.cliente.abv)
 
-        instance.carga = carga    
+        instance.carga = carga
         instance.save()
 
         encomenda.num_cargas_actual += 1
         encomenda.num_cargas += 1
-        encomenda.save()   
-               
+        encomenda.save()
+
         return redirect('producao:carga_list')
 
     context = {
@@ -2703,24 +2736,27 @@ def carga_create(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def carga_detail(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     paletes = Palete.objects.filter(carga=carga).order_by('-num_palete_carga')
-     
+
     relacoes = []
     relacoes_area = []
     realcoes_comp = []
     num = 1
-    som = 0 
+    som = 0
     som_comp = 0
     som_area = 0
     for pal in paletes:
-        rel = round((Decimal(pal.peso_liquido) / (Decimal(pal.area / 10 ))) * 100, 2)
+        rel = round((Decimal(pal.peso_liquido) /
+                     (Decimal(pal.area / 10))) * 100, 2)
         relacoes.append(rel)
         rel_area = round((Decimal(pal.peso_liquido) * 1000) / 100, 0)
         relacoes_area.append(rel_area)
-        rel_comp = round((Decimal(rel_area) / ((Decimal(pal.num_bobines) * Decimal(pal.largura_bobines)) * Decimal(0.001))) * Decimal(pal.num_bobines), 2)
+        rel_comp = round((Decimal(rel_area) / ((Decimal(pal.num_bobines) * Decimal(
+            pal.largura_bobines)) * Decimal(0.001))) * Decimal(pal.num_bobines), 2)
         realcoes_comp.append(rel_comp)
 
     form = ImprimirEtiquetaFinalPalete(request.POST or None)
@@ -2732,24 +2768,23 @@ def carga_detail(request, pk):
             etiqueta.num_copias = num_copias
             etiqueta.estado_impressao = True
             etiqueta.save()
-    
+
     for p in paletes:
         som += (p.peso_liquido/(p.area/10))*100
-        area = (p.peso_liquido * 1000) / 100 
+        area = (p.peso_liquido * 1000) / 100
         som_area += area
-        som_comp += (Decimal(area) / ((Decimal(p.num_bobines) * Decimal(p.largura_bobines)) * Decimal(0.001))) * (Decimal(p.num_bobines))
-        
-        
-    
+        som_comp += (Decimal(area) / ((Decimal(p.num_bobines) *
+                                       Decimal(p.largura_bobines)) * Decimal(0.001))) * (Decimal(p.num_bobines))
+
     if len(paletes) == 0:
         som = 0
     else:
         som = som / len(paletes)
-    
+
     som = round(som, 2)
     som_comp = round(som_comp, 2)
     som_area = round(som_area, 2)
-      
+
     data_inicial = 0
     data_final = 0
     l_real_max = 0
@@ -2758,9 +2793,9 @@ def carga_detail(request, pk):
 
     for p in paletes:
         bobines = Bobine.objects.filter(palete=p)
-        
+
         for b in bobines:
-            data = b.bobinagem.data 
+            data = b.bobinagem.data
             if data_inicial == 0 and data_final == 0:
                 data_inicial = data
                 data_final = data
@@ -2769,7 +2804,6 @@ def carga_detail(request, pk):
             elif data >= data_final:
                 data_final = data
 
-                        
             if b.l_real == None:
                 l_real = 0
             else:
@@ -2804,12 +2838,13 @@ def carga_detail(request, pk):
 
     return render(request, template_name, context)
 
+
 @login_required
 def carga_etiqueta_palete(request, pk):
     palete = get_object_or_404(Palete, pk=pk)
     etiqueta = EtiquetaFinal.objects.get(palete=palete, activa=True)
     template_name = 'producao/carga_etiqueta_palete.html'
-        
+
     etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
     etiqueta.num_copias = 1
     etiqueta.estado_impressao = True
@@ -2832,11 +2867,12 @@ def armazem_home(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def palete_selecao(request):
     template_name = 'palete/palete_selecao.html'
     form = SelecaoPaleteForm(request.POST or None)
-    
+
     if request.method == 'POST':
         form = SelecaoPaleteForm(request.POST or None)
         if form.is_valid:
@@ -2850,6 +2886,7 @@ def palete_selecao(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def palete_pesagem(request, pk=None):
     instance = get_object_or_404(Palete, pk=pk)
@@ -2857,6 +2894,7 @@ def palete_pesagem(request, pk=None):
     palete = get_object_or_404(Palete, pk=pk)
     bobines = Bobine.objects.filter(palete=palete)
     form = PaletePesagemForm(request.POST or None, instance=instance)
+    
     tem_artigo = True
 
     for b in bobines:
@@ -2865,18 +2903,21 @@ def palete_pesagem(request, pk=None):
             break
         else:
             tem_artigo = True
-    
+
     if form.is_valid():
         if tem_artigo == False:
-            messages.error(request, 'As bobines da palete ' + palete.nome + ' não têm artigo atribuido. Por favor contacte o Administrador.') 
-        else:  
-            instance = form.save(commit=False)
-            instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete)
-            instance.save()
-            return redirect('producao:palete_selecao')
-                
-            
-            
+            messages.error(request, 'As bobines da palete ' + palete.nome +' não têm artigo atribuido. Por favor contacte o Administrador.')
+        else:
+            try:
+                instance = form.save(commit=False)
+                perfil_embalamento = get_object_or_404(PerfilEmbalamento, pk=instance.perfil_embalamento.pk)
+                core_largura = CoreLargura.objects.get(core=palete.core_bobines, largura=palete.largura_bobines)
+                peso_cores = core_largura.peso * int(palete.num_bobines)
+                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete) - perfil_embalamento.peso - peso_cores
+                instance.save()
+                return redirect('producao:palete_selecao')
+            except:
+                messages.error(request, 'A palete ' + palete.nome + ' não têm perfil de embalaemnto atribuido. Por favor contacte o Administrador.')
 
     context = {
         "form": form,
@@ -2893,29 +2934,30 @@ def palete_details_armazem(request, pk):
     palete = get_object_or_404(Palete, pk=pk)
     template_name = 'palete/palete_details_armazem.html'
 
-
     context = {
         "palete": palete,
-        
-        
+
+
     }
 
     return render(request, template_name, context)
 
+
 @login_required
 def stock_list(request):
-    palete_list = Palete.objects.filter(stock=True).order_by('-data_pal','-num')
+    palete_list = Palete.objects.filter(
+        stock=True).order_by('-data_pal', '-num')
     template_name = 'stock/stock_list.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        palete_list = Palete.objects.filter(nome__icontains=query, stock=True).order_by('-data_pal','-num')
+        palete_list = Palete.objects.filter(
+            nome__icontains=query, stock=True).order_by('-data_pal', '-num')
 
     paginator = Paginator(palete_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         palete = paginator.page(page)
@@ -2923,12 +2965,11 @@ def stock_list(request):
         palete = paginator.page(1)
     except EmptyPage:
         palete = paginator.page(paginator.num_pages)
-             
 
     context = {
         "palete": palete,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
     paletes = Palete.objects.filter(stock=True)
@@ -2940,6 +2981,7 @@ def stock_list(request):
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def stock_add_to_carga(request, pk=None):
@@ -2956,7 +2998,7 @@ def stock_add_to_carga(request, pk=None):
         paletes_carga_1 = Palete.objects.filter(carga=carga)
         cont = 0
         array_num_palete = []
-            
+
         for p1 in paletes_carga_1:
             array_num_palete.append(p1.num_palete_carga)
             # array_num_palete[cont] = p1.num_palete_carga
@@ -2973,18 +3015,18 @@ def stock_add_to_carga(request, pk=None):
                     break
                 elif len(array_num_palete) == cont2 + 1:
                     instance.num_palete_carga = cont2 + 2
-                    break 
+                    break
                 cont2 += 1
 
         carga.sqm += instance.area
         carga.metros += instance.comp_total
         if carga.num_paletes_actual == carga.num_paletes:
             carga.estado = 'C'
-        
+
         carga.save()
         instance.save()
         gerar_etiqueta_final(instance.pk)
-        
+
         return redirect('producao:carga_detail', pk=carga.pk)
 
     context = {
@@ -2997,31 +3039,28 @@ def stock_add_to_carga(request, pk=None):
 
 @login_required
 def acompanhamento_diario(request):
-    
 
     form = AcompanhamentoDiarioSearchForm(request.POST or None)
 
     template_name = 'lab/acompanhamento_diario.html'
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
-        
-    
+
     context = {
         "form": form,
     }
-
 
     return render(request, template_name, context)
 
 # @login_required
 # def acompanhamento_diario_filter(request):
-    
+
 
 #     form = AcompanhamentoDiarioSearchForm(request.POST or None)
 
 #     template_name = 'lab/acompanhamento_diario.html'
-    
+
 #     if form.is_valid():
 #         instance = form.save(commit=False)
 #         data_i = instance.data_inicio
@@ -3029,7 +3068,7 @@ def acompanhamento_diario(request):
 #         data_f = instance.data_fim
 #         hora_f = instance.hora_fim
 #         return redirect('producao:qualidade_home')
-    
+
 #     context = {
 #         "form": form,
 #     }
@@ -3038,15 +3077,12 @@ def acompanhamento_diario(request):
 #     return render(request, template_name, context)
 
 
-
-    
 @login_required
 def qualidade_home(request):
     template_name = 'lab/qualidade_home.html'
     context = {}
 
     return render(request, template_name, context)
-
 
 
 @login_required
@@ -3071,13 +3107,14 @@ def retrabalho_v2(request, pk):
                 comp_actual_1 = b_1.comp_actual
                 comp_actual_2 = b_2.comp_actual
                 comp_actual_3 = b_3.comp_actual
-               
+
                 if comp_actual_1 >= m_b_1 and comp_actual_2 >= m_b_2 and comp_actual_3 >= m_b_3 and b_1.estado == 'DM' and b_2.estado == 'DM' and b_3.estado == 'DM':
                     if b_1 == b_2 == b_3:
                         comp_total = m_b_1 + m_b_2 + m_b_3
                         dif = comp_total - b_1.comp_actual
                         if comp_total > b_1.comp_actual:
-                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                            messages.error(request, 'A bobine ' + b_1.nome +
+                                           ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
                         else:
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
 
@@ -3085,15 +3122,17 @@ def retrabalho_v2(request, pk):
                         comp_total = m_b_1 + m_b_2
                         dif = comp_total - b_1.comp_actual
                         if comp_total > b_1.comp_actual:
-                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                            messages.error(request, 'A bobine ' + b_1.nome +
+                                           ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
                         else:
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
-                    
+
                     elif b_1 == b_3:
                         comp_total = m_b_1 + m_b_3
                         dif = comp_total - b_1.comp_actual
                         if comp_total > b_1.comp_actual:
-                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                            messages.error(request, 'A bobine ' + b_1.nome +
+                                           ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
                         else:
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
 
@@ -3101,41 +3140,41 @@ def retrabalho_v2(request, pk):
                         comp_total = m_b_2 + m_b_3
                         dif = comp_total - b_2.comp_actual
                         if comp_total > b_2.comp_actual:
-                            messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                            messages.error(request, 'A bobine ' + b_2.nome +
+                                           ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
                         else:
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
                     else:
                         return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=b_3.pk, m3=m_b_3)
-                        
-                                                  
 
-                    
                 else:
                     if b_1.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
 
                     if b_2.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
 
                     if b_3.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_3.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_3.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        messages.error(request, 'A bobine ' + b_3.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_3.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
 
                     if comp_actual_1 < m_b_1:
                         dif = m_b_1 - comp_actual_1
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
-                    
+                        messages.error(request, 'A bobine ' + b_1.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
                     if comp_actual_2 < m_b_2:
-                        dif = m_b_2 - comp_actual_2 
-                        messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+                        dif = m_b_2 - comp_actual_2
+                        messages.error(request, 'A bobine ' + b_2.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
 
                     if comp_actual_3 < m_b_3:
                         dif = m_b_3 - comp_actual_3
-                        messages.error(request, 'A bobine ' + b_3.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+                        messages.error(request, 'A bobine ' + b_3.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
 
-                    
-
-                    
-                    
             else:
                 if not Bobine.objects.filter(nome=b_1):
                     messages.error(request, 'A bobine ' + b_1 + ' não existe.')
@@ -3143,82 +3182,80 @@ def retrabalho_v2(request, pk):
                     messages.error(request, 'A bobine ' + b_2 + ' não existe.')
                 if not Bobine.objects.filter(nome=b_3):
                     messages.error(request, 'A bobine ' + b_2 + ' não existe.')
-        
+
         elif b_1 and b_2 and m_b_1 and m_b_2:
             if Bobine.objects.filter(nome=b_1) and Bobine.objects.filter(nome=b_2):
                 b_1 = get_object_or_404(Bobine, nome=b_1)
                 b_2 = get_object_or_404(Bobine, nome=b_2)
-               
+
                 comp_actual_1 = b_1.comp_actual
                 comp_actual_2 = b_2.comp_actual
-                
-               
+
                 if comp_actual_1 >= m_b_1 and comp_actual_2 >= m_b_2 and b_1.estado == 'DM' and b_2.estado == 'DM':
                     if b_1 == b_2:
                         comp_total = m_b_1 + m_b_2
                         dif = comp_total - b_1.comp_actual
                         if comp_total > b_1.comp_actual:
-                            messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.') 
+                            messages.error(request, 'A bobine ' + b_1.nome +
+                                           ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
                         else:
                             return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
                     else:
                         return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=b_2.pk, m2=m_b_2, b3=None, m3=None)
-                        
-                    
+
                 else:
                     if b_1.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
 
                     if b_2.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+                        messages.error(request, 'A bobine ' + b_2.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_2.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
 
                     if comp_actual_1 < m_b_1:
                         dif = m_b_1 - comp_actual_1
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
-                    
+                        messages.error(request, 'A bobine ' + b_1.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
                     if comp_actual_2 < m_b_2:
-                        dif = m_b_2 - comp_actual_2 
-                        messages.error(request, 'A bobine ' + b_2.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
-            
-                    
-               
-                
+                        dif = m_b_2 - comp_actual_2
+                        messages.error(request, 'A bobine ' + b_2.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+
             else:
                 if not Bobine.objects.filter(nome=b_1):
                     messages.error(request, 'A bobine ' + b_1 + ' não existe.')
                 if not Bobine.objects.filter(nome=b_2):
                     messages.error(request, 'A bobine ' + b_2 + ' não existe.')
-        
+
         elif b_1 and m_b_1:
             if Bobine.objects.filter(nome=b_1):
                 b_1 = get_object_or_404(Bobine, nome=b_1)
                 comp_actual_1 = b_1.comp_actual
-                              
+
                 if comp_actual_1 >= m_b_1 and b_1.estado == 'DM':
                     return redirect('producao:retrabalho_confirmacao', pk=pk, b1=b_1.pk, m1=m_b_1, b2=None, m2=None, b3=None, m3=None)
-                                   
+
                 else:
                     if b_1.estado != 'DM':
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' + b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
-                        
+                        messages.error(request, 'A bobine ' + b_1.nome + ' não pode ser usada para retrabalho porque o seu estado é ' +
+                                       b_1.estado + '. Para poder ser retrabalhada o seu estado deverá ser DM.')
+
                     if comp_actual_1 < m_b_1:
                         dif = m_b_1 - comp_actual_1
-                        messages.error(request, 'A bobine ' + b_1.nome + ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
+                        messages.error(request, 'A bobine ' + b_1.nome +
+                                       ' não tem metros suficentes para efectuar esta operação. O valor que introduziu excede o comprimento atual da bobine em ' + str(dif) + ' m.')
 
-                    
-
-                    
-                               
             else:
                 if not Bobine.objects.filter(nome=b_1):
                     messages.error(request, 'A bobine ' + b_1 + ' não existe.')
-                    
-                
+
     context = {
-        "form": form, 
+        "form": form,
         "instance": instance,
-        }
+    }
     return render(request, template_name, context)
+
 
 @login_required
 def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=None):
@@ -3228,7 +3265,7 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
     m_1 = m1
     m_2 = m2
     m_3 = m3
-        
+
     try:
         b_3 = Bobine.objects.get(pk=b3)
     except:
@@ -3240,17 +3277,18 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
     except:
         b_2 = "N/A"
         m_2 = "N/A"
-        
+
     b_1 = get_object_or_404(Bobine, pk=b1)
 
     comp_total = comp_dm(b_1, m_1, b_2, m_2, b_3, m_3)
-    area_total = Decimal(comp_total) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001))
-    area_total = round(area_total,2)
+    area_total = Decimal(
+        comp_total) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001))
+    area_total = round(area_total, 2)
 
     area_bobines = []
     for b in bobines:
-        area_bobines.append(round(Decimal(comp_total) * (Decimal(b.largura.largura) * Decimal(0.001)), 2))
-
+        area_bobines.append(
+            round(Decimal(comp_total) * (Decimal(b.largura.largura) * Decimal(0.001)), 2))
 
     if b_3 != "N/A" and b_2 != "N/A":
         e_1 = m_1
@@ -3269,13 +3307,13 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
             mr_3 = mr_1
             mr_2 = int(b_2.comp_actual) - int(m_2)
         elif b_2 == b_3 != b_1:
-            mr_1 =  int(b_1.comp_actual) - int(m_1)
-            mr_2 =  int(b_2.comp_actual) - int(m_2) - int(m_3)
-            mr_3 =  mr_2
+            mr_1 = int(b_1.comp_actual) - int(m_1)
+            mr_2 = int(b_2.comp_actual) - int(m_2) - int(m_3)
+            mr_3 = mr_2
         else:
-            mr_1 =  int(b_1.comp_actual) - int(m_1)
-            mr_2 =  int(b_2.comp_actual) - int(m_2)
-            mr_3 =  int(b_3.comp_actual) - int(m_3)
+            mr_1 = int(b_1.comp_actual) - int(m_1)
+            mr_2 = int(b_2.comp_actual) - int(m_2)
+            mr_3 = int(b_3.comp_actual) - int(m_3)
     elif b_2 != "N/A" and b_3 == "N/A":
         e_1 = m_1
         e_2 = int(m_1) + int(m_2)
@@ -3296,23 +3334,27 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
         e_3 = "N/A"
         mr_2 = "N/A"
         mr_3 = "N/A"
-    
+
     if form.is_valid():
         recycle_1 = form.cleaned_data['recycle_1']
         recycle_2 = form.cleaned_data['recycle_2']
         recycle_3 = form.cleaned_data['recycle_3']
-        
+
         if b_1 != "N/A" and b_3 != "N/A" and b_2 != "N/A":
-              
-            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
-            emenda_2 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
-            emenda_3 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_3, num_emenda=3, emenda=e_3, metros=m_3)
+
+            emenda_1 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            emenda_2 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
+            emenda_3 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_3, num_emenda=3, emenda=e_3, metros=m_3)
 
             bobinagem.num_emendas = 3
             bobinagem.comp = e_3
             bobinagem.comp_par = e_3
             bobinagem.comp_cli = e_3
-            bobinagem.area = round(Decimal(e_3) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area = round(Decimal(
+                e_3) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
             bobinagem.area_g = bobinagem.area
             bobinagem.estado = 'G'
             bobinagem.save()
@@ -3327,25 +3369,29 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
             data = data.strftime('%Y%m%d')
             map(int, data)
             if bobinagem.num_bobinagem < 10:
-                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '3%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
             else:
                 bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
-            bobinagem.save()    
+            bobinagem.save()
             for b in bobines:
                 if b.largura.num_bobine < 10:
                     b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
                 else:
                     b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
-                b.save() 
+                b.save()
 
         elif b_1 != "N/A" and b_2 != "N/A":
-            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
-            emenda_2 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
+            emenda_1 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            emenda_2 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_2, num_emenda=2, emenda=e_2, metros=m_2)
             bobinagem.num_emendas = 2
             bobinagem.comp = e_2
             bobinagem.comp_par = e_2
             bobinagem.comp_cli = e_2
-            bobinagem.area = round(Decimal(e_2) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area = round(Decimal(
+                e_2) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
             bobinagem.area_g = bobinagem.area
             bobinagem.estado = 'G'
             bobinagem.save()
@@ -3353,75 +3399,80 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
             b_2.comp_actual = mr_2
             b_1.save()
             b_2.save()
-            
+
             # retrabalho_nome(bobinagem.pk, 2)
             data = bobinagem.data
             data = data.strftime('%Y%m%d')
             map(int, data)
             if bobinagem.num_bobinagem < 10:
-                bobinagem.nome = '3%s-0%s' % (data[1:], bobinagem.num_bobinagem)
+                bobinagem.nome = '3%s-0%s' % (data[1:],
+                                              bobinagem.num_bobinagem)
             else:
                 bobinagem.nome = '3%s-%s' % (data[1:], bobinagem.num_bobinagem)
-            bobinagem.save()    
+            bobinagem.save()
             for b in bobines:
                 if b.largura.num_bobine < 10:
                     b.nome = '%s-0%s' % (bobinagem.nome, b.largura.num_bobine)
-                   
+
                 else:
                     b.nome = '%s-%s' % (bobinagem.nome, b.largura.num_bobine)
-                b.save()      
+                b.save()
 
         elif b_1 != "N/A":
-            emenda_1 = Emenda.objects.create(bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
+            emenda_1 = Emenda.objects.create(
+                bobinagem=bobinagem, bobine=b_1, num_emenda=1, emenda=e_1, metros=m_1)
             bobinagem.num_emendas = 1
             bobinagem.comp = e_1
             bobinagem.comp_par = e_1
             bobinagem.comp_cli = e_1
-            bobinagem.area = round(Decimal(e_1) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
+            bobinagem.area = round(Decimal(
+                e_1) * (Decimal(bobinagem.perfil.largura_bobinagem) * Decimal(0.001)), 2)
             bobinagem.area_g = bobinagem.area
             bobinagem.estado = 'G'
             bobinagem.save()
             b_1.comp_actual = mr_1
             b_1.save()
-            
-                        
+
         if recycle_1 == True and b_1 != "N/A":
             b_1.recycle = True
             try:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_1, palete=b_1.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_1, palete=b_1.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
             except:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_1, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_1, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_1.save()
-          
+
         if recycle_2 == True and b_2 != "N/A":
             b_2.recycle = True
             try:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_2, palete=b_2.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_2, palete=b_2.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
             except:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_2, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_2, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_2.save()
 
         if recycle_3 == True and b_3 != "N/A":
             b_3.recycle = True
             try:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_3, palete=b_3.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_3, palete=b_3.palete, timestamp=bobinagem.timestamp, destino="Reciclada")
             except:
-                movimento_bobine = MovimentosBobines.objects.create(bobine=b_3, timestamp=bobinagem.timestamp, destino="Reciclada")
+                movimento_bobine = MovimentosBobines.objects.create(
+                    bobine=b_3, timestamp=bobinagem.timestamp, destino="Reciclada")
             b_3.save()
 
         for bob in bobines:
             bob.comp_actual = bobinagem.comp_cli
             bob.comp = bobinagem.comp_cli
-            bob.area = round(Decimal(bobinagem.comp_cli) * (Decimal(bob.largura.largura) * Decimal(0.001)), 2)
+            bob.area = round(Decimal(bobinagem.comp_cli) *
+                             (Decimal(bob.largura.largura) * Decimal(0.001)), 2)
             bob.estado = 'G'
             bob.save()
-                   
 
         return redirect('producao:finalizar_retrabalho', pk=bobinagem.pk)
-          
-  
 
-    
     template_name = "retrabalho/retrabalho_confirmacao.html"
 
     context = {
@@ -3443,9 +3494,10 @@ def retrabalho_confirmacao(request, pk, b1, m1, b2=None, m2=None, b3=None, m3=No
         "mr_2": mr_2,
         "mr_3": mr_3,
         "form": form,
-        
-        }
+
+    }
     return render(request, template_name, context)
+
 
 @login_required
 def palete_picagem(request, pk):
@@ -3454,7 +3506,7 @@ def palete_picagem(request, pk):
     template_name = 'palete/palete_picagem_v2.html'
     num_bobines = palete.num_bobines
     PicagemBobinesFormSet = formset_factory(PicagemBobines, extra=num_bobines)
-    
+
     if request.method == 'POST':
         formset = PicagemBobinesFormSet(request.POST)
         if formset.is_valid():
@@ -3469,13 +3521,12 @@ def palete_picagem(request, pk):
             if palete.cliente != None:
                 cliente = palete.cliente
 
-
-            #Validação individual
+            # Validação individual
             for f in formset:
                 count += 1
                 cd = f.cleaned_data
                 b = cd.get('bobine')
-                
+
                 if b is not None:
                     try:
                         bobine = get_object_or_404(Bobine, nome=b)
@@ -3485,61 +3536,75 @@ def palete_picagem(request, pk):
                         array_produtos.append(bobine.designacao_prod)
                         array_estados.append(bobine.estado)
                         if cliente != 0:
-                            try:    
-                                artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine.artigo)
+                            try:
+                                artigo_cliente = ArtigoCliente.objects.get(
+                                    cliente=cliente, artigo=bobine.artigo)
                                 pass
                             except:
-                                messages.error(request, '(' + str(count) + ') O artigo da bobine ' + bobine.nome + ' não esta associado ao cliente ' + cliente.nome)
+                                messages.error(request, '(' + str(count) + ') O artigo da bobine ' +
+                                               bobine.nome + ' não esta associado ao cliente ' + cliente.nome)
                                 validation = False
 
                         if bobine.estado != 'G' and bobine.estado != 'LAB' and bobine.estado != 'SC':
-                            messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' não está em estado GOOD, LAB ou SC.')
+                            messages.error(request, '(' + str(count) + ') A bobine ' +
+                                           bobine.nome + ' não está em estado GOOD, LAB ou SC.')
                             validation = False
 
                         if bobine.palete:
-                            p_b = get_object_or_404(Palete, pk = bobine.palete.pk)
+                            p_b = get_object_or_404(
+                                Palete, pk=bobine.palete.pk)
                             if p_b.estado == 'G':
-                                messages.error(request, '(' + str(count) + ') A bobine ' + bobine.nome + ' encontra-se noutra palete GOOD.')
+                                messages.error(request, '(' + str(count) + ') A bobine ' +
+                                               bobine.nome + ' encontra-se noutra palete GOOD.')
                                 validation = False
-                            
+
                         if cliente != 0:
                             if bobine.diam > cliente.limsup:
-                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.') 
+                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome +
+                                               ' é superior ao limite máximo aceite pelo cliente ' + cliente.nome + '.')
                                 validation = False
                             elif bobine.diam > cliente.limsup:
-                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome + ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.') 
+                                messages.error(request, '(' + str(count) + ') O diâmetro da bobine ' + bobine.nome +
+                                               ' é inferior ao limite mínimo aceite pelo cliente ' + cliente.nome + '.')
                                 validation = False
 
                         if bobine.largura.largura != palete.largura_bobines:
-                            messages.error(request, '(' + str(count) + ') A largura de ' + bobine.nome +  ' (' + str(bobine.largura.largura) + ' mm) não corresponde a largura definida na palete de ' + str(palete.largura_bobines) + ' mm.') 
+                            messages.error(request, '(' + str(count) + ') A largura de ' + bobine.nome + ' (' + str(
+                                bobine.largura.largura) + ' mm) não corresponde a largura definida na palete de ' + str(palete.largura_bobines) + ' mm.')
                             validation = False
 
                         if bobine.bobinagem.perfil.core != palete.core_bobines:
-                            messages.error(request, '(' + str(count) + ') O core da ' + bobine.nome +  ' (' + str(bobine.bobinagem.perfil.core) + '") não corresponde ao core definido na palete de ' + str(palete.core_bobines) + '".') 
+                            messages.error(request, '(' + str(count) + ') O core da ' + bobine.nome + ' (' + str(
+                                bobine.bobinagem.perfil.core) + '") não corresponde ao core definido na palete de ' + str(palete.core_bobines) + '".')
                             validation = False
-                
+
                     except:
-                        messages.error(request, '(' + str(count) + ') A bobine ' + b + ' não existe.')
+                        messages.error(
+                            request, '(' + str(count) + ') A bobine ' + b + ' não existe.')
                         validation = False
-                        
+
                 else:
-                    messages.error(request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
+                    messages.error(
+                        request, '(' + str(count) + ') Por favor preencha a campo nº ' + str(count) + '.')
                     validation = False
-            
+
             validation_estados = True
             for estado in array_estados:
                 if estado == 'SC':
                     validation_estados = False
-                    pass 
+                    pass
 
-            #Validação global -> remover validação global de core e largura
+            # Validação global -> remover validação global de core e largura
             if len(array_bobines) == palete.num_bobines and validation == True:
                 if len(array_bobines) > len(set(array_bobines)):
-                    messages.error(request, 'A picagem contem bobines repetidas.')
-                elif len(set(array_produtos))!=1:
-                    messages.error(request, 'As bobines picadas são produtos diferentes. Para que a palete seja válida todas as bobines têm de ser o mesmo produto.')
-                elif len(set(array_estados))!=1 and validation_estados == False:
-                    messages.error(request, 'Todas as bobines tem de ser classificadas como SC antes de validar esta palete.')
+                    messages.error(
+                        request, 'A picagem contem bobines repetidas.')
+                elif len(set(array_produtos)) != 1:
+                    messages.error(
+                        request, 'As bobines picadas são produtos diferentes. Para que a palete seja válida todas as bobines têm de ser o mesmo produto.')
+                elif len(set(array_estados)) != 1 and validation_estados == False:
+                    messages.error(
+                        request, 'Todas as bobines tem de ser classificadas como SC antes de validar esta palete.')
                 else:
                     c = 0
                     area_sum = 0
@@ -3548,10 +3613,11 @@ def palete_picagem(request, pk):
                     for y in array_bobines:
                         y_b = get_object_or_404(Bobine, nome=y)
                         if y_b.palete:
-                            y_p = get_object_or_404(Palete, pk = y_b.palete.pk)
+                            y_p = get_object_or_404(Palete, pk=y_b.palete.pk)
                             if y_p.estado == 'DM':
-                                y_p.area -= Decimal(y_b.area) 
-                                y_p.comp_total -= Decimal(y_b.bobinagem.comp_cli)
+                                y_p.area -= Decimal(y_b.area)
+                                y_p.comp_total -= Decimal(
+                                    y_b.bobinagem.comp_cli)
                                 y_p.num_bobines -= 1
                                 y_p.num_bobines_act -= 1
                                 y_p.save()
@@ -3564,47 +3630,45 @@ def palete_picagem(request, pk):
                         area_sum += bob.area
                         comp_total += bob.comp
                         bob.save()
-                        movimento_bobine = MovimentosBobines.objects.create(bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
+                        movimento_bobine = MovimentosBobines.objects.create(
+                            bobine=bob, palete=palete, timestamp=palete.timestamp, destino=bob.destino)
 
-                    e_p = EtiquetaPalete.objects.get(palete=palete)       
+                    e_p = EtiquetaPalete.objects.get(palete=palete)
                     for x in array_bobines:
                         bobine = Bobine.objects.get(nome=x)
                         if bobine.bobinagem.perfil.retrabalho == True:
                             ano = palete.data_pal
                             ano = ano.strftime('%Y')
                             num = palete.num
-                            if num < 10:    
-                                palete.nome = 'R000%s-%s' % (num, ano)  
+                            if num < 10:
+                                palete.nome = 'R000%s-%s' % (num, ano)
                             elif num < 100:
                                 palete.nome = 'R00%s-%s' % (num, ano)
-                            elif num < 1000: 
+                            elif num < 1000:
                                 palete.nome = 'R0%s-%s' % (num, ano)
-                            else: 
+                            else:
                                 palete.nome = 'R%s-%s' % (num, ano)
                             palete.save()
                             e_p.palete_nome = palete.nome
                             break
-                 
-
 
                     palete.num_bobines_act = c
                     palete.area = area_sum
                     palete.comp_total = comp_total
                     palete.save()
 
-                    
                     bobines = Bobine.objects.filter(palete=palete)
                     bobines_nome = []
                     d_min = 0
                     d_max = 0
                     bobine_posicao = [None] * 61
-                                        
+
                     for bn in bobines:
                         bobines_nome.append(bn.nome)
                         d = bn.diam
                         pos = bn.posicao_palete
                         bobine_posicao[pos] = bn.nome
-                        if d_min == 0 and d_max == 0: 
+                        if d_min == 0 and d_max == 0:
                             d_min = d
                             d_max = d
                         elif d <= d_min:
@@ -3616,9 +3680,10 @@ def palete_picagem(request, pk):
                     e_p.produto = bobine_produto.designacao_prod
                     e_p.artigo = bobine_produto.artigo.des
                     if cliente != 0:
-                        artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=bobine_produto.artigo)
+                        artigo_cliente = ArtigoCliente.objects.get(
+                            cliente=cliente, artigo=bobine_produto.artigo)
                         e_p.cod_cliente = artigo_cliente.cod_client
-                    
+
                     e_p.bobine1 = bobine_posicao[1]
                     e_p.bobine2 = bobine_posicao[2]
                     e_p.bobine3 = bobine_posicao[3]
@@ -3684,56 +3749,50 @@ def palete_picagem(request, pk):
                     e_p.save()
 
                     return redirect('producao:addbobinepalete', pk=palete.pk)
-                  
-               
+
     else:
         formset = PicagemBobinesFormSet()
-    
-    
+
     context = {
         "palete": palete,
         "formset": formset
-        }
+    }
     return render(request, template_name, context)
 
 
-
-@login_required    
+@login_required
 def classificacao_bobines_v2(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'producao/classificacao_bobines_v2.html'
-    
 
     # ClassificacaoBobinesFormSet = modelformset_factory(Bobine, fields=('estado', ))
-    ClassificacaoBobinesFormSet = inlineformset_factory(Bobinagem, Bobine, fields=('nome', 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'estado', 'buraco', 'esp', 'troca_nw', 'outros', 'obs', 'l_real', ), extra=0, can_delete=False)
-    
-    
+    ClassificacaoBobinesFormSet = inlineformset_factory(Bobinagem, Bobine, fields=(
+        'nome', 'estado', 'con', 'descen', 'presa', 'diam_insuf', 'furos', 'estado', 'buraco', 'esp', 'troca_nw', 'outros', 'obs', 'l_real', ), extra=0, can_delete=False)
+
     if request.method == 'POST':
         # formset = ClassificacaoBobinesFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem),)
         formset = ClassificacaoBobinesFormSet(request.POST, instance=bobinagem)
         if formset.is_valid():
-        #    instances = formset.save(commit=False)
-        #    for instance in instances:
-        #        instance.save()
+            #    instances = formset.save(commit=False)
+            #    for instance in instances:
+            #        instance.save()
             formset.save()
-           
-    
-    formset = ClassificacaoBobinesFormSet(instance=bobinagem)       
-    
-    
-    
+
+    formset = ClassificacaoBobinesFormSet(instance=bobinagem)
+
     context = {
         "bobinagem": bobinagem,
-        "bobines":bobines,
+        "bobines": bobines,
         "formset": formset
-        }
+    }
     return render(request, template_name, context)
 
 
 @login_required
 def bobinagem_list_v2(request):
-    bobinagens = Bobinagem.objects.filter(perfil__retrabalho=0, data__gt='2018-12-31')
+    bobinagens = Bobinagem.objects.filter(
+        perfil__retrabalho=0, data__gt='2018-12-31')
     bobine = Bobine.objects.filter(bobinagem__perfil__retrabalho=0)
     template_name = 'producao/bobinagem_list_v2.html'
     query = request.GET.get("q")
@@ -3742,9 +3801,10 @@ def bobinagem_list_v2(request):
     context = {
         "bobinagens": bobinagens,
         "bobine": bobine
-        
-        }
+
+    }
     return render(request, template_name, context)
+
 
 @login_required
 def perfil_list_v2(request):
@@ -3752,33 +3812,30 @@ def perfil_list_v2(request):
     template_name = 'perfil/perfil_list_v2.html'
     # form = SearchPerfil(request.POST or None)
 
-       
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        perfil_list = perfil_list.filter(nome__icontains=query).order_by('-timestamp')
-
+        perfil_list = perfil_list.filter(
+            nome__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(perfil_list, 7)
     page = request.GET.get('page')
-    
 
     try:
-        perfil= paginator.page(page)
+        perfil = paginator.page(page)
     except PageNotAnInteger:
         perfil = paginator.page(1)
     except EmptyPage:
         perfil = paginator.page(paginator.num_pages)
-             
 
     context = {
         "perfil": perfil,
         "query": query,
-        
+
     }
-    return render(request, template_name, context) 
-    
+    return render(request, template_name, context)
+
     # if form.is_valid():
     #     cd = form.cleaned_data
     #     nome = cd.get('nome')
@@ -3820,7 +3877,7 @@ def perfil_list_v2(request):
     #             perfil = Perfil.objects.filter(Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=True) & Q(obsoleto=False))
     #         else:
     #             perfil = Perfil.objects.filter(Q(retrabalho=True) & Q(obsoleto=False))
-        
+
     #     if retrabalho == False:
     #         if nome and num_bobines and core and largura_bobinagem:
     #             perfil = Perfil.objects.filter(Q(nome__icontains=nome) & Q(num_bobines__iexact=num_bobines) & Q(core__iexact=core) & Q(largura_bobinagem__iexact=largura_bobinagem) & Q(retrabalho=False) & Q(obsoleto=False))
@@ -3856,12 +3913,6 @@ def perfil_list_v2(request):
     #             perfil = Perfil.objects.filter(Q(retrabalho=False) & Q(obsoleto=False))
 
 
-
-    
-    
-
-
-
 @login_required
 def perfil_details_v2(request, pk):
     template_name = 'perfil/perfil_details_v2.html'
@@ -3874,6 +3925,7 @@ def perfil_details_v2(request, pk):
     }
     return render(request, template_name, context)
 
+
 @login_required
 def perfil_create_linha_v2(request):
     template_name = 'perfil/perfil_create_linha_v2.html'
@@ -3883,39 +3935,38 @@ def perfil_create_linha_v2(request):
         instance = form.save(commit=False)
         cd = form.cleaned_data
         largura_bobines = cd.get('largura_bobines')
-    
-           
+
         instance.user = request.user
         instance.retrabalho = False
         instance.save()
 
         for i in range(instance.num_bobines):
             if largura_bobines and instance.gramagem:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
                 lar.save()
             elif largura_bobines:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
             elif instance.gramagem:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
             else:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
-
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
 
         return redirect('producao:perfil_larguras_v2', pk=instance.pk)
 
-
-
-
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def perfil_create_dm_v2(request):
     template_name = 'perfil/perfil_create_dm_v2.html'
     form = PerfilDMForm(request.POST or None)
-    
 
     if form.is_valid():
         instance = form.save(commit=False)
@@ -3927,34 +3978,39 @@ def perfil_create_dm_v2(request):
         instance.retrabalho = True
         instance.core_original = core_original
         instance.largura_original = largura_original
-        
+
         instance.save()
 
         for i in range(instance.num_bobines):
             if largura_bobines and instance.gramagem:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines, gsm=instance.gramagem)
                 lar.save()
             elif largura_bobines:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, largura=largura_bobines)
             elif instance.gramagem:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto, gsm=instance.gramagem)
             else:
-                lar = Largura.objects.create(perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
-
+                lar = Largura.objects.create(
+                    perfil=instance, num_bobine=i+1, designacao_prod=instance.produto)
 
         return redirect('producao:perfil_larguras_v2', pk=instance.pk)
-        
+
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def perfil_larguras_v2(request, pk):
     perfil = get_object_or_404(Perfil, pk=pk)
     template_name = 'perfil/perfil_larguras_v2.html'
     # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
-    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=(
+        'designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
     largura_total = 0
     larguras = []
     produtos = []
@@ -3968,9 +4024,10 @@ def perfil_larguras_v2(request, pk):
     valid = True
     if bobinagem.exists():
         can_edit = False
-    
+
     if request.method == 'POST':
-        formset = LargurasPerfilFormSet(request.POST, queryset=Largura.objects.filter(perfil=perfil))
+        formset = LargurasPerfilFormSet(
+            request.POST, queryset=Largura.objects.filter(perfil=perfil))
         if formset.is_valid():
             for f in formset:
                 cd = f.cleaned_data
@@ -3985,55 +4042,64 @@ def perfil_larguras_v2(request, pk):
                 gsms.append(gsm)
                 clientes.append(cliente)
                 artigos.append(artigo)
-                artigo_obj = Artigo.objects.get(id= artigo.id)
-                
+                artigo_obj = Artigo.objects.get(id=artigo.id)
+
                 if artigo_obj.cod == 'EEEEFTACPAAR000181':
-                    pass 
+                    pass
                 elif designacao_prod != artigo_obj.produto or gsm != artigo_obj.gsm or largura != artigo_obj.lar:
                     valid = False
 
             if valid == False:
-                messages.error(request, 'O artigo selecionado não condiz com as caracteristicas submetidas. Verifique o artigo selecionado.')
+                messages.error(
+                    request, 'O artigo selecionado não condiz com as caracteristicas submetidas. Verifique o artigo selecionado.')
             else:
                 if perfil.retrabalho == True and perfil.largura_original < largura_total:
-                    messages.error(request, 'Não é possivel validar as larguras inseridas. A largura da bobine original é inferior ao total da bobine final')
+                    messages.error(
+                        request, 'Não é possivel validar as larguras inseridas. A largura da bobine original é inferior ao total da bobine final')
                 else:
-                    
-                    lar_s_dupli = list(dict.fromkeys(larguras))   
+
+                    lar_s_dupli = list(dict.fromkeys(larguras))
 
                     for i in lar_s_dupli:
                         num = larguras.count(i)
                         cont.append(num)
 
-                
                     larguras_dict = dict(zip(lar_s_dupli, cont))
                     for ld in larguras_dict:
-                        nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
+                        nome_largura += str(larguras_dict[ld]) + \
+                            'x' + str(ld) + '+'
 
                     nome_largura = nome_largura[:-1]
-                    if perfil.retrabalho == False: 
-                        nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
-                    if perfil.retrabalho == True: 
-                        nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
+                    if perfil.retrabalho == False:
+                        nome_parcial = 'L1 ' + perfil.produto + \
+                            ' [' + nome_largura + '=' + \
+                            str(largura_total) + '] ' + perfil.core + '"'
+                    if perfil.retrabalho == True:
+                        nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(
+                            largura_total) + '] ' + perfil.core + '"' + ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
 
                     if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
-                        perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
+                        perfis = Perfil.objects.filter(
+                            nome__icontains=nome_parcial).count()
                         perfis += 1
                         nome = nome_parcial + ' ' + str(perfis)
-                        
+
                     else:
                         nome = nome_parcial + ' 1'
-                        
-                    if perfil.retrabalho == True:
-                        token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
-                    else:
-                        token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
 
+                    if perfil.retrabalho == True:
+                        token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos,
+                                                    gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
+                    else:
+                        token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core,
+                                                    larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
 
                     if Perfil.objects.filter(token=token).exists():
                         perfil_2 = get_object_or_404(Perfil, token=token)
-                        messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
-                        messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
+                        messages.error(
+                            request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
+                        messages.error(
+                            request, 'O perfil que procura é ' + perfil_2.nome)
                     else:
                         # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
                         # print(token)
@@ -4043,26 +4109,26 @@ def perfil_larguras_v2(request, pk):
                         perfil.save()
                         formset.save()
                         return redirect('producao:perfil_details_v2', pk=perfil.pk)
-                
-
-
 
     else:
-        formset = LargurasPerfilFormSet(queryset=Largura.objects.filter(perfil=perfil))
+        formset = LargurasPerfilFormSet(
+            queryset=Largura.objects.filter(perfil=perfil))
 
     context = {
-        "formset": formset, 
+        "formset": formset,
         "perfil": perfil,
         "can_edit": can_edit
     }
     return render(request, template_name, context)
+
 
 @login_required
 def perfil_edit_larguras_v2(request, pk):
     perfil = get_object_or_404(Perfil, pk=pk)
     template_name = 'perfil/perfil_edit_larguras_v2.html'
     # LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm'), extra=0)
-    LargurasPerfilFormSet = modelformset_factory(Largura, fields=('designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
+    LargurasPerfilFormSet = modelformset_factory(Largura, fields=(
+        'designacao_prod', 'largura', 'gsm', 'cliente', 'artigo'), extra=0)
     largura_total = 0
     larguras = []
     produtos = []
@@ -4075,9 +4141,10 @@ def perfil_edit_larguras_v2(request, pk):
     can_edit = True
     if bobinagem.exists():
         can_edit = False
-    
+
     if request.method == 'POST':
-        formset = LargurasPerfilFormSet(request.POST, queryset=Largura.objects.filter(perfil=perfil))
+        formset = LargurasPerfilFormSet(
+            request.POST, queryset=Largura.objects.filter(perfil=perfil))
         if formset.is_valid():
             for f in formset:
                 cd = f.cleaned_data
@@ -4093,41 +4160,46 @@ def perfil_edit_larguras_v2(request, pk):
                 clientes.append(cliente)
                 artigos.append(artigo)
 
-
-            lar_s_dupli = list(dict.fromkeys(larguras))   
+            lar_s_dupli = list(dict.fromkeys(larguras))
 
             for i in lar_s_dupli:
                 num = larguras.count(i)
                 cont.append(num)
 
-          
             larguras_dict = dict(zip(lar_s_dupli, cont))
             for ld in larguras_dict:
                 nome_largura += str(larguras_dict[ld]) + 'x' + str(ld) + '+'
 
             nome_largura = nome_largura[:-1]
-            if perfil.retrabalho == False: 
-                nome_parcial = 'L1 ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'
-            if perfil.retrabalho == True: 
-                nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(largura_total) + '] ' + perfil.core + '"'  +  ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
+            if perfil.retrabalho == False:
+                nome_parcial = 'L1 ' + perfil.produto + \
+                    ' [' + nome_largura + '=' + \
+                    str(largura_total) + '] ' + perfil.core + '"'
+            if perfil.retrabalho == True:
+                nome_parcial = 'DM ' + perfil.produto + ' [' + nome_largura + '=' + str(
+                    largura_total) + '] ' + perfil.core + '"' + ' CO:' + str(perfil.core_original) + '" LO:' + str(perfil.largura_original)
 
             if Perfil.objects.filter(nome__icontains=nome_parcial).exists():
-                perfis = Perfil.objects.filter(nome__icontains=nome_parcial).count()
+                perfis = Perfil.objects.filter(
+                    nome__icontains=nome_parcial).count()
                 perfis += 1
                 nome = nome_parcial + ' ' + str(perfis)
             else:
                 nome = nome_parcial + ' 1'
-                
-            
+
             if perfil.retrabalho == True:
-                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos,
+                                            gsms, perfil.retrabalho, perfil.core_original, perfil.largura_original, clientes, artigos)
             else:
-                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core, larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
+                token = create_perfil_token(perfil.num_bobines, perfil.produto, perfil.core,
+                                            larguras, produtos, gsms, perfil.retrabalho, None, None, clientes, artigos)
 
             if Perfil.objects.filter(token=token).exists():
                 perfil_2 = get_object_or_404(Perfil, token=token)
-                messages.error(request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
-                messages.error(request, 'O perfil que procura é ' + perfil_2.nome)
+                messages.error(
+                    request, 'O perfil que deseja criar já existe. Verifique as larguras, produtos e gramagens atribuidas.')
+                messages.error(
+                    request, 'O perfil que procura é ' + perfil_2.nome)
             else:
                 # print(largura_total, larguras, larguras_dict, nome_parcial, produtos, gsms)
                 # print(token)
@@ -4138,16 +4210,17 @@ def perfil_edit_larguras_v2(request, pk):
                 formset.save()
                 return redirect('producao:perfil_details_v2', pk=perfil.pk)
 
-
     else:
-        formset = LargurasPerfilFormSet(queryset=Largura.objects.filter(perfil=perfil))
+        formset = LargurasPerfilFormSet(
+            queryset=Largura.objects.filter(perfil=perfil))
 
     context = {
-        "formset": formset, 
+        "formset": formset,
         "perfil": perfil,
         "can_edit": can_edit
     }
     return render(request, template_name, context)
+
 
 @login_required
 def perfil_delete_v2(request, pk):
@@ -4162,32 +4235,30 @@ def perfil_delete_v2(request, pk):
         perfil.delete()
         return redirect('producao:perfil_list_v2')
 
-
-
     context = {
         "can_delete": can_delete,
         "perfil": perfil,
         "bobinagem": bobinagem
-        
+
     }
     return render(request, template_name, context)
 
 
 @login_required
 def bobinagem_retrabalho_list_v2(request):
-    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
+    bobinagem_list = Bobinagem.objects.filter(
+        perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
     template_name = 'retrabalho/bobinagem_retrabalho_list_v2.html'
-    
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        bobinagem_list = Bobinagem.objects.filter(nome__icontains=query, perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
-
+        bobinagem_list = Bobinagem.objects.filter(
+            nome__icontains=query, perfil__retrabalho=True).order_by('-data', '-num_bobinagem')
 
     paginator = Paginator(bobinagem_list, 10)
     page = request.GET.get('page')
-    
 
     try:
         bobinagem = paginator.page(page)
@@ -4195,16 +4266,12 @@ def bobinagem_retrabalho_list_v2(request):
         bobinagem = paginator.page(1)
     except EmptyPage:
         bobinagem = paginator.page(paginator.num_pages)
-             
 
     context = {
         "bobinagem": bobinagem,
         "query": query
     }
     return render(request, template_name, context)
-
-
-
 
 
 @login_required
@@ -4217,45 +4284,50 @@ def inventario_bobines_list(request):
         bobines.append(b)
 
     context = {
-        
+
         "bobines": bobines
 
     }
 
     return render(request, template_name, context)
 
+
 @login_required
 def inventario_bobines_dm_insert(request):
     template_name = 'inventario/inventario_bobines_dm_insert.html'
     form = InventarioBobineDMInsert(request.POST or None)
-    
+
     if form.is_valid():
         cd = form.cleaned_data
         bobine_picada = cd.get('bobine')
         bobines = Bobine.objects.filter(nome=bobine_picada)
         user = request.user.username
         if user != 'elsa.rodrigues':
-            messages.error(request, 'Não tem permissão para introduzir bobines no inventário. Por favor, fale com o administrador.')
+            messages.error(
+                request, 'Não tem permissão para introduzir bobines no inventário. Por favor, fale com o administrador.')
         else:
             if bobines.exists():
                 bobine = InventarioBobinesDM.objects.filter(nome=bobine_picada)
                 if bobine.exists():
-                    messages.warning(request, 'A bobine ' + bobine_picada + ' já se encontra no Inventário.')
+                    messages.warning(
+                        request, 'A bobine ' + bobine_picada + ' já se encontra no Inventário.')
                     form = InventarioBobineDMInsert()
                 else:
                     bobine = get_object_or_404(Bobine, nome=bobine_picada)
-                    bobine_inv = InventarioBobinesDM.objects.create(user=request.user, bobine=bobine, nome=bobine_picada)
+                    bobine_inv = InventarioBobinesDM.objects.create(
+                        user=request.user, bobine=bobine, nome=bobine_picada)
                     bobine_inv.save()
-                    messages.success(request, 'A bobine ' + bobine_picada + ' foi inserida com sucesso.')
+                    messages.success(request, 'A bobine ' +
+                                     bobine_picada + ' foi inserida com sucesso.')
                     form = InventarioBobineDMInsert()
-                
+
             else:
-                messages.error(request, 'A bobine que inseriu não existe. Tente de novo.')
+                messages.error(
+                    request, 'A bobine que inseriu não existe. Tente de novo.')
                 form = InventarioBobineDMInsert()
 
-        
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
 
@@ -4270,14 +4342,13 @@ def inventario_bobines_dm_remover(request, pk):
         bobine_inv.delete()
         return redirect('producao:inventario_bobines_list')
 
-
-
     context = {
         "bobine": bobine,
         "bobine_inv": bobine_inv
     }
 
     return render(request, template_name, context)
+
 
 @login_required
 def inventario_paletes_cliente_list(request):
@@ -4300,7 +4371,6 @@ def inventario_paletes_cliente_list(request):
 def inventario_palete_cliente_insert(request):
     template_name = 'inventario/inventario_palete_cliente_insert.html'
     form = InventarioPaleteClienteInsert(request.POST or None)
-    
 
     if form.is_valid():
         cd = form.cleaned_data
@@ -4311,28 +4381,33 @@ def inventario_palete_cliente_insert(request):
         #     messages.error(request, 'Não tem permissão para introduzir Paletes no inventário. Por favor, fale com o administrador.')
         # else:
         if paletes.exists():
-            palete = InventarioPaletesCliente.objects.filter(nome=palete_picada)
+            palete = InventarioPaletesCliente.objects.filter(
+                nome=palete_picada)
             if palete.exists():
-                messages.warning(request, 'A palete ' + palete_picada + ' já se encontra no Inventário.')
+                messages.warning(request, 'A palete ' +
+                                 palete_picada + ' já se encontra no Inventário.')
                 form = InventarioPaleteClienteInsert()
             else:
                 palete = get_object_or_404(Palete, nome=palete_picada)
-                palete_etiqueta = get_object_or_404(EtiquetaPalete, palete=palete)
+                palete_etiqueta = get_object_or_404(
+                    EtiquetaPalete, palete=palete)
                 bobines = Bobine.objects.filter(palete=palete)
                 artigo = bobines[0].artigo
-                palete_inv = InventarioPaletesCliente.objects.create(user=request.user, palete=palete, nome=palete_picada, cliente=palete_etiqueta.cliente, comp_total=palete.comp_total, area=palete.area, largura_bobine=palete_etiqueta.largura_bobine, diam_max=palete_etiqueta.diam_max, diam_min=palete_etiqueta.diam_min, core_bobines=palete.core_bobines, artigo=artigo)
+                palete_inv = InventarioPaletesCliente.objects.create(user=request.user, palete=palete, nome=palete_picada, cliente=palete_etiqueta.cliente, comp_total=palete.comp_total, area=palete.area,
+                                                                     largura_bobine=palete_etiqueta.largura_bobine, diam_max=palete_etiqueta.diam_max, diam_min=palete_etiqueta.diam_min, core_bobines=palete.core_bobines, artigo=artigo)
                 palete_inv.save()
-                messages.success(request, 'A palete ' + palete_picada + ' foi inserida com sucesso.')
+                messages.success(request, 'A palete ' +
+                                 palete_picada + ' foi inserida com sucesso.')
                 form = InventarioPaleteClienteInsert()
-            
+
         else:
-            messages.error(request, 'A palete que inseriu não existe. Tente de novo.')
+            messages.error(
+                request, 'A palete que inseriu não existe. Tente de novo.')
             form = InventarioPaleteClienteInsert()
 
-        
     context = {
-        "form": form, 
-        
+        "form": form,
+
     }
     return render(request, template_name, context)
 
@@ -4341,11 +4416,13 @@ def inventario_palete_cliente_insert(request):
 def bobines_larguras_reais(request, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     template_name = 'producao/bobines_larguras_reais.html'
-    LargurasReaisFormSet = modelformset_factory(Bobine, fields=('l_real',), extra=0)
+    LargurasReaisFormSet = modelformset_factory(
+        Bobine, fields=('l_real',), extra=0)
     larguras_validator = []
-    
+
     if request.method == 'POST':
-        formset = LargurasReaisFormSet(request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem))
+        formset = LargurasReaisFormSet(
+            request.POST, queryset=Bobine.objects.filter(bobinagem=bobinagem))
         if formset.is_valid():
             for f in formset:
                 bobine = f.save(commit=False)
@@ -4360,12 +4437,12 @@ def bobines_larguras_reais(request, pk):
             if len(larguras_validator) == 0:
                 return redirect('producao:etiqueta_retrabalho', pk=bobinagem.pk)
             else:
-                messages.error(request, 'Todos os campos de larguras reais são de preenchimento obrigatório.')
-                
+                messages.error(
+                    request, 'Todos os campos de larguras reais são de preenchimento obrigatório.')
 
     else:
-        formset = LargurasReaisFormSet(queryset=Bobine.objects.filter(bobinagem=bobinagem))
-
+        formset = LargurasReaisFormSet(
+            queryset=Bobine.objects.filter(bobinagem=bobinagem))
 
     context = {
         "formset": formset,
@@ -4375,23 +4452,21 @@ def bobines_larguras_reais(request, pk):
     return render(request, template_name, context)
 
 
-
-
 @login_required
 def bobinagem_list_v3(request):
-    bobinagem_list = Bobinagem.objects.filter(perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
+    bobinagem_list = Bobinagem.objects.filter(
+        perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
     template_name = 'producao/bobinagem_list_v3.html'
-     
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        bobinagem_list = Bobinagem.objects.filter(nome__icontains=query, perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
-
+        bobinagem_list = Bobinagem.objects.filter(
+            nome__icontains=query, perfil__retrabalho=False).order_by('-data', '-num_bobinagem')
 
     paginator = Paginator(bobinagem_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         bobinagem = paginator.page(page)
@@ -4399,14 +4474,14 @@ def bobinagem_list_v3(request):
         bobinagem = paginator.page(1)
     except EmptyPage:
         bobinagem = paginator.page(paginator.num_pages)
-             
 
     context = {
         "bobinagem": bobinagem,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def cliente_details(request, pk):
@@ -4415,7 +4490,7 @@ def cliente_details(request, pk):
     template_name = 'cliente/cliente_details.html'
 
     context = {
-        "cliente": cliente, 
+        "cliente": cliente,
         "artigos_cliente": artigos_cliente
     }
 
@@ -4438,16 +4513,17 @@ def cliente_add_artigo(request, pk):
             if ac.artigo == instance.artigo:
                 artigo_valido = False
                 break
-                        
+
         if artigo_valido == True:
             instance.save()
             return redirect('producao:cliente_details', pk=cliente.pk)
         else:
-            messages.error(request, 'O Artigo ' + instance.artigo.des + ' já está associado ao cliente ' + cliente.nome + '.')
+            messages.error(request, 'O Artigo ' + instance.artigo.des +
+                           ' já está associado ao cliente ' + cliente.nome + '.')
             form = ArtigoClientInsert()
 
     context = {
-        "cliente": cliente, 
+        "cliente": cliente,
         "form": form
     }
 
@@ -4465,7 +4541,6 @@ def cliente_remover_artigo(request, pk_cliente, pk_artigo):
         artigo_cliente.delete()
         return redirect('producao:cliente_details', pk=cliente.pk)
 
-
     context = {
         "cliente": cliente,
         "artigo:": artigo,
@@ -4474,37 +4549,37 @@ def cliente_remover_artigo(request, pk_cliente, pk_artigo):
 
     return render(request, template_name, context)
 
+
 @login_required
 def load_artigos_cliente(request):
     cliente = request.GET.get('cliente')
     largura = request.GET.get('largura')
     produto = request.GET.get('produto')
     gsm = request.GET.get('gsm')
-    cliente_obj = get_object_or_404(Cliente, pk=cliente) 
+    cliente_obj = get_object_or_404(Cliente, pk=cliente)
     if cliente_obj.cod == 0:
-        artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj).order_by('artigo')
+        artigos_cliente = ArtigoCliente.objects.filter(
+            cliente=cliente_obj).order_by('artigo')
     else:
-        artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente_obj, artigo__lar=largura, artigo__produto=produto, artigo__gsm=gsm).order_by('artigo')
-    return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})       
-
-     
+        artigos_cliente = ArtigoCliente.objects.filter(
+            cliente=cliente_obj, artigo__lar=largura, artigo__produto=produto, artigo__gsm=gsm).order_by('artigo')
+    return render(request, 'perfil/dropdown_options.html', {'artigos_cliente': artigos_cliente})
 
 
 @login_required
 def fornecedor_list(request):
     fornecedor_list = Fornecedor.objects.all().order_by('-timestamp')
     template_name = 'fornecedor/fornecedor_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        fornecedor_list = Fornecedor.objects.filter(designacao__icontains=query).order_by('-timestamp')
-
+        fornecedor_list = Fornecedor.objects.filter(
+            designacao__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(fornecedor_list, 12)
     page = request.GET.get('page')
-    
 
     try:
         fornecedor = paginator.page(page)
@@ -4512,14 +4587,13 @@ def fornecedor_list(request):
         fornecedor = paginator.page(1)
     except EmptyPage:
         fornecedor = paginator.page(paginator.num_pages)
-             
 
     context = {
         "fornecedor": fornecedor,
         "query": query,
-        
+
     }
-    return render(request, template_name, context) 
+    return render(request, template_name, context)
 
 
 @login_required
@@ -4534,9 +4608,10 @@ def fornecedor_create(request):
         return redirect('producao:fornecedor_list')
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def fornecedor_delete(request, pk):
@@ -4551,15 +4626,14 @@ def fornecedor_delete(request, pk):
         fornecedor.delete()
         return redirect('producao:fornecedor_list')
 
-
-
     context = {
         "can_delete": can_delete,
         "fornecedor": fornecedor,
         "artigonw": artigonw
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def fornecedor_edit(request, pk):
@@ -4574,7 +4648,7 @@ def fornecedor_edit(request, pk):
         return redirect('producao:fornecedor_list')
 
     context = {
-        "form": form, 
+        "form": form,
         "fornecedor": fornecedor
     }
     return render(request, template_name, context)
@@ -4584,17 +4658,16 @@ def fornecedor_edit(request, pk):
 def rececao_list(request):
     rececao_list = Rececao.objects.all().order_by('estado', '-num')
     template_name = 'rececao/rececao_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        rececao_list = Rececao.objects.filter(rececao__icontains=query).order_by('estado', '-num')
-
+        rececao_list = Rececao.objects.filter(
+            rececao__icontains=query).order_by('estado', '-num')
 
     paginator = Paginator(rececao_list, 14)
     page = request.GET.get('page')
-    
 
     try:
         rececao = paginator.page(page)
@@ -4602,14 +4675,14 @@ def rececao_list(request):
         rececao = paginator.page(1)
     except EmptyPage:
         rececao = paginator.page(paginator.num_pages)
-             
 
     context = {
         "rececao": rececao,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def rececao_create(request):
@@ -4638,31 +4711,31 @@ def rececao_create(request):
             str_num = '0'
         elif instance.num < 100000:
             str_num = ''
- 
-        instance.rececao = 'R-'+ mes + ano + '/'+ str_num + str(instance.num)
+
+        instance.rececao = 'R-' + mes + ano + '/' + str_num + str(instance.num)
         instance.save()
         return redirect('producao:rececao_insert_nw', pk=instance.pk)
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def artigonw_list(request):
     artigonw_list = ArtigoNW.objects.all().order_by('-timestamp')
     template_name = 'artigonw/artigonw_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        artigonw_list = ArtigoNW.objects.filter(designacao__icontains=query).order_by('-timestamp')
-
+        artigonw_list = ArtigoNW.objects.filter(
+            designacao__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(artigonw_list, 14)
     page = request.GET.get('page')
-    
 
     try:
         artigonw = paginator.page(page)
@@ -4670,31 +4743,32 @@ def artigonw_list(request):
         artigonw = paginator.page(1)
     except EmptyPage:
         artigonw = paginator.page(paginator.num_pages)
-             
 
     context = {
         "artigonw": artigonw,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def artigonw_create(request):
     template_name = 'artigonw/artigonw_create.html'
     form = ArtigoNWCreateForm(request.POST or None)
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
-       
+
         instance.save()
         return redirect('producao:artigonw_list')
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def rececao_insert_nw(request, pk):
@@ -4702,7 +4776,7 @@ def rececao_insert_nw(request, pk):
     rececao = get_object_or_404(Rececao, pk=pk)
     fornecedor = get_object_or_404(Fornecedor, pk=rececao.fornecedor.pk)
     form = RececaoInsertNW(request.POST or None)
-    
+
     if form.is_valid():
         cd = form.cleaned_data
         cod_artigo = cd.get('artigo_nw')
@@ -4710,38 +4784,42 @@ def rececao_insert_nw(request, pk):
         lote = cd.get('lote')
         prod = cd.get('prod')
         stack_num = cd.get('stack_num')
-        # print(artigo_nw)           
-        # print(sqm)           
-        # print(lote)           
-        # print(prod)           
-        # print(stack_num) 
-        artigo_nw = ''    
+        # print(artigo_nw)
+        # print(sqm)
+        # print(lote)
+        # print(prod)
+        # print(stack_num)
+        artigo_nw = ''
 
         try:
-            artigo_nw = get_object_or_404(ArtigoNW, cod=cod_artigo, fornecedor=fornecedor)
+            artigo_nw = get_object_or_404(
+                ArtigoNW, cod=cod_artigo, fornecedor=fornecedor)
             form = RececaoInsertNW()
-                   
-        except:           
-            messages.error(request, 'O Artigo com o código ' + cod_artigo + ' não existe ou  não corresponde ao fornecedor da receção.')
+
+        except:
+            messages.error(request, 'O Artigo com o código ' + cod_artigo +
+                           ' não existe ou  não corresponde ao fornecedor da receção.')
             form = RececaoInsertNW()
-        
+
         try:
             sqm = sqm[:-3]
-            sqm = Decimal(sqm.replace(',','.'))
+            sqm = Decimal(sqm.replace(',', '.'))
             form = RececaoInsertNW()
-        except:           
+        except:
             messages.error(request, 'Metros quadrados inválidos')
             form = RececaoInsertNW()
 
         try:
             nw = get_object_or_404(Nonwoven, stack_num=stack_num)
-            messages.error(request, 'O Nonwoven com a Stack Number ' + stack_num + ' já foi inserido.')
+            messages.error(
+                request, 'O Nonwoven com a Stack Number ' + stack_num + ' já foi inserido.')
         except:
             pass
-               
+
         try:
             comp = sqm / (artigo_nw.largura / 1000)
-            nw = Nonwoven.objects.create(user=request.user, artigo_nw=artigo_nw, rececao=rececao, stack_num=stack_num, sqm=sqm, lote=lote, prod=prod, comp_total=comp, comp_actual=comp)
+            nw = Nonwoven.objects.create(user=request.user, artigo_nw=artigo_nw, rececao=rececao,
+                                         stack_num=stack_num, sqm=sqm, lote=lote, prod=prod, comp_total=comp, comp_actual=comp)
             cont = Nonwoven.objects.filter(rececao=rececao).count()
 
             if cont < 10:
@@ -4750,10 +4828,11 @@ def rececao_insert_nw(request, pk):
                 cont = '0' + str(cont)
             else:
                 cont = '' + str(cont)
-            
+
             cod_nw = 'NW' + rececao.encomenda + cont
 
-            etiquetanw = EtiquetaNonwoven.objects.create(nonwoven=nw, rececao=rececao, cod_nw=cod_nw, rececao_rec=rececao.rececao, encomenda=rececao.encomenda, data_rec=rececao.timestamp, nw_des=nw.artigo_nw.designacao)
+            etiquetanw = EtiquetaNonwoven.objects.create(nonwoven=nw, rececao=rececao, cod_nw=cod_nw, rececao_rec=rececao.rececao,
+                                                         encomenda=rececao.encomenda, data_rec=rececao.timestamp, nw_des=nw.artigo_nw.designacao)
             nw.cod_nw = cod_nw
             nw.save()
             rececao.quantidade += 1
@@ -4761,15 +4840,12 @@ def rececao_insert_nw(request, pk):
             messages.success(request, 'Nonwoven inserido com successo')
         except:
             pass
-                  
-
 
     context = {
-        "form": form, 
+        "form": form,
         "rececao": rececao
     }
     return render(request, template_name, context)
-
 
 
 @login_required
@@ -4784,10 +4860,11 @@ def rececao_close(request, pk):
         return redirect('producao:rececao_list')
 
     context = {
-        "rececao": rececao, 
+        "rececao": rececao,
         "nonwovens": nonwovens
     }
     return render(request, template_name, context)
+
 
 @login_required
 def rececao_open(request, pk):
@@ -4801,7 +4878,7 @@ def rececao_open(request, pk):
         return redirect('producao:rececao_insert_nw', pk=rececao.pk)
 
     context = {
-        "rececao": rececao, 
+        "rececao": rececao,
         "nonwovens": nonwovens
     }
     return render(request, template_name, context)
@@ -4821,13 +4898,12 @@ def fornecedor_details(request, pk):
 
     return render(request, template_name, context)
 
+
 @login_required
 def artigonw_details(request, pk):
     artigonw = get_object_or_404(ArtigoNW, pk=pk)
     nonwoven = Nonwoven.objects.filter(artigo_nw=artigonw)
     template_name = 'artigonw/artigonw_details.html'
-
-    
 
     context = {
         "artigonw": artigonw,
@@ -4835,7 +4911,6 @@ def artigonw_details(request, pk):
     }
 
     return render(request, template_name, context)
-
 
 
 @login_required
@@ -4846,19 +4921,20 @@ def artigonw_edit(request, pk):
     can_edit = True
     if Nonwoven.objects.filter(artigo_nw=artigonw).exists():
         can_edit = False
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
-       
+
         instance.save()
         return redirect('producao:artigonw_list')
 
     context = {
-        "form": form, 
+        "form": form,
         "can_edit": can_edit
     }
     return render(request, template_name, context)
+
 
 @login_required
 def artigonw_delete(request, pk):
@@ -4872,14 +4948,13 @@ def artigonw_delete(request, pk):
         artigonw.delete()
         return redirect('producao:artigonw_list')
 
-
-
     context = {
         "can_delete": can_delete,
         "artigonw": artigonw
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def rececao_details(request, pk):
@@ -4896,15 +4971,12 @@ def rececao_details(request, pk):
     return render(request, template_name, context)
 
 
-
-
 @login_required
 def bobinagem_create_v2(request):
-    
+
     template_name = 'producao/bobinagem_create_v2.html'
     form = BobinagemCreateFormV2(request.POST or None)
-    
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -4919,12 +4991,12 @@ def bobinagem_create_v2(request):
             nonwoven_sup = get_object_or_404(Nonwoven, cod_nw=nonwoven_sup)
             nonwoven_inf = get_object_or_404(Nonwoven, cod_nw=nonwoven_inf)
             print(nonwoven_sup.cod_nw + '->' + str(consumo_sup))
-            print(nonwoven_inf.cod_nw + '->' + str(consumo_inf)) 
+            print(nonwoven_inf.cod_nw + '->' + str(consumo_inf))
 
         except:
-            messages.error(request, 'O Nonwoven ' + nonwoven_sup + ' não existe.')
+            messages.error(request, 'O Nonwoven ' +
+                           nonwoven_sup + ' não existe.')
 
-    
         # sup = instance.lotenwsup
         # inf = instance.lotenwinf
 
@@ -4956,7 +5028,7 @@ def bobinagem_create_v2(request):
         #     else:
         #         instance.save()
         #         bobinagem_create(instance.pk)
-        
+
         #         if not instance.estado == 'LAB' or instance.estado == 'HOLD':
         #             areas(instance.pk)
 
@@ -4971,11 +5043,12 @@ def bobinagem_create_v2(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def carga_etiqueta_nonwoven(request, pk):
     nonwoven = get_object_or_404(Nonwoven, pk=pk)
     etiqueta = EtiquetaNonwoven.objects.get(nonwoven=nonwoven)
-        
+
     etiqueta.impressora = 'ARMAZEM_CAB_SQUIX_6.3_200'
     etiqueta.num_copias = 1
     etiqueta.estado_impressao = True
@@ -4984,6 +5057,7 @@ def carga_etiqueta_nonwoven(request, pk):
     context = {}
 
     return redirect('producao:rececao_details', pk=nonwoven.rececao.pk)
+
 
 @login_required
 def carga_etiqueta_nonwoven_rececao(request, pk):
@@ -5000,10 +5074,11 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
     return redirect('producao:rececao_list')
 
-    
+
 @login_required
 def bobinagem_classificacao(request, pk):
-    BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt', 'fc',  'fc_diam_ini', 'fc_diam_fim', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs','outros','obs','troca_nw'), extra=0, can_delete=False)
+    BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt',
+                                                                                   'fc',  'fc_diam_ini', 'fc_diam_fim', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs', 'outros', 'obs', 'troca_nw'), extra=0, can_delete=False)
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'bobine/bobinagem_classificacao.html'
@@ -5014,16 +5089,21 @@ def bobinagem_classificacao(request, pk):
             valid = False
         else:
             pass
-    
+
     if request.method == 'POST':
-        if not user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and valid == False:
-            messages.error(request, 'Não tem permissões para modificar o estado de uma bobinagem em HOLD.')
-        else:
-            formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
-            if formset.is_valid():
-                index = 0
-                messages_count = 0
-                for form in formset:
+
+        formset = BobineClassificacaoFormSet(request.POST, instance=bobinagem)
+        if formset.is_valid():
+            index = 0
+            messages_count = 0
+            for form in formset:
+                bobine = Bobine.objects.get(
+                    bobinagem=bobinagem, largura__num_bobine=index+1)
+                if not user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and bobine.estado == 'HOLD':
+                    index += 1
+                    messages.error(
+                        request, 'Não tem permissões para modificar o estado de uma bobine em HOLD.')
+                else:
                     cd = form.cleaned_data
                     estado = cd.get('estado')
                     fc_diam_ini = cd.get('fc_diam_ini')
@@ -5033,59 +5113,66 @@ def bobinagem_classificacao(request, pk):
                     obs = cd.get('obs')
                     prop_obs = cd.get('prop_obs')
                     if not user.groups.filter(Q(name='Qualidade Supervisor') | Q(name='Qualidade Tecnico')).exists() and estado == 'HOLD':
-                        messages.error(request, 'Não tem permissões para modificar o estado de uma bobine em HOLD')
-                    else:                                
-                        defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
+                        index += 1
+                        messages.error(
+                            request, 'Não tem permissões para modificar o estado de uma bobine para HOLD')
+                    else:
+                        defeitos = [cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get(
+                            'sbrt'), cd.get('fc'), cd.get('ff'), cd.get('fmp'), cd.get('furos'), cd.get('buraco'), cd.get('esp'), cd.get('prop'), cd.get('outros'), cd.get('troca_nw')]
                         defeitos_validation = not any(defeitos)
                         index += 1
                         if (estado == 'DM' or estado == 'R') and defeitos_validation == True:
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Para classificar a bobine como DM ou R é necessário atribuir pelo menos um defeito.')
+                            messages.error(request, 'Bobine nº' + str(
+                                index) + ' - Para classificar a bobine como DM ou R é necessário atribuir pelo menos um defeito.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
+                            messages.error(
+                                request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de corte.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
+                            messages.error(
+                                request, 'Bobine nº' + str(index) + ' - Preencher inicio e fim da falha de filme.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[12] == True and obs == '':
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Falha de MP: Preencher nas observações o motivo.')
+                            messages.error(request, 'Bobine nº' + str(index) +
+                                           ' - Falha de MP: Preencher nas observações o motivo.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[14] == True and obs == '':
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
+                            messages.error(request, 'Bobine nº' + str(
+                                index) + ' - Buracos: Preencher nas observações os metros de desbobinagem.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[15] == True and prop_obs == '':
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
+                            messages.error(
+                                request, 'Bobine nº' + str(index) + ' - Gramagem: Preencher nas Prop. Obs.')
                             messages_count += 1
                         elif (estado == 'DM' or estado == 'R') and defeitos[16] == True and prop_obs == '':
-                            messages.error(request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
+                            messages.error(
+                                request, 'Bobine nº' + str(index) + ' - Propriedades: Preencher nas Prop. Obs.')
                             messages_count += 1
                         else:
                             form.save()
-                            messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
-
+                            messages.success(
+                                request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
 
             # if messages_count == 0:
             #     return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
-                    
                 # if estado == 'DM':
                 #     messages.error(request, 'DM')
-                    
-                # form.save()
-                
-                
-            # return redirect('producao:bobinestatus', pk=bobinagem.pk)
-              
 
+                # form.save()
+
+            # return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
     formset = BobineClassificacaoFormSet(instance=bobinagem)
-    
+
     context = {
-        "formset": formset, 
+        "formset": formset,
         "bobinagem": bobinagem,
         "bobines": bobines,
     }
     return render(request, template_name, context)
+
 
 def classificacao_bobines_all(request, operation, pk):
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
@@ -5099,9 +5186,10 @@ def classificacao_bobines_all(request, operation, pk):
                 bob.estado = 'G'
                 bob.save()
             else:
-                messages.error(request, 'Não tem permissões para aprovar uma bobine em HOLD')
-                
-        return redirect('producao:bobinagem_classificacao', pk=bobinagem.pk)       
+                messages.error(
+                    request, 'Não tem permissões para aprovar uma bobine em HOLD')
+
+        return redirect('producao:bobinagem_classificacao', pk=bobinagem.pk)
     elif operation == 'hold':
         for bob in bobines:
             if bob.estado == 'LAB' or bob.estado == 'DM':
@@ -5119,23 +5207,30 @@ def classificacao_bobines_all(request, operation, pk):
             ff_m_fim = cd.get('ff_m_fim')
             obs = cd.get('obs')
             prop_obs = cd.get('prop_obs')
-        
-            defeitos = [ cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get('sbrt'), cd.get('fc'),cd.get('ff'),cd.get('fmp'),cd.get('furos'),cd.get('buraco'), cd.get('esp'),cd.get('prop'),cd.get('outros'),cd.get('troca_nw')]
+
+            defeitos = [cd.get('nok'), cd.get('con'), cd.get('descen'), cd.get('presa'), cd.get('diam_insuf'), cd.get('suj'), cd.get('car'), cd.get('lac'), cd.get('ncore'), cd.get(
+                'sbrt'), cd.get('fc'), cd.get('ff'), cd.get('fmp'), cd.get('furos'), cd.get('buraco'), cd.get('esp'), cd.get('prop'), cd.get('outros'), cd.get('troca_nw')]
             defeitos_validation = not any(defeitos)
             if defeitos_validation == True:
-                messages.error(request, 'Para classificar a bobinagem como ' + operation + ' é necessário atribuir pelo menos um defeito.')
+                messages.error(request, 'Para classificar a bobinagem como ' +
+                               operation + ' é necessário atribuir pelo menos um defeito.')
             elif defeitos[10] == True and (fc_diam_ini == None or fc_diam_fim == None):
-                messages.error(request, 'Preencher inicio e fim da falha de corte.')
+                messages.error(
+                    request, 'Preencher inicio e fim da falha de corte.')
             elif defeitos[11] == True and (ff_m_ini == None or ff_m_fim == None):
-                messages.error(request, 'Preencher inicio e fim da falha de filme.')
+                messages.error(
+                    request, 'Preencher inicio e fim da falha de filme.')
             elif defeitos[12] == True and obs == '':
-                messages.error(request, 'Falha de MP: Preencher nas observações o motivo.')
+                messages.error(
+                    request, 'Falha de MP: Preencher nas observações o motivo.')
             elif defeitos[14] == True and obs == '':
-                messages.error(request, 'Buracos: Preencher nas observações os metros de desbobinagem.')
+                messages.error(
+                    request, 'Buracos: Preencher nas observações os metros de desbobinagem.')
             elif defeitos[15] == True and prop_obs == '':
                 messages.error(request, 'Gramagem: Preencher nas Prop. Obs.')
             elif defeitos[16] == True and prop_obs == '':
-                messages.error(request, 'Propriedades: Preencher nas Prop. Obs.')
+                messages.error(
+                    request, 'Propriedades: Preencher nas Prop. Obs.')
             else:
                 for bob in bobines:
                     if bob.estado == 'LAB' and operation == 'dm':
@@ -5195,15 +5290,12 @@ def classificacao_bobines_all(request, operation, pk):
                         bob.prop_obs = cd.get('prop_obs')
                         bob.save()
                 return redirect('producao:bobinestatus', pk=bobinagem.pk)
-        
 
             #     form.save()
                 # messages.success(request, 'Bobine nº' + str(index) + ' - Alterações guardadas com sucesso.')
 
-            
-
     context = {
-        "form": form, 
+        "form": form,
         "bobinagem": bobinagem,
         "operation": operation
     }
@@ -5215,7 +5307,7 @@ def classificacao_bobines_all(request, operation, pk):
 #     for pal in paletes:
 #         if pal.num_bobines_act > 0:
 #             bobines = Bobine.objects.filter(palete=pal)
-#             for bob in bobines:                
+#             for bob in bobines:
 #                 movimento = MovimentosBobines.objects.create(bobine=bob, palete=pal, timestamp=pal.timestamp, destino=bob.destino)
 
 #     return redirect('producao:producao_home')
@@ -5226,21 +5318,21 @@ def reciclado_home(request):
 
     return render(request, template_name, context)
 
+
 @login_required
 def produto_granulado_list(request):
     produto_granulado_list = ProdutoGranulado.objects.all().order_by('-timestamp')
     template_name = 'reciclado/produto_granulado_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        produto_granulado_list = ProdutoGranulado.objects.filter(produto_granulado__icontains=query).order_by('-timestamp')
-
+        produto_granulado_list = ProdutoGranulado.objects.filter(
+            produto_granulado__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(produto_granulado_list, 14)
     page = request.GET.get('page')
-    
 
     try:
         produto_granulado = paginator.page(page)
@@ -5248,20 +5340,20 @@ def produto_granulado_list(request):
         produto_granulado = paginator.page(1)
     except EmptyPage:
         produto_granulado = paginator.page(paginator.num_pages)
-             
 
     context = {
         "produto_granulado": produto_granulado,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def produto_granulado_create(request):
     template_name = 'reciclado/produto_granulado_create.html'
     form = ProdutoGranuladoCreateForm(request.POST or None)
-    
+
     if form.is_valid():
         cd = form.cleaned_data
         produto = cd.get('produto_granulado')
@@ -5273,29 +5365,27 @@ def produto_granulado_create(request):
             instance.user = request.user
             instance.save()
             return redirect('producao:produto_granulado_list')
-        
-
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
-    
+
+
 @login_required
 def reciclado_list(request):
     reciclado_list = Reciclado.objects.all().order_by('-timestamp')
     template_name = 'reciclado/reciclado_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        reciclado_list = Reciclado.objects.filter(lote__icontains=query).order_by('-timestamp')
-
+        reciclado_list = Reciclado.objects.filter(
+            lote__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(reciclado_list, 14)
     page = request.GET.get('page')
-    
 
     try:
         reciclado = paginator.page(page)
@@ -5303,20 +5393,20 @@ def reciclado_list(request):
         reciclado = paginator.page(1)
     except EmptyPage:
         reciclado = paginator.page(paginator.num_pages)
-             
 
     context = {
         "reciclado": reciclado,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def reciclado_create(request):
     template_name = 'reciclado/reciclado_create.html'
     form = RecicladoCreateForm(request.POST or None)
-    
+
     if form.is_valid():
         cd = form.cleaned_data
         estado = cd.get('estado')
@@ -5337,45 +5427,46 @@ def reciclado_create(request):
             instance.timestamp_edit = datetime.now()
             instance.timestamp = datetime.now()
             instance.timestamp_inicio = reciclado_latest.timestamp
-            
+
             print(instance.peso)
 
             if instance.tara == '30 kg':
                 instance.peso -= 30
             elif instance.tara == '15 kg':
                 instance.peso -= 15
-            
+
             print(instance.tara)
             print(instance.peso)
 
-
             if estado == 'R' and instance.obs == '':
-                messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
+                messages.error(
+                    request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
             else:
                 instance.save()
                 return redirect('producao:reciclado_details', pk=instance.pk)
-                       
 
         except:
             messages.error(request, 'O lote que pretende criar já existe.')
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 @login_required
 def reciclado_edit(request, pk):
     template_name = 'reciclado/reciclado_edit.html'
     reciclado = get_object_or_404(Reciclado, pk=pk)
     form = RecicladoEditForm(request.POST or None, instance=reciclado)
-    
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
         instance.timestamp_edit = datetime.now()
         if (instance.estado == 'R' and instance.obs == '') or (instance.estado == 'NOK' and instance.obs == ''):
-            messages.error(request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
+            messages.error(
+                request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')
         else:
             instance.save()
             etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=instance)
@@ -5383,13 +5474,13 @@ def reciclado_edit(request, pk):
             etiqueta.peso = instance.peso
             etiqueta.save()
             return redirect('producao:reciclado_list')
-       
 
     context = {
-        "form": form, 
+        "form": form,
         "reciclado": reciclado
     }
     return render(request, template_name, context)
+
 
 @login_required
 def reciclado_details(request, pk):
@@ -5399,14 +5490,15 @@ def reciclado_details(request, pk):
     if form.is_valid():
         try:
             num_copias = int(form['num_copias'].value())
-            etiqueta = get_object_or_404(EtiquetaReciclado, reciclado=reciclado)
+            etiqueta = get_object_or_404(
+                EtiquetaReciclado, reciclado=reciclado)
             etiqueta.delete()
-            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias = num_copias, inicio=reciclado.timestamp_inicio, fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
+            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias=num_copias, inicio=reciclado.timestamp_inicio,
+                                                                  fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
         except:
             num_copias = int(form['num_copias'].value())
-            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias = num_copias, inicio=reciclado.timestamp_inicio, fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
-
-   
+            etiqueta_reciclado = EtiquetaReciclado.objects.create(user=request.user, impressora='ARMAZEM_CAB_SQUIX_6.3_200',  num_copias=num_copias, inicio=reciclado.timestamp_inicio,
+                                                                  fim=reciclado.timestamp, reciclado=reciclado, lote=reciclado.lote, produto_granulado=reciclado.produto_granulado.produto_granulado, peso=reciclado.peso)
 
     context = {
         "reciclado": reciclado,
@@ -5415,21 +5507,21 @@ def reciclado_details(request, pk):
 
     return render(request, template_name, context)
 
+
 @login_required
 def movimentos_list(request):
     movimentos_list = MovimentoMP.objects.all().order_by('-timestamp')
     template_name = 'reciclado/movimento_list.html'
-        
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        movimentos_list = MovimentoMP.objects.filter(lote__icontains=query).order_by('-timestamp')
-
+        movimentos_list = MovimentoMP.objects.filter(
+            lote__icontains=query).order_by('-timestamp')
 
     paginator = Paginator(movimentos_list, 14)
     page = request.GET.get('page')
-    
 
     try:
         movimentos = paginator.page(page)
@@ -5437,20 +5529,20 @@ def movimentos_list(request):
         movimentos = paginator.page(1)
     except EmptyPage:
         movimentos = paginator.page(paginator.num_pages)
-             
 
     context = {
         "movimentos": movimentos,
         "query": query,
-        
+
     }
     return render(request, template_name, context)
+
 
 @login_required
 def movimento_create(request):
     template_name = 'reciclado/movimento_create.html'
     form = MovimentoCreateForm(request.POST or None)
-    
+
     if form.is_valid():
         cd = form.cleaned_data
         lote = cd.get('lote')
@@ -5459,43 +5551,45 @@ def movimento_create(request):
         instance = form.save(commit=False)
         instance.user = request.user
         if tipo == 'NOK' and motivo == '':
-            messages.error(request, 'Para criar um movimento NOK é necessário escrever o motivo da mesma.')
+            messages.error(
+                request, 'Para criar um movimento NOK é necessário escrever o motivo da mesma.')
         else:
             try:
                 lote = get_object_or_404(Reciclado, lote=lote)
                 if (lote.estado == 'R' or lote.estado == 'NOK'):
-                    messages.error(request, 'Não é possivel movimentar lote ' + lote.lote + ' porque o seu estado é R ou NOK.')
+                    messages.error(request, 'Não é possivel movimentar lote ' +
+                                   lote.lote + ' porque o seu estado é R ou NOK.')
                 else:
                     movimentos = MovimentoMP.objects.filter(lote=lote.lote)
                     if movimentos.exists():
                         if movimentos.count() == 2:
-                            messages.error(request, 'Não é possivel movimentar o lote ' + lote.lote + ' porque o lote selecionado ja tem um movimento de Entrada e um NOK.')
+                            messages.error(request, 'Não é possivel movimentar o lote ' + lote.lote +
+                                           ' porque o lote selecionado ja tem um movimento de Entrada e um NOK.')
                         if movimentos.count() == 1:
                             for mov in movimentos:
                                 if tipo == mov.tipo:
-                                    messages.error(request, 'Não é possivel movimear o lote ' + lote.lote + ' porque o lote selecionado ja tem um movimento de ' + tipo + '.')
-                                else:      
+                                    messages.error(request, 'Não é possivel movimear o lote ' + lote.lote +
+                                                   ' porque o lote selecionado ja tem um movimento de ' + tipo + '.')
+                                else:
                                     instance.save()
-                                    return redirect('producao:movimentos_list')   
+                                    return redirect('producao:movimentos_list')
 
-                    
-                    else:  
+                    else:
                         if tipo == 'NOK':
-                            messages.error(request, 'Não é possivel passar o lote ' + lote.lote + ' a NOK porque não Entrou em Linha.')
+                            messages.error(request, 'Não é possivel passar o lote ' +
+                                           lote.lote + ' a NOK porque não Entrou em Linha.')
                         else:
                             instance.save()
-                            return redirect('producao:movimentos_list')            
-                
-                
+                            return redirect('producao:movimentos_list')
+
             except:
                 messages.error(request, 'O lote que picou não existe.')
-        
 
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
-    
+
 
 @login_required
 def export_bobine_to_excel(request):
@@ -5525,6 +5619,9 @@ def export_bobine_to_excel(request):
                     worksheet.write(row, col + 2, bob.largura.cliente.nome)
                     worksheet.write(row, col + 3, bob.largura.artigo.cod)
                     worksheet.write(row, col + 4, bob.area)
+                    # worksheet.write(row, col + 5, bob.palete)
+                    if bob.palete != None:
+                        worksheet.write(row, col + 5, bob.palete.nome)
                     row += 1
 
                 worksheet.write('A1', 'Bobine')
@@ -5532,7 +5629,8 @@ def export_bobine_to_excel(request):
                 worksheet.write('C1', 'Cliente')
                 worksheet.write('D1', 'Artigo')
                 worksheet.write('E1', 'SQM')
-
+                worksheet.write('F1', 'Palete')
+               
                 workbook.close()
 
                 output.seek(0)
@@ -5546,10 +5644,12 @@ def export_bobine_to_excel(request):
 
                 return response
             except:
-                messages.error(request, 'O cliente com abreviatura ' + abv + ' não existe')
+                messages.error(
+                    request, 'O cliente com abreviatura ' + abv + ' não existe')
         elif abv == '' and data_inicial != '' and data_final != '':
-            bobines = Bobine.objects.filter(bobinagem__data__range=(data_inicial, data_final))
-            
+            bobines = Bobine.objects.filter(
+                bobinagem__data__range=(data_inicial, data_final))
+
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output)
             worksheet = workbook.add_worksheet()
@@ -5563,6 +5663,8 @@ def export_bobine_to_excel(request):
                 worksheet.write(row, col + 2, bob.largura.cliente.nome)
                 worksheet.write(row, col + 3, bob.largura.artigo.cod)
                 worksheet.write(row, col + 4, bob.area)
+                if bob.palete != None:
+                    worksheet.write(row, col + 5, bob.palete.nome)
                 row += 1
 
             worksheet.write('A1', 'Bobine')
@@ -5570,7 +5672,8 @@ def export_bobine_to_excel(request):
             worksheet.write('C1', 'Cliente')
             worksheet.write('D1', 'Artigo')
             worksheet.write('E1', 'SQM')
-
+            worksheet.write('F1', 'Palete')
+            
             workbook.close()
 
             output.seek(0)
@@ -5584,12 +5687,11 @@ def export_bobine_to_excel(request):
 
             return response
 
-        
-
     context = {
-        "form": form, 
+        "form": form,
     }
     return render(request, template_name, context)
+
 
 def calendario_expedicoes(request):
     template_name = 'expedicoes/expedicao_calendar.html'
@@ -5598,23 +5700,25 @@ def calendario_expedicoes(request):
     month = monthrange(int(ano), int(mes))
     data_inicial = datetime.now().strftime('%Y-%m-' + str(1))
     data_final = datetime.now().strftime('%Y-%m-' + str(month[1]))
-    cargas_previstas = Carga.objects.filter(data_prevista__range=(data_inicial, data_final))
-    cargas_expedidas = Carga.objects.filter(expedida=True, data_expedicao__range=(data_inicial, data_final))
-    
+    cargas_previstas = Carga.objects.filter(
+        data_prevista__range=(data_inicial, data_final))
+    cargas_expedidas = Carga.objects.filter(
+        expedida=True, data_expedicao__range=(data_inicial, data_final))
+
     cargas_previstas_dia = defaultdict(list)
     cargas_expedidas_dia = defaultdict(list)
-    
+
     for cp in cargas_previstas:
         cp_int = (int(cp.data_prevista.strftime('%d')))
         cargas_previstas_dia[cp_int].append(cp)
-    
+
     for ce in cargas_expedidas:
         ce_int = (int(ce.data_expedicao.strftime('%d')))
         cargas_expedidas_dia[ce_int].append(ce)
-   
+
     cargas_previstas_dia = dict(cargas_previstas_dia)
     cargas_expedidas_dia = dict(cargas_expedidas_dia)
-    
+
     print(cargas_previstas_dia)
     print(cargas_expedidas_dia)
 
@@ -5659,7 +5763,7 @@ def calendario_expedicoes(request):
         semana_4[4] = 26
         semana_4[5] = 27
         semana_4[6] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[0] = 29
         elif num_dias == 30:
             semana_5[0] = 29
@@ -5668,7 +5772,7 @@ def calendario_expedicoes(request):
             semana_5[0] = 29
             semana_5[1] = 30
             semana_5[2] = 31
-        
+
     elif primeiro_dia == 1:
         semana_1[1] = 1
         semana_1[2] = 2
@@ -5702,7 +5806,7 @@ def calendario_expedicoes(request):
         semana_4[6] = 27
 
         semana_5[0] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[1] = 29
         elif num_dias == 30:
             semana_5[1] = 29
@@ -5711,7 +5815,7 @@ def calendario_expedicoes(request):
             semana_5[1] = 29
             semana_5[2] = 30
             semana_5[3] = 31
-        
+
     elif primeiro_dia == 2:
         semana_1[2] = 1
         semana_1[3] = 2
@@ -5745,7 +5849,7 @@ def calendario_expedicoes(request):
 
         semana_5[0] = 27
         semana_5[1] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[2] = 29
         elif num_dias == 30:
             semana_5[2] = 29
@@ -5754,7 +5858,7 @@ def calendario_expedicoes(request):
             semana_5[2] = 29
             semana_5[3] = 30
             semana_5[4] = 31
-       
+
     elif primeiro_dia == 3:
         semana_1[3] = 1
         semana_1[4] = 2
@@ -5788,7 +5892,7 @@ def calendario_expedicoes(request):
         semana_5[0] = 26
         semana_5[1] = 27
         semana_5[2] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[3] = 29
         elif num_dias == 30:
             semana_5[3] = 29
@@ -5798,9 +5902,6 @@ def calendario_expedicoes(request):
             semana_5[4] = 30
             semana_5[5] = 31
 
-      
-
-        
     elif primeiro_dia == 4:
         semana_1[4] = 1
         semana_1[5] = 2
@@ -5834,7 +5935,7 @@ def calendario_expedicoes(request):
         semana_5[1] = 26
         semana_5[2] = 27
         semana_5[3] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[4] = 29
         elif num_dias == 30:
             semana_5[4] = 29
@@ -5843,7 +5944,7 @@ def calendario_expedicoes(request):
             semana_5[4] = 29
             semana_5[5] = 30
             semana_5[6] = 31
-       
+
     elif primeiro_dia == 5:
         semana_1[5] = 1
         semana_1[6] = 2
@@ -5877,7 +5978,7 @@ def calendario_expedicoes(request):
         semana_5[2] = 26
         semana_5[3] = 27
         semana_5[4] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[5] = 29
         elif num_dias == 30:
             semana_5[5] = 29
@@ -5886,10 +5987,9 @@ def calendario_expedicoes(request):
             semana_5[5] = 29
             semana_5[6] = 30
             semana_6[0] = 31
-        
-        
+
     elif primeiro_dia == 6:
-        
+
         semana_1[6] = 1
 
         semana_2[0] = 2
@@ -5922,7 +6022,7 @@ def calendario_expedicoes(request):
         semana_5[3] = 26
         semana_5[4] = 27
         semana_5[5] = 28
-        if num_dias == 29: 
+        if num_dias == 29:
             semana_5[6] = 29
         elif num_dias == 30:
             semana_5[6] = 29
@@ -5931,23 +6031,18 @@ def calendario_expedicoes(request):
             semana_5[6] = 29
             semana_6[0] = 30
             semana_6[1] = 31
-         
-             
-    
-  
-
 
     context = {
         "ano": ano,
         "mes": mes,
-        "num_dias":num_dias,
-        "primeiro_dia":primeiro_dia,
-        "semana_1":semana_1,
-        "semana_2":semana_2,
-        "semana_3":semana_3,
-        "semana_4":semana_4,
-        "semana_5":semana_5,
-        "semana_6":semana_6,
+        "num_dias": num_dias,
+        "primeiro_dia": primeiro_dia,
+        "semana_1": semana_1,
+        "semana_2": semana_2,
+        "semana_3": semana_3,
+        "semana_4": semana_4,
+        "semana_5": semana_5,
+        "semana_6": semana_6,
         "cargas_previstas": cargas_previstas,
         "cargas_previstas_dia": cargas_previstas_dia,
         "cargas_expedidas": cargas_expedidas,
@@ -5976,7 +6071,8 @@ def bobinagem_edit(request, pk):
                 pass
 
     form = BobinagemEditForm(request.POST or None, instance=bobinagem)
-    form_has_palete = BobinagemEditHasPaleteForm(request.POST or None, instance=bobinagem)
+    form_has_palete = BobinagemEditHasPaleteForm(
+        request.POST or None, instance=bobinagem)
     metros_nw_sup_now = bobinagem.nwsup
     metros_nw_inf_now = bobinagem.nwinf
     diam = bobinagem.diam
@@ -5990,7 +6086,7 @@ def bobinagem_edit(request, pk):
         metros_nwinf = instance.nwinf
         instance.lotenwsup = sup.replace(" ", "")
         instance.lotenwinf = inf.replace(" ", "")
-     
+
         nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
         nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
 
@@ -6004,25 +6100,24 @@ def bobinagem_edit(request, pk):
         total_sup -= metros_nw_sup_now
         total_inf -= metros_nw_inf_now
 
-      
         # if (total_sup > 7500):
         #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
         # if (total_inf > 7500):
 
-        if (total_inf > 8500  or total_sup > 8500):
-            messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
+        if (total_inf > 8500 or total_sup > 8500):
+            messages.error(
+                request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
         else:
             instance.save()
-            desperdicio(instance.pk) 
+            desperdicio(instance.pk)
             tempo_duracao(instance.pk)
-            area_bobinagem(instance.pk) 
+            area_bobinagem(instance.pk)
             edit_bobine(instance.pk)
 
-            
             if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                 areas(instance.pk)
 
-            return redirect('producao:bobinestatus', pk=bobinagem.pk)  
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
     if form_has_palete.is_valid():
         instance = form_has_palete.save(commit=False)
@@ -6035,7 +6130,7 @@ def bobinagem_edit(request, pk):
         metros_nwinf = instance.nwinf
         instance.lotenwsup = sup.replace(" ", "")
         instance.lotenwinf = inf.replace(" ", "")
-     
+
         nonwovensup = Bobinagem.objects.filter(lotenwsup=sup)
         nonwoveninf = Bobinagem.objects.filter(lotenwinf=inf)
 
@@ -6049,37 +6144,37 @@ def bobinagem_edit(request, pk):
         total_sup -= metros_nw_sup_now
         total_inf -= metros_nw_inf_now
 
-      
         # if (total_sup > 7500):
         #     messages.error(request, 'A soms total de metros do lote de Nonwoven superior "' + sup + '" excede o limite establecido de 7500. Por favor verifique o valor introduzido.')
         # if (total_inf > 7500):
 
-        if (total_inf > 8500  or total_sup > 8500):
-            messages.error(request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
+        if (total_inf > 8500 or total_sup > 8500):
+            messages.error(
+                request, 'A soma total de metros dos lotes de Nonwoven excedem o limite establecido. Por favor verifique os valores introduzidos.')
         else:
             instance.save()
             tempo_duracao(instance.pk)
-                  
-            return redirect('producao:bobinestatus', pk=bobinagem.pk)   
-           
+
+            return redirect('producao:bobinestatus', pk=bobinagem.pk)
 
     context = {
-       "bobinagem": bobinagem,
-       "form": form, 
-       "form_has_palete": form_has_palete, 
-       "has_palete": has_palete
+        "bobinagem": bobinagem,
+        "form": form,
+        "form_has_palete": form_has_palete,
+        "has_palete": has_palete
     }
     return render(request, template_name, context)
+
 
 @login_required
 def bobine_edit(request, pk):
     bobine = get_object_or_404(Bobine, pk=pk)
     template_name = 'bobine/bobine_edit.html'
     has_palete = False
-    
+
     if bobine.palete != None and bobine.palete.estado == 'G':
         has_palete = True
-    
+
     form = BobineEditForm(request.POST or None, instance=bobine)
 
     if form.is_valid():
@@ -6096,76 +6191,82 @@ def bobine_edit(request, pk):
         etiqueta.artigo = instance.artigo.des
         etiqueta.produto = instance.designacao_prod
         try:
-            artigo_cliente = ArtigoCliente.objects.get(artigo=instance.artigo, cliente__nome=instance.cliente)
+            artigo_cliente = ArtigoCliente.objects.get(
+                artigo=instance.artigo, cliente__nome=instance.cliente)
             etiqueta.cod_cliente = artigo_cliente.cod_client
             etiqueta.save()
         except:
             etiqueta.cod_cliente = None
             etiqueta.save()
 
-        return redirect('producao:bobine_details', pk=bobine.pk)  
+        return redirect('producao:bobine_details', pk=bobine.pk)
     else:
         print('erro')
 
     context = {
-       "bobine": bobine,
-       "form": form,
-       "has_palete": has_palete
+        "bobine": bobine,
+        "form": form,
+        "has_palete": has_palete
     }
     return render(request, template_name, context)
+
 
 @login_required
 def carga_carregar(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
     cliente = enc.cliente
-    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) & ~Q(peso_liquido=0) & Q(carga__isnull=True) | (Q(stock=True) & Q(cliente=cliente)) & Q(carga__isnull=True) & ~Q(peso_liquido=0)).order_by('nome')
+    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) & ~Q(peso_liquido=0) & Q(carga__isnull=True) | (
+        Q(stock=True) & Q(cliente=cliente)) & Q(carga__isnull=True) & ~Q(peso_liquido=0)).order_by('nome')
     paletes_carga = Palete.objects.filter(carga=carga)
     template_name = 'carga/carga_carregar.html'
-   
 
     context = {
-       "carga": carga,
-       "enc": enc,
-       "paletes_enc": paletes_enc,
-       "paletes_carga": paletes_carga
+        "carga": carga,
+        "enc": enc,
+        "paletes_enc": paletes_enc,
+        "paletes_carga": paletes_carga
     }
     return render(request, template_name, context)
 
     # Q(hide=False) & Q(deleted=False),
     # Q(stock=False) | Q(quantity__gte=1))
 
+
 @login_required
 def add_palete_carga(request, pk_carga, pk_palete):
     carga = Carga.objects.get(pk=pk_carga)
     palete = Palete.objects.get(pk=pk_palete)
     if carga.num_paletes_actual >= carga.num_paletes:
-        messages.error(request, 'Carga completa. Não é possivel adiconar mais paletes a esta carga.')
+        messages.error(
+            request, 'Carga completa. Não é possivel adiconar mais paletes a esta carga.')
     else:
         carga.num_paletes_actual += 1
-        palete.carga=carga
+        palete.carga = carga
         palete.save()
         carga.save()
 
-    return redirect('producao:carga_carregar', pk=carga.pk)  
+    return redirect('producao:carga_carregar', pk=carga.pk)
+
 
 @login_required
 def remove_palete_carga(request, pk_carga, pk_palete):
     carga = Carga.objects.get(pk=pk_carga)
     palete = Palete.objects.get(pk=pk_palete)
     carga.num_paletes_actual -= 1
-    palete.carga=None
+    palete.carga = None
     palete.save()
     carga.save()
 
-    return redirect('producao:carga_carregar', pk=carga.pk)  
+    return redirect('producao:carga_carregar', pk=carga.pk)
+
 
 @login_required
 def finalizar_carga(request, pk):
     carga = Carga.objects.get(pk=pk)
     paletes = Palete.objects.filter(carga=carga)
     paletes_count = Palete.objects.filter(carga=carga).count()
-    
+
     sqm = 0
     metros = 0
     num_palete_carga = 0
@@ -6177,19 +6278,20 @@ def finalizar_carga(request, pk):
             pal.num_palete_carga = num_palete_carga + 1
             num_palete_carga += 1
             pal.save()
-            gerar_etiqueta_final(pal.pk)    
+            gerar_etiqueta_final(pal.pk)
 
         enc = carga.enc
         enc.num_paletes_actual += paletes_count
         enc.save()
         carga.estado = 'C'
-        carga.metros = metros    
+        carga.metros = metros
         carga.sqm = sqm
-        carga.save()    
-        return redirect('producao:carga_detail', pk=carga.pk)  
+        carga.save()
+        return redirect('producao:carga_detail', pk=carga.pk)
     else:
-        messages.error(request, 'Carga incompleta. Não é possivel finalizar carga.')
-        return redirect('producao:carga_carregar', pk=carga.pk)  
+        messages.error(
+            request, 'Carga incompleta. Não é possivel finalizar carga.')
+        return redirect('producao:carga_carregar', pk=carga.pk)
 
 
 @login_required
@@ -6197,18 +6299,69 @@ def carga_expedir(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
 
-    hora_expedicao = timezone.now() 
-    hora_expedicao = timezone.localtime(hora_expedicao, timezone.get_fixed_timezone(60))
+    hora_expedicao = timezone.now()
+    hora_expedicao = timezone.localtime(
+        hora_expedicao, timezone.get_fixed_timezone(60))
     carga.data_expedicao = date.today()
-    carga.hora_expedicao = timezone.localtime(hora_expedicao, timezone.get_fixed_timezone(60))
+    carga.hora_expedicao = timezone.localtime(
+        hora_expedicao, timezone.get_fixed_timezone(60))
     carga.expedida = True
     carga.save()
 
-    return redirect('producao:carga_list_completa')  
+    return redirect('producao:carga_list_completa')
 
 
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources
+    """
+    result = finders.find(uri)
+    if result:
+            if not isinstance(result, (list, tuple)):
+                    result = [result]
+            result = list(os.path.realpath(path) for path in result)
+            path=result[0]
+    else:
+            sUrl = settings.STATIC_URL        # Typically /static/
+            sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
+            mUrl = settings.MEDIA_URL         # Typically /media/
+            mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
 
-    
+            if uri.startswith(mUrl):
+                    path = os.path.join(mRoot, uri.replace(mUrl, ""))
+            elif uri.startswith(sUrl):
+                    path = os.path.join(sRoot, uri.replace(sUrl, ""))
+            else:
+                    return uri
 
+    # make sure that file exists
+    if not os.path.isfile(path):
+            raise Exception(
+                    'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+    return path
 
+@login_required
+def carga_packinglist_details(request, *args, **kwargs):
+    template_path = 'carga/carga_packinglist_details.html'
+    pk = kwargs.get('pk')
+    carga = get_object_or_404(Carga, pk=pk)
+    paletes = Palete.objects.filter(carga=carga)
 
+    context = {'carga': carga, 'paletes': paletes}
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    # if download run this line
+    # response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response,link_callback=link_callback)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

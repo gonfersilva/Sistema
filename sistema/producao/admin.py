@@ -25,29 +25,37 @@ admin.site.register(ProdutoGranulado)
 admin.site.register(MovimentoMP)
 admin.site.register(EtiquetaReciclado)
 admin.site.register(Turno)
+admin.site.register(CoreLargura)
+admin.site.register(PerfilEmbalamento)
+
 
 class BobinagemAdmin(admin.ModelAdmin):
     search_fields = ['nome']
 
+
 class BobineAdmin(admin.ModelAdmin):
     search_fields = ['nome']
+
 
 class PaleteAdmin(admin.ModelAdmin):
     search_fields = ['nome']
 
+
 class ArtigoAdmin(admin.ModelAdmin):
     search_fields = ['des']
+
 
 class PerfilAdmin(admin.ModelAdmin):
     search_fields = ['nome']
     readonly_fields = ['token']
 
+
 class ClienteAdmin(admin.ModelAdmin):
     search_fields = ['nome']
 
+
 class NonwovenAdmin(admin.ModelAdmin):
     search_fields = ['designacao']
-
 
 
 admin.site.register(Bobinagem, BobinagemAdmin)

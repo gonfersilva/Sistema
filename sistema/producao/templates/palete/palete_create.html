@@ -30,13 +30,14 @@
                     <p>{{message}} </p>
                 </div>
             {% endif %}
-    {% endfor %}
+        {% endfor %}
 
 </div>
 {% endif %}
 <form action="" method="POST" class="submission-form">
     {% csrf_token %}
     <label for="id_ordem">Ordem de Produção</label>{{ form.ordem }}
+    <label for="id_perfil_embalamento">Embalamento</label>{{ form.perfil_embalamento }}
     <label for="id_num">Palete Nº</label>{{ form.num }}
     <label for="id_data_pal">Data</label>{{ form.data_pal }}
     <label for="id_num_bobines">Bobines Total</label>{{ form.num_bobines }}

@@ -76,7 +76,11 @@
         </form>
     </div>
     <div>
+        {% if has_carga == False %}
         <a href="{% url 'producao:palete_rabrir' pk=palete.pk %}" type="button" class="btn_list_r">Refazer Palete</a>
+        {% else %}
+        <p>Não é possivel refazer a Palete porque ela já está atribuida a uma carga.</p>
+        {% endif %}
     </div>
     
     

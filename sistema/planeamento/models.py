@@ -73,7 +73,7 @@ class OrdemProducao(models.Model):
     TIPOTRANS = (('Camião', 'Camião'), ('Contentor', 'Contentor'))
     ENR = (('Anti-horário', 'Anti-horário'), ('Horário', 'Horário'))
     CORE = (('3"', '3"'), ('6"', '6"'))
-    TIPONW = (('Suominen 25 gsm','Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP','Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE','BCN 70%PP/30%PE'), ('Sandler','Sandler'), ('PEGAS BICO 17gsm','PEGAS BICO 17gsm'), ('Suominen','Suominen'), ('BCN','BCN'), ('ORMA','ORMA'), ('PEGAS 22','PEGAS 22'), ('SAWASOFT','SAWASOFT'), ('SAWABOND','SAWABOND'), ('Teksis','Teksis'), ('Union','Union'),('Radici','Radici'),('Fitesa','Fitesa'),('ALBIS 23','ALBIS 23'),('ALBIS 16','ALBIS 16'),('Union Pillow','Union Pillow'),('Union UV','Union UV'), ('Jacob Holm','Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'))
+    TIPONW = (('Suominen 25 gsm','Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP','Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE','BCN 70%PP/30%PE'), ('Sandler','Sandler'), ('PEGAS BICO 17gsm','PEGAS BICO 17gsm'), ('Suominen','Suominen'), ('BCN','BCN'), ('ORMA','ORMA'), ('PEGAS 22','PEGAS 22'), ('SAWASOFT','SAWASOFT'), ('SAWABOND','SAWABOND'), ('Teksis','Teksis'), ('Union','Union'),('Radici','Radici'),('Fitesa','Fitesa'),('ALBIS 23','ALBIS 23'),('ALBIS 16','ALBIS 16'),('Union Pillow','Union Pillow'),('Union UV','Union UV'), ('Jacob Holm','Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'),('Nonwoven Nikoo 28gsm Spunlace 100PP', 'Nonwoven Nikoo 28gsm Spunlace 100PP'))
     EMBAL_T = (('Placa Plástico', 'Placa Plástico'), ('Placa Cartão Fino', 'Placa Cartão Fino'))
     EMBAL_E = (('Filme Estirável', 'Filme Estirável'),)
     TIPO_PAL = (('970x970', '970x970'),)

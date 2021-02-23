@@ -44,7 +44,7 @@ class Perfil(models.Model):
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('75', '75 gsm'), ('80', '80 gsm'),
            ('60', '60 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'),('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+               'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
     user = models.ForeignKey(
         User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -101,8 +101,7 @@ class Artigo(models.Model):
            ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     CORE = (('3', '3'), ('6', '6'))
     FORMU = (('HE', 'HE'), ('HT', 'HT'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'),('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',  'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))                                                                                                                                                                                                                                                                        
     cod = models.CharField(verbose_name="Cód. Artigo",
                            max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo",
@@ -162,7 +161,7 @@ class Largura(models.Model):
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'),
            ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'),('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
     perfil = models.ForeignKey(
         Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
@@ -211,66 +210,65 @@ class Bobinagem(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),
                ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
     TIPODESP = (('R', 'R'), ('BA', 'BA'))
-    TIPONW = (('Suominen 25 gsm', 'Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP', 'Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE', 'BCN 70%PP/30%PE'), ('Sandler', 'Sandler'), ('PEGAS BICO 17gsm', 'PEGAS BICO 17gsm'), ('Suominen', 'Suominen'), ('BCN', 'BCN'), ('ORMA', 'ORMA'), ('PEGAS 22', 'PEGAS 22'), ('SAWASOFT', 'SAWASOFT'), ('SAWABOND', 'SAWABOND'),
-              ('Teksis', 'Teksis'), ('Union', 'Union'), ('Radici', 'Radici'), ('Fitesa', 'Fitesa'), ('ALBIS 23', 'ALBIS 23'), ('ALBIS 16', 'ALBIS 16'), ('Union Pillow', 'Union Pillow'), ('Union UV', 'Union UV'), ('Jacob Holm', 'Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'), ('ELA-ACE', 'ELA-ACE'), ('ELA-SPUN', 'ELA-SPUN'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
-    perfil = models.ForeignKey(
-        Perfil, on_delete=models.PROTECT, verbose_name="Perfil")
-    num_emendas = models.IntegerField(
-        verbose_name="Número de emendas", null=True, blank=True, default=0)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    nome = models.CharField(verbose_name="Bobinagem",
-                            max_length=200, unique=True)
-    data = models.DateField(auto_now_add=False, auto_now=False,
-                            default=datetime.date.today, verbose_name="Data")
-    num_bobinagem = models.PositiveIntegerField(verbose_name="Bobinagem nº")
-    comp = models.DecimalField(
-        max_digits=6, decimal_places=2, verbose_name="Comprimento Final", default=0)
-    tiponwsup = models.CharField(max_length=40, choices=TIPONW, default='',
-                                 verbose_name="Tipo Nonwoven Superior", null=True, blank=True)
-    tiponwinf = models.CharField(max_length=40, choices=TIPONW, default='',
-                                 verbose_name="Tipo Nonwoven Inferior", null=True, blank=True)
-    estado = models.CharField(
-        max_length=4, choices=STATUSP, default='LAB', verbose_name="Estado")
-    lotenwsup = models.CharField(
-        verbose_name="Lote Nonwoven Superior", max_length=200, unique=False, null=True, blank=True,)
-    lotenwinf = models.CharField(
-        verbose_name="Lote Nonwoven Inferior", max_length=200, unique=False, null=True, blank=True,)
-    nwsup = models.DecimalField(max_digits=10, decimal_places=2,
-                                verbose_name="Consumo Nonwoven Superior", null=True, blank=True)
-    nwinf = models.DecimalField(max_digits=10, decimal_places=2,
-                                verbose_name="Consumo Nonwoven Inferior", null=True, blank=True)
-    comp_par = models.DecimalField(max_digits=10, decimal_places=2,
-                                   verbose_name="Comprimento Emenda", null=True, blank=True, default=0)
-    comp_cli = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Comprimento Cliente", default=0)
-    desper = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Desperdício", default=0)
-    tipo_desp = models.CharField(max_length=4, choices=TIPODESP, default=None,
-                                 verbose_name="Tipo de desperdício", null=True, blank=True)
-    diam = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diametro", null=True, blank=True)
-    area = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área", null=True, blank=True)
-    inico = models.TimeField(
-        auto_now_add=False, auto_now=False, verbose_name="Início", null=True, blank=True)
-    fim = models.TimeField(auto_now_add=False, auto_now=False,
-                           verbose_name="Fim", null=True, blank=True)
-    duracao = models.CharField(
-        max_length=200, null=True, blank=True, verbose_name="Duração")
-    obs = models.TextField(max_length=500, null=True,
-                           blank=True, verbose_name="Observações", default="")
-    area_g = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área Good", default=0)
-    area_dm = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área DM", default=0)
-    area_r = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área R", default=0)
-    area_ind = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área Ind", default=0)
-    area_ba = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área BA", default=0)
+    TIPONW = (('Suominen 25 gsm', 'Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP', 'Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE', 'BCN 70%PP/30%PE'), ('Sandler', 'Sandler'), ('PEGAS BICO 17gsm', 'PEGAS BICO 17gsm'), ('Suominen', 'Suominen'), ('BCN', 'BCN'), ('ORMA', 'ORMA'), ('PEGAS 22', 'PEGAS 22'), ('SAWASOFT', 'SAWASOFT'), ('SAWABOND', 'SAWABOND'), ('Teksis', 'Teksis'), ('Union', 'Union'), ('Radici', 'Radici'), ('Fitesa', 'Fitesa'), ('ALBIS 23', 'ALBIS 23'), ('ALBIS 16', 'ALBIS 16'), ('Union Pillow', 'Union Pillow'), ('Union UV', 'Union UV'), ('Jacob Holm', 'Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'), ('ELA-ACE', 'ELA-ACE'), ('ELA-SPUN', 'ELA-SPUN'), ('Nonwoven Nikoo 28gsm Spunlace 100PP', 'Nonwoven Nikoo 28gsm Spunlace 100PP'))
+    user=models.ForeignKey(
+        User, on_delete = models.PROTECT, verbose_name = "Username")
+    perfil=models.ForeignKey(
+        Perfil, on_delete = models.PROTECT, verbose_name = "Perfil")
+    num_emendas=models.IntegerField(
+        verbose_name = "Número de emendas", null = True, blank = True, default = 0)
+    timestamp=models.DateTimeField(auto_now_add = True)
+    nome=models.CharField(verbose_name = "Bobinagem",
+                            max_length = 200, unique = True)
+    data=models.DateField(auto_now_add = False, auto_now = False,
+                            default = datetime.date.today, verbose_name = "Data")
+    num_bobinagem=models.PositiveIntegerField(verbose_name = "Bobinagem nº")
+    comp=models.DecimalField(
+        max_digits = 6, decimal_places = 2, verbose_name = "Comprimento Final", default = 0)
+    tiponwsup=models.CharField(max_length = 40, choices = TIPONW, default = '',
+                                 verbose_name = "Tipo Nonwoven Superior", null = True, blank = True)
+    tiponwinf=models.CharField(max_length = 40, choices = TIPONW, default = '',
+                                 verbose_name = "Tipo Nonwoven Inferior", null = True, blank = True)
+    estado=models.CharField(
+        max_length = 4, choices = STATUSP, default = 'LAB', verbose_name = "Estado")
+    lotenwsup=models.CharField(
+        verbose_name = "Lote Nonwoven Superior", max_length = 200, unique = False, null = True, blank = True,)
+    lotenwinf=models.CharField(
+        verbose_name = "Lote Nonwoven Inferior", max_length = 200, unique = False, null = True, blank = True,)
+    nwsup=models.DecimalField(max_digits = 10, decimal_places = 2,
+                                verbose_name = "Consumo Nonwoven Superior", null = True, blank = True)
+    nwinf=models.DecimalField(max_digits = 10, decimal_places = 2,
+                                verbose_name = "Consumo Nonwoven Inferior", null = True, blank = True)
+    comp_par=models.DecimalField(max_digits = 10, decimal_places = 2,
+                                   verbose_name = "Comprimento Emenda", null = True, blank = True, default = 0)
+    comp_cli=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Comprimento Cliente", default = 0)
+    desper=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Desperdício", default = 0)
+    tipo_desp=models.CharField(max_length = 4, choices = TIPODESP, default = None,
+                                 verbose_name = "Tipo de desperdício", null = True, blank = True)
+    diam=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Diametro", null = True, blank = True)
+    area=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área", null = True, blank = True)
+    inico=models.TimeField(
+        auto_now_add = False, auto_now = False, verbose_name = "Início", null = True, blank = True)
+    fim=models.TimeField(auto_now_add = False, auto_now = False,
+                           verbose_name = "Fim", null = True, blank = True)
+    duracao=models.CharField(
+        max_length = 200, null = True, blank = True, verbose_name = "Duração")
+    obs=models.TextField(max_length = 500, null = True,
+                           blank = True, verbose_name = "Observações", default = "")
+    area_g=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área Good", default = 0)
+    area_dm=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área DM", default = 0)
+    area_r=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área R", default = 0)
+    area_ind=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área Ind", default = 0)
+    area_ba=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Área BA", default = 0)
 
     def __str__(self):
         return self.nome
@@ -280,110 +278,112 @@ class Bobinagem(models.Model):
         return self.nome
 
     class Meta:
-        verbose_name_plural = "Bobinagens"
-        ordering = ['-data', '-fim', '-nome']
-        get_latest_by = ['data', 'fim']
+        verbose_name_plural="Bobinagens"
+        ordering=['-data', '-fim', '-nome']
+        get_latest_by=['data', 'fim']
 
     def get_absolute_url(self):
         return f"/producao/bobinagem/{self.id}"
 
 
 class Encomenda(models.Model):
-    STATUS = (('A', 'A'), ('F', 'F'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
-    cliente = models.ForeignKey(
-        Cliente, on_delete=models.PROTECT, verbose_name="Cliente")
-    timestamp = models.DateTimeField(auto_now_add=True)
-    data = models.DateField(auto_now_add=False, auto_now=False,
-                            default=datetime.date.today, verbose_name="Data")
-    data_prevista = models.DateField(
-        verbose_name="Data Prevista de Conclusão", null=True, blank=True,)
-    eef = models.CharField(max_length=17, unique=True,
-                           verbose_name="Encomenda")
-    prf = models.CharField(max_length=15, unique=True, verbose_name="Proforma")
-    sqm = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Metros quadrados")
-    estado = models.CharField(
-        max_length=1, choices=STATUS, default='A', verbose_name="Estado")
-    num_cargas_actual = models.IntegerField(default=0)
-    num_cargas = models.IntegerField(default=0)
-    order_num = models.CharField(
-        max_length=100, unique=False, null=True, blank=True, verbose_name="Order Number")
-    num_paletes_actual = models.IntegerField(
-        default=0, verbose_name="Nº de Paletes Actual")
-    num_paletes = models.IntegerField(
-        default=0, verbose_name="Nº de Paletes Total")
+    STATUS=(('A', 'A'), ('F', 'F'))
+    user=models.ForeignKey(
+        User, on_delete = models.PROTECT, verbose_name = "Username")
+    cliente=models.ForeignKey(
+        Cliente, on_delete = models.PROTECT, verbose_name = "Cliente")
+    timestamp=models.DateTimeField(auto_now_add = True)
+    data=models.DateField(auto_now_add = False, auto_now = False,
+                            default = datetime.date.today, verbose_name = "Data")
+    data_prevista=models.DateField(
+        verbose_name = "Data Prevista de Conclusão", null = True, blank = True,)
+    eef=models.CharField(max_length = 17, unique = True,
+                           verbose_name = "Encomenda")
+    prf=models.CharField(max_length = 15, unique = True,
+                         verbose_name = "Proforma")
+    sqm=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
+    estado=models.CharField(
+        max_length = 1, choices = STATUS, default = 'A', verbose_name = "Estado")
+    num_cargas_actual=models.IntegerField(default = 0)
+    num_cargas=models.IntegerField(default = 0)
+    order_num=models.CharField(
+        max_length = 100, unique = False, null = True, blank = True, verbose_name ="Order Number")
+    num_paletes_actual=models.IntegerField(
+        default = 0, verbose_name = "Nº de Paletes Actual")
+    num_paletes=models.IntegerField(
+        default = 0, verbose_name = "Nº de Paletes Total")
 
     def __str__(self):
         return self.eef
 
     class Meta:
-        verbose_name_plural = "Encomendas"
-        ordering = ['-eef', 'estado', '-data']
+        verbose_name_plural="Encomendas"
+        ordering=['-eef', 'estado', '-data']
 
 
 class Carga(models.Model):
-    STATUS = (('I', 'I'), ('C', 'C'))
-    TIPO = (('CONTENTOR', 'CONTENTOR'), ('CAMIÃO', 'CAMIÃO'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
-    enc = models.ForeignKey(
-        Encomenda, on_delete=models.PROTECT, verbose_name="Encomenda")
-    timestamp = models.DateTimeField(auto_now_add=True)
-    data = models.DateField(auto_now_add=False, auto_now=False,
-                            default=datetime.date.today, verbose_name="Data")
-    carga = models.CharField(max_length=200, unique=True, verbose_name="Carga")
-    num_carga = models.IntegerField(default=0, verbose_name="Carga nº")
-    num_paletes = models.IntegerField(
-        default=0, verbose_name="Número de paletes total")
-    num_paletes_actual = models.IntegerField(
-        default=0, verbose_name="Número de paletes actual")
-    estado = models.CharField(
-        max_length=1, choices=STATUS, default='I', verbose_name="Estado")
-    sqm = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Metros quadrados")
-    metros = models.DecimalField(
-        max_digits=15, decimal_places=2, verbose_name="Metros lineares", default=0)
-    tipo = models.CharField(max_length=9, choices=TIPO,
-                            default='CONTENTOR', verbose_name="Tipo de Carga")
-    data_expedicao = models.DateField(
-        null=True, blank=True, verbose_name="Data de expedição")
-    hora_expedicao = models.TimeField(
-        auto_now_add=False, auto_now=False, verbose_name="Hora de expedição", null=True, blank=True)
-    data_prevista = models.DateField(
-        null=True, blank=True, verbose_name="Data prevista de expedição")
-    expedida = models.BooleanField(default=False, verbose_name="Expedida")
+    STATUS=(('I', 'I'), ('C', 'C'))
+    TIPO=(('CONTENTOR', 'CONTENTOR'), ('CAMIÃO', 'CAMIÃO'))
+    user=models.ForeignKey(
+        User, on_delete = models.PROTECT, verbose_name = "Username")
+    enc=models.ForeignKey(
+        Encomenda, on_delete = models.PROTECT, verbose_name = "Encomenda")
+    timestamp=models.DateTimeField(auto_now_add = True)
+    data=models.DateField(auto_now_add = False, auto_now = False,
+                            default = datetime.date.today, verbose_name = "Data")
+    carga=models.CharField(
+        max_length = 200, unique = True, verbose_name = "Carga")
+    num_carga=models.IntegerField(default = 0, verbose_name = "Carga nº")
+    num_paletes=models.IntegerField(
+        default = 0, verbose_name = "Número de paletes total")
+    num_paletes_actual=models.IntegerField(
+        default = 0, verbose_name = "Número de paletes actual")
+    estado=models.CharField(
+        max_length = 1, choices = STATUS, default = 'I', verbose_name = "Estado")
+    sqm=models.DecimalField(
+        max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
+    metros=models.DecimalField(
+        max_digits = 15, decimal_places = 2, verbose_name = "Metros lineares", default = 0)
+    tipo=models.CharField(max_length = 9, choices = TIPO,
+                            default = 'CONTENTOR', verbose_name = "Tipo de Carga")
+    data_expedicao=models.DateField(
+        null = True, blank = True, verbose_name = "Data de expedição")
+    hora_expedicao=models.TimeField(
+        auto_now_add = False, auto_now = False, verbose_name = "Hora de expedição", null = True, blank =True)
+    data_prevista=models.DateField(
+        null = True, blank = True, verbose_name = "Data prevista de expedição")
+    expedida=models.BooleanField(default = False, verbose_name = "Expedida")
 
     def __str__(self):
         return self.carga
 
     class Meta:
-        verbose_name_plural = "Cargas"
-        ordering = ['-carga', '-data']
+        verbose_name_plural="Cargas"
+        ordering=['-carga', '-data']
 
 
 class Palete(models.Model):
-    CORE = (('3', '3'), ('6', '6'))
-    STATUSP = (('G', 'G'), ('DM', 'DM'))
-    PESOP = (('0', '0 Kg'), ('8', '8 Kg'), ('13', '13 Kg'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
-    cliente = models.ForeignKey(
-        Cliente, on_delete=models.PROTECT, verbose_name="Cliente", null=True, blank=True)
-    carga = models.ForeignKey(
-        Carga, on_delete=models.PROTECT, verbose_name="Carga", null=True, blank=True)
-    ordem = models.ForeignKey('planeamento.OrdemProducao', on_delete=models.PROTECT,
-                              verbose_name="Ordem de Producao", null=True, blank=True)
-    ordem_original = models.CharField(
-        max_length=200, null=True, blank=True, verbose_name="Ordem de produção Original")
-    perfil_embalamento = models.ForeignKey(
-        PerfilEmbalamento, on_delete=models.PROTECT, null=True, blank=True, verbose_name="PerfilEmbalamento")
-    stock = models.BooleanField(default=False, verbose_name="Stock")
-    timestamp = models.DateTimeField(auto_now_add=True)
-    data_pal = models.DateField(auto_now=False, auto_now_add=False,
-                                default=datetime.date.today, verbose_name="Data da Palete")
-    nome = models.CharField(max_length=200, unique=True,
+    CORE=(('3', '3'), ('6', '6'))
+    STATUSP=(('G', 'G'), ('DM', 'DM'))
+    PESOP=(('0', '0 Kg'), ('8', '8 Kg'), ('13', '13 Kg'))
+    user=models.ForeignKey(
+        User, on_delete = models.PROTECT, verbose_name = "Username")
+    cliente=models.ForeignKey(
+        Cliente, on_delete = models.PROTECT, verbose_name = "Cliente", null = True, blank = True)
+    carga=models.ForeignKey(
+        Carga, on_delete = models.PROTECT, verbose_name = "Carga", null = True, blank = True)
+    ordem=models.ForeignKey('planeamento.OrdemProducao', on_delete = models.PROTECT,
+                              verbose_name = "Ordem de Producao", null = True, blank = True)
+    ordem_original=models.CharField(
+        max_length = 200, null = True, blank = True, verbose_name = "Ordem de produção Original")
+    perfil_embalamento=models.ForeignKey(
+        PerfilEmbalamento, on_delete = models.PROTECT, null = True, blank = True, verbose_name = "PerfilEmbalamento")
+    stock=models.BooleanField(default = False, verbose_name = "Stock")
+    timestamp=models.DateTimeField(auto_now_add = True)
+    data_pal=models.DateField(auto_now = False, auto_now_add = False,
+                                default = datetime.date.today, verbose_name = "Data da Palete")
+    nome=models.CharField(max_length = 200, unique = True,
                             null=True, blank=True, verbose_name="Palete")
     num = models.IntegerField(unique=False, null=True,
                               blank=True, verbose_name="Palete nº")

@@ -70,7 +70,7 @@ class OrdemProducaoCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(OrdemProducaoCreateForm, self).__init__(*args, **kwargs)  
         self.fields['enc'].queryset = Encomenda.objects.filter(estado='A')
-        self.fields['artigo'].queryset = Artigo.objects.none()
+        self.fields['artigo'].queryset = Artigo.objects.all()
 
         if 'artigo' in self.data:
             try:

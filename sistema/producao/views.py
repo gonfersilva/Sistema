@@ -393,9 +393,11 @@ def create_palete(request):
                         if num_paletes_ordem == 0:
                             instance.num_palete_ordem = 1
                         else:
-                            last_palete = Palete.objects.filter(
-                                ordem=instance.ordem).latest('num_palete_ordem')
-                            instance.num_palete_ordem = last_palete.num_palete_ordem + 1
+                            try:
+                                last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                                instance.num_palete_ordem = last_palete.num_palete_ordem + 1
+                            except:
+                                instance.num_palete_ordem = 1
                         instance.cliente = encomenda.cliente
                         instance.destino = encomenda.cliente.nome + ' L' + \
                             str(int(instance.largura_bobines)) + \
@@ -5411,7 +5413,7 @@ def reciclado_create(request):
         cd = form.cleaned_data
         estado = cd.get('estado')
         instance = form.save(commit=False)
-        data = datetime.now().strftime('%Y%m%d')
+        data = datetime.date.today().strftime('%Y%m%d')
         print(data)
         map(int, data)
         if instance.num < 10:
@@ -6365,3 +6367,39 @@ def carga_packinglist_details(request, *args, **kwargs):
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+
+
+@login_required
+def palete_pesagem_dm(request, pk):
+    palete = get_object_or_404(Palete, pk=pk)
+    bobines = Bobine.objects.filter(palete=palete)
+    template_name = 'palete/palete_pesagem_dm.html'
+
+    form = PaletePesagemDMForm(request.POST or None, instance=palete)
+    peso_cores = 0
+    
+    if form.is_valid():
+        try:
+            instance = form.save(commit=False)
+            perfil_embalamento = get_object_or_404(PerfilEmbalamento, pk=instance.perfil_embalamento.pk)
+            if bobines.count() == 0:
+                messages.error(request, 'Não é possivel pesar a palete ' + palete.nome + '. Está vazia.')
+            else:
+                for bobine in bobines:
+                    core_largura = CoreLargura.objects.get(core=bobine.largura.perfil.core, largura=bobine.largura.largura)
+                    peso_cores += core_largura.peso
+
+                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete) - perfil_embalamento.peso - peso_cores
+                instance.save()
+                return redirect('producao:paletes_retrabalho')
+        except:
+            messages.error(request, 'A palete ' + palete.nome + ' não têm perfil de embalamento atribuido. Por favor contacte o Administrador.')
+
+    context = {
+        "palete": palete,
+        "bobines": bobines,
+        "form": form
+       
+    }
+    return render(request, template_name, context)

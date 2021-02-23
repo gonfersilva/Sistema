@@ -21,3 +21,4 @@ function autoFillArtigo(artigo){
         }
     })
 }
+

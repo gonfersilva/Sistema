@@ -140,6 +140,7 @@ urlpatterns = [
     url(r'^bobinagem/exportbobines/$', export_bobine_to_excel, name='export_bobine_to_excel'),
     url(r'^carga/calendario/$', calendario_expedicoes, name='calendario_expedicoes'),
     url(r'^carga/packinglist/(?P<pk>\d+)/$', carga_packinglist_details, name='carga_packinglist_details'),
+    url(r'^palete/pesagemdm/(?P<pk>\d+)/$', palete_pesagem_dm, name='palete_pesagem_dm'),
   
     
 ]

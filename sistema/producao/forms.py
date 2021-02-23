@@ -186,7 +186,7 @@ class PaleteRetrabalhoForm(ModelForm):
 
     class Meta:
         model = Palete
-        fields = ['num', 'data_pal', 'num_bobines']
+        fields = ['num', 'data_pal', 'num_bobines', 'perfil_embalamento']
 
     def __init__(self, *args, **kwargs):
         palete = Palete.objects.filter(
@@ -274,6 +274,11 @@ class PaletePesagemForm(ModelForm):
     class Meta:
         model = Palete
         fields = ['stock', 'peso_bruto', 'peso_palete']
+
+class PaletePesagemDMForm(ModelForm):
+    class Meta:
+        model = Palete
+        fields = ['peso_bruto', 'peso_palete']
 
 
 class AddPalateStockForm(ModelForm):
@@ -581,7 +586,7 @@ class BobineEditForm(ModelForm):
             'NORTE EM AÇÃO (SAOM - Serviços de Assistência)', 'NORTE EM AÇÃO (SAOM - Serviços de Assistência)'),
         ('Hospital Garcia de Orta', 'Hospital Garcia de Orta'), ('Napco Consumer Products Co.',
                                                                  'Napco Consumer Products Co.'), ('National Paper Company Ltd.', 'National Paper Company Ltd.'),
-        ('SANITA CONSUMER PRODUCTS S.A.E.', 'SANITA CONSUMER PRODUCTS S.A.E.'))
+        ('SANITA CONSUMER PRODUCTS S.A.E.', 'SANITA CONSUMER PRODUCTS S.A.E.'), ('BV Trading SA', 'BV Trading SA'))
     cliente = forms.CharField(
         max_length=100, required=True, widget=forms.Select(choices=CLIENTE))
 

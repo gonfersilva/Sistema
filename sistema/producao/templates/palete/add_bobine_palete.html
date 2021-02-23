@@ -57,12 +57,12 @@
             {% else %}
             <div><h3>Destino: <span>S/ destino atribuido</span></h3></div>
             {% endif %}
-            {% if palete.peso_bruto == None %}<div><h3>Peso Bruto: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Bruto: <span>{{ palete.peso_bruto }}</span></h3></div>{% endif %}
-            {% if palete.peso_liquido == None %}<div><h3>Peso Liquido: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Liquido: <span>{{ palete.peso_liquido }}</span></h3></div>{% endif %}
             {% if palete.carga == None %}<div><h3>Carga: <span>S/ carga atribuida</span></h3></div>{% else %}<div><h3>Carga: <span>{{ palete.carga.carga }}</span></h3></div>{% endif %}
             {% if palete.stock == False %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-times"></i></span></h3></div>{% else %}<div><h3>Stock: <span class="td-icon" ><i class="fas fa-check"></i></span></h3></div>{% endif %}
-        {% endif %}
-    </div>
+            {% endif %}
+            {% if palete.peso_bruto == None %}<div><h3>Peso Bruto: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Bruto: <span>{{ palete.peso_bruto }}</span></h3></div>{% endif %}
+            {% if palete.peso_liquido == None %}<div><h3>Peso Liquido: <span>Não pesada</span></h3></div>{% else %}<div><h3>Peso Liquido: <span>{{ palete.peso_liquido }}</span></h3></div>{% endif %}
+        </div>
 </div>
 {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
 <div class="content_details"> 

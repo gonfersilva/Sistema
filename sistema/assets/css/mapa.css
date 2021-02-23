@@ -116,6 +116,7 @@ header a:hover {
 
 .btn_back {
     background-color: #00ace6;
+    cursor: pointer;
     color: white;
     padding: 10px;
     margin: 10px;
@@ -1250,4 +1251,83 @@ input[type=number] {
 
 .palete {
     color:red
+}
+
+
+.box1 {
+    display: flex;
+    flex-direction: column;
+    height: 79vh;
+    justify-content: space-evenly;
+    background: #e8e3e3;
+
+
+}
+
+.box1-1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+
+.box1-2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    
+}
+    
+.box1-2-2-1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.btn-submit {
+    background-color: #00ace6;
+    cursor: pointer;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+}
+
+
+.btn-submit:hover {
+    background-color: #00e600;
+    color: white;
+    margin: 8px;
+    border: 2px #0099cc solid;
+
+}
+
+.btn-cancel {
+    background-color: #00ace6;
+    cursor: pointer;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+}
+
+
+.btn-cancel:hover {
+    background-color: #ff471a;
+    color: white;
+    margin: 8px;
+    border: 2px #0099cc solid;
+
 }

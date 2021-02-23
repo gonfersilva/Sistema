@@ -1,18 +1,11 @@
-{% extends "layout.html "%} {% load bootstrap3 %} {% block title %}Perfil
-Larguras | {{ block.super }}{% endblock %} {% block content %}
+{% extends "layout.html "%}
+{% load bootstrap3 %}
+{% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
+{% block content %}
 <div>
-  <a
-    href="{% url 'producao:cancel_insert_larguras' pk=perfil.pk %}"
-    class="btn_back"
-    role="button"
-    >Cancelar</a
-  >
+  <a href="{% url 'producao:cancel_insert_larguras' pk=perfil.pk %}" class="btn_back" role="button">Cancelar</a>
 </div>
-<form
-  method="post"
-  id="largurasForm"
-  data-artigos-url="{% url 'producao:load_artigos_cliente' %}"
->
+<form method="post" id="largurasForm" data-artigos-url="{% url 'producao:load_artigos_cliente' %}">
   {% csrf_token %} {{ formset.management_form }}
   <div class="title_block-list">
     <h1>Atribuir Larguras</h1>
@@ -20,8 +13,7 @@ Larguras | {{ block.super }}{% endblock %} {% block content %}
   </div>
   {% if messages %}
   <div>
-    {% for message in messages %} {% if message.level ==
-    DEFAULT_MESSAGE_LEVELS.ERROR %}
+    {% for message in messages %} {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
     <div class="error_classificacao">
       <p>{{message}}</p>
     </div>
@@ -33,7 +25,8 @@ Larguras | {{ block.super }}{% endblock %} {% block content %}
     <div>
       <p>{{message}}</p>
     </div>
-    {% endif %} {% endfor %}
+    {% endif %}
+    {% endfor %}
   </div>
   {% endif %}
   <!-- <div class="content-form_larguras">

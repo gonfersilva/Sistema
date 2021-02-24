@@ -124,7 +124,7 @@ def create_ordem(request):
                     messages.error(request, 'Número de bobines por palete incorreto. Verifique valores inseridos.') 
                 else:
                     count = OrdemProducao.objects.filter(enc=instance.enc).count()
-                    instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-' + str(count + 1)
+                    instance.op = instance.enc.cliente.nome + ' L' + str(instance.largura) + ' LINHA ' + instance.enc.eef + ' ' + str(count + 1)
                     instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
                     if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
                         dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
@@ -139,7 +139,7 @@ def create_ordem(request):
                     messages.error(request, 'Número de bobines por palete incorreto. Verifique valores inseridos.') 
                 else:
                     count = OrdemProducao.objects.filter(stock=True).count()
-                    instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(count + 1)
+                    instance.op = instance.cliente.nome + ' L' + str(instance.largura) + ' LINHA STOCK ' + str(count + 1)
                     instance.enc = None
                     instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
                     if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
@@ -362,7 +362,7 @@ def create_ordem_dm(request):
                         messages.error(request, 'O número de paletes que deseja produzir nesta Ordem de Produção é maior que o permitido na encomenda.') 
                     else:
                         count = OrdemProducao.objects.filter(enc=instance.enc).count()
-                        instance.op = instance.enc.cliente.nome + '-' + instance.enc.eef + '-DM-' + str(count + 1)
+                        instance.op = instance.enc.cliente.nome + ' L' + str(instance.largura) + ' DM12 ' + instance.enc.eef + ' ' + str(count + 1)
                         instance.num_paletes_total = instance.num_paletes_produzir
                         if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
                             dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
@@ -373,7 +373,7 @@ def create_ordem_dm(request):
                         return redirect('planeamento:add_paletes_retrabalho', pk=instance.pk)
             elif instance.enc == None and instance.stock == True and instance.cliente != None:
                 count = OrdemProducao.objects.filter(stock=True, retrabalho=True, cliente=instance.cliente).count()
-                instance.op = 'STOCK ' + str(instance.data_prevista_inicio) + '-' + str(instance.artigo.cod) + '-' + str(instance.cliente.nome)+ '-DM-' + str(count + 1)
+                instance.op = instance.cliente.nome + ' L' + str(instance.largura) + ' DM12 STOCK ' + str(count + 1)
                 instance.enc = None
                 instance.num_paletes_total = instance.num_paletes_produzir
                 if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
@@ -513,6 +513,12 @@ def load_artigos(request):
     cliente = Cliente.objects.get(id=enc.cliente.id)
     artigos_cliente = ArtigoCliente.objects.filter(cliente=cliente).order_by('artigo')
     return render(request, 'ordensproducao/dropdown_options.html', {'artigos_cliente': artigos_cliente})     
+
+def load_cliente(request):
+    enc_id = request.GET.get('enc_id')
+    enc = Encomenda.objects.get(id=enc_id)
+    clientes = Cliente.objects.filter(id=enc.cliente.id)
+    return render(request, 'ordensproducao/dropdown_options_cliente.html', {'clientes': clientes})     
 
 @login_required
 def load_encomendas(request):

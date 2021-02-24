@@ -415,20 +415,17 @@ def create_palete(request):
                         messages.error(
                             request, 'A ordem que selecinou encontra-se completa')
                 except:
-                    num_paletes_ordem = Palete.objects.filter(
-                        ordem=instance.ordem).count()
+                    ordem = OrdemProducao.objects.get(pk=instance.ordem.pk)
+                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
                     instance.ordem_original_stock = True
                     if num_paletes_ordem < ordem.num_paletes_total:
                         ordem.num_paletes_produzidas += 1
                         if num_paletes_ordem == 0:
                             instance.num_palete_ordem = 1
                         else:
-                            last_palete = Palete.objects.filter(
-                                ordem=instance.ordem).latest('num_palete_ordem')
+                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
                             instance.num_palete_ordem = last_palete.num_palete_ordem + 1
-                        instance.destino = 'STOCK L' + \
-                            str(int(instance.largura_bobines)) + \
-                            ' ' + str(instance.num_palete_ordem)
+                        instance.destino = ordem.cliente.nome + ' STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
                         ordem.save()
                         instance.save()
                         if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
@@ -2270,7 +2267,7 @@ def palete_picagem_dm(request, pk):
 
                     # add_artigo_to_bobine(pk)
 
-                    return redirect('producao:addbobinepalete', pk=palete.pk)
+                    return redirect('producao:palete_pesagem_dm', pk=palete.pk)
 
     else:
         formset = PicagemBobinesFormSet()
@@ -3750,7 +3747,7 @@ def palete_picagem(request, pk):
                     e_p.diam_max = d_max
                     e_p.save()
 
-                    return redirect('producao:addbobinepalete', pk=palete.pk)
+                    return redirect('producao:palete_pesagem', pk=palete.pk)
 
     else:
         formset = PicagemBobinesFormSet()
@@ -5413,7 +5410,7 @@ def reciclado_create(request):
         cd = form.cleaned_data
         estado = cd.get('estado')
         instance = form.save(commit=False)
-        data = datetime.date.today().strftime('%Y%m%d')
+        data = datetime.datetime.today().strftime('%Y%m%d')
         print(data)
         map(int, data)
         if instance.num < 10:
@@ -5426,8 +5423,8 @@ def reciclado_create(request):
             instance.lote = lote
             instance.estado = estado
             instance.user = request.user
-            instance.timestamp_edit = datetime.now()
-            instance.timestamp = datetime.now()
+            instance.timestamp_edit = datetime.datetime.now()
+            instance.timestamp = datetime.datetime.now()
             instance.timestamp_inicio = reciclado_latest.timestamp
 
             print(instance.peso)
@@ -5465,7 +5462,7 @@ def reciclado_edit(request, pk):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
-        instance.timestamp_edit = datetime.now()
+        instance.timestamp_edit = datetime.datetime.now()
         if (instance.estado == 'R' and instance.obs == '') or (instance.estado == 'NOK' and instance.obs == ''):
             messages.error(
                 request, 'Para rejeitar um lote, é necessário escrever a causa nas observações.')

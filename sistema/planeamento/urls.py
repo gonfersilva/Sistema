@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^ordemdeproducao/finalizar/(?P<pk>\d+)/$', finalizar_ordem_retrabalho_dm, name='finalizar_ordem_retrabalho_dm'),
     url(r'^ajax/artigos-cliente/$', load_artigos, name='load_artigos'),
     url(r'^ajax/cliente-encomenda/$', load_encomendas, name='load_encomendas'),
+    url(r'^ajax/cliente/$', load_cliente, name='load_cliente'),
 ]
   
   

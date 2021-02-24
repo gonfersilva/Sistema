@@ -6,7 +6,7 @@
     <h1>Criar Ordem de Fabrico</h1>
 </div>
 <br>
-<form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" action="" enctype="multipart/form-data">
+<form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" data-cliente-url="{% url 'planeamento:load_cliente' %}"  action="" enctype="multipart/form-data">
     {% csrf_token %}
     {% if messages %}
     <div>
@@ -34,6 +34,7 @@
             <div>
                 <div><h2>Encomenda</h2></div>
                 <div><div>Encomenda:</div> <div>{{ form.enc }}</div></div>             
+                <div><div>Cliente:</div> <div>{{ form.cliente }}</div></div>             
                 <div><div>Artigo:</div> <div>{{ form.artigo }}</div></div>   
                 <div><div>Data prevista de início:</div> <div>{{ form.data_prevista_inicio }}</div></div>   
                 <div><div>Hora prevista de início:</div> <div>{{ form.hora_prevista_inicio }}</div></div>   
@@ -227,6 +228,23 @@ $("#id_enc").change(function () {
         },
         success: function (data) { 
             $("#id_artigo").html(data);  
+            // console.log(data)
+        }
+    });
+
+});
+
+$("#id_enc").change(function () {
+    var url = $("#ordemForm").attr("data-cliente-url");  
+    var encId = $(this).val();  
+    
+    $.ajax({                       
+        url: url,                   
+        data: {
+            'enc_id': encId      
+        },
+        success: function (data) { 
+            $("#id_cliente").html(data);  
             // console.log(data)
         }
     });

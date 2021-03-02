@@ -998,3 +998,5 @@ def edit_bobine(pk):
 #     if datetime.now() == '12:54':
 #         Session.objects.all().delete()
 
+
+

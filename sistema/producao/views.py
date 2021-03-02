@@ -6236,9 +6236,16 @@ def carga_carregar(request, pk):
 def add_palete_carga(request, pk_carga, pk_palete):
     carga = Carga.objects.get(pk=pk_carga)
     palete = Palete.objects.get(pk=pk_palete)
+    bobines = Bobine.objects.filter(palete=palete)
+    valid = True
+    for bobine in bobines:
+        if bobine.estado != "G":
+            valid = False
+            
     if carga.num_paletes_actual >= carga.num_paletes:
-        messages.error(
-            request, 'Carga completa. Não é possivel adiconar mais paletes a esta carga.')
+        messages.error(request, 'Carga completa. Não é possivel adiconar mais paletes a esta carga.')
+    elif valid == False:
+        messages.error(request, 'A palete que deseja inserir na carga contem bobines que não estão em GOOD. Por favor, verifique com o Sep. de Qualidade.')
     else:
         carga.num_paletes_actual += 1
         palete.carga = carga

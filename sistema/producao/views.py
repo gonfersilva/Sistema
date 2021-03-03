@@ -426,6 +426,7 @@ def create_palete(request):
                             last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
                             instance.num_palete_ordem = last_palete.num_palete_ordem + 1
                         instance.destino = ordem.cliente.nome + ' STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
+                        instance.cliente = ordem.cliente
                         ordem.save()
                         instance.save()
                         if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:

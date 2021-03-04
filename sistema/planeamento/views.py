@@ -126,7 +126,7 @@ def create_ordem(request):
                     instance.op = instance.enc.cliente.nome + ' L' + str(instance.largura) + ' LINHA ' + instance.enc.eef + ' ' + str(count + 1)
                     instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
                     if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
-                        dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                        dt = datetime.datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
                         dt += timedelta(hours=instance.horas_previstas_producao)
                         instance.data_prevista_fim = dt.date()
                         instance.hora_prevista_fim = dt.time()
@@ -142,7 +142,7 @@ def create_ordem(request):
                     instance.enc = None
                     instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
                     if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
-                            dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                            dt = datetime.datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
                             dt += timedelta(hours=instance.horas_previstas_producao)
                             instance.data_prevista_fim = dt.date()
                             instance.hora_prevista_fim = dt.time()
@@ -364,7 +364,7 @@ def create_ordem_dm(request):
                         instance.op = instance.enc.cliente.nome + ' L' + str(instance.largura) + ' DM12 ' + instance.enc.eef + ' ' + str(count + 1)
                         instance.num_paletes_total = instance.num_paletes_produzir
                         if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
-                            dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                            dt = datetime.datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
                             dt += timedelta(hours=instance.horas_previstas_producao)
                             instance.data_prevista_fim = dt.date()
                             instance.hora_prevista_fim = dt.time()
@@ -376,7 +376,7 @@ def create_ordem_dm(request):
                 instance.enc = None
                 instance.num_paletes_total = instance.num_paletes_produzir
                 if instance.data_prevista_inicio != None and instance.hora_prevista_inicio != None and instance.horas_previstas_producao != None:
-                    dt = datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                    dt = datetime.datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
                     dt += timedelta(hours=instance.horas_previstas_producao)
                     instance.data_prevista_fim = dt.date()
                     instance.hora_prevista_fim = dt.time()

@@ -272,7 +272,7 @@ def ordem_add_stock(request, pk):
 def ordem_iniciar(request, pk):
     ordem = OrdemProducao.objects.get(pk=pk)
     ordem.ativa = True
-    ordem.inicio = datetime.now()
+    ordem.inicio = datetime.datetime.now()
     ordem.save()
     
 

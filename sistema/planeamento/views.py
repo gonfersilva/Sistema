@@ -9,7 +9,6 @@ from producao.models import *
 from django.forms.models import modelformset_factory, inlineformset_factory
 import datetime
 from django.contrib import messages
-from datetime import datetime
 
 
 
@@ -527,3 +526,25 @@ def load_encomendas(request):
     encomendas = Encomenda.objects.filter(cliente=cliente_obj)
     
     return render(request, 'perfil/dropdown_enc.html', {'encomendas': encomendas})  
+
+@login_required
+def finalizar_ordem(request, pk):
+    ordem = get_object_or_404(OrdemProducao, pk=pk)
+    ordem.fim = datetime.datetime.now()
+    ordem.num_paletes_total = ordem.num_paletes_produzidas + ordem.num_paletes_stock_in
+    ordem.num_paletes_stock = ordem.num_paletes_stock_in
+    ordem.num_paletes_produzir = ordem.num_paletes_produzidas
+    ordem.ativa = False
+    ordem.completa = True
+    ordem.save()
+    return redirect('planeamento:details_ordem', pk=ordem.pk)
+
+@login_required
+def reabrir_ordem(request, pk):
+    ordem = get_object_or_404(OrdemProducao, pk=pk)
+    ordem.fim = None
+    ordem.ativa = True
+    ordem.completa = False
+    ordem.save()
+    return redirect('planeamento:details_ordem', pk=ordem.pk)
+

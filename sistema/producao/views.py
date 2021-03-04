@@ -377,66 +377,52 @@ def create_palete(request):
             nome_c_r = 'R%s-%s' % (instance.num, ano)
 
         if Palete.objects.filter(nome=nome_s_r).exists() or Palete.objects.filter(nome=nome_c_r).exists():
-            messages.error(request, 'A palete nº' +
-                           str(instance.num) + ' de ' + str(ano) + ' já existe.')
+            messages.error(request, 'A palete nº' + str(instance.num) + ' de ' + str(ano) + ' já existe.')
         else:
             if instance.ordem != None:
                 ordem = OrdemProducao.objects.get(pk=instance.ordem.pk)
                 instance.ordem_original = ordem.op
                 try:
                     encomenda = Encomenda.objects.get(pk=ordem.enc.pk)
-                    num_paletes_ordem = Palete.objects.filter(
-                        ordem=instance.ordem).count()
-                    if num_paletes_ordem < ordem.num_paletes_total:
-                        ordem.num_paletes_produzidas += 1
-                        encomenda.num_paletes_actual += 1
-                        if num_paletes_ordem == 0:
-                            instance.num_palete_ordem = 1
-                        else:
-                            try:
-                                last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
-                                instance.num_palete_ordem = last_palete.num_palete_ordem + 1
-                            except:
-                                instance.num_palete_ordem = 1
-                        instance.cliente = encomenda.cliente
-                        instance.destino = encomenda.cliente.nome + ' L' + \
-                            str(int(instance.largura_bobines)) + \
-                            ' ' + str(instance.num_palete_ordem)
-                        ordem.save()
-                        encomenda.save()
-                        instance.save()
-                        if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
-                            ordem.ativa = False
-                            ordem.completa = True
-                            ordem.save()
-                        palete_nome(instance.pk)
-                        return redirect('producao:palete_picagem', pk=instance.pk)
+                    num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
+                    ordem.num_paletes_produzidas += 1
+                    encomenda.num_paletes_actual += 1
+                    if num_paletes_ordem == 0:
+                        instance.num_palete_ordem = 1
                     else:
-                        messages.error(
-                            request, 'A ordem que selecinou encontra-se completa')
+                        try:
+                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                            instance.num_palete_ordem = last_palete.num_palete_ordem + 1
+                        except:
+                            instance.num_palete_ordem = 1
+                    instance.cliente = encomenda.cliente
+                    instance.destino = encomenda.cliente.nome + ' L' + \
+                        str(int(instance.largura_bobines)) + \
+                        ' ' + str(instance.num_palete_ordem)
+                    ordem.save()
+                    encomenda.save()
+                    instance.save()
+                    palete_nome(instance.pk)
+                    return redirect('producao:palete_picagem', pk=instance.pk)
+                    
                 except:
                     ordem = OrdemProducao.objects.get(pk=instance.ordem.pk)
                     num_paletes_ordem = Palete.objects.filter(ordem=instance.ordem).count()
                     instance.ordem_original_stock = True
-                    if num_paletes_ordem < ordem.num_paletes_total:
-                        ordem.num_paletes_produzidas += 1
-                        if num_paletes_ordem == 0:
-                            instance.num_palete_ordem = 1
-                        else:
-                            last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
-                            instance.num_palete_ordem = last_palete.num_palete_ordem + 1
-                        instance.destino = ordem.cliente.nome + ' STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
-                        instance.cliente = ordem.cliente
-                        ordem.save()
-                        instance.save()
-                        if Palete.objects.filter(ordem=instance.ordem).count() == ordem.num_paletes_total:
-                            ordem.ativa = False
-                            ordem.completa = True
-                            ordem.save()
-                        instance.stock = True
-                        instance.save()
-                        palete_nome(instance.pk)
-                        return redirect('producao:palete_picagem', pk=instance.pk)
+                    ordem.num_paletes_produzidas += 1
+                    if num_paletes_ordem == 0:
+                        instance.num_palete_ordem = 1
+                    else:
+                        last_palete = Palete.objects.filter(ordem=instance.ordem).latest('num_palete_ordem')
+                        instance.num_palete_ordem = last_palete.num_palete_ordem + 1
+                    instance.destino = ordem.cliente.nome + ' STOCK L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
+                    instance.cliente = ordem.cliente
+                    ordem.save()
+                    instance.save()
+                    instance.stock = True
+                    instance.save()
+                    palete_nome(instance.pk)
+                    return redirect('producao:palete_picagem', pk=instance.pk)
             else:
                 messages.error(
                     request, 'Não é possivel criar uma palete sem ordem de produção associada. Por favor selecione uma Ordem de produção em progresso.')

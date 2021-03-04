@@ -1217,6 +1217,33 @@ input[type=number] {
     
 }
 
+.finalizar-ordem {
+    background-color: #0099cc;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: none;
+}
+
+.finalizar-ordem:hover {
+    background-color: white;
+    color: #0099cc;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 1em;
+    font-size: 0.8em;
+    border: 1px #0099cc solid;
+    
+}
+
 .cancelar-ordem {
     background-color: red;
     color: white;

@@ -33,6 +33,7 @@
        
         {% endif %}
     </div>
+    
     <div>
         <div><h2>Documentos</h2></div>
         {% if ordem.ficha_processo %}
@@ -46,6 +47,15 @@
         {% endif %}
         {% if ordem.pack_list %}
         <a href="{{ ordem.pack_list.url }}" class="btn_create" role="button" target="_blank">Packing List</a>
+        {% endif %}
+        
+        
+    </div>
+    <div>
+        {% if request.user|has_group:"Logistica Supervisor" and ordem.ativa == True and ordem.completa == False %}
+        <a href="{% url 'planeamento:finalizar_ordem' pk=ordem.pk %}"  class="finalizar-ordem" role="button">Finalizar Ordem de Produção</a>
+        {% elif request.user|has_group:"Logistica Supervisor" and ordem.ativa == False and ordem.completa == True %}
+        <a href="{% url 'planeamento:reabrir_ordem' pk=ordem.pk %}"  class="finalizar-ordem" role="button">Reabrir Ordem de Produção</a>
         {% endif %}
     </div>
 </div>
@@ -69,12 +79,12 @@
             {% if ordem.inicio == None %}  
             <div><h3>Data de inicio:</h3> Por iniciar</div>   
             {% else %}
-            <div><h3>Data de inicio:</h3> {{ ordem.inicio }}</div>   
+            <div><h3>Data de inicio:</h3> {{ ordem.inicio|date:"d-n-Y" }} {{ ordem.inicio|date:"G:i"  }}</div>   
             {% endif %}
             {% if ordem.fim == None %}  
             <div><h3>Data de fim:</h3> Em progresso</div>   
             {% else %}
-            <div><h3>Data de fim:</h3> {{ ordem.fim }}</div>   
+            <div><h3>Data de fim:</h3> {{ ordem.fim|date:"d-n-Y" }} {{ ordem.fim|date:"G:i"  }}</div>   
             {% endif %}
             
 

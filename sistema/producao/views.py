@@ -2911,11 +2911,14 @@ def palete_pesagem(request, pk=None):
             try:
                 instance = form.save(commit=False)
                 perfil_embalamento = get_object_or_404(PerfilEmbalamento, pk=instance.perfil_embalamento.pk)
-                core_largura = CoreLargura.objects.get(core=palete.core_bobines, largura=palete.largura_bobines)
-                peso_cores = core_largura.peso * int(palete.num_bobines)
-                instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete) - perfil_embalamento.peso - peso_cores
-                instance.save()
-                return redirect('producao:palete_selecao')
+                if instance.peso_bruto == 0:
+                    messages.error(request, 'A palete ' + palete.nome + ' não pode ter peso bruto de 0Kg.')
+                else:
+                    core_largura = CoreLargura.objects.get(core=palete.core_bobines, largura=palete.largura_bobines)
+                    peso_cores = core_largura.peso * int(palete.num_bobines)
+                    instance.peso_liquido = instance.peso_bruto - int(instance.peso_palete) - perfil_embalamento.peso - peso_cores
+                    instance.save()
+                    return redirect('producao:palete_selecao')
             except:
                 messages.error(request, 'A palete ' + palete.nome + ' não têm perfil de embalaemnto atribuido. Por favor contacte o Administrador.')
 
@@ -6390,6 +6393,8 @@ def palete_pesagem_dm(request, pk):
             perfil_embalamento = get_object_or_404(PerfilEmbalamento, pk=instance.perfil_embalamento.pk)
             if bobines.count() == 0:
                 messages.error(request, 'Não é possivel pesar a palete ' + palete.nome + '. Está vazia.')
+            elif instance.peso_bruto == 0:
+                messages.error(request, 'A palete ' + palete.nome + ' não pode ter peso bruto de 0Kg.')
             else:
                 for bobine in bobines:
                     core_largura = CoreLargura.objects.get(core=bobine.largura.perfil.core, largura=bobine.largura.largura)

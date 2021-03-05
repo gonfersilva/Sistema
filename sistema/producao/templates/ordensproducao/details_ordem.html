@@ -52,9 +52,9 @@
         
     </div>
     <div>
-        {% if request.user|has_group:"Logistica Supervisor" and ordem.ativa == True and ordem.completa == False %}
+        {% if request.user|has_group:"Produção Supervisor" and ordem.ativa == True and ordem.completa == False %}
         <a href="{% url 'planeamento:finalizar_ordem' pk=ordem.pk %}"  class="finalizar-ordem" role="button">Finalizar Ordem de Produção</a>
-        {% elif request.user|has_group:"Logistica Supervisor" and ordem.ativa == False and ordem.completa == True %}
+        {% elif request.user|has_group:"Produção Supervisor" and ordem.ativa == False and ordem.completa == True %}
         <a href="{% url 'planeamento:reabrir_ordem' pk=ordem.pk %}"  class="finalizar-ordem" role="button">Reabrir Ordem de Produção</a>
         {% endif %}
     </div>

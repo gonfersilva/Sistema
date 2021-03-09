@@ -90,7 +90,7 @@ urlpatterns = [
     url(r'^qualidade/acd/$', acompanhamento_diario, name='acompanhamento_diario'),
     url(r'^retrabalho/(?P<pk>\d+)/$', retrabalho_v2, name='retrabalho_v2'),
     url(r'^retrabalho/confirmacao/(?P<pk>\d+)/(?P<b1>\d+)/(?P<m1>\d+)/(?P<b2>\w+)/(?P<m2>\w+)/(?P<b3>\w+)/(?P<m3>\w+)/$', retrabalho_confirmacao, name='retrabalho_confirmacao'),
-    url(r'^palete/picagem/(?P<pk>\d+)/$', palete_picagem, name='palete_picagem'),    
+    url(r'^palete/picagem/(?P<pk>\d+)/$', palete_picagem_v3, name='palete_picagem_v3'),    
     url(r'^listadebobines/(?P<pk>\d+)/$', classificacao_bobines_v2, name='classificacao_bobines_v2'),   
     url(r'^perfil/list/$', perfil_list_v2, name='perfil_list_v2'),    
     url(r'^perfil/details/(?P<pk>\d+)/$', perfil_details_v2, name='perfil_details_v2'),    
@@ -141,6 +141,7 @@ urlpatterns = [
     url(r'^carga/calendario/$', calendario_expedicoes, name='calendario_expedicoes'),
     url(r'^carga/packinglist/(?P<pk>\d+)/$', carga_packinglist_details, name='carga_packinglist_details'),
     url(r'^palete/pesagemdm/(?P<pk>\d+)/$', palete_pesagem_dm, name='palete_pesagem_dm'),
-  
+    url(r'^teste/(?P<pk>\d+)/$', palete_picagem_v3, name='palete_picagem_v3'),
+    
     
 ]

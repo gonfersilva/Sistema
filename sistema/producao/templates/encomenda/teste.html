@@ -1,0 +1,14 @@
+{% extends "layout.html "%} 
+{% block title %}Teste Encomendas | {{ block.super }}{% endblock %}
+{% load producao_tags %}
+{% block content %}
+
+{% for r in result %}
+<p>{{ r.0 }} {{ r.1 }} {{ r.2 }} {{ r.3 }}</p>
+{% endfor %}
+
+{{ nova_encomenda }}
+
+
+
+{% endblock %}

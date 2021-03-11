@@ -288,31 +288,20 @@ class Bobinagem(models.Model):
 
 class Encomenda(models.Model):
     STATUS=(('A', 'A'), ('F', 'F'))
-    user=models.ForeignKey(
-        User, on_delete = models.PROTECT, verbose_name = "Username")
-    cliente=models.ForeignKey(
-        Cliente, on_delete = models.PROTECT, verbose_name = "Cliente")
+    user=models.ForeignKey(User, on_delete = models.PROTECT, verbose_name = "Username")
+    cliente=models.ForeignKey(Cliente, on_delete = models.PROTECT, verbose_name = "Cliente")
     timestamp=models.DateTimeField(auto_now_add = True)
-    data=models.DateField(auto_now_add = False, auto_now = False,
-                            default = datetime.date.today, verbose_name = "Data")
-    data_prevista=models.DateField(
-        verbose_name = "Data Prevista de Conclusão", null = True, blank = True,)
-    eef=models.CharField(max_length = 17, unique = True,
-                           verbose_name = "Encomenda")
-    prf=models.CharField(max_length = 15, unique = True,
-                         verbose_name = "Proforma")
-    sqm=models.DecimalField(
-        max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
-    estado=models.CharField(
-        max_length = 1, choices = STATUS, default = 'A', verbose_name = "Estado")
+    data=models.DateField(auto_now_add = False, auto_now = False, default = datetime.date.today, verbose_name = "Data")
+    data_prevista=models.DateField(verbose_name = "Data Prevista de Conclusão", null = True, blank = True,)
+    eef=models.CharField(max_length = 17, unique = True, verbose_name = "Encomenda")
+    prf=models.CharField(max_length = 15, unique = True, verbose_name = "Proforma")
+    sqm=models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
+    estado=models.CharField(max_length = 1, choices = STATUS, default = 'A', verbose_name = "Estado")
     num_cargas_actual=models.IntegerField(default = 0)
     num_cargas=models.IntegerField(default = 0)
-    order_num=models.CharField(
-        max_length = 100, unique = False, null = True, blank = True, verbose_name ="Order Number")
-    num_paletes_actual=models.IntegerField(
-        default = 0, verbose_name = "Nº de Paletes Actual")
-    num_paletes=models.IntegerField(
-        default = 0, verbose_name = "Nº de Paletes Total")
+    order_num=models.CharField(max_length = 100, unique = False, null = True, blank = True, verbose_name ="Order Number")
+    num_paletes_actual=models.IntegerField(default = 0, verbose_name = "Nº de Paletes Actual")
+    num_paletes=models.IntegerField(default = 0, verbose_name = "Nº de Paletes Total")
 
     def __str__(self):
         return self.eef

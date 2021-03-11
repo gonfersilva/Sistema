@@ -46,7 +46,7 @@
                 {% elif ordem.ativa == False and ordem.completa == True %} 
                 <td id="estado_ba">Finalizada</td>                 
                 {% endif %}
-                {% if ordem.ativa == False and ordem.completa == False %}
+                {% if ordem.ativa == False and ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}
                 <td class="td-icon"><a href="{% url 'planeamento:delete_ordem' pk=ordem.pk %}"><i class="fas fa-trash"></i></a></td>
 
                 {% endif %}

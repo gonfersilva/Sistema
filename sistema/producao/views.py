@@ -37,6 +37,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.conf import settings
 from django.contrib.staticfiles import finders
+# import pyodbc
 
 
 
@@ -6656,3 +6657,29 @@ def palete_picagem_v3(request, pk):
         "form": form
     }
     return render(request, template_name, context)
+
+
+# @login_required
+# def sql_connect(request):
+
+#     template_name = 'encomenda/teste.html'
+    
+#     server = 'SRV-SAGE\SAGEX3' 
+#     database = 'x3v80db' 
+#     username = 'X3_ELASTICTEK' 
+#     password = '%ElAsTicT3k@2021!RePoRt' 
+#     conn = pyodbc.connect('DRIVER={sql server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+
+#     cursor=conn.cursor()
+#     cursor.execute("select e.SOHNUM_0, e.ITMREF_0, a.ITMREF_0, a.ITMDES1_0, a.ITMDES2_0, a.ITMDES3_0 from x3v80db.ELASTICTEK.SORDERQ as e LEFT JOIN x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0;")
+#     result = cursor.fetchall()
+
+#     # cliente = get_object_or_404(Cliente, cod=100234)
+#     # nova_encomenda = Encomenda.objects.create(user=request.user, eef=result[0][0], data="2021-03-10", data_prevista="2021-03-10", prf='prf10', cliente=cliente, sqm=2000000, num_paletes=20)
+
+#     context = {
+#         "result": result,
+#         # "nova_encomenda": nova_encomenda
+        
+#     }
+#     return render(request, template_name, context)

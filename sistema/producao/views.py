@@ -8,7 +8,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import CoreLargura, PerfilEmbalamento, ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao, ArtigoNW
+from .models import Artigo, CoreLargura, LinhaEncomenda, PerfilEmbalamento, ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao, ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
@@ -37,7 +37,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.conf import settings
 from django.contrib.staticfiles import finders
-# import pyodbc
+import pyodbc
 
 
 
@@ -6671,15 +6671,35 @@ def palete_picagem_v3(request, pk):
 #     conn = pyodbc.connect('DRIVER={sql server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 
 #     cursor=conn.cursor()
-#     cursor.execute("select e.SOHNUM_0, e.ITMREF_0, a.ITMREF_0, a.ITMDES1_0, a.ITMDES2_0, a.ITMDES3_0 from x3v80db.ELASTICTEK.SORDERQ as e LEFT JOIN x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0;")
+#     cursor.execute("select  e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.ORDDAT_0 > '2021-01-01' order by e.ROWID desc;")
 #     result = cursor.fetchall()
+    
 
-#     # cliente = get_object_or_404(Cliente, cod=100234)
-#     # nova_encomenda = Encomenda.objects.create(user=request.user, eef=result[0][0], data="2021-03-10", data_prevista="2021-03-10", prf='prf10', cliente=cliente, sqm=2000000, num_paletes=20)
+#     for r in result:
+#         linha_artigo = 1        
+#         cliente = get_object_or_404(Cliente, cod=r[9])
+#         nova_encomenda = Encomenda.objects.create(user=request.user, eef=r[1], data_encomenda=r[2], data_solicitada=r[3], data_expedicao=r[4], data_prevista_expedicao=r[5], cliente=cliente, sqm=0)
+#         linhas = conn.cursor()
+#         linhas.execute("select  e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
+#         result_linhas = linhas.fetchall()
+#         for linha in result_linhas:
+#             artigo = get_object_or_404(Artigo, cod=linha[9])
+#             nova_linha = LinhaEncomenda.objects.create(encomenda=nova_encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
+#             linha_artigo += 1
+#             nova_encomenda.sqm += linha[8]
 
-#     context = {
-#         "result": result,
-#         # "nova_encomenda": nova_encomenda
+#         nova_encomenda.save()
+
         
-#     }
-#     return render(request, template_name, context)
+
+        
+
+   
+
+    context = {
+        "result": result,
+        "result_linhas": result_linhas,
+       
+    }
+    return render(request, template_name, context)
+

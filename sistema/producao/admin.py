@@ -27,6 +27,7 @@ admin.site.register(EtiquetaReciclado)
 admin.site.register(Turno)
 admin.site.register(CoreLargura)
 admin.site.register(PerfilEmbalamento)
+admin.site.register(LinhaEncomenda)
 
 
 class BobinagemAdmin(admin.ModelAdmin):

@@ -228,7 +228,7 @@ class Encomenda(models.Model):
     data_prevista_expedicao = models.DateTimeField(verbose_name = "Data Prevista de Expedição", null = True, blank = True)
     prazo = models.IntegerField(default = 0)
     eef=models.CharField(max_length = 17, unique = True, verbose_name = "Encomenda")
-    prf=models.CharField(max_length = 15, unique = True, verbose_name = "Proforma")
+    prf=models.CharField(max_length = 15, verbose_name = "Proforma", null = True, blank = True)
     sqm=models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
     estado=models.CharField(max_length = 1, choices = STATUS, default = 'A', verbose_name = "Estado")
     num_cargas_actual=models.IntegerField(default = 0)
@@ -249,7 +249,12 @@ class LinhaEncomenda(models.Model):
     artigo = models.ForeignKey(Artigo, on_delete = models.PROTECT, verbose_name = "Artigo")
     linha = models.IntegerField(default = 0)
     qtd = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = "Metros quadrados")
-    prc = models.DecimalField(max_digits = 4, decimal_places = 2, verbose_name = "Preço Metro")
+    prc = models.DecimalField(max_digits = 10, decimal_places = 5, verbose_name = "Preço Metro")
+
+    def __str__(self):
+        return '%s - %s - %s' % (self.linha, self.encomenda, self.artigo)
+
+    
 
 class Carga(models.Model):
     STATUS=(('I', 'I'), ('C', 'C'))

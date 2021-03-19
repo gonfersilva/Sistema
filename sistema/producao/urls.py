@@ -135,7 +135,7 @@ urlpatterns = [
     url(r'^carga/calendario/$', calendario_expedicoes, name='calendario_expedicoes'),
     url(r'^carga/packinglist/(?P<pk>\d+)/$', carga_packinglist_details, name='carga_packinglist_details'),
     url(r'^palete/pesagemdm/(?P<pk>\d+)/$', palete_pesagem_dm, name='palete_pesagem_dm'),
-    url(r'^teste/$', sql_connect, name='sql_connect'),
+    url(r'^atualizar/$', sql_connect, name='sql_connect'),
     
     
 ]

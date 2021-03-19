@@ -6703,52 +6703,59 @@ def sql_connect(request):
     password = '%ElAsTicT3k@2021!RePoRt' 
     conn = pyodbc.connect('DRIVER={sql server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 
-    cursor=conn.cursor()
-    cursor.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.ORDDAT_0 > '2021-01-01' order by e.ROWID desc;")
-    result = cursor.fetchall()
+    # cursor=conn.cursor()
+    # cursor.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.ORDDAT_0 > '2021-01-01' order by e.ROWID desc;")
+    # result = cursor.fetchall()
 
-    for r in result:
-        if Encomenda.objects.filter(eef=r[1]).exists():
-            if LinhaEncomenda.objects.filter(encomenda=Encomenda.objects.get(eef=r[1])).exists():
-                pass
-            else:
-                try:
-                    linha_artigo = 1  
-                    encomenda = Encomenda.objects.get(eef=r[1])
-                    encomenda.sqm = 0
-                    linhas = conn.cursor()
-                    linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
-                    result_linhas = linhas.fetchall()
-                    for linha in result_linhas:
-                        artigo = get_object_or_404(Artigo, cod=linha[6])
-                        nova_linha = LinhaEncomenda.objects.create(encomenda=encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
-                        linha_artigo += 1
-                        encomenda.sqm += linha[8]
-                        encomenda.save()
-                except:
-                    pass
-        else:
-            try:
-                linha_artigo = 1        
-                cliente = get_object_or_404(Cliente, cod=r[9])
-                nova_encomenda = Encomenda.objects.create(user=request.user, eef=r[1], data_encomenda=r[2], data_solicitada=r[3], data_expedicao=r[4], data_prevista_expedicao=r[5], cliente=cliente, sqm=0)
-                linhas = conn.cursor()
-                linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
-                result_linhas = linhas.fetchall()
-                for linha in result_linhas:
-                    artigo = get_object_or_404(Artigo, cod=linha[6])
-                    nova_linha = LinhaEncomenda.objects.create(encomenda=nova_encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
-                    linha_artigo += 1
-                    nova_encomenda.sqm += linha[8]
-                    nova_encomenda.save()
-            except:
-                pass 
+    # for r in result:
+    #     if Encomenda.objects.filter(eef=r[1]).exists():
+    #         if LinhaEncomenda.objects.filter(encomenda=Encomenda.objects.get(eef=r[1])).exists():
+    #             pass
+    #         else:
+    #             try:
+    #                 linha_artigo = 1  
+    #                 encomenda = Encomenda.objects.get(eef=r[1])
+    #                 encomenda.sqm = 0
+    #                 linhas = conn.cursor()
+    #                 linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
+    #                 result_linhas = linhas.fetchall()
+    #                 for linha in result_linhas:
+    #                     artigo = get_object_or_404(Artigo, cod=linha[6])
+    #                     nova_linha = LinhaEncomenda.objects.create(encomenda=encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
+    #                     linha_artigo += 1
+    #                     encomenda.sqm += linha[8]
+    #                     encomenda.save()
+    #             except:
+    #                 pass
+    #     else:
+    #         try:
+    #             linha_artigo = 1        
+    #             cliente = get_object_or_404(Cliente, cod=r[9])
+    #             nova_encomenda = Encomenda.objects.create(user=request.user, eef=r[1], data_encomenda=r[2], data_solicitada=r[3], data_expedicao=r[4], data_prevista_expedicao=r[5], cliente=cliente, sqm=0)
+    #             linhas = conn.cursor()
+    #             linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
+    #             result_linhas = linhas.fetchall()
+    #             for linha in result_linhas:
+    #                 artigo = get_object_or_404(Artigo, cod=linha[6])
+    #                 nova_linha = LinhaEncomenda.objects.create(encomenda=nova_encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
+    #                 linha_artigo += 1
+    #                 nova_encomenda.sqm += linha[8]
+    #                 nova_encomenda.save()
+    #         except:
+    #             pass 
 
-   
+    encomendas = Encomenda.objects.filter(data_encomenda__gte='2021-01-01')
+    for encomenda in encomendas:
+
+        cursor=conn.cursor()
+        cursor.execute("select distinct o.SOHNUM_0, s.SOHNUM_0, s.PRFNUM_0 from x3v80db.ELASTICTEK.SORDERQ as o left join x3v80db.ELASTICTEK.SORDER as s on o.SOHNUM_0 = s.SOHNUM_0 where o.SOHNUM_0 = '" + encomenda.eef + "';")
+        result = cursor.fetchall()
+
+        encomenda.prf = result[0][2]
+        encomenda.save()
 
     context = {
         "result": result,
-        "result_linhas": result_linhas,
        
     }
     return render(request, template_name, context)

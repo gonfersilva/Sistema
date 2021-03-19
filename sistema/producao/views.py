@@ -2554,6 +2554,11 @@ def encomenda_list(request):
                 linha_artigo = 1        
                 cliente = get_object_or_404(Cliente, cod=r[9])
                 nova_encomenda = Encomenda.objects.create(user=request.user, eef=r[1], data_encomenda=r[2], data_solicitada=r[3], data_expedicao=r[4], data_prevista_expedicao=r[5], cliente=cliente, sqm=0)
+                prf = conn.cursor()
+                prf.execute("select distinct o.SOHNUM_0, s.SOHNUM_0, s.PRFNUM_0 from x3v80db.ELASTICTEK.SORDERQ as o left join x3v80db.ELASTICTEK.SORDER as s on o.SOHNUM_0 = s.SOHNUM_0 where o.SOHNUM_0 = '" + nova_encomenda.eef + "';")
+                result_prf = prf.fetchall()
+                nova_encomenda.prf = result_prf[0][2]
+                nova_encomenda.save()
                 linhas = conn.cursor()
                 linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
                 result_linhas = linhas.fetchall()
@@ -6747,15 +6752,24 @@ def sql_connect(request):
     encomendas = Encomenda.objects.filter(data_encomenda__gte='2021-01-01')
     for encomenda in encomendas:
 
-        cursor=conn.cursor()
-        cursor.execute("select distinct o.SOHNUM_0, s.SOHNUM_0, s.PRFNUM_0 from x3v80db.ELASTICTEK.SORDERQ as o left join x3v80db.ELASTICTEK.SORDER as s on o.SOHNUM_0 = s.SOHNUM_0 where o.SOHNUM_0 = '" + encomenda.eef + "';")
-        result = cursor.fetchall()
+        paletes = encomenda.sqm / 5400
+        paletes = round(paletes, 0) + 1
+        if encomenda.num_paletes == 0:
+            encomenda.num_paletes = paletes
+            encomenda.save()
+        
 
-        encomenda.prf = result[0][2]
-        encomenda.save()
+    #     cursor=conn.cursor()
+    #     cursor.execute("select distinct o.SOHNUM_0, s.SOHNUM_0, s.PRFNUM_0 from x3v80db.ELASTICTEK.SORDERQ as o left join x3v80db.ELASTICTEK.SORDER as s on o.SOHNUM_0 = s.SOHNUM_0 where o.SOHNUM_0 = '" + encomenda.eef + "';")
+    #     result = cursor.fetchall()
+
+    #     encomenda.prf = result[0][2]
+    #     encomenda.save()
+
+    
 
     context = {
-        "result": result,
+        # "result": result,
        
     }
     return render(request, template_name, context)

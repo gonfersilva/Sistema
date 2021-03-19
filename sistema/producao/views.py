@@ -2568,6 +2568,12 @@ def encomenda_list(request):
                     linha_artigo += 1
                     nova_encomenda.sqm += linha[8]
                     nova_encomenda.save()
+
+                paletes = nova_encomenda.sqm / 5400
+                paletes = round(paletes, 0) + 1
+                if nova_encomenda.num_paletes == 0:
+                    nova_encomenda.num_paletes = paletes
+                    nova_encomenda.save()
             except:
                 pass
         

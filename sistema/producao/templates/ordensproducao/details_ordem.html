@@ -10,11 +10,12 @@
     {% else %}
     <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn_create" role="button">Paletes a retrabalhar</a>
     {% endif %}
-    {% if ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>{% endif %}
-    <!-- <a href="#"  class="btn_create" role="button">Editar Ordem de Produção</a> -->
-    <!-- {% if ordem.ativa == True and  ordem.completa == False  and request.user|has_group:"Logistica Supervisor" and ordem.num_paletes_stock != 0 %} -->
-    <!-- {% elif ordem.ativa == False and ordem.completa == True and request.user|has_group:"Produção Supervisor" %} -->
-    <!-- {% endif %} -->
+    {% if ordem.completa == False and request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Qualidade Supervisor" %}
+    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>
+    {% elif ordem.completa == False and request.user|has_group:"Qualidade Supervisor"%}
+    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>
+    {% endif %}
+    
    
 </div>
 <div class="title_block-list">

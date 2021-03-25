@@ -1,6 +1,7 @@
 from producao.models import *
 import datetime
 from django.contrib.sessions.models import Session
+import pyodbc
 
 
 def areas(pk):

@@ -159,14 +159,6 @@ def create_ordem(request):
     return render(request, template_name, context)
 
 @login_required
-def edit_ordem(request, pk):
-    
-    context = {
-       
-    }
-    return render(request, template_name, context)
-
-@login_required
 def delete_ordem(request, pk):
     template_name = 'ordensproducao/delete_ordem.html'
     ordem = get_object_or_404(OrdemProducao, pk=pk)
@@ -198,7 +190,7 @@ def delete_ordem(request, pk):
 def list_ordem(request):
     ordens_list = OrdemProducao.objects.all().order_by('-ativa', 'completa', '-timestamp')
     template_name = 'ordensproducao/list_ordem.html'
-            
+    
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
@@ -548,3 +540,21 @@ def reabrir_ordem(request, pk):
     ordem.save()
     return redirect('planeamento:details_ordem', pk=ordem.pk)
 
+@login_required
+def edit_ordem(request, pk):
+    ordem = get_object_or_404(OrdemProducao, pk=pk)
+    template_name = 'ordensproducao/edit_ordem.html'
+    form = OrdemProducaoEditForm(request.POST or None, instance=ordem)
+    if request.method == 'POST':
+        form = OrdemProducaoEditForm(request.POST, request.FILES, instance=ordem)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+            return redirect('planeamento:details_ordem', pk=ordem.pk)
+            
+    context = {
+       "form": form,
+       "ordem": ordem
+    }
+    return render(request, template_name, context)

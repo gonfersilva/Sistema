@@ -10,7 +10,7 @@
     {% else %}
     <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn_create" role="button">Paletes a retrabalhar</a>
     {% endif %}
-    {% if ordem.ativa == False and ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>{% endif %}
+    {% if ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>{% endif %}
     <!-- <a href="#"  class="btn_create" role="button">Editar Ordem de Produção</a> -->
     <!-- {% if ordem.ativa == True and  ordem.completa == False  and request.user|has_group:"Logistica Supervisor" and ordem.num_paletes_stock != 0 %} -->
     <!-- {% elif ordem.ativa == False and ordem.completa == True and request.user|has_group:"Produção Supervisor" %} -->
@@ -36,6 +36,12 @@
     
     <div>
         <div><h2>Documentos</h2></div>
+        {% if ordem.res_prod %}
+        <a href="{{ ordem.res_prod.url }}" class="btn_create" role="button" target="_blank">Resumo de Produção</a>
+        {% endif %}
+        {% if ordem.ori_qua %}
+        <a href="{{ ordem.ori_qua.url }}" class="btn_create" role="button" target="_blank">Orientação Qualidade</a>
+        {% endif %}
         {% if ordem.ficha_processo %}
         <a href="{{ ordem.ficha_processo.url }}" class="btn_create" role="button" target="_blank">Ficha de processo</a>
         {% endif %}
@@ -48,6 +54,7 @@
         {% if ordem.pack_list %}
         <a href="{{ ordem.pack_list.url }}" class="btn_create" role="button" target="_blank">Packing List</a>
         {% endif %}
+        
         
         
     </div>

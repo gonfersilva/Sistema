@@ -122,6 +122,8 @@ class OrdemProducao(models.Model):
     of                      = models.FileField(upload_to='media/docs/of/', null=True, blank=True)
     coa_aprov               = models.FileField(upload_to='media/docs/coa/', null=True, blank=True)
     pack_list               = models.FileField(upload_to='media/docs/packlist/', null=True, blank=True)
+    res_prod                = models.FileField(upload_to='media/docs/resumoproducao/', null=True, blank=True)
+    ori_qua                 = models.FileField(upload_to='media/docs/oriqualidade/', null=True, blank=True)
     tipo_transporte         = models.CharField(max_length=20, unique=False, choices= TIPOTRANS, verbose_name="Tipo de Transporte", null=True, blank=True)
     paletes_camiao          = models.IntegerField(default=0, verbose_name="Paletes por camião", null=True, blank=True)
     altura_max              = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Altura máxima", default=0)

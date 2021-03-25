@@ -42,7 +42,7 @@
                 <td id="designacao"><a href="{% url 'producao:encomenda_detail' pk=e.pk %}">{{ e.eef }}</a></td>
                 <td id="designacao">{{ e.cliente }}</td>
                 <td>{{ e.prf }}</td>
-                <td>{{ e.data|date:"d-n-Y" }}</td>
+                <td>{{ e.data_encomenda|date:"d-n-Y" }}</td>
                 <td>{{ e.sqm }}</td>
                 <td>{{ e.num_cargas_actual }}</td>
                 <td>{{ e.num_paletes_actual }} / {{ e.num_paletes }}</td>

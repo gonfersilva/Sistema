@@ -2549,6 +2549,37 @@ def encomenda_list(request):
     for r in result:
         if Encomenda.objects.filter(eef=r[1]).exists():
             pass
+            # encomenda = get_object_or_404(Encomenda, eef=r[1])
+            
+            # if encomenda.data_encomenda == r[2] and encomenda.data_solicitada == r[3] and encomenda.data_expedicao == r[4] and encomenda.data_prevista_expedicao == r[5]:
+            #     pass
+            # else:
+            #     encomenda.data_encomenda = r[2] 
+            #     encomenda.data_solicitada = r[3] 
+            #     encomenda.data_expedicao = r[4] 
+            #     encomenda.data_prevista_expedicao = r[5]
+            #     encomenda.save()
+
+            # linhas = conn.cursor()
+            # linhas.execute("select distinct e.ROWID, e.SOHNUM_0, e.ORDDAT_0, e.DEMDLVDAT_0, e.SHIDAT_0, e.EXTDLVDAT_0, e.ITMREF_0, a.ITMDES1_0, e.QTY_0, e.BPCORD_0, c.BPCNAM_0, b.GROPRI_0 from x3v80db.ELASTICTEK.SORDERQ as e left join x3v80db.ELASTICTEK.SORDERP as b on e.SOHNUM_0 = b.SOHNUM_0 left join x3v80db.ELASTICTEK.ITMMASTER as a on e.ITMREF_0 = a.ITMREF_0 left join x3v80db.ELASTICTEK.BPCUSTOMER as c on e.BPCORD_0 = c.BPCNUM_0 where e.SOHNUM_0 = '" + r[1] + "' order by e.ROWID desc;")
+            # result_linhas = linhas.fetchall()
+
+            # for linha in result_linhas:
+            #     artigo = get_object_or_404(Artigo, cod=linha[6])
+            #     try:
+            #         linha_encomenda = LinhaEncomenda.objects.get(encomenda=encomenda, artigo=artigo)
+            #         if linha_encomenda.qtd == linha[8] and linha_encomenda.prc == linha[11]:
+            #             pass
+            #         else:
+            #             linha_encomenda.qtd = linha[8] 
+            #             linha_encomenda.prc = linha[11]
+            #             linha_encomenda.save()
+            #     except:
+            #         nova_linha = LinhaEncomenda.objects.create(encomenda=nova_encomenda, artigo=artigo, linha=linha_artigo, qtd = linha[8], prc=linha[11])
+            #         linha_artigo += 1
+            #         nova_encomenda.sqm += linha[8]
+            #         nova_encomenda.save()
+            
         else:
             try:
                 linha_artigo = 1        

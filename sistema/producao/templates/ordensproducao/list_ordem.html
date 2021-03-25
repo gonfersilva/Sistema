@@ -26,7 +26,9 @@
             <tr>
                 <th id="designacao">Ordem de Produção</th>
                 <th>Retrabalho</th>
-                <th>Paletes Produzidas</th>
+                <!-- <th>Nº de paletes a produzir(Tempo real)</th> -->
+                <th>Paletes Produzidas Linha</th>
+                <th>Paletes Produzidas Total</th>
                 <th>Paletes de Stock</th>
                 <th></th>
                 <th></th>
@@ -37,7 +39,9 @@
             <tr>
                 <td id="designacao"><a href="{% url 'planeamento:details_ordem' pk=ordem.pk %}">{{ ordem.op }}</a></td>
                 {% if ordem.retrabalho == False %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td class="td-icon"><i class="fas fa-check"></i></td>{% endif %}
+                <!-- <td></td> -->
                 <td>{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</td>
+                <td>{{ ordem.num_paletes_stock|add:ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_total }}</td>
                 <td>{{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</td>
                 {% if ordem.ativa == True and ordem.completa == False %} 
                 <td id="estado_good">Em Progresso</td> 

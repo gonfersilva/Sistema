@@ -39,6 +39,7 @@
                 <th>Cliente</th>
                 <th>Área (m<sup>2</sup>)</th>
                 <th>Comprimento (m)</th>
+                <th>Pesar</th>
                 <th></th>
             </tr>
         </thead>
@@ -71,6 +72,9 @@
                 {% endif %}
                 <td>{{ pal.area }}</td>
                 <td>{{ pal.comp_total }}</td>
+                {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
+                <td class="td-icon"><a href="{% url 'producao:palete_pesagem' pk=pal.pk %}"><i class="fas fa-weight"></i></a></td>
+                {% endif %}
                 {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
                 <td class="td-icon"><a href="{% url 'producao:palete_delete' pk=pal.pk %}"><i class="fas fa-trash"></i></a></td>
                 {% endif %}

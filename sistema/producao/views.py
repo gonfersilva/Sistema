@@ -78,6 +78,7 @@ def create_perfil(request):
 @login_required
 def create_bobinagem(request):
 
+    
     template_name = 'producao/bobinagem_create.html'
     form = BobinagemCreateForm(request.POST or None)
 
@@ -124,7 +125,7 @@ def create_bobinagem(request):
                 if not instance.estado == 'LAB' or instance.estado == 'HOLD':
                     areas(instance.pk)
 
-                if instance.estado == 'BA':
+                if instance.estado == 'BA' or instance.num_bobinagem == 1 or multipleOf10(instance.num_bobinagem) == 0:
                     return redirect('producao:bobines_larguras_reais', pk=instance.pk)
                 else:
                     return redirect('producao:etiqueta_retrabalho', pk=instance.pk)

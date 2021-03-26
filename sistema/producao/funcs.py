@@ -1002,3 +1002,9 @@ def edit_bobine(pk):
 
 
 
+def multipleOf10(num):
+
+    result = num%10
+    print(result)
+
+    return result

@@ -188,13 +188,13 @@ def delete_ordem(request, pk):
 
 @login_required
 def list_ordem(request):
-    ordens_list = OrdemProducao.objects.all().order_by('-ativa', 'completa', '-timestamp')
+    ordens_list = OrdemProducao.objects.all().order_by('-ativa', 'completa', '-fim')
     template_name = 'ordensproducao/list_ordem.html'
     
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
-        ordens_list = OrdemProducao.objects.filter(op__icontains=query).order_by('-ativa', 'completa')
+        ordens_list = OrdemProducao.objects.filter(op__icontains=query).order_by('-ativa', 'completa', '-fim')
 
 
     paginator = Paginator(ordens_list, 12)

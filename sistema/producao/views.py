@@ -400,9 +400,7 @@ def create_palete(request):
                         except:
                             instance.num_palete_ordem = 1
                     instance.cliente = encomenda.cliente
-                    instance.destino = encomenda.cliente.nome + ' L' + \
-                        str(int(instance.largura_bobines)) + \
-                        ' ' + str(instance.num_palete_ordem)
+                    instance.destino = encomenda.cliente.nome + ' L' + str(int(instance.largura_bobines)) + ' ' + str(instance.num_palete_ordem)
                     ordem.save()
                     encomenda.save()
                     instance.save()

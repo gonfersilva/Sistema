@@ -1,22 +1,26 @@
+from planeamento.models import OrdemProducao
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
 from producao.models import Palete, Bobine, Emenda, Bobinagem, Cliente, Encomenda, Carga
-from .serializers import PaleteListSerializer, PaleteDetailSerializer, CargaListSerializer, PaletesCargaSerializer, CargasEncomendaSerializer, CargaDetailSerializer, BobineSerializer, EncomendaListSerializer, BobinagemCreateSerializer, BobinesDmSerializer, BobinesPaleteDmSerializer, EmendaSerializer, EmendaCreateSerializer, BobinagemListSerializer, BobineListAllSerializer, ClienteSerializer, BobinagemBobinesSerializer, PaleteDmSerializer
+from .serializers import OrdemSerializer
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-# class PaleteListStockAPIView(LoginRequiredMixin, ListAPIView):
-#     queryset = Palete.objects.filter(stock=True)
-#     serializer_class = PaleteListSerializer
+
+
+class OrdemListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = OrdemProducao.objects.all()
+    serializer_class = OrdemSerializer
+
+class OrdemDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
+    queryset = OrdemProducao.objects.all()
+    serializer_class = OrdemSerializer
 
 # class PaleteListHistoricoAPIView(LoginRequiredMixin, ListAPIView):
 #     queryset = Palete.objects.all().order_by('-data_pal', '-num')
 #     serializer_class = PaleteListSerializer
 
-# class PaleteDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
-#     queryset = Palete.objects.all()
-#     serializer_class = PaleteDetailSerializer
 
 # class ClienteDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
 #     queryset = Cliente.objects.all()

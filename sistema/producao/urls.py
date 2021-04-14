@@ -9,6 +9,7 @@ urlpatterns = [
     
     url(r'^$', producao_home, name='producao_home'),
     url(r'^planeamento/$', planeamento_home, name='planeamento_home'),
+    url(r'^dadosbase/$', dadosbase, name='dadosbase'),
     url(r'^bobinagem/$', bobinagem_list, name='bobinagens'),
     url(r'^bobinagem/list/$', bobinagem_list_v3, name='bobinagem_list_v3'),
     url(r'^bobinagem/historico/$', bobinagem_list_all_historico, name='bobinagem_list_all_historico'),
@@ -136,6 +137,8 @@ urlpatterns = [
     url(r'^carga/packinglist/(?P<pk>\d+)/$', carga_packinglist_details, name='carga_packinglist_details'),
     url(r'^palete/pesagemdm/(?P<pk>\d+)/$', palete_pesagem_dm, name='palete_pesagem_dm'),
     url(r'^atualizar/$', sql_connect, name='sql_connect'),
+    url(r'^ajax/perfis/$', load_perfis, name='load_perfis'),
+    
     
     
 ]

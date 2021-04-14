@@ -24,6 +24,7 @@
         <nav>
           <ul>
             {% if user.is_authenticated %}
+              <!-- <li><a href="{% url 'producao:dadosbase' %}">Dados Base</a></li> -->
               <li><a href="{% url 'producao:planeamento_home' %}">Planeamento</a></li>
               <li><a href="{% url 'producao:producao_home' %}">Produção</a></li>
               <li><a href="{% url 'producao:armazem_home' %}">Armazém</a></li>

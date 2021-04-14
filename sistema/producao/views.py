@@ -41,6 +41,7 @@ import pyodbc
 
 
 
+
 # class CreatePerfil(LoginRequiredMixin, CreateView):
 #     template_name = 'perfil/perfil_create.html'
 #     form_class = PerfilCreateForm
@@ -2806,13 +2807,11 @@ def carga_detail(request, pk):
     som_comp = 0
     som_area = 0
     for pal in paletes:
-        rel = round((Decimal(pal.peso_liquido) /
-                     (Decimal(pal.area / 10))) * 100, 2)
+        rel = round((Decimal(pal.peso_liquido) / (Decimal(pal.area / 10))) * 100, 2)
         relacoes.append(rel)
         rel_area = round((Decimal(pal.peso_liquido) * 1000) / 100, 0)
         relacoes_area.append(rel_area)
-        rel_comp = round((Decimal(rel_area) / ((Decimal(pal.num_bobines) * Decimal(
-            pal.largura_bobines)) * Decimal(0.001))) * Decimal(pal.num_bobines), 2)
+        rel_comp = round((Decimal(rel_area) / ((Decimal(pal.num_bobines) * Decimal(pal.largura_bobines)) * Decimal(0.001))) * Decimal(pal.num_bobines), 2)
         realcoes_comp.append(rel_comp)
 
     form = ImprimirEtiquetaFinalPalete(request.POST or None)
@@ -5131,9 +5130,13 @@ def carga_etiqueta_nonwoven_rececao(request, pk):
 
 @login_required
 def bobinagem_classificacao(request, pk):
+
+
+       
     BobineClassificacaoFormSet = inlineformset_factory(Bobinagem, Bobine,  fields=('estado', 'l_real', 'nok', 'con', 'descen', 'presa', 'diam_insuf', 'suj', 'car',  'lac', 'ncore', 'sbrt',
                                                                                    'fc',  'fc_diam_ini', 'fc_diam_fim', 'ff', 'ff_m_ini', 'ff_m_fim', 'fmp',  'furos', 'buraco', 'esp', 'prop', 'prop_obs', 'outros', 'obs', 'troca_nw'), extra=0, can_delete=False)
     bobinagem = get_object_or_404(Bobinagem, pk=pk)
+    print(request.session['bobinagem'])
     bobines = Bobine.objects.filter(bobinagem=bobinagem)
     template_name = 'bobine/bobinagem_classificacao.html'
     valid = True
@@ -6809,3 +6812,38 @@ def sql_connect(request):
     }
     return render(request, template_name, context)
 
+
+def dadosbase(request):
+    template_name = 'producao/dadosbase_home.html'
+
+    context = {
+
+    }
+    return render(request, template_name, context)
+
+
+def load_perfis(request):
+    clienteId = request.GET.get('clienteId')
+    # produto = request.GET.get('produto')
+    artigoId = request.GET.get('artigoId')
+    # larguraFinal = request.GET.get('larguraFinal')
+    # larguraOriginal = request.GET.get('larguraOriginal')
+    # coreFinal = request.GET.get('coreFinal')
+    # coreOriginal = request.GET.get('coreOriginal')
+    perfis =  []
+    artigo = get_object_or_404(Artigo, pk=artigoId)
+    cliente = get_object_or_404(Cliente, pk=clienteId)
+
+    larguras = Largura.objects.filter(artigo=artigo, cliente=cliente)
+    
+    for largura in larguras:
+        perfil_id = largura.perfil.pk
+        try:
+            perfil = Perfil.objects.get(pk=perfil_id, retrabalho=True)
+            perfis.append(perfil)
+        except:
+            pass    
+
+        
+    
+    return render(request, 'retrabalho/dropdown_options_perfis.html', {'perfis': perfis})  

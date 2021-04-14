@@ -131,5 +131,12 @@ class PaleteListStockAPIView(LoginRequiredMixin, ListAPIView):
 class ArtigoDetailAPIView(LoginRequiredMixin, RetrieveAPIView):
     queryset = Artigo.objects.all()
     serializer_class = ArtigoDetailSerializer
+    
+class ClienteListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
 
+class ArtigoListAPIView(LoginRequiredMixin, ListAPIView):
+    queryset = Artigo.objects.all()
+    serializer_class = ArtigoDetailSerializer
 

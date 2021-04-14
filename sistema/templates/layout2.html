@@ -38,6 +38,15 @@
           
           {% else %}
           
+          <!-- <li>
+            {% if user.is_staff %}
+            <a class="btn btn-secondary" href="{% url 'producao:dadosbase_home' %}">
+              Dados BAse
+            </a>
+           
+            {% endif %}
+            
+          </li> -->
           <li>
             {% if user.is_staff %}
             <a class="btn btn-secondary" href="{% url 'producao:planeamento_home' %}">

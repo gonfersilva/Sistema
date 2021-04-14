@@ -1454,3 +1454,35 @@ input[type=number] {
     justify-content: space-evenly; 
     margin: 10px;
 }
+
+#pesquisa-perfil-div {
+    padding: 5px;
+}
+
+#pesquisa-perfil-div label {
+    font-size: 0.8rem;
+}
+
+#pesquisa-perfil {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-right: 5px;
+    padding: 3px;
+    
+
+
+}
+
+.cliente-div {
+    margin-right: 10px;
+}
+.largura-final-div {
+    margin-right: 10px;
+}
+.largura-original-div {
+    margin-right: 10px;
+}
+.core-finl-div {
+    margin-right: 10px;
+}

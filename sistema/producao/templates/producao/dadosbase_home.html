@@ -1,34 +1,29 @@
 {% extends "layout.html "%}
 {% load producao_tags %}
-{% block title %}Planeamento{% endblock %}
+{% block title %}Dados Base{% endblock %}
 {% block content %}
 <div>
     <a href="{% url 'home' %}" class="btn_back">Voltar</a>
 </div>
 <div class="title_block">
-    <h1>Planeamento</h1>
+    <h1>Dados Base</h1>
 </div>
 <div class="menu">
     
-    <!-- <div>
-        <a href="{% url 'producao:dadosbase' %}">Dados Base</a>
-    </div> -->
     <div>
         <a href="{% url 'producao:clientes' %}">Clientes</a>
     </div>
-   
-    <!-- <div>
-        <a href="{% url 'producao:fornecedor_list' %}">Fornecedores</a>
-    </div> -->
-    
     <div>
-        <a href="{% url 'producao:perfil_list_v2' %}">Perfis de Bobinagens</a>
+        <a href="#">Artigos</a>
     </div>
     <div>
-        <a href="{% url 'producao:encomenda_list' %}">Encomendas</a>
+        <a href="#">Embalamento</a>
     </div>
     <div>
-        <a href="{% url 'planeamento:list_ordem' %}">Ordens de Produção</a>
+        <a href="#">Transporte</a>
+    </div>
+    <div>
+        <a href="">Métodos</a>
     </div>
     
     <!-- <div>

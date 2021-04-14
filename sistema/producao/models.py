@@ -2,6 +2,7 @@ from django.db import models
 import datetime
 import time
 from django.conf import settings
+from django.db.models.fields import CharField
 from django.shortcuts import render, get_object_or_404, render_to_response, redirect
 from django.db import models
 from django.db.models.signals import pre_save, post_save
@@ -34,6 +35,111 @@ class PerfilEmbalamento(models.Model):
 
     def __str__(self):
         return '%s' % (self.des)
+
+class CoreLargura(models.Model):
+    CORE = (('3', '3'), ('6', '6'))
+    core = models.CharField(verbose_name="Core", max_length=1, choices=CORE)
+    largura = models.DecimalField(max_digits=6, decimal_places=0, null=True, blank=True)
+    peso = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso em Kg")
+
+    def __str__(self):
+        return '%s - %s' % (self.core, self.largura)
+
+class PaleteEmb(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Palete de embalamento")
+    des = models.TextField(verbose_name="Descrição Palete de Embalamento")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class Filme(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Filme")
+    des = models.TextField(verbose_name="Descrição Filme")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class Cinta(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Cinta")
+    des = models.TextField(verbose_name="Descrição Cinta")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class Mdf(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. MDF")
+    des = models.TextField(verbose_name="Descrição MDF")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class Core(models.Model):
+    CORE = (('3', '3'), ('6', '6'))
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Core")
+    des = models.TextField(verbose_name="Descrição Core")
+    core = models.CharField(verbose_name="Core", max_length=1, choices=CORE)
+
+    def __str__(self):
+        return '%s - %s - %s' % (self.cod, self.des, self.core)
+
+class Etiqueta(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Etiqueta")
+    des = models.TextField(verbose_name="Descrição Etiqueta")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class TipoEmenda(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    des = models.TextField(verbose_name="Tipo Emenda")
+    preta = models.BooleanField(default=False)
+    metalica = models.BooleanField(default=False)
+    
+    
+class Embalamento(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    paletemb = models.ForeignKey(PaleteEmb, on_delete=models.PROTECT, verbose_name="Palete embalamento")
+    filme = models.ForeignKey(Filme, on_delete=models.PROTECT, verbose_name="Filme")
+    cinta = models.ForeignKey(Cinta, on_delete=models.PROTECT, verbose_name="Cinta")
+    core = models.ForeignKey(Core, on_delete=models.PROTECT, verbose_name="Core")
+    mdf = models.ForeignKey(Mdf, on_delete=models.PROTECT, verbose_name="MDF")
+
+        
+class EtiquetaEmbalamento(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    etiqueta = models.ForeignKey(Etiqueta, on_delete=models.PROTECT, verbose_name="Etiqueta")
+    embalamento = models.ForeignKey(Embalamento, on_delete=models.PROTECT, verbose_name="Username")
+    qtd = models.PositiveIntegerField()
+
+class Transporte(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    tipo = models.CharField(max_length=200)
 
 
 class Perfil(models.Model):
@@ -82,8 +188,7 @@ class Perfil(models.Model):
 
 
 class Artigo(models.Model):
-    GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'),
-           ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
+    GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'), ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     CORE = (('3', '3'), ('6', '6'))
     FORMU = (('HE', 'HE'), ('HT', 'HT'))
     PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',  'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))                                                                                                                                                                                                                                                                        
@@ -127,8 +232,7 @@ class Cliente(models.Model):
 
 class Largura(models.Model):
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'), ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=0, null=True, blank=True)
@@ -147,13 +251,15 @@ class Largura(models.Model):
     def get_absolute_url(self):
         return f"/producao/perfil/{self.perfil.id}"
 
-
 class ArtigoCliente(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username", null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo")
     cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name="Cliente")
+    tipoemenda = models.ForeignKey(TipoEmenda, on_delete=models.PROTECT, verbose_name="Tipo de Emenda", null=True, blank=True)
+    embalamento = models.ForeignKey(Embalamento, on_delete=models.PROTECT, verbose_name="Embalamento", null=True, blank=True)
     cod_client = models.CharField(max_length=200, unique=False, verbose_name="Cód. Cliente", null=True, blank=True)
+    num_emendas_bobine = models.PositiveIntegerField(verbose_name="Numero de emendas por bobine", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Artigos Cliente"
@@ -162,10 +268,18 @@ class ArtigoCliente(models.Model):
     def __str__(self):
         return '%s - %s' % (self.artigo.des, self.cliente.nome)
 
+class TrasporteArtigoCliente(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    transporte = models.ForeignKey(Transporte, on_delete=models.PROTECT, verbose_name="Transporte")
+    artigocliente = models.ForeignKey(ArtigoCliente, on_delete=models.PROTECT, verbose_name="Artigo Cliente")
+    num_bobines_palete = models.PositiveIntegerField()
+    num_paletes_transporte = models.PositiveIntegerField()
+
 
 class Bobinagem(models.Model):
-    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),
-               ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
     TIPODESP = (('R', 'R'), ('BA', 'BA'))
     TIPONW = (('Suominen 25 gsm', 'Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP', 'Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE', 'BCN 70%PP/30%PE'), ('Sandler', 'Sandler'), ('PEGAS BICO 17gsm', 'PEGAS BICO 17gsm'), ('Suominen', 'Suominen'), ('BCN', 'BCN'), ('ORMA', 'ORMA'), ('PEGAS 22', 'PEGAS 22'), ('SAWASOFT', 'SAWASOFT'), ('SAWABOND', 'SAWABOND'), ('Teksis', 'Teksis'), ('Union', 'Union'), ('Radici', 'Radici'), ('Fitesa', 'Fitesa'), ('ALBIS 23', 'ALBIS 23'), ('ALBIS 16', 'ALBIS 16'), ('Union Pillow', 'Union Pillow'), ('Union UV', 'Union UV'), ('Jacob Holm', 'Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'), ('ELA-ACE', 'ELA-ACE'), ('ELA-SPUN', 'ELA-SPUN'), ('Nonwoven Nikoo 28gsm Spunlace 100PP', 'Nonwoven Nikoo 28gsm Spunlace 100PP'), ('Nonwoven Vaporjet 25gsm Spunlace 100PP 2200', 'Nonwoven Vaporjet 25gsm Spunlace 100PP 2200'))
     user=models.ForeignKey(User, on_delete = models.PROTECT, verbose_name = "Username")
@@ -598,16 +712,11 @@ class Bobine(models.Model):
 
 
 class Emenda(models.Model):
-    bobinagem = models.ForeignKey(
-        Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem", null=True, blank=True)
-    bobine = models.ForeignKey(
-        Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
-    num_emenda = models.IntegerField(
-        verbose_name="Bobine nº",  null=True, blank=True, default=0)
-    emenda = models.DecimalField(max_digits=10, decimal_places=2,
-                                 verbose_name="Emenda metros", null=True, blank=True, default=0)
-    metros = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Metros gastos", blank=True, default=0)
+    bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem", null=True, blank=True)
+    bobine = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+    num_emenda = models.IntegerField(verbose_name="Bobine nº", null=True, blank=True, default=0)
+    emenda = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Emenda metros", null=True, blank=True, default=0)
+    metros = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Metros gastos", blank=True, default=0)
 
     def __str__(self):
         return 'Emenda nº %s da bobinagem %s' % (self.num_emenda, self.bobinagem)
@@ -621,50 +730,29 @@ class Emenda(models.Model):
 
 class EtiquetaRetrabalho(models.Model):
     IMP = (('Bobinadora_CAB_A4_200', 'BOBINADORA'), ('DM12_CAB_A4_200', 'DM12'))
-    bobinagem = models.ForeignKey(
-        Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
+    bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
     bobine = models.CharField(verbose_name="Bobine", max_length=200)
-    data = models.DateField(auto_now_add=False, auto_now=False,
-                            default=datetime.date.today, verbose_name="Data")
+    data = models.DateField(auto_now_add=False, auto_now=False, default=datetime.date.today, verbose_name="Data")
     produto = models.CharField(verbose_name="Produto", max_length=200)
-    largura_bobinagem = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura da bobinagem")
-    diam = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro")
-    largura_bobine = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura")
-    comp_total = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Comprimento total")
-    area = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área")
-    bobine_original_1 = models.CharField(
-        verbose_name="Bobine1", max_length=200,  null=True, blank=True)
-    bobine_original_2 = models.CharField(
-        verbose_name="Bobine2", max_length=200,  null=True, blank=True)
-    bobine_original_3 = models.CharField(
-        verbose_name="Bobine3", max_length=200,  null=True, blank=True)
-    emenda1 = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 1", default=0)
-    metros1 = models.DecimalField(max_digits=10, decimal_places=2, null=True,
-                                  blank=True, verbose_name="Metros Consumidos 1", default=0)
-    emenda2 = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 2", default=0)
-    metros2 = models.DecimalField(max_digits=10, decimal_places=2, null=True,
-                                  blank=True, verbose_name="Metros Consumidos 2", default=0)
-    emenda3 = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 3", default=0)
-    metros3 = models.DecimalField(max_digits=10, decimal_places=2, null=True,
-                                  blank=True, verbose_name="Metros Consumidos 3", default=0)
-    impressora = models.CharField(
-        max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
-    num_copias = models.IntegerField(
-        verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    estado_impressao = models.BooleanField(
-        default=False, verbose_name="Imprimir")
-    artigo = models.CharField(
-        max_length=200, verbose_name="Artigo", null=True, blank=True)
-    cod_cliente = models.CharField(
-        max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
+    largura_bobinagem = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura da bobinagem")
+    diam = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro")
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
+    comp_total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área")
+    bobine_original_1 = models.CharField(verbose_name="Bobine1", max_length=200,  null=True, blank=True)
+    bobine_original_2 = models.CharField(verbose_name="Bobine2", max_length=200,  null=True, blank=True)
+    bobine_original_3 = models.CharField(verbose_name="Bobine3", max_length=200,  null=True, blank=True)
+    emenda1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 1", default=0)
+    metros1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 1", default=0)
+    emenda2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 2", default=0)
+    metros2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 2", default=0)
+    emenda3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Emenda 3", default=0)
+    metros3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Metros Consumidos 3", default=0)
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False, verbose_name="Imprimir")
+    artigo = models.CharField(max_length=200, verbose_name="Artigo", null=True, blank=True)
+    cod_cliente = models.CharField(max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
 
     def __str__(self):
         return self.bobine
@@ -672,147 +760,78 @@ class EtiquetaRetrabalho(models.Model):
 
 class EtiquetaPalete(models.Model):
     IMP = (('Bobinadora_CAB_A4_200', 'BOBINADORA'), ('DM12_CAB_A4_200', 'DM12'))
-    palete = models.ForeignKey(
-        Palete, on_delete=models.CASCADE, verbose_name="Palete")
+    palete = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete")
     palete_nome = models.CharField(verbose_name="Palete nome", max_length=200)
     produto = models.CharField(verbose_name="Produto", max_length=200)
-    largura_bobine = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura")
-    diam_min = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
-    diam_max = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
+    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
+    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
     cliente = models.CharField(verbose_name="Cliente", max_length=200)
-    bobine1 = models.CharField(
-        verbose_name="Bobine nº 1", max_length=200, null=True, blank=True)
-    bobine2 = models.CharField(
-        verbose_name="Bobine nº 2", max_length=200, null=True, blank=True)
-    bobine3 = models.CharField(
-        verbose_name="Bobine nº 3", max_length=200, null=True, blank=True)
-    bobine4 = models.CharField(
-        verbose_name="Bobine nº 4", max_length=200, null=True, blank=True)
-    bobine5 = models.CharField(
-        verbose_name="Bobine nº 5", max_length=200, null=True, blank=True)
-    bobine6 = models.CharField(
-        verbose_name="Bobine nº 6", max_length=200, null=True, blank=True)
-    bobine7 = models.CharField(
-        verbose_name="Bobine nº 7", max_length=200, null=True, blank=True)
-    bobine8 = models.CharField(
-        verbose_name="Bobine nº 8", max_length=200, null=True, blank=True)
-    bobine9 = models.CharField(
-        verbose_name="Bobine nº 9", max_length=200, null=True, blank=True)
-    bobine10 = models.CharField(
-        verbose_name="Bobine nº 10", max_length=200, null=True, blank=True)
-    bobine11 = models.CharField(
-        verbose_name="Bobine nº 11", max_length=200, null=True, blank=True)
-    bobine12 = models.CharField(
-        verbose_name="Bobine nº 12", max_length=200, null=True, blank=True)
-    bobine13 = models.CharField(
-        verbose_name="Bobine nº 13", max_length=200, null=True, blank=True)
-    bobine14 = models.CharField(
-        verbose_name="Bobine nº 14", max_length=200, null=True, blank=True)
-    bobine15 = models.CharField(
-        verbose_name="Bobine nº 15", max_length=200, null=True, blank=True)
-    bobine16 = models.CharField(
-        verbose_name="Bobine nº 16", max_length=200, null=True, blank=True)
-    bobine17 = models.CharField(
-        verbose_name="Bobine nº 17", max_length=200, null=True, blank=True)
-    bobine18 = models.CharField(
-        verbose_name="Bobine nº 18", max_length=200, null=True, blank=True)
-    bobine19 = models.CharField(
-        verbose_name="Bobine nº 19", max_length=200, null=True, blank=True)
-    bobine20 = models.CharField(
-        verbose_name="Bobine nº 20", max_length=200, null=True, blank=True)
-    bobine21 = models.CharField(
-        verbose_name="Bobine nº 21", max_length=200, null=True, blank=True)
-    bobine22 = models.CharField(
-        verbose_name="Bobine nº 22", max_length=200, null=True, blank=True)
-    bobine23 = models.CharField(
-        verbose_name="Bobine nº 23", max_length=200, null=True, blank=True)
-    bobine24 = models.CharField(
-        verbose_name="Bobine nº 24", max_length=200, null=True, blank=True)
-    bobine25 = models.CharField(
-        verbose_name="Bobine nº 25", max_length=200, null=True, blank=True)
-    bobine26 = models.CharField(
-        verbose_name="Bobine nº 26", max_length=200, null=True, blank=True)
-    bobine27 = models.CharField(
-        verbose_name="Bobine nº 27", max_length=200, null=True, blank=True)
-    bobine28 = models.CharField(
-        verbose_name="Bobine nº 28", max_length=200, null=True, blank=True)
-    bobine29 = models.CharField(
-        verbose_name="Bobine nº 29", max_length=200, null=True, blank=True)
-    bobine30 = models.CharField(
-        verbose_name="Bobine nº 30", max_length=200, null=True, blank=True)
-    bobine31 = models.CharField(
-        verbose_name="Bobine nº 31", max_length=200, null=True, blank=True)
-    bobine32 = models.CharField(
-        verbose_name="Bobine nº 32", max_length=200, null=True, blank=True)
-    bobine33 = models.CharField(
-        verbose_name="Bobine nº 33", max_length=200, null=True, blank=True)
-    bobine34 = models.CharField(
-        verbose_name="Bobine nº 34", max_length=200, null=True, blank=True)
-    bobine35 = models.CharField(
-        verbose_name="Bobine nº 35", max_length=200, null=True, blank=True)
-    bobine36 = models.CharField(
-        verbose_name="Bobine nº 36", max_length=200, null=True, blank=True)
-    bobine37 = models.CharField(
-        verbose_name="Bobine nº 37", max_length=200, null=True, blank=True)
-    bobine38 = models.CharField(
-        verbose_name="Bobine nº 38", max_length=200, null=True, blank=True)
-    bobine39 = models.CharField(
-        verbose_name="Bobine nº 39", max_length=200, null=True, blank=True)
-    bobine40 = models.CharField(
-        verbose_name="Bobine nº 40", max_length=200, null=True, blank=True)
-    bobine41 = models.CharField(
-        verbose_name="Bobine nº 41", max_length=200, null=True, blank=True)
-    bobine42 = models.CharField(
-        verbose_name="Bobine nº 42", max_length=200, null=True, blank=True)
-    bobine43 = models.CharField(
-        verbose_name="Bobine nº 43", max_length=200, null=True, blank=True)
-    bobine44 = models.CharField(
-        verbose_name="Bobine nº 44", max_length=200, null=True, blank=True)
-    bobine45 = models.CharField(
-        verbose_name="Bobine nº 45", max_length=200, null=True, blank=True)
-    bobine46 = models.CharField(
-        verbose_name="Bobine nº 46", max_length=200, null=True, blank=True)
-    bobine47 = models.CharField(
-        verbose_name="Bobine nº 47", max_length=200, null=True, blank=True)
-    bobine48 = models.CharField(
-        verbose_name="Bobine nº 48", max_length=200, null=True, blank=True)
-    bobine49 = models.CharField(
-        verbose_name="Bobine nº 49", max_length=200, null=True, blank=True)
-    bobine50 = models.CharField(
-        verbose_name="Bobine nº 50", max_length=200, null=True, blank=True)
-    bobine51 = models.CharField(
-        verbose_name="Bobine nº 51", max_length=200, null=True, blank=True)
-    bobine52 = models.CharField(
-        verbose_name="Bobine nº 52", max_length=200, null=True, blank=True)
-    bobine53 = models.CharField(
-        verbose_name="Bobine nº 53", max_length=200, null=True, blank=True)
-    bobine54 = models.CharField(
-        verbose_name="Bobine nº 54", max_length=200, null=True, blank=True)
-    bobine55 = models.CharField(
-        verbose_name="Bobine nº 55", max_length=200, null=True, blank=True)
-    bobine56 = models.CharField(
-        verbose_name="Bobine nº 56", max_length=200, null=True, blank=True)
-    bobine57 = models.CharField(
-        verbose_name="Bobine nº 57", max_length=200, null=True, blank=True)
-    bobine58 = models.CharField(
-        verbose_name="Bobine nº 58", max_length=200, null=True, blank=True)
-    bobine59 = models.CharField(
-        verbose_name="Bobine nº 59", max_length=200, null=True, blank=True)
-    bobine60 = models.CharField(
-        verbose_name="Bobine nº 60", max_length=200, null=True, blank=True)
-    artigo = models.CharField(
-        max_length=200, verbose_name="Artigo", null=True, blank=True)
-    cod_cliente = models.CharField(
-        max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
-    impressora = models.CharField(
-        max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
-    num_copias = models.IntegerField(
-        verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    estado_impressao = models.BooleanField(
-        default=False, verbose_name="Imprimir")
+    bobine1 = models.CharField(verbose_name="Bobine nº 1", max_length=200, null=True, blank=True)
+    bobine2 = models.CharField(verbose_name="Bobine nº 2", max_length=200, null=True, blank=True)
+    bobine3 = models.CharField(verbose_name="Bobine nº 3", max_length=200, null=True, blank=True)
+    bobine4 = models.CharField(verbose_name="Bobine nº 4", max_length=200, null=True, blank=True)
+    bobine5 = models.CharField(verbose_name="Bobine nº 5", max_length=200, null=True, blank=True)
+    bobine6 = models.CharField(verbose_name="Bobine nº 6", max_length=200, null=True, blank=True)
+    bobine7 = models.CharField(verbose_name="Bobine nº 7", max_length=200, null=True, blank=True)
+    bobine8 = models.CharField(verbose_name="Bobine nº 8", max_length=200, null=True, blank=True)
+    bobine9 = models.CharField(verbose_name="Bobine nº 9", max_length=200, null=True, blank=True)
+    bobine10 = models.CharField(verbose_name="Bobine nº 10", max_length=200, null=True, blank=True)
+    bobine11 = models.CharField(verbose_name="Bobine nº 11", max_length=200, null=True, blank=True)
+    bobine12 = models.CharField(verbose_name="Bobine nº 12", max_length=200, null=True, blank=True)
+    bobine13 = models.CharField(verbose_name="Bobine nº 13", max_length=200, null=True, blank=True)
+    bobine14 = models.CharField(verbose_name="Bobine nº 14", max_length=200, null=True, blank=True)
+    bobine15 = models.CharField(verbose_name="Bobine nº 15", max_length=200, null=True, blank=True)
+    bobine16 = models.CharField(verbose_name="Bobine nº 16", max_length=200, null=True, blank=True)
+    bobine17 = models.CharField(verbose_name="Bobine nº 17", max_length=200, null=True, blank=True)
+    bobine18 = models.CharField(verbose_name="Bobine nº 18", max_length=200, null=True, blank=True)
+    bobine19 = models.CharField(verbose_name="Bobine nº 19", max_length=200, null=True, blank=True)
+    bobine20 = models.CharField(verbose_name="Bobine nº 20", max_length=200, null=True, blank=True)
+    bobine21 = models.CharField(verbose_name="Bobine nº 21", max_length=200, null=True, blank=True)
+    bobine22 = models.CharField(verbose_name="Bobine nº 22", max_length=200, null=True, blank=True)
+    bobine23 = models.CharField(verbose_name="Bobine nº 23", max_length=200, null=True, blank=True)
+    bobine24 = models.CharField(verbose_name="Bobine nº 24", max_length=200, null=True, blank=True)
+    bobine25 = models.CharField(verbose_name="Bobine nº 25", max_length=200, null=True, blank=True)
+    bobine26 = models.CharField(verbose_name="Bobine nº 26", max_length=200, null=True, blank=True)
+    bobine27 = models.CharField(verbose_name="Bobine nº 27", max_length=200, null=True, blank=True)
+    bobine28 = models.CharField(verbose_name="Bobine nº 28", max_length=200, null=True, blank=True)
+    bobine29 = models.CharField(verbose_name="Bobine nº 29", max_length=200, null=True, blank=True)
+    bobine30 = models.CharField(verbose_name="Bobine nº 30", max_length=200, null=True, blank=True)
+    bobine31 = models.CharField(verbose_name="Bobine nº 31", max_length=200, null=True, blank=True)
+    bobine32 = models.CharField(verbose_name="Bobine nº 32", max_length=200, null=True, blank=True)
+    bobine33 = models.CharField(verbose_name="Bobine nº 33", max_length=200, null=True, blank=True)
+    bobine34 = models.CharField(verbose_name="Bobine nº 34", max_length=200, null=True, blank=True)
+    bobine35 = models.CharField(verbose_name="Bobine nº 35", max_length=200, null=True, blank=True)
+    bobine36 = models.CharField(verbose_name="Bobine nº 36", max_length=200, null=True, blank=True)
+    bobine37 = models.CharField(verbose_name="Bobine nº 37", max_length=200, null=True, blank=True)
+    bobine38 = models.CharField(verbose_name="Bobine nº 38", max_length=200, null=True, blank=True)
+    bobine39 = models.CharField(verbose_name="Bobine nº 39", max_length=200, null=True, blank=True)
+    bobine40 = models.CharField(verbose_name="Bobine nº 40", max_length=200, null=True, blank=True)
+    bobine41 = models.CharField(verbose_name="Bobine nº 41", max_length=200, null=True, blank=True)
+    bobine42 = models.CharField(verbose_name="Bobine nº 42", max_length=200, null=True, blank=True)
+    bobine43 = models.CharField(verbose_name="Bobine nº 43", max_length=200, null=True, blank=True)
+    bobine44 = models.CharField(verbose_name="Bobine nº 44", max_length=200, null=True, blank=True)
+    bobine45 = models.CharField(verbose_name="Bobine nº 45", max_length=200, null=True, blank=True)
+    bobine46 = models.CharField(verbose_name="Bobine nº 46", max_length=200, null=True, blank=True)
+    bobine47 = models.CharField(verbose_name="Bobine nº 47", max_length=200, null=True, blank=True)
+    bobine48 = models.CharField(verbose_name="Bobine nº 48", max_length=200, null=True, blank=True)
+    bobine49 = models.CharField(verbose_name="Bobine nº 49", max_length=200, null=True, blank=True)
+    bobine50 = models.CharField(verbose_name="Bobine nº 50", max_length=200, null=True, blank=True)
+    bobine51 = models.CharField(verbose_name="Bobine nº 51", max_length=200, null=True, blank=True)
+    bobine52 = models.CharField(verbose_name="Bobine nº 52", max_length=200, null=True, blank=True)
+    bobine53 = models.CharField(verbose_name="Bobine nº 53", max_length=200, null=True, blank=True)
+    bobine54 = models.CharField(verbose_name="Bobine nº 54", max_length=200, null=True, blank=True)
+    bobine55 = models.CharField(verbose_name="Bobine nº 55", max_length=200, null=True, blank=True)
+    bobine56 = models.CharField(verbose_name="Bobine nº 56", max_length=200, null=True, blank=True)
+    bobine57 = models.CharField(verbose_name="Bobine nº 57", max_length=200, null=True, blank=True)
+    bobine58 = models.CharField(verbose_name="Bobine nº 58", max_length=200, null=True, blank=True)
+    bobine59 = models.CharField(verbose_name="Bobine nº 59", max_length=200, null=True, blank=True)
+    bobine60 = models.CharField(verbose_name="Bobine nº 60", max_length=200, null=True, blank=True)
+    artigo = models.CharField(max_length=200, verbose_name="Artigo", null=True, blank=True)
+    cod_cliente = models.CharField(max_length=200, verbose_name="Código do Cliente", null=True, blank=True)
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True, choices=IMP)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False, verbose_name="Imprimir")
 
     def __str__(self):
         return self.palete_nome
@@ -1029,13 +1048,6 @@ class EtiquetaReciclado(models.Model):
         return self.lote
 
 
-class CoreLargura(models.Model):
-    CORE = (('3', '3'), ('6', '6'))
-    core = models.CharField(verbose_name="Core", max_length=1, choices=CORE)
-    largura = models.DecimalField(
-        max_digits=6, decimal_places=0, null=True, blank=True)
-    peso = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Peso em Kg")
 
-    def __str__(self):
-        return '%s - %s' % (self.core, self.largura)
+
+    

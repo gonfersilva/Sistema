@@ -28,6 +28,17 @@ admin.site.register(Turno)
 admin.site.register(CoreLargura)
 admin.site.register(PerfilEmbalamento)
 admin.site.register(LinhaEncomenda)
+admin.site.register(PaleteEmb)
+admin.site.register(Filme)
+admin.site.register(Cinta)
+admin.site.register(Mdf)
+admin.site.register(Core)
+admin.site.register(Etiqueta)
+admin.site.register(TipoEmenda)
+admin.site.register(Embalamento)
+admin.site.register(Transporte)
+admin.site.register(TrasporteArtigoCliente)
+
 
 
 class BobinagemAdmin(admin.ModelAdmin):

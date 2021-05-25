@@ -2,53 +2,32 @@
 {% load producao_tags %}
 {% block title %}Planeamento{% endblock %}
 {% block content %}
-<div>
-    <a href="{% url 'home' %}" class="btn_back">Voltar</a>
-</div>
-<div class="title_block">
-    <h1>Planeamento</h1>
-</div>
-<div class="menu">
-    
-    <!-- <div>
-        <a href="{% url 'producao:dadosbase' %}">Dados Base</a>
-    </div> -->
-    <div>
-        <a href="{% url 'producao:clientes' %}">Clientes</a>
-    </div>
-   
-    <!-- <div>
-        <a href="{% url 'producao:fornecedor_list' %}">Fornecedores</a>
-    </div> -->
-    
-    <div>
-        <a href="{% url 'producao:perfil_list_v2' %}">Perfis de Bobinagens</a>
-    </div>
-    <div>
-        <a href="{% url 'producao:encomenda_list' %}">Encomendas</a>
-    </div>
-    <div>
-        <a href="{% url 'planeamento:list_ordem' %}">Ordens de Produção</a>
-    </div>
-    
-    <!-- <div>
-        <a href="{% url 'producao:artigonw_list' %}">Artigos de Nonwoven</a>
-    </div> -->
-    <!-- <div>
-        <a href="{% url 'producao:inventario_paletes_cliente_list' %}">Inventário de Paletes Good</a>
-    </div>
-    <div>
-        <a href="{% url 'producao:inventario_bobines_list' %}">Inventário de Bobines DM</a>
-    </div> -->
 
-    <!-- <a href="#" class="menu_btn">Fornecedores</a>
-    <a href="#" class="menu_btn">Encomendas</a>
-    <a href="#" class="menu_btn">Perfis de Bobinagens</a>
-    <a href="#" class="menu_btn">Artigos de Nonwoven</a>
-    <a href="#" class="menu_btn">Inventário de Paletes Good</a>
-    <a href="#" class="menu_btn">Inventário de Bobines DM</a> -->
-
+<div class="container">
+    <a href="{% url 'home' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    
 </div>
+<div class="container">
+    <div>
+        <h3 class="text-center">Planeamento</h3>
+    </div>
+    <br>
+    <div class="container" id="embalamento-menu">
+        <div class="row mb-2">
+            <div class="col-4">            
+                <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Perfis de Bobinagens</h1></a>
+            </div>
+            <div class="col-4 text-center">
+                <a href="{% url 'producao:encomenda_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Encomendas</h1></a>
+            </div>
+            <div class="col-4 text-center">
+                <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Ordens de Produção</h1></a>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
 
 
 

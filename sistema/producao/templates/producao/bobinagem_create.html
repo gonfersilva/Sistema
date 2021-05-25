@@ -4,7 +4,100 @@
 
 {% block title %}Bobinagem | {{ block.super }}{% endblock %}
 {% block content %}
-<div class="title_block-list">
+<div class="container">
+    <a href="{% url 'producao:bobinagem_list_v3' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Criar Bobinagem</h3>
+    </div>
+    <br>
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Perfil:</label></div>
+                <div class="col-3 form-control-sm">{{ form.perfil }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Data:</label></div>
+                <div class="col-2 form-control-sm">{{ form.data }}</div>
+                <div class="col-2"><label class="form-label">Início:</label></div>
+                <div class="col-2 form-control-sm">{{ form.inico }}</div>
+                <div class="col-2"><label class="form-label">Fim:</label></div>
+                <div class="col-2 form-control-sm">{{ form.fim }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Bobinagem nº:</label></div>
+                <div class="col-2 form-control-sm">{{ form.num_bobinagem }}</div>
+                <div class="col-2"><label class="form-label">Estado:</label></div>
+                <div class="col-2 form-control-sm">{{ form.estado }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Diâmetro:</label></div>
+                <div class="col-3 form-control-sm">{{ form.diam }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Comp. Final:</label></div>
+                <div class="col-2 form-control-sm">{{ form.comp }}</div>
+                <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
+                <div class="col-2 form-control-sm">{{ form.comp_par }}</div>
+                <div class="col-2"><label class="form-label">Tipo desperdicio:</label></div>
+                <div class="col-2 form-control-sm">{{ form.tipo_desp }}</div>
+            </div>
+            <br>
+            <div class="container">
+                <h3 class="text-center">Desbobinadora</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-6">Inferior</div>
+                <div class="col-6">Superior</div>
+            </div>            
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwinf }}</div>
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwinf }}</div>
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwinf }}</div>
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwsup }}</div>
+            </div>
+            <br>
+            <div class="container">
+                <h3 class="text-center">Observações</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Observações:</label></div>
+                <div class="col-10 form-control-sm">{{ form.obs }}</div>
+            </div>
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+<!-- <div class="title_block-list">
     <h1>Criar Bobinagem</h1>
 </div>
 <form method="POST" action="" onkeypress="return event.keyCode != 13;">
@@ -19,7 +112,7 @@
     </div>
     <div class="content-form">
         <div class="content-form-2">
-            <div><label for="id_perfil">Perfil: </label>{{ form.perfil }}</div>
+            <div><label for="id_perfil">Perfil: </label>c</div>
         </div>
         <div class="form_create_bobinagem_2">
             <div><label for="id_data">Data: </label>{{ form.data }}</div>
@@ -67,7 +160,7 @@
         <input type="submit" id="validate-btn" value="Gravar">
     </div>
 
-</form>
+</form> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

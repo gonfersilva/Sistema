@@ -3,8 +3,8 @@
 {% block title %}Clientes | {{ block.super }}{% endblock %}
 {% block content %}
 
-<div>
-    <a href="{% url 'producao:planeamento_home' %}"  class="btn_back" role="button">Voltar</a>
+<!-- <div>
+    <a href="{% url 'producao:dadosbase' %}"  class="btn_back" role="button">Voltar</a>
     {% if request.user|has_group:"Logistica Supervisor"%}
     <a href="{% url 'producao:cliente_create' %}"  class="btn_create" role="button">Criar cliente</a>
     {% endif %}
@@ -40,7 +40,7 @@
                 <td>{{ c.liminf }}</td>
                 <td>{{ c.limsup }}</td>
                 <td>{{ c.diam_ref }}</td>
-                <!-- <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>      -->
+                <td id="center"><a href="#" class="btn btn-danger">Apagar</a></td>     
             </tr>
             {% endfor %}
         </tbody>
@@ -73,6 +73,48 @@
     </div>
     {% endif %}
 
+</div> -->
+
+<div class="container">
+    <a href="{% url 'producao:dadosbase' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:cliente_create' %}" class="btn btn-outline-primary" role="button">Criar Cliente</a>
+    
+</div>
+<div class="container">
+    <div>
+        <h3 class="text-center">Clientes</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Código cliente</th>
+                    <th scope="col">Abv.</th>
+                    <th id="designacao">Designação</th>
+                    <th scope="col">Diâmetro inferior</th>
+                    <th scope="col">Diâmetro superior</th>
+                    <th scope="col">Diâmetro de referência</th>
+                    <th>Editar</th>
+                    <th>Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in cliente %}
+                <tr>                   
+                    <td>{{ c.cod }}</td>
+                    <td>{{ c.abv }}</td>
+                    <td><a href="{% url 'producao:cliente_details' pk=c.pk %}">{{ c.nome }}</a></td>
+                    <td>{{ c.liminf }}</td>
+                    <td>{{ c.limsup }}</td>
+                    <td>{{ c.diam_ref }}</td>
+                    <td><a href="#"><i class="fas fa-edit"></i></a></td>
+                    <td><a href="#"><i class="fas fa-trash"></i></a></td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 

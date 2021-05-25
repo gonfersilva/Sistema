@@ -5,7 +5,7 @@
 {% block content %}
 
 <div>
-    <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
+    <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn btn-outline-primary" role="button">Voltar</a>
     
 </div>
 <div class="title_block-list">
@@ -37,13 +37,13 @@
     <form action='' method="post">
         {% csrf_token %}
         {{ formset.management_form }}
-        <input type="submit" value="Validar" id="validate-btn">
+        <input type="submit" value="Validar" class="btn btn-outline-primary">
         {% if request.user|has_group:"Qualidade Supervisor" or request.user|has_group:"Qualidade Tecnico" %}
-        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='hold' %}" class="btn_hold" role="button">Hold</a>
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='hold' %}" class="btn btn-light" role="button">Hold</a>
         {% endif %}
         <!-- <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='rej' %}" class="btn_r" role="button">Rejeitar</a> -->
         <!-- <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='dm' %}" class="btn_dm" role="button">DM</a> -->
-        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='ap' %}" class="btn_g" role="button">Aprovar</a>
+        <a href="{% url 'producao:classificacao_bobines_all' pk=bobinagem.pk operation='ap' %}" class="btn btn-success" role="button">Aprovar</a>
         <table class="content-table" id="defeitos">
             <thead>
                 <tr>

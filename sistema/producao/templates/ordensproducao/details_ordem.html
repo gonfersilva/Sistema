@@ -2,26 +2,257 @@
 {% load producao_tags %}
 {% block title %}Detalhes Ordem de Fabrico | {{ block.super }}{% endblock %}
 {% block content %}
-<div>
-    <a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a>
-    
+<div class="container">
+    <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-outline-primary" role="button">Voltar</a>
     {% if ordem.retrabalho == False %}
-    <a href="{% url 'planeamento:ordem_add_stock' pk=ordem.pk %}"  class="btn_create" role="button">Adicionar Paletes em Stock</a>
+    <a href="{% url 'planeamento:ordem_add_stock' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Adicionar Paletes em Stock</a>
     {% else %}
-    <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn_create" role="button">Paletes a retrabalhar</a>
+    <a href="{% url 'planeamento:add_paletes_retrabalho' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Paletes a retrabalhar</a>
     {% endif %}
     {% if ordem.completa == False and request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Qualidade Supervisor" %}
-    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>
+    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Editar Ordem de Fabrico</a>
     {% elif ordem.completa == False and request.user|has_group:"Qualidade Supervisor"%}
-    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn_create" role="button">Editar Ordem de Fabrico</a>
+    <a href="{% url 'planeamento:edit_ordem' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Editar Ordem de Fabrico</a>
     {% endif %}
+</div>       
+<br>
+<div>
+    <h3 class="text-center">Ordem de Produção</h3>
+</div>
+<div class="container">
+    <div class="container">
+        <div class="row mt-2">
+                        
+            {% if ordem.completa == True and ordem.ativa == False %}
+            <div class="ordem-finalizada"><h2>Ordem Finalizada</h2></div>
+            {% elif ordem.ativa == True and ordem.completa == False %}
+            <div class="ordem-ativa"><h2>Em Progresso</h2> {% if request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:ordem_cancelar' pk=ordem.pk %}"  class="cancelar-ordem" role="button">Cancelar</a>{% endif %}</div>
+            {% elif ordem.ativa == False and ordem.completa == False %}
+            <div class="ordem-aguardar"><h2>Aguardando Início</h2> {% if request.user|has_group:"Produção Supervisor" %}<a href="{% url 'planeamento:ordem_iniciar' pk=ordem.pk %}"  class="iniciar-ordem" role="button">Iniciar</a>{% endif %}</div>
+            {% endif %}
+            
+            {% if request.user|has_group:"Produção Supervisor" and ordem.ativa == True and ordem.completa == False %}
+            <a href="{% url 'planeamento:finalizar_ordem' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Finalizar Ordem de Produção</a>
+            {% elif request.user|has_group:"Produção Supervisor" and ordem.ativa == False and ordem.completa == True %}
+            <a href="{% url 'planeamento:reabrir_ordem' pk=ordem.pk %}"  class="btn btn-outline-primary" role="button">Reabrir Ordem de Produção</a>
+            {% endif %}
+            
+        </div>
+
+        <div class="row mt-2">
+            {% if ordem.res_prod %}
+            <div class="col-2"><a href="{{ ordem.res_prod.url }}" class="btn btn-outline-primary" role="button" target="_blank">Resumo de Produção</a></div>
+            {% endif %}
+            {% if ordem.ori_qua %}
+            <div class="col-2"><a href="{{ ordem.ori_qua.url }}" class="btn btn-outline-primary" role="button" target="_blank">Orientação Qualidade</a></div>
+            {% endif %}
+            {% if ordem.ficha_processo %}
+            <div class="col-2"><a href="{{ ordem.ficha_processo.url }}" class="btn btn-outline-primary" role="button" target="_blank">Ficha de processo</a></div>
+            {% endif %}
+            {% if ordem.ficha_tecnica %}
+            <div class="col-2"><a href="{{ ordem.ficha_tecnica.url }}" class="btn btn-outline-primary" role="button" target="_blank">Ficha Técnica</a></div>
+            {% endif %}
+            {% if ordem.of %}
+            <div class="col-2"><a href="{{ ordem.of.url }}" class="btn btn-outline-primary" role="button" target="_blank">OF</a></div>
+            {% endif %}
+            {% if ordem.pack_list %}
+            <div class="col-2"><a href="{{ ordem.pack_list.url }}" class="btn btn-outline-primary" role="button" target="_blank">Packing List</a></div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<br>
+<div class="container">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Ordem de Produção:</label></div>
+            <div class="col-10">{{ ordem }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Encomenda:</label></div>
+            <div class="col-10">{{ ordem.enc }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Cliente:</label></div>
+            <div class="col-4">{{ ordem.cliente }}</div>
+            <div class="col-2"><label class="form-label">Artigo:</label></div>
+            <div class="col-4">{{ ordem.artigo }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Data prevista de inicio:</label></div>
+            <div class="col-4">{{ ordem.data_prevista_inicio|date:"d-n-Y" }} {{ ordem.hora_prevista_inicio|date:"G:i" }}</div>
+            <div class="col-2"><label class="form-label">Data prevista de fim:</label></div>
+            <div class="col-4">{{ ordem.data_prevista_fim|date:"d-n-Y" }} {{ ordem.hora_prevista_fim|date:"G:i" }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Data de inicio:</label></div>
+            <div class="col-4">{{ ordem.inicio|date:"d-n-Y" }} {{ ordem.inicio|date:"G:i"  }}</div>
+            <div class="col-2"><label class="form-label">Data de fim:</label></div>
+            <div class="col-4">{{ ordem.fim|date:"d-n-Y" }} {{ ordem.fim|date:"G:i"  }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Largura:</label></div>
+            <div class="col-4">{{ ordem.largura }}</div>
+            <div class="col-2"><label class="form-label">Core("):</label></div>
+            <div class="col-4">{{ ordem.core }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Diâmetro mínimo:</label></div>
+            <div class="col-4">{{ ordem.diam_min }}</div>
+            <div class="col-2"><label class="form-label">Diâmetro máximo:</label></div>
+            <div class="col-4">{{ ordem.diam_max }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Nº de paletes a Produzir:</label></div>
+            <div class="col-4">{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</div>
+            <div class="col-2"><label class="form-label">Nº de paletes Total:</label></div>
+            <div class="col-4">{{ ordem.num_paletes_total }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Tipo Palete:</label></div>
+            <div class="col-4">{{ ordem.tipo_paletes }}</div>
+            <div class="col-2"><label class="form-label">Paletes por palete:</label></div>
+            <div class="col-4">{{ ordem.palete_por_palete }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Bobine Palete Superior:</label></div>
+            <div class="col-4"> {{ ordem.bobines_por_palete }}</div>
+            <div class="col-2"><label class="form-label">Bobine Palete inferior:</label></div>
+            <div class="col-4">{{ ordem.bobines_por_palete_inf }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Sentido Enrolamento:</label></div>
+            <div class="col-4">{{ ordem.enrolamento }}</div>
+            <div class="col-2"><label class="form-label">Folha indentificação Palete:</label></div>
+            <div class="col-4">{% if ordem.folha_id == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Stock:</label></div>
+            <div class="col-4">{% if ordem.stock == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>      
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Emendas:</label></div>
+            <div class="col-4">{{ ordem.emendas }}</div>      
+        </div>
+        <div class="row mt-2">
+            <div class="col-4"><label class="form-label">Frequência amostragem(p/ Bobinagem):</label></div>
+            <div class="col-6">{{ ordem.freq_amos }}</div>
+            
+        </div>
+        
+    </div>
+</div>
+<br>
+<div class="container">
+    <div>
+        <h3 class="text-center">Esquema de paletização</h3>
+    </div>
+    <br>
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Tipo de Transporte:</label></div>
+            <div class="col-10">{{ ordem.tipo_transporte }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Nº Paletes / Camião:</label></div>
+            <div class="col-10">{{ ordem.paletes_camiao }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Altura máx. Palete:</label></div>
+            <div class="col-4">{{ ordem.altura_max }}</div>
+            
+        </div>
+        
+        
+    </div>
+</div>
+<div class="container">
+    <div>
+        <h3 class="text-center">Paletes Produzidas</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Palete</th>
+                    <th scope="col">Nº</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Bobines</th>
+                    <th scope="col">Core</th>
+                    <th scope="col">Largura</th>
+                    <th scope="col">Área (m<sup>2</sup>)</th>
+                    <th scope="col">Comprimento (m)</th>
+                </tr>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pal in palete %}
+                <tr>
+                    
+                    <td id="designacao"><a href="{% url 'producao:addbobinepalete' pk=pal.pk %}">{{ pal.nome }}</a></td>
+                    <td>{{ pal.num }}</td>
+                    <td>{{ pal.data_pal|date:"d-n-Y" }}</td>
+                    {% if pal.estado == 'G' %}<td id="estado_good">{{ pal.estado }}</td>
+                    {% elif pal.estado == 'DM' %}<td id="estado_dm">{{ pal.estado }}</td>{% endif %}
+                    <td>{{ pal.num_bobines_act }} / {{ pal.num_bobines }}</td>
+                    <td>{{ pal.core_bobines }}</td>
+                    <td>{{ pal.largura_bobines }}</td>
+                    <td>{{ pal.area }}</td>
+                    <td>{{ pal.comp_total }}</td>
+                    {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
+                    {% endif %}
     
-   
+                    
+                </tr>
+                {% endfor%}
+                   
+              
+            </tbody>
+        </table>
+    </div>
 </div>
-<div class="title_block-list">
-    <h1>Ordem de Fabrico</h1>
-    <h2>{{ ordem }}</h2>
+<br>
+{% if ordem.retrabalho == True %}
+<div class="container">
+    <div>
+        <h3 class="text-center">Bobines a retrabalhar</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Bobine</th>
+                    <th scope="col">Palete</th>
+                    <th scope="col">Retrabalhar</th>
+                    <th scope="col">Utilizada</th>
+                </tr>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bob in bobines_para_retrabalho %}
+                <tr>                    
+                    <td>{{ bob.bobine.nome }}</td>
+                    <td>{{ bob.bobine.palete.nome }}</td>
+                    {% if bob.retrabalhar == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}
+                    {% if bob.bobine.recycle == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}
+                </tr>
+                {% endfor%}
+                   
+              
+            </tbody>
+        </table>
+    </div>
 </div>
+{% endif%}
+
+
+
+
+
+
+<!-- 
 <br>
 <div class="flex-container">
     <div>
@@ -67,8 +298,8 @@
         {% endif %}
     </div>
 </div>
- <br>
-
+ <br> -->
+<!-- 
 <div class="content-form">
     <div class="flex-container border">
         <div>
@@ -78,7 +309,7 @@
             <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>  
             {% elif ordem.enc == None and ordem.cliente != None %}   
             <div><h2>Encomenda</h2></div>
-            <div><h3>Encomenda:</h3> S/ Encomenda atribuida</div>    3         
+            <div><h3>Encomenda:</h3> S/ Encomenda atribuida</div>            
             <div><h3>Cliente:</h3> {{ ordem.cliente }}</div>          
             {% endif %}
             <div><h3>Artigo:</h3> {{ ordem.artigo }}</div>   
@@ -132,115 +363,7 @@
         </div>
         
     </div>
-    <!-- {% if ordem.retrabalho == False %}
-    <div class="flex-container border">
-        <div>
-            <div><h2>Limites</h2></div>
-            <div><h3>Descentrado:</h3> {{ ordem.limite_desc }} mm</div>            
-            <div><h3>Cónico:</h3> {{ ordem.limite_con }} mm</div>  
-            
-            
-        </div>
-        
-        
-    </div>
     
-    
-    <br>
-    <div class="flex-container">
-        <div>
-            <table class="content-table">
-                <h2>Características Técnicas (à saída de produção)</h2>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Inferior</th>
-                        <th>Superior</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Basis weight (gsm)</td>
-                        <td>{{ ordem.ct.ctinf.basis_weight }}</td>
-                        <td>{{ ordem.ct.ctsup.basis_weight }}</td>
-                    </tr>
-                    <tr>
-                        <td>Tensile at peak CD (N/25mm)</td>
-                        <td>{{ ordem.ct.ctinf.tensile_peak }}</td>
-                        <td>{{ ordem.ct.ctsup.tensile_peak }}</td>
-                    </tr>
-                    <tr>
-                        <td>Elongation at break CD (%)</td>
-                        <td>{{ ordem.ct.ctinf.elong_break_cd }}</td>
-                        <td>{{ ordem.ct.ctsup.elong_break_cd }}</td>
-                    </tr>
-                    <tr>
-                        <td>Elongation at 9.81N CD (%)</td>
-                        <td>{{ ordem.ct.ctinf.elong_n_cd }}</td>
-                        <td>{{ ordem.ct.ctsup.elong_n_cd }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 5% elongation 1st cycle CD (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_five }}</td>
-                        <td>{{ ordem.ct.ctsup.load_five }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 10% elongation 1st cycle CD (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_ten }}</td>
-                        <td>{{ ordem.ct.ctsup.load_ten }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 20% elongation 1st cycle CD (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_twenty }}</td>
-                        <td>{{ ordem.ct.ctsup.load_twenty }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 50% elongation 1st cycle CD (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_fifty }}</td>
-                        <td>{{ ordem.ct.ctsup.load_fifty }}</td>
-                    </tr>
-                    <tr>
-                        <td>Permanent set 2nd cycle (%)</td>
-                        <td>{{ ordem.ct.ctinf.perm_set_second }}</td>
-                        <td>{{ ordem.ct.ctsup.perm_set_second }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 100% elongation 2nd cycle (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_hundred_second }}</td>
-                        <td>{{ ordem.ct.ctsup.load_hundred_second }}</td>
-                    </tr>
-                    <tr>
-                        <td>Permanent set 3rd cycle (%)</td>
-                        <td>{{ ordem.ct.ctinf.perm_set_third }}</td>
-                        <td>{{ ordem.ct.ctsup.perm_set_third }}</td>
-                    </tr>
-                    <tr>
-                        <td>Load at 100% elongation 3rd cycle (N/50 mm)</td>
-                        <td>{{ ordem.ct.ctinf.load_hundred_third }}</td>
-                        <td>{{ ordem.ct.ctsup.load_hundred_third }}</td>
-                    </tr>
-                    <tr>
-                        <td>Lamination strenght (CD) (N/25 mm)</td>
-                        <td>{{ ordem.ct.ctinf.lamination_str }}</td>
-                        <td>{{ ordem.ct.ctsup.lamination_str }}</td>
-                    </tr>
-                </tbody>
-            </table> 
-            
-            
-        </div>
-        
-        
-    </div>
-    
-    <br>
-    <br>
-    <div class="flex-container border">
-        <div><h3>Fichas de Processo:</h3> {{ ordem.ficha_processo }}</div>           
-        <div><h3>CoA de aprovação:</h3> {{ ordem.coa_aprov }}</div>
-    </div>
-    {% endif %}  -->
     <div class="flex-container border">
         
         <div>
@@ -250,24 +373,11 @@
             <div><h3>Nº Paletes / Camião:</h3> {{ ordem.paletes_camiao }}</div>
             {% endif %}
             <div><h3>Altura máx. Palete:</h3> {{ ordem.altura_max }}</div>
-            <!-- <div><h3>Paletes Sobrepostas:</h3> {% if ordem.paletes_sobre == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div>
-            <div><h3>Cintas:</h3> {% if ordem.cintas == True %}<td class="td-icon"><i class="fas fa-check"></i></td>{% else %}<td class="td-icon"><i class="fas fa-times"></i></td>{% endif %}</div> -->
+            
         </div>             
-        <!-- <div>
-            <div><h2>Palete</h2></div>
-            <div><h3>Topo:</h3> {{ ordem.topo }}</div>
-            <div><h3>Embalamento:</h3> {{ ordem.embal }}</div>
-            <div><h3>Base:</h3> {{ ordem.base }}</div>
-        </div>  -->
+      
     </div>
-    <!-- <div class="flex-container border">
-        <div>
-            <div><h2>Etiquetas</h2></div>
-            <div><h3>Bobine:</h3> {{ ordem.etiqueta_bobine }}</div>            
-            <div><h3>Palete:</h3> {{ ordem.etiqueta_palete }}</div>
-            <div><h3>Final:</h3> {{ ordem.etiqueta_final }}</div>
-        </div>
-    </div> -->
+    
     
     <div>
         <h2>Paletes Produzidas</h2>
@@ -336,7 +446,7 @@
             </tbody>
             </table>
     </div>
-    {% endif %}
+    {% endif %} -->
     
     
     

@@ -2,33 +2,178 @@
 {% load producao_tags %}
 {% block title %}Criar Ordem de Fabrico | {{ block.super }}{% endblock %}
 {% block content %}
+<div class="container">
+    <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Criar Ordem de Fabrico</h3>
+    </div>
+    <br>
+    <form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" data-cliente-url="{% url 'planeamento:load_cliente' %}"  action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if messages %}
+        <div>            
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    <div class="error_classificacao">
+                        <p>{{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div class="success_classificacao">
+                        <p>{{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                    <div>
+                        <p>{{message}} </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </div>
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Encomenda:</label></div>
+                <div class="col-3 form-control-sm">{{ form.enc }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Cliente:</label></div>
+                <div class="col-3 form-control-sm">{{ form.cliente }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Artigo:</label></div>
+                <div class="col-3 form-control-sm">{{ form.artigo }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Data prevista de inicio:</label></div>
+                <div class="col-3 form-control-sm">{{ form.data_prevista_inicio }}</div>
+                <div class="col-2"><label class="form-label">Hora prevista de inicio:</label></div>
+                <div class="col-3 form-control-sm">{{ form.hora_prevista_inicio }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Horas previstas de produção:</label></div>
+                <div class="col-3 form-control-sm">{{ form.horas_previstas_producao }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Largura:</label></div>
+                <div class="col-3 form-control-sm">{{ form.largura }}</div>
+                <div class="col-2"><label class="form-label">Core:</label></div>
+                <div class="col-3 form-control-sm">{{ form.core }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Diam. Minimo:</label></div>
+                <div class="col-3 form-control-sm">{{ form.diam_min }}</div>
+                <div class="col-2"><label class="form-label">Diam. Máximo:</label></div>
+                <div class="col-3 form-control-sm">{{ form.diam_max }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Paletes a produzir:</label></div>
+                <div class="col-3 form-control-sm">{{ form.num_paletes_produzir }}</div>
+                <div class="col-2"><label class="form-label">Paletes em stock:</label></div>
+                <div class="col-3 form-control-sm">{{ form.num_paletes_stock }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Emendas:</label></div>
+                <div class="col-3 form-control-sm">{{ form.emendas }}</div>
+            </div>
+            <div class="row mt-2">
+                <h3 class="text-center">Requisitos</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Nonwoven Inferior:</label></div>
+                <div class="col-3 form-control-sm">{{ form.nwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Nonwoven Superior:</label></div>
+                <div class="col-3 form-control-sm">{{ form.nwinf }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Tipo de Palete:</label></div>
+                <div class="col-3 form-control-sm">{{ form.tipo_paletes }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Paletes por palete:</label></div>
+                <div class="col-3 form-control-sm">{{ form.palete_por_palete }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Bobines por palete Superior ou Única:</label></div>
+                <div class="col-3 form-control-sm">{{ form.bobines_por_palete }}</div>
+                <div class="col-2"><label class="form-label">Bobines por palete Inferior:</label></div>
+                <div class="col-3 form-control-sm">{{ form.bobines_por_palete_inf }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Sentido Enrolamento:</label></div>
+                <div class="col-3 form-control-sm">{{ form.enrolamento }}</div>
+                <div class="col-2"><label class="form-label">Folha de identificação de Palete:</label></div>
+                <div class="col-3 form-control-sm">{{ form.folha_id }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Frequência de amostragem(p/Bobinagem):</label></div>
+                <div class="col-3 form-control-sm">{{ form.freq_amos }}</div>
+                <div class="col-2"><label class="form-label">Stock:</label></div>
+                <div class="col-3 form-control-sm">{{ form.stock }}</div>
+            </div>
+            <br>
+            <div class="row mt-2">
+                <h3 class="text-center">Esquema de paletização</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Tipo de transporte:</label></div>
+                <div class="col-3 form-control-sm">{{ form.tipo_transporte }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Nº Paletes / Camião:</label></div>
+                <div class="col-3 form-control-sm">{{ form.paletes_camiao }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Altura máxima Palete:</label></div>
+                <div class="col-3 form-control-sm">{{ form.altura_max }}</div>
+            </div>
+            <br>
+            <div class="row mt-2">
+                <h3 class="text-center">Documentos</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Ficha de processo:</label></div>
+                <div class="col-3 form-control-sm">{{ form.ficha_processo }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Ficha Técnica:</label></div>
+                <div class="col-3 form-control-sm">{{ form.ficha_tecnica }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">OF:</label></div>
+                <div class="col-3 form-control-sm">{{ form.of }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Packing List:</label></div>
+                <div class="col-3 form-control-sm">{{ form.pack_list }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Resumo de Produção:</label></div>
+                <div class="col-3 form-control-sm">{{ form.res_prod }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Orientação Qualidade:</label></div>
+                <div class="col-3 form-control-sm">{{ form.ori_qua }}</div>
+            </div>
+            <br>
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+<!-- 
 <div class="title_block-list">
     <h1>Criar Ordem de Fabrico</h1>
 </div>
 <br>
 <form method="POST" id="ordemForm" data-artigos-url="{% url 'planeamento:load_artigos' %}" data-cliente-url="{% url 'planeamento:load_cliente' %}"  action="" enctype="multipart/form-data">
     {% csrf_token %}
-    {% if messages %}
-    <div>
-        
-        {% for message in messages %}
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                <div class="error_classificacao">
-                    <p>{{message}} </p>
-                </div>
-            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                <div class="success_classificacao">
-                    <p>{{message}} </p>
-                </div>
-            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                <div>
-                    <p>{{message}} </p>
-                </div>
-            {% endif %}
-    {% endfor %}
-
-</div>
-{% endif %}
+    
     <div class="content-form">
         <div class="flex-container">
             <div>
@@ -45,8 +190,8 @@
                 <div><div>Core("):</div> <div>{{ form.core }}</div></div>   
                 <div><div>Paletes Produzir:</div> <div>{{ form.num_paletes_produzir }}</div></div>   
                 <div><div>Paletes stock:</div> <div>{{ form.num_paletes_stock }}</div></div>   
-                <!-- <div><div>Paletes Total:</div> <div>{{ form.num_paletes_total }}</div></div>    -->
-                <!-- <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>    -->
+                <div><div>Paletes Total:</div> <div>{{ form.num_paletes_total }}</div></div> 
+                <div><div>Tipo de Emenda:</div><div>{{ form.tipo_emenda }}</div></div>
                 <div><div>Emendas:</div><div>{{ form.emendas }}</div></div>   
                 
             </div>
@@ -66,107 +211,10 @@
             
         </div>
         <br>
-        <!-- <div class="flex-container">
-            <div>
-                <div><h2>Limites</h2></div>
-                <div><div>Descentrado:</div> <div>{{ form.limite_desc }}</div></div>             
-                <div><div>Cónico:</div> <div>{{ form.limite_con }}</div></div>   
-                
-                
-            </div>
-            
-            
-        </div> -->
+        <br>
+        <br>
+       
         
-        <br>
-        <!-- <div class="flex-container">
-            <div>
-                <table class="content-table">
-                    <h2>Características Técnicas (à saída de produção)</h2>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Inferior</th>
-                            <th>Superior</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Basis weight (gsm)</td>
-                            <td>{{ form.basis_weight_inf }}</td>
-                            <td>{{ form.basis_weight_sup}}</td>
-                        </tr>
-                        <tr>
-                            <td>Tensile at peak CD (N/25mm)</td>
-                            <td>{{ form.tensile_peak_inf }}</td>
-                            <td>{{ form.tensile_peak_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Elongation at break CD (%)</td>
-                            <td>{{ form.elong_break_cd_inf }}</td>
-                            <td>{{ form.elong_break_cd_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Elongation at 9.81N CD (%)</td>
-                            <td>{{ form.elong_n_cd_inf }}</td>
-                            <td>{{ form.elong_n_cd_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 5% elongation 1st cycle CD (N/50 mm)</td>
-                            <td>{{ form.load_five_inf }}</td>
-                            <td>{{ form.load_five_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 10% elongation 1st cycle CD (N/50 mm)</td>
-                            <td>{{ form.load_ten_inf }}</td>
-                            <td>{{ form.load_ten_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 20% elongation 1st cycle CD (N/50 mm)</td>
-                            <td>{{ form.load_twenty_inf }}</td>
-                            <td>{{ form.load_twenty_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 50% elongation 1st cycle CD (N/50 mm)</td>
-                            <td>{{ form.load_fifty_inf }}</td>
-                            <td>{{ form.load_fifty_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Permanent set 2nd cycle (%)</td>
-                            <td>{{ form.perm_set_second_inf }}</td>
-                            <td>{{ form.perm_set_second_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 100% elongation 2nd cycle (N/50 mm)</td>
-                            <td>{{ form.load_hundred_second_inf }}</td>
-                            <td>{{ form.load_hundred_second_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Permanent set 3rd cycle (%)</td>
-                            <td>{{ form.perm_set_third_inf }}</td>
-                            <td>{{ form.perm_set_third_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Load at 100% elongation 3rd cycle (N/50 mm)</td>
-                            <td>{{ form.load_hundred_third_inf }}</td>
-                            <td>{{ form.load_hundred_third_sup }}</td>
-                        </tr>
-                        <tr>
-                            <td>Lamination strenght (CD) (N/25 mm)</td>
-                            <td>{{ form.lamination_str_inf }}</td>
-                            <td>{{ form.lamination_str_sup }}</td>
-                        </tr>
-                    </tbody>
-                </table> 
-                
-                
-            </div>
-            
-            
-        </div> -->
-        <br>
-        <br>
         <div class="flex-container">
             
             <div>
@@ -175,7 +223,7 @@
                 <div>Nº Paletes / Camião:</div> <div>{{ form.paletes_camiao }}</div>
                 <div>Altura máx. Palete:</div> <div>{{ form.altura_max }}</div>
                 
-            </div>             
+            </div>
             
         </div>
         <br>
@@ -194,17 +242,6 @@
         <br>
         <br>
         
-        <!-- <div class="flex-container">
-            <div>
-                <div><h2>Etiquetas</h2></div>
-                <div><div>Bobine:</div> <div>{{ form.etiqueta_bobine }}</div></div>             
-                <div><div>Palete:</div> <div>{{ form.etiqueta_palete }}</div></div> 
-                <div><div>Final:</div> <div>{{ form.etiqueta_final }}</div></div> 
-            </div>
-        </div> -->
-       
-        
-        
         <div class="flex-container">
             <div><a href="{% url 'planeamento:list_ordem' %}"  class="btn_back" role="button">Voltar</a></div>
             <div><input type="submit" id="validate-btn" value="Criar"></div>
@@ -212,7 +249,7 @@
         
     </div>
 
-</form>
+</form> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

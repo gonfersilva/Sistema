@@ -4,15 +4,107 @@
 {% load producao_tags %}
 {% block title %}Bobinagens Linha 1 | {{ block.super }}{% endblock %} 
 {% block content %}
-<div>
-    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+<div class="container">
+    <a href="{% url 'producao:producao_home' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:export_bobine_to_excel' %}" class="btn btn-outline-primary" role="button">Export Bobines</a>
     {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
-    <a href="{% url 'producao:bobinagem_create' %}"  class="btn_create" role="button">Criar Bobinagem</a>
+    <a href="{% url 'producao:bobinagem_create' %}" class="btn btn-outline-primary" role="button">Criar Bobinagem</a>
     {% endif %}                                                                                                                                                                                                 
-    <a href="{% url 'producao:export_bobine_to_excel' %}"  class="btn_create" role="button">Export Bobines</a>
-
+    
 </div>
-<div class="title_block-list">
+<br>
+<div class="container">
+    <div>
+        <h3 class="text-center">Bobinagens Linha 1</h3>
+    </div>
+    <div>
+        <form action="" method="GET">
+            <input type="text" name="q">
+            <input type="submit" value="Procurar" class="btn btn-primary">
+            <a href="{% url 'producao:bobinagem_list_v3' %}" class="btn btn-outline-primary">Reset</a>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Bobinagem</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Início</th>
+                    <th scope="col">Fim</th>
+                    <th scope="col">Duração</th>
+                    <th scope="col">Core</th>
+                    <th scope="col">Comp(m)</th>
+                    <th scope="col">Comp. Emenda(m)</th>
+                    <th scope="col">Comp. Cliente</th>
+                    <th scope="col">Área(m<sup>2</sup>)</th>
+                    <th scope="col">Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bobinagem %}
+                <tr>
+                    
+                    <td id="designacao"><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
+                    <td>{{ b.data|date:"d-n-Y" }}</td>
+                    <td>{{ b.inico|date:"G:i" }}</td>
+                    <td>{{ b.fim|date:"G:i" }}</td>
+                    <td>{{ b.duracao }}</td>
+                    <td>{{ b.perfil.core }}</td>
+                    <td>{{ b.comp }}</td>
+                    <td>{{ b.comp_par }}</td>
+                    <td>{{ b.comp_cli }}</td>
+                    <td>{{ b.area }}</td>
+                    {% if b.estado == 'LAB' %}
+                        
+                        <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
+                    {% else %}
+                        
+                        <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
+    
+                    {% endif %}
+                    
+                    
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+        
+    </div>
+    <div class="container">
+        {% if bobinagem.has_other_pages %}
+        <div>
+            <span>
+                {% if bobinagem.has_previous %}
+                    <a href="?{% if query %}q={{query}}&{% endif %}page=1"><i class="fas fa-angle-double-left"></i></a>
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.previous_page_number }}"><i class="fas fa-angle-left"></i></a>
+                {% endif %}
+        
+                <span>
+                    Pág. {{ bobinagem.number }} de {{ bobinagem.paginator.num_pages }}
+                </span>
+        
+                {% if bobinagem.has_next %}
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.next_page_number }}"><i class="fas fa-angle-right"></i></a>
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ bobinagem.paginator.num_pages }}"><i class="fas fa-angle-double-right"></i></a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="title_block-list">
     <h1>Bobinagens Linha 1</h1>
 </div>
 <div class="form-search">
@@ -21,8 +113,8 @@
         <input type="submit" value="Procurar">
         <a href="{% url 'producao:bobinagem_list_v3' %}">Reset</a>
     </form>
-</div>
-<div>
+</div> -->
+<!-- <div>
     <table class="content-table">
         <thead>
             <tr>
@@ -36,16 +128,16 @@
                 <th>Comp. Emenda(m)</th>
                 <th>Comp. Cliente</th>
                 <th>Área(m<sup>2</sup>)</th>
-                <th></th>
+                <th></th> -->
                 <!-- <th></th> -->
                 <!-- <th></th>
                 <th></th>
                 <th></th>
                 <th></th> -->
-            </tr>
+            <!-- </tr>
         </thead>
-        <tbody>
-            {% for b in bobinagem %}
+        <tbody> -->
+            <!-- {% for b in bobinagem %}
             <tr>
                 
                 <td id="designacao"><a href="{% url 'producao:bobinestatus' pk=b.pk %}">{{ b.nome }}</a></td>
@@ -59,16 +151,10 @@
                 <td>{{ b.comp_cli }}</td>
                 <td>{{ b.area }}</td>
                 {% if b.estado == 'LAB' %}
-                    <!-- <td><a href="{% url 'producao:classificacao_bobines_all' pk=b.pk operation='ap' %}" class="btn_list_g" role="button">Aprovar</a></td> -->
-                    <!-- <td><a href="{% url 'producao:classificacao_bobines_all' pk=b.pk operation='dm' %}" class="btn_list_dm" role="button">DM</a></td> -->
-                    <!-- <td><a href="{% url 'producao:classificacao_bobines_all' pk=b.pk operation='rej' %}" class="btn_list_r" role="button">Rejeitar</a></td>
-                    <td><a href="{% url 'producao:classificacao_bobines_all' pk=b.pk operation='hold' %}" class="btn_list_hold" role="button">Hold</a></td> -->
+                    
                     <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
                 {% else %}
-                    <!-- <td></td> -->
-                    <!-- <td></td> -->
-                    <!-- <td></td> -->
-                    <!-- <td></td> -->
+                    
                     <td class="td-icon"><a href="{% url 'producao:bobinagem_delete' pk=b.pk %}"><i class="fas fa-trash"></i></a></td>
 
                 {% endif %}
@@ -125,16 +211,16 @@
                 {% endfor%}
                 
             </tr>
-            {% endfor%}
-        </tbody>
-        </table>
+            {% endfor%} -->
+        <!-- </tbody>
+        </table> -->
             
       
                 
 
             
             
-</div>
+<!-- </div>
 <div class="pagination">
     {% if bobinagem.has_other_pages %}
     <div>
@@ -156,7 +242,7 @@
     </div>
     {% endif %}
 
-</div>
+</div> -->
 
 
 

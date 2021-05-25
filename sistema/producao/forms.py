@@ -1,4 +1,4 @@
-from .models import Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho, Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW, ProdutoGranulado, Reciclado, MovimentoMP
+from .models import Embalamento, Especificacoes, Mdf, Cinta, Core, Artigo, Filme, PaleteEmb, Perfil, Largura, Bobinagem, Bobine, Palete, Emenda, Cliente, Encomenda, Carga, EtiquetaRetrabalho, Nonwoven, ArtigoCliente, Fornecedor, Rececao, ArtigoNW, ProdutoGranulado, Reciclado, MovimentoMP, Transporte, TrasporteArtigoCliente
 from django.forms import ModelForm, formset_factory, inlineformset_factory, modelformset_factory
 from datetime import datetime
 from planeamento.models import *
@@ -410,7 +410,7 @@ class InventarioPaleteClienteInsert(forms.Form):
 class ArtigoClientInsert(ModelForm):
     class Meta:
         model = ArtigoCliente
-        fields = ['artigo', 'cod_client']
+        fields = ['artigo', 'cod_client', 'tipoemenda', 'num_emendas_bobine'] 
 
 
 class FornecedorCreateForm(ModelForm):
@@ -598,3 +598,141 @@ class BobinagemFinalizarForm(ModelForm):
     class Meta:
         model = Bobinagem
         fields = ['fim', 'diam']
+
+class ArtigoCreateForm(ModelForm):
+    class Meta:
+        model = Artigo
+        fields = "__all__"
+
+class PaleteEmbCreateForm(ModelForm):
+    class Meta:
+        model = PaleteEmb
+        fields = ['cod', 'des']
+
+class FilmeCreateForm(ModelForm):
+    class Meta:
+        model = Filme
+        fields = ['cod', 'des']
+
+class CintaCreateForm(ModelForm):
+    class Meta:
+        model = Cinta
+        fields = ['cod', 'des']
+
+class CoreCreateForm(ModelForm):
+    class Meta:
+        model = Core
+        fields = ['cod', 'des', 'core']
+
+class MdfCreateForm(ModelForm):
+    class Meta:
+        model = Mdf
+        fields = ['cod', 'des']
+
+class CartaoCreateForm(ModelForm):
+    class Meta:
+        model = Mdf
+        fields = ['cod', 'des']
+
+class TransporteCreateForm(ModelForm):
+    class Meta:
+        model = Transporte
+        fields = ['tipo']
+
+class TransporteArtigoClienteAddCreateForm(ModelForm):
+    class Meta:
+        model = TrasporteArtigoCliente
+        fields = ['transporte', 'num_bobines_palete', 'num_paletes_transporte']
+
+class EspecificacoesArtigoClienteAddCreateForm(ModelForm):
+    class Meta:
+        model = Especificacoes
+        fields = ['spec',
+                'basis_weight_inf',
+                'tensile_peak_cd_inf',
+                'elongation_break_cd_inf',
+                'elongation_n_cd_inf',
+                'tensile_peak_md_inf',
+                'elongation_break_md_inf',
+                'elongation_n_md_inf',
+                'load_five_inf',
+                'load_ten_inf',
+                'load_twenty_inf',
+                'load_50_inf',
+                'permanent_set_second_inf',
+                'load_hundred_second_inf',
+                'permanent_set_third_inf',
+                'load_hundred_third_inf',
+                'peel_test_inf',
+                'elongation_ten_inf',
+                'force_max_inf',
+                'force_relax_inf',
+                'tensile_set_inf',
+                'load_first_cycle_inf',
+                'load_first_relax_inf',
+                'first_retract_force_fifty_inf',
+                'first_cycle_permanent_set_inf',
+                'load_second_cycle_inf',
+                'load_second_relax_inf',
+                'second_retract_force_fifty_inf',
+                'max_load_inf',
+                'extension_max_load_inf',
+                'load_break_inf',
+                'extencion_break_inf',
+                'extencion_preset_point_load_ten_inf',
+                'load_preset_point_tensile_extention_fortyfive_inf',
+                'elongation_capacity_inf',
+                'max_elongation_capacity_inf',
+                'retract_capacity_inf',
+                'deformation_inf',
+                'tensile_strengh_inf',
+                'elongation_break_cd_inf',
+                'elongation_n_out_inf',
+                'elongation_after_one_forty_inf',
+                'basis_weight_sup',
+                'tensile_peak_cd_sup',
+                'elongation_break_cd_sup',
+                'elongation_n_cd_sup',
+                'tensile_peak_md_sup',
+                'elongation_break_md_sup',
+                'elongation_n_md_sup',
+                'load_five_sup',
+                'load_ten_sup',
+                'load_twenty_sup',
+                'load_50_sup',
+                'permanent_set_second_sup',
+                'load_hundred_second_sup',
+                'permanent_set_third_sup',
+                'load_hundred_third_sup',
+                'peel_test_sup',
+                'elongation_ten_sup',
+                'force_max_sup',
+                'force_relax_sup',
+                'tensile_set_sup',
+                'load_first_cycle_sup',
+                'load_first_relax_sup',
+                'first_retract_force_fifty_sup',
+                'first_cycle_permanent_set_sup',
+                'load_second_cycle_sup',
+                'load_second_relax_sup',
+                'second_retract_force_fifty_sup',
+                'max_load_sup',
+                'extension_max_load_sup',
+                'load_break_sup',
+                'extencion_break_sup',
+                'extencion_preset_point_load_ten_sup',
+                'load_preset_point_tensile_extention_fortyfive_sup',
+                'elongation_capacity_sup',
+                'max_elongation_capacity_sup',
+                'retract_capacity_sup',
+                'deformation_sup',
+                'tensile_strengh_sup',
+                'elongation_break_cd_sup',
+                'elongation_n_out_sup',
+                'elongation_after_one_forty_sup',
+                ]
+
+class EmbalamentoCreateForm(ModelForm):
+    class Meta:
+        model = Embalamento
+        fields = ['paletemb', 'filme', 'cinta', 'core', 'mdf', 'cartao', 'qtd_mdf', 'qtd_cartao']

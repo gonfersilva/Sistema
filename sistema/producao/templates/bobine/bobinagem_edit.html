@@ -3,6 +3,113 @@
 {% load producao_tags %}
 {% block title %}Editar Bobinagem | {{ block.super }}{% endblock %}
 {% block content %}
+
+{% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
+<div class="container">
+    <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Editar Bobinagem</h3>
+        <h3 class="text-center">{{ bobinagem.nome }}</h3>
+        <h3>Atenção: Todas as Bobines desta Bobinagem serão editadas no momento da validação.</h3>
+
+    </div>
+    {% if messages %}
+        <div>            
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    <div class="error_classificacao">
+                        <p>{{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div class="success_classificacao">
+                        <p>{{message}} </p>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                    <div>
+                        <p>{{message}} </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <br>
+    {% if has_palete == False %}
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Início:</label></div>
+                <div class="col-3 form-control-sm">{{ form.inico }}</div>
+                <div class="col-2"><label class="form-label">Fim:</label></div>
+                <div class="col-5 form-control-sm"></div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Diam:</label></div>
+                <div class="col-3 form-control-sm"></div>
+                <div class="col-2"><label class="form-label">Comp. Final:</label></div>
+                <div class="col-5 form-control-sm"></div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
+                <div class="col-3 form-control-sm">{{ form.comp_par }}</div>
+                <div class="col-2"><label class="form-label">Tipo Desperdicio:</label></div>
+                <div class="col-5 form-control-sm">{{ form.tipo_desp }}</div>
+            </div>
+            <div class="container">
+                <h3 class="text-center">Nonwoven</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-6">Superior</div>
+                <div class="col-6">Inferior</div>
+            </div> 
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
+                <div class="col-3 form-control-sm">{{ form.comp_par }}</div>
+                <div class="col-2"><label class="form-label">Tipo Desperdicio:</label></div>
+                <div class="col-5 form-control-sm">{{ form.tipo_desp }}</div>
+            </div>   
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submit</button>
+            </div>
+
+        </div>
+    </form>
+    {% else %}
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Início:</label></div>
+                <div class="col-3 form-control-sm"></div>
+                <div class="col-2"><label class="form-label">Fim:</label></div>
+                <div class="col-5 form-control-sm"></div>
+            </div>
+            
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submit</button>
+            </div>
+
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endif %}
+
+
+
+
 {% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
 <div>
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>

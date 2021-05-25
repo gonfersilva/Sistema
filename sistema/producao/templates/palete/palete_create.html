@@ -5,8 +5,79 @@
 
 {% block title %}Criar Palete Cliente | {{ block.super }}{% endblock %}
 {% block content %}
+
+
+<div class="container">
+    <a href="{% url 'producao:palete_list_all' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Criar Palete para Cliente</h3>
+    </div>
+    {% if messages %}
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+</div>
+{% endif %}
+    <br>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Ordem:</label></div>
+                <div class="col-10 form-control-sm">{{ form.ordem }}</div>
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Embalamento:</label></div>
+                <div class="col-5 form-control-sm">{{ form.perfil_embalamento }}</div>
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Palete nº:</label></div>
+                <div class="col-3 form-control-sm">{{ form.num }}</div>
+                <div class="col-2"><label class="form-label">Data:</label></div>
+                <div class="col-3 form-control-sm">{{ form.data_pal }}</div>
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Nº Bobines:</label></div>
+                <div class="col-3 form-control-sm">{{ form.num_bobines }}</div>
+                <div class="col-2"><label class="form-label">Largura:</label></div>
+                <div class="col-3 form-control-sm">{{ form.largura_bobines }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Core:</label></div>
+                <div class="col-5 form-control-sm">{{ form.core_bobines }}</div>
+            </div>
+            
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
       
-<div>
+<!-- <div>
     <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
 {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
@@ -43,14 +114,14 @@
     <label for="id_num_bobines">Bobines Total</label>{{ form.num_bobines }}
     <label for="id_largura_bobines">Largura das Bobines</label>{{ form.largura_bobines }}
     <label for="id_core_bobines">Core das Bobines</label>{{ form.core_bobines }}
-    <!-- <label for="id_destino">Destino</label>{{ form.destino }} -->
-    <input type="submit" value="Criar" id="validate-btn">
+    <label for="id_destino">Destino</label>{{ form.destino }} -->
+    <!-- <input type="submit" value="Criar" id="validate-btn">
     
 </form>
 
 {% else %}
 <h3>Acesso Restrito</h3>
-{% endif %}
+{% endif %}  -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

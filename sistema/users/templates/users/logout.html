@@ -3,16 +3,25 @@
 {% block title %}Logout | {{ block.super }}{% endblock %}
 {% block content %}
 
-<div class="title_logout">
-    <h1>Tem a certeza que quer fazer logout?</h1>
-</div>
-<div class="form_log">
-    <form method="POST">
+<div class="container">
+    <div class="container">
+        <h1>Tem a certeza que quer fazer logout?</h1>
+    </div>
+    <br>
+    <form method="POST" action="">
         {% csrf_token %}
-        {{ form.as_p }}
-    <a href="{% url 'home' %}" class="btn_back">Cancelar</a>
-    <input type="submit" value="Logout">
+        <div class="container">
+            <div class="row mt-2">
+                <a href="{% url 'home' %}" class="btn btn-outline-primary" role="button">Cancelar</a>
+            </div>           
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-primary">Logout</button>
+            </div>
+
+        </div>
     </form>
+
 </div>
-</div>
+
 {% endblock %}

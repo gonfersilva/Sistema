@@ -5,7 +5,7 @@
 {% block title %}Retrabalho Confirmação | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
-    <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
+    <input type="button" value="Voltar" class="btn btn-outline-primary" onclick="history.back()">
 </div>
 <div class="title_block-list">
     <h2>Deseja confirmar o retrabalho da bobinagem {{ bobinagem.nome }} com as seguintes caracteristicas?</h2>
@@ -155,7 +155,7 @@
                 </tr>
             </tbody>
         </table>
-        <input type="submit" value="Validar" id="validate-btn">
+        <input type="submit" value="Validar" class="btn btn-outline-primary">
     </form>
 </div>                   
     

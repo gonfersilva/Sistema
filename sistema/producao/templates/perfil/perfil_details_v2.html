@@ -3,35 +3,51 @@
 
 {% block title %}Perfil | {{ block.super }}{% endblock %}
 {% block content %}
+<div class="container">
+    <a href="{% url 'producao:perfil_list_v2' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+       
+<br>
 <div>
-    <a href="{% url 'producao:perfil_list_v2' %}"  class="btn_back" role="button">Voltar</a>
+    <h3 class="text-center">Detalhes Perfil</h3>
 </div>
-<div class="title_block-list">
-    <h1>Perfil</h1>
-    <h1>{{ perfil.nome }}</h1>
-    <h2>Nº de Bobines: {{ perfil.num_bobines }}</h2>
-    <h2>Largura total: {{ perfil.largura_bobinagem }} mm</h2>
-    <h2>Core: {{ perfil.core }}"</h2>
+<br>
+<div class="container">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Perfil:</label></div>
+            <div class="col-10">{{ perfil.nome }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Nº Bobines:</label></div>
+            <div class="col-4">{{ perfil.num_bobines }}</div>
+            <div class="col-2"><label class="form-label">Largura total:</label></div>
+            <div class="col-4">{{ perfil.largura_bobinagem }} mm</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Core:</label></div>
+            <div class="col-4">{{ perfil.core }}"</div>
+        </div>
+    </div>
 </div>
-<div class="title_block-list">
-    <h2>Cortes</h2>
-    
-</div>
-<div>
-<table class="content-table">
-    <thead>
-        <tr>
-            <th>Bobine</th>
-            <th>Largura (mm)</th>
-            <th id="designacao">Produto</th>
-            <th>Gramagem (gsm)</th>
-            <th>Cliente</th>
-            <th>Artigo</th>
-        </tr>
-    </thead>
-    <tbody>
-        
-        {% for lar in largura %}
+<div class="container">
+    <div>
+        <h3 class="text-center">Cortes</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Bobine</th>
+                    <th scope="col">Largura (mm)</th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Gramagem (gsm)</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Artigo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lar in largura %}
         <tr>
             <td id="center">{{ lar.num_bobine }}</td>
             {% if not lar.largura == None %}
@@ -69,12 +85,17 @@
             {% endif %}
         </tr>
         {% endfor%}
-       
-    </tbody>
-</table>
-        
-
-    
+                
+                   
+                   
+              
+            </tbody>
+        </table>
+    </div>
 </div>
+                      
+    
+
+
 
 {% endblock %}

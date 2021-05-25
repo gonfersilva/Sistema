@@ -50,7 +50,7 @@ class PaleteEmb(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. Palete de embalamento")
-    des = models.TextField(verbose_name="Descrição Palete de Embalamento")
+    des = models.CharField(max_length=200, verbose_name="Descrição Palete de Embalamento")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.des)
@@ -60,7 +60,7 @@ class Filme(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. Filme")
-    des = models.TextField(verbose_name="Descrição Filme")
+    des = models.CharField(max_length=200,verbose_name="Descrição Filme")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.des)
@@ -70,7 +70,7 @@ class Cinta(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. Cinta")
-    des = models.TextField(verbose_name="Descrição Cinta")
+    des = models.CharField(max_length=200,verbose_name="Descrição Cinta")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.des)
@@ -80,7 +80,17 @@ class Mdf(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. MDF")
-    des = models.TextField(verbose_name="Descrição MDF")
+    des = models.CharField(max_length=200,verbose_name="Descrição MDF")
+
+    def __str__(self):
+        return '%s - %s' % (self.cod, self.des)
+
+class Cartao(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    cod = models.CharField(max_length=200, verbose_name="Cód. Cartão")
+    des = models.CharField(max_length=200,verbose_name="Descrição Cartão")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.des)
@@ -91,7 +101,7 @@ class Core(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. Core")
-    des = models.TextField(verbose_name="Descrição Core")
+    des = models.CharField(max_length=200, verbose_name="Descrição Core")
     core = models.CharField(verbose_name="Core", max_length=1, choices=CORE)
 
     def __str__(self):
@@ -102,7 +112,7 @@ class Etiqueta(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     cod = models.CharField(max_length=200, verbose_name="Cód. Etiqueta")
-    des = models.TextField(verbose_name="Descrição Etiqueta")
+    des = models.CharField(max_length=200,verbose_name="Descrição Etiqueta")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.des)
@@ -114,6 +124,9 @@ class TipoEmenda(models.Model):
     des = models.TextField(verbose_name="Tipo Emenda")
     preta = models.BooleanField(default=False)
     metalica = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '%s' % (self.des)
     
     
 class Embalamento(models.Model):
@@ -122,9 +135,12 @@ class Embalamento(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     paletemb = models.ForeignKey(PaleteEmb, on_delete=models.PROTECT, verbose_name="Palete embalamento")
     filme = models.ForeignKey(Filme, on_delete=models.PROTECT, verbose_name="Filme")
-    cinta = models.ForeignKey(Cinta, on_delete=models.PROTECT, verbose_name="Cinta")
+    cinta = models.ForeignKey(Cinta, on_delete=models.PROTECT, verbose_name="Cinta", null=True, blank=True)
     core = models.ForeignKey(Core, on_delete=models.PROTECT, verbose_name="Core")
-    mdf = models.ForeignKey(Mdf, on_delete=models.PROTECT, verbose_name="MDF")
+    mdf = models.ForeignKey(Mdf, on_delete=models.PROTECT, verbose_name="MDF", null=True, blank=True)
+    cartao = models.ForeignKey(Cartao, on_delete=models.PROTECT, verbose_name="Cartao", null=True, blank=True)
+    qtd_cartao = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
+    qtd_mdf = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
 
         
 class EtiquetaEmbalamento(models.Model):
@@ -141,13 +157,16 @@ class Transporte(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
     tipo = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.tipo
+
 
 class Perfil(models.Model):
     CORE = (('3', '3'), ('6', '6'))
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('75', '75 gsm'), ('80', '80 gsm'),
            ('60', '60 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-               'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+               'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'), ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'), ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'))
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
     nome = models.CharField(verbose_name="Perfil", max_length=200, unique=True, null=True, blank=True)
@@ -191,7 +210,7 @@ class Artigo(models.Model):
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'), ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
     CORE = (('3', '3'), ('6', '6'))
     FORMU = (('HE', 'HE'), ('HT', 'HT'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',  'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))                                                                                                                                                                                                                                                                        
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',  'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'), ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'), ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'))                                                                                                                                                                                      
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
     tipo = models.CharField(verbose_name="Tipo", max_length=50, default="Produto final")
@@ -216,7 +235,7 @@ class Artigo(models.Model):
 class Cliente(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     cod = models.PositiveIntegerField(verbose_name="Código de cliente", unique=True)
-    nome = models.CharField(max_length=200, unique=True, null=True, blank=True, verbose_name="Nome")
+    nome = models.CharField(max_length=255, unique=True, null=True, blank=True, verbose_name="Nome")
     abv = models.CharField(max_length=3, unique=True, null=True, blank=True, verbose_name="Abreviatura")
     limsup = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Superior")
     liminf = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Limite Inferior")
@@ -232,7 +251,7 @@ class Cliente(models.Model):
 
 class Largura(models.Model):
     GSM = (('105', '105 gsm'), ('100', '100 gsm'), ('95', '95 gsm'), ('90', '90 gsm'), ('80', '80 gsm'), ('60', '60 gsm'), ('75', '75 gsm'), ('57', '57 gsm'), ('50', '50 gsm'), ('48', '48 gsm'), ('45', '45 gsm'), ('25', '25 gsm'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'), ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'), ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'))
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")
     largura = models.DecimalField(max_digits=6, decimal_places=0, null=True, blank=True)
@@ -268,6 +287,99 @@ class ArtigoCliente(models.Model):
     def __str__(self):
         return '%s - %s' % (self.artigo.des, self.cliente.nome)
 
+class Especificacoes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+    artigo_cliente = models.ForeignKey(ArtigoCliente, on_delete=models.PROTECT, verbose_name="Artigo Cliente")
+    spec = models.CharField(max_length=200, unique=False, null=False, blank=False)
+    basis_weight_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Basis Weight (g/m2) Inferior")
+    tensile_peak_cd_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile at peak CD (N/25mm) Inferior")
+    elongation_break_cd_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break CD (%) Inferior")
+    elongation_n_cd_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9.81N CD (%) Inferior")
+    tensile_peak_md_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile at peak MD (N/25mm) Inferior")
+    elongation_break_md_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break MD (%) Inferior")
+    elongation_n_md_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9.81N MD (%) Inferior")
+    load_five_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 5% elongation 1st cycle (N) Inferior")
+    load_ten_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 10% elongation 1st cycle (N) Inferior")
+    load_twenty_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 20% elongation 1st cycle (N) Inferior")
+    load_50_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 50% elongation 1st cycle (N) Inferior")
+    permanent_set_second_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Permanent set 2º Cicle (%) Inferior")
+    load_hundred_second_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 100% elongation 2cicle (N/50mm) Inferior")
+    permanent_set_third_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Permanent set 3º Cicle (%) Inferior")
+    load_hundred_third_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 100% elongation 3cicle (N/50mm) Inferior")
+    peel_test_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Peel test - (CD) (N/25mm) Inferior")
+    elongation_ten_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 10 N (mm) Inferior")
+    force_max_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Force Max (N) Inferior")
+    force_relax_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Force Relaxation 1st Cycle (%) Inferior")
+    tensile_set_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile Set (%) Inferior")
+    load_first_cycle_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 1ST CYCLE (N/50mm) Inferior")
+    load_first_relax_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 1ST RELAXATION (N/50mm) Inferior")
+    first_retract_force_fifty_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="1ST RETRACTION FORCE AT 50% (N/50mm) Inferior")
+    first_cycle_permanent_set_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="1st cycle PERMANENT SET (mm) Inferior")
+    load_second_cycle_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 2ND CYCLE (N/50mm) Inferior")
+    load_second_relax_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 2ND RELAXATION (N/50mm) Inferior")
+    second_retract_force_fifty_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="2ND RETRACTION FORCE AT 50% (N/50mm) Inferior")
+    max_load_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="MAXIMUM LOAD (N/50mm) Inferior")
+    extension_max_load_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT MAXIMUM LOAD (mm) Inferior")
+    load_break_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD AT BREAK (N/50mm) Inferior")
+    extencion_break_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT BREAK (mm) Inferior")
+    extencion_preset_point_load_ten_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT PRESET POINT - LOAD 10N (mm) Inferior")
+    load_preset_point_tensile_extention_fortyfive_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD AT PRESET POINT - TENSILE EXTENSION 45mm (N/50mm) Inferior")
+    elongation_capacity_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation capacity (%) Inferior")
+    max_elongation_capacity_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Maximum elongation capacity (%) Inferior")
+    retract_capacity_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Retraction capacity (%) Inferior")
+    deformation_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Deformation (%) Inferior")
+    tensile_strengh_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile strengh (N/50mm) Inferior")
+    elongation_break_cd_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break CD (%) Inferior")
+    elongation_n_out_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9,81N - fora estufa (%) Inferior")
+    elongation_after_one_forty_inf = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation after 1h at 40°C (%) Inferior")
+    basis_weight_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Basis Weight (g/m2) Superior")
+    tensile_peak_cd_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile at peak CD (N/25mm) Superior")
+    elongation_break_cd_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break CD (%) Superior")
+    elongation_n_cd_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9.81N CD (%) Superior")
+    tensile_peak_md_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile at peak MD (N/25mm) Superior")
+    elongation_break_md_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break MD (%) Superior")
+    elongation_n_md_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9.81N MD (%) Superior")
+    load_five_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 5% elongation 1st cycle (N) Superior")
+    load_ten_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 10% elongation 1st cycle (N) Superior")
+    load_twenty_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 20% elongation 1st cycle (N) Superior")
+    load_50_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 50% elongation 1st cycle (N) Superior")
+    permanent_set_second_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Permanent set 2º Cicle (%) Superior")
+    load_hundred_second_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 100% elongation 2cicle (N/50mm) Superior")
+    permanent_set_third_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Permanent set 3º Cicle (%) Superior")
+    load_hundred_third_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Load at 100% elongation 3cicle (N/50mm) Superior")
+    peel_test_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Peel test - (CD) (N/25mm) Superior")
+    elongation_ten_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 10 N (mm) Superior")
+    force_max_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Force Max (N) Superior")
+    force_relax_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Force Relaxation 1st Cycle (%) Superior")
+    tensile_set_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile Set (%) Superior")
+    load_first_cycle_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 1ST CYCLE (N/50mm)  Superior")
+    load_first_relax_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 1ST RELAXATION (N/50mm) Superior")
+    first_retract_force_fifty_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="1ST RETRACTION FORCE AT 50% (N/50mm) Superior")
+    first_cycle_permanent_set_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="1st cycle PERMANENT SET (mm) Superior")
+    load_second_cycle_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 2ND CYCLE (N/50mm) Superior")
+    load_second_relax_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD 2ND RELAXATION (N/50mm) Superior")
+    second_retract_force_fifty_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="2ND RETRACTION FORCE AT 50% (N/50mm) Superior")
+    max_load_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="MAXIMUM LOAD (N/50mm) Superior")
+    extension_max_load_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT MAXIMUM LOAD (mm) Superior")
+    load_break_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD AT BREAK (N/50mm) Superior")
+    extencion_break_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT BREAK (mm) Superior")
+    extencion_preset_point_load_ten_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="EXTENSION AT PRESET POINT - LOAD 10N (mm) Superior")
+    load_preset_point_tensile_extention_fortyfive_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="LOAD AT PRESET POINT - TENSILE EXTENSION 45mm (N/50mm) Superior")
+    elongation_capacity_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation capacity (%)  Superior")
+    max_elongation_capacity_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Maximum elongation capacity (%) Superior")
+    retract_capacity_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Retraction capacity (%)  Superior")
+    deformation_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Deformation (%) Superior")
+    tensile_strengh_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Tensile strengh (N/50mm) Superior")
+    elongation_break_cd_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at break CD (%) Superior")
+    elongation_n_out_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation at 9,81N - fora estufa (%) Superior")
+    elongation_after_one_forty_sup = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True, verbose_name="Elongation after 1h at 40°C (%) Superior")
+
+    def __str__(self):
+        return '%s - %s %s ' % (self.spec, self.artigo_cliente.cliente, self.artigo_cliente.artigo)
+
+
 class TrasporteArtigoCliente(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     updated = models.DateTimeField(auto_now=True, verbose_name="Updated at")
@@ -281,7 +393,7 @@ class TrasporteArtigoCliente(models.Model):
 class Bobinagem(models.Model):
     STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
     TIPODESP = (('R', 'R'), ('BA', 'BA'))
-    TIPONW = (('Suominen 25 gsm', 'Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP', 'Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE', 'BCN 70%PP/30%PE'), ('Sandler', 'Sandler'), ('PEGAS BICO 17gsm', 'PEGAS BICO 17gsm'), ('Suominen', 'Suominen'), ('BCN', 'BCN'), ('ORMA', 'ORMA'), ('PEGAS 22', 'PEGAS 22'), ('SAWASOFT', 'SAWASOFT'), ('SAWABOND', 'SAWABOND'), ('Teksis', 'Teksis'), ('Union', 'Union'), ('Radici', 'Radici'), ('Fitesa', 'Fitesa'), ('ALBIS 23', 'ALBIS 23'), ('ALBIS 16', 'ALBIS 16'), ('Union Pillow', 'Union Pillow'), ('Union UV', 'Union UV'), ('Jacob Holm', 'Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'), ('ELA-ACE', 'ELA-ACE'), ('ELA-SPUN', 'ELA-SPUN'), ('Nonwoven Nikoo 28gsm Spunlace 100PP', 'Nonwoven Nikoo 28gsm Spunlace 100PP'), ('Nonwoven Vaporjet 25gsm Spunlace 100PP 2200', 'Nonwoven Vaporjet 25gsm Spunlace 100PP 2200'))
+    TIPONW = (('Suominen 25 gsm', 'Suominen 25 gsm'), ('Sandler SPUNLACE 100%PP', 'Sandler SPUNLACE 100%PP'), ('BCN 70%PP/30%PE', 'BCN 70%PP/30%PE'), ('Sandler', 'Sandler'), ('PEGAS BICO 17gsm', 'PEGAS BICO 17gsm'), ('Suominen', 'Suominen'), ('BCN', 'BCN'), ('ORMA', 'ORMA'), ('PEGAS 22', 'PEGAS 22'), ('SAWASOFT', 'SAWASOFT'), ('SAWABOND', 'SAWABOND'), ('Teksis', 'Teksis'), ('Union', 'Union'), ('Radici', 'Radici'), ('Fitesa', 'Fitesa'), ('ALBIS 23', 'ALBIS 23'), ('ALBIS 16', 'ALBIS 16'), ('Union Pillow', 'Union Pillow'), ('Union UV', 'Union UV'), ('Jacob Holm', 'Jacob Holm'), ('Nonwoven Nikoo 25gsm Spunlace 100PP', 'Nonwoven Nikoo 25gsm Spunlace 100PP'), ('ELA-ACE', 'ELA-ACE'), ('ELA-SPUN', 'ELA-SPUN'), ('Nonwoven Nikoo 28gsm Spunlace 100PP', 'Nonwoven Nikoo 28gsm Spunlace 100PP'), ('Nonwoven Vaporjet 25gsm Spunlace 100PP 2200', 'Nonwoven Vaporjet 25gsm Spunlace 100PP 2200'), ('Sandler Sawabond 7059 24gsm', 'Sandler Sawabond 7059 24gsm'))
     user=models.ForeignKey(User, on_delete = models.PROTECT, verbose_name = "Username")
     perfil=models.ForeignKey(Perfil, on_delete = models.PROTECT, verbose_name = "Perfil")
     num_emendas=models.IntegerField(verbose_name = "Número de emendas", null = True, blank = True, default = 0)
@@ -441,15 +553,11 @@ class Palete(models.Model):
 
 
 class Fornecedor(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    cod = models.CharField(max_length=20, unique=True,
-                           verbose_name="Código Fornecedor", null=True, blank=True)
-    abv = models.CharField(max_length=3, unique=True,
-                           verbose_name="Abreviatura", null=True, blank=True)
-    designacao = models.CharField(
-        max_length=200, unique=True, verbose_name="Designação")
+    cod = models.CharField(max_length=20, unique=True, verbose_name="Código Fornecedor", null=True, blank=True)
+    abv = models.CharField(max_length=3, unique=True, verbose_name="Abreviatura", null=True, blank=True)
+    designacao = models.CharField(max_length=200, unique=True, verbose_name="Designação")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.designacao)
@@ -461,20 +569,14 @@ class Fornecedor(models.Model):
 
 class Rececao(models.Model):
     STATUS = (('A', 'Aberta'), ('F', 'Fechada'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    fornecedor = models.ForeignKey(
-        Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
-    rececao = models.CharField(
-        max_length=20, unique=True, verbose_name="Receção")
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
+    rececao = models.CharField(max_length=20, unique=True, verbose_name="Receção")
     num = models.IntegerField(verbose_name="Rececao nº", null=True, blank=True)
-    quantidade = models.IntegerField(
-        verbose_name="Quantidade de Lotes", null=True, blank=True)
-    estado = models.CharField(
-        max_length=1, choices=STATUS, default='A', verbose_name="Estado da Receção")
-    encomenda = models.CharField(
-        max_length=15, unique=True, verbose_name="Encomenda")
+    quantidade = models.IntegerField(verbose_name="Quantidade de Lotes", null=True, blank=True)
+    estado = models.CharField(max_length=1, choices=STATUS, default='A', verbose_name="Estado da Receção")
+    encomenda = models.CharField(max_length=15, unique=True, verbose_name="Encomenda")
 
     def __str__(self):
         return self.rececao
@@ -485,18 +587,13 @@ class Rececao(models.Model):
 
 
 class ArtigoNW(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    fornecedor = models.ForeignKey(
-        Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
-    cod = models.CharField(max_length=50, unique=True,
-                           verbose_name="Código Artigo Nonwoven")
-    designacao = models.CharField(
-        max_length=200, unique=True, verbose_name="Designação")
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, verbose_name="Fornecedor")
+    cod = models.CharField(max_length=50, unique=True, verbose_name="Código Artigo Nonwoven")
+    designacao = models.CharField(max_length=200, unique=True, verbose_name="Designação")
     gsm = models.IntegerField(verbose_name="Gramagem")
-    largura = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura")
+    largura = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
 
     def __str__(self):
         return '%s - %s' % (self.cod, self.designacao)
@@ -507,27 +604,17 @@ class ArtigoNW(models.Model):
 
 
 class Nonwoven(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    artigo_nw = models.ForeignKey(
-        ArtigoNW, on_delete=models.PROTECT, verbose_name="Artigo Nonwoven", null=True, blank=True)
-    rececao = models.ForeignKey(
-        Rececao, on_delete=models.PROTECT, verbose_name="Receção", null=True, blank=True)
-    cod_nw = models.CharField(
-        max_length=50, verbose_name="Código Nonwoven", unique=True, null=True, blank=True)
-    stack_num = models.CharField(
-        max_length=20, verbose_name="Stack number", unique=True, null=True, blank=True)
-    sqm = models.DecimalField(max_digits=15, decimal_places=2,
-                              verbose_name="Metros quadrados", null=True, blank=True)
-    lote = models.CharField(
-        max_length=10, verbose_name="Lote", null=True, blank=True)
-    prod = models.CharField(
-        max_length=10, verbose_name="Produção", null=True, blank=True)
-    comp_total = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Comprimento total")
-    comp_actual = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Comprimento actual")
+    artigo_nw = models.ForeignKey(ArtigoNW, on_delete=models.PROTECT, verbose_name="Artigo Nonwoven", null=True, blank=True)
+    rececao = models.ForeignKey(Rececao, on_delete=models.PROTECT, verbose_name="Receção", null=True, blank=True)
+    cod_nw = models.CharField(max_length=50, verbose_name="Código Nonwoven", unique=True, null=True, blank=True)
+    stack_num = models.CharField(max_length=20, verbose_name="Stack number", unique=True, null=True, blank=True)
+    sqm = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Metros quadrados", null=True, blank=True)
+    lote = models.CharField(max_length=10, verbose_name="Lote", null=True, blank=True)
+    prod = models.CharField(max_length=10, verbose_name="Produção", null=True, blank=True)
+    comp_total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento total")
+    comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual")
     vazio = models.BooleanField(default=False, verbose_name="Utilizado")
 
     def __str__(self):
@@ -540,21 +627,16 @@ class Nonwoven(models.Model):
 
 class EtiquetaNonwoven(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
-    nonwoven = models.ForeignKey(
-        Nonwoven, on_delete=models.CASCADE, verbose_name="Nonwoven")
-    rececao = models.ForeignKey(
-        Rececao, on_delete=models.PROTECT, verbose_name="Receção")
+    nonwoven = models.ForeignKey(Nonwoven, on_delete=models.CASCADE, verbose_name="Nonwoven")
+    rececao = models.ForeignKey(Rececao, on_delete=models.PROTECT, verbose_name="Receção")
     cod_nw = models.CharField(max_length=100, verbose_name="Código NW")
     nw_des = models.CharField(max_length=100, verbose_name="Descrição NW")
     rececao_rec = models.CharField(max_length=100, verbose_name="Receção Rec")
     encomenda = models.CharField(max_length=100, verbose_name="Encomenda")
     data_rec = models.CharField(max_length=100, verbose_name="Data de Receção")
-    impressora = models.CharField(
-        max_length=200, verbose_name="Impressora", null=True, blank=True)
-    num_copias = models.IntegerField(
-        verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    estado_impressao = models.BooleanField(
-        default=False, verbose_name="Imprimir")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False, verbose_name="Imprimir")
 
     def __str__(self):
         return self.cod_nw
@@ -566,17 +648,12 @@ class EtiquetaNonwoven(models.Model):
 
 class ConsumoNonwoven(models.Model):
     POS = (('SUP', 'Superior'), ('INF', 'Inferior'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    bobinagem = models.ForeignKey(
-        Bobinagem, on_delete=models.PROTECT, verbose_name="Bobinagem")
-    nonwoven = models.ForeignKey(
-        Nonwoven, on_delete=models.PROTECT, verbose_name="Nonwoven")
-    posicao = models.CharField(
-        max_length=10, verbose_name="Posição (Sup/Inf)", choices=POS)
-    consumo = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Consumo")
+    bobinagem = models.ForeignKey(Bobinagem, on_delete=models.PROTECT, verbose_name="Bobinagem")
+    nonwoven = models.ForeignKey(Nonwoven, on_delete=models.PROTECT, verbose_name="Nonwoven")
+    posicao = models.CharField(max_length=10, verbose_name="Posição (Sup/Inf)", choices=POS)
+    consumo = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Consumo")
 
     def __str__(self):
         return '%s - %s:  %s' % (self.bobinagem.nome, self.nonwoven.designacao, self.posicao)
@@ -587,84 +664,53 @@ class ConsumoNonwoven(models.Model):
 
 
 class Bobine(models.Model):
-    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'),
-               ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
-    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE',
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'),('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'))
+    STATUSP = (('G', 'G'), ('DM', 'DM12'), ('R', 'R'), ('BA', 'BA'), ('LAB', 'LAB'), ('IND', 'IND'), ('HOLD', 'HOLD'), ('SC', 'SC'))
+    PRODUTO = (('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE', 'STRETCHABLE NONWOVEN ELASTIC BANDS ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 90 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 90 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HT', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HT'), ('NONWOVEN ELASTIC BANDS ELA-ACE 95 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 95 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 90 HT HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 95 HE HL'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE HL'), ('SIDE PANEL ELA-ACE 100 HE', 'SIDE PANEL ELA-ACE 100 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO', 'NONWOVEN ELASTIC BANDS ELA-SPUN 100 HE BICO'), ('NONWOVEN ELASTIC BANDS ELA-ACE 105 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 105 HE'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'), ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'), ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'), ('ELASTIC FILM', 'ELASTIC FILM'), ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(L)'), ('NONWOVEN ELASTIC BANDS ELA-ACE 75 HE', 'NONWOVEN ELASTIC BANDS ELA-ACE 75 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HE'), ('NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT', 'NONWOVEN ELASTIC BANDS ELA-SPUN 60 HT'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 50 23A'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16B'), ('NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A', 'NONWOVEN TEXTILE BACKSHEET ELA-TBS 45 16A'), ('NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA', 'NONWOVEN ELASTIC BAND ELA-CARDED AMOSTRA'), ('NONWOVEN ELASTIC BAND ELA-CARDED 100', 'NONWOVEN ELASTIC BAND ELA-CARDED 100'),('NONWOVEN ELASTIC BAND ELA-CARDED 100 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 100 HE'), ('NONWOVEN ELASTIC BAND ELA-SPUN 75 HT', 'NONWOVEN ELASTIC BAND ELA-SPUN 75 HT'), ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'), ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'))
     TIPODESP = (('R', 'R'), ('BA', 'BA'))
-    bobinagem = models.ForeignKey(
-        Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
-    largura = models.ForeignKey(
-        Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
-    artigo = models.ForeignKey(
-        Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
-    designacao_prod = models.CharField(
-        verbose_name="Produto", max_length=100, default="", null=True, blank=True, choices=PRODUTO)
-    cliente = models.CharField(
-        verbose_name="Cliente", max_length=100, default="", null=True, blank=True)
-    comp = models.DecimalField(max_digits=10, decimal_places=2,
-                               verbose_name="Comprimento", default=0, null=True, blank=True)
-    comp_actual = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0, null=True, blank=True)
-    diam = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diametro", null=True, blank=True)
-    nome = models.CharField(verbose_name="Bobine",
-                            max_length=200, null=True, blank=True, default="")
-    palete = models.ForeignKey(
-        Palete, on_delete=models.SET_NULL, null=True, blank=True)
-    posicao_palete = models.PositiveIntegerField(
-        verbose_name="Posição", default=0)
-    estado = models.CharField(
-        max_length=4, choices=STATUSP, default='G', verbose_name="Estado")
-    area = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Área bobine", null=True, blank=True)
+    bobinagem = models.ForeignKey(Bobinagem, on_delete=models.CASCADE, verbose_name="Bobinagem")
+    largura = models.ForeignKey(Largura, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Largura")
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    designacao_prod = models.CharField(verbose_name="Produto", max_length=100, default="", null=True, blank=True, choices=PRODUTO)
+    cliente = models.CharField(verbose_name="Cliente", max_length=100, default="", null=True, blank=True)
+    comp = models.DecimalField(max_digits=10, decimal_places=2,verbose_name="Comprimento", default=0, null=True, blank=True)
+    comp_actual = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Comprimento actual", default=0, null=True, blank=True)
+    diam = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diametro", null=True, blank=True)
+    nome = models.CharField(verbose_name="Bobine", max_length=200, null=True, blank=True, default="")
+    palete = models.ForeignKey(Palete, on_delete=models.SET_NULL, null=True, blank=True)
+    posicao_palete = models.PositiveIntegerField(verbose_name="Posição", default=0)
+    estado = models.CharField(max_length=4, choices=STATUSP, default='G', verbose_name="Estado")
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área bobine", null=True, blank=True)
     con = models.BooleanField(default=False, verbose_name="Cónica")
     descen = models.BooleanField(default=False, verbose_name="Descentrada")
     presa = models.BooleanField(default=False, verbose_name="Presa")
-    diam_insuf = models.BooleanField(
-        default=False, verbose_name="Diâmetro insuficiente")
+    diam_insuf = models.BooleanField(default=False, verbose_name="Diâmetro insuficiente")
     furos = models.BooleanField(default=False, verbose_name="Furos")
     esp = models.BooleanField(default=False, verbose_name="Gramagem")
     troca_nw = models.BooleanField(default=False, verbose_name="Troca NW")
     outros = models.BooleanField(default=False, verbose_name="Outros")
     buraco = models.BooleanField(default=False, verbose_name="Buracos")
-    obs = models.TextField(max_length=500, null=True,
-                           blank=True, verbose_name="Observações", default="")
+    obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações", default="")
     recycle = models.BooleanField(default=False, verbose_name="Reciclada")
-    destino = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="Destino", default="")
-    l_real = models.IntegerField(
-        unique=False, null=True, blank=True, verbose_name="Largura Real")
+    destino = models.TextField(max_length=500, null=True, blank=True, verbose_name="Destino", default="")
+    l_real = models.IntegerField(unique=False, null=True, blank=True, verbose_name="Largura Real")
     nok = models.BooleanField(default=False, verbose_name="Largura NOK")
     fc = models.BooleanField(default=False, verbose_name="Falha de corte")
     ff = models.BooleanField(default=False, verbose_name="Falha de filme")
-    fmp = models.BooleanField(
-        default=False, verbose_name="Falha de Matéria Prima")
-    suj = models.BooleanField(
-        default=False, verbose_name="Sujidade/Caiu do carro")
-    car = models.BooleanField(
-        default=False, verbose_name="Carro andou para trás")
+    fmp = models.BooleanField(default=False, verbose_name="Falha de Matéria Prima")
+    suj = models.BooleanField(default=False, verbose_name="Sujidade/Caiu do carro")
+    car = models.BooleanField(default=False, verbose_name="Carro andou para trás")
     lac = models.BooleanField(default=False, verbose_name="Laçou")
-    ncore = models.BooleanField(
-        default=False, verbose_name="Não colou core/Falta de fita cola")
+    ncore = models.BooleanField(default=False, verbose_name="Não colou core/Falta de fita cola")
     sbrt = models.BooleanField(default=False, verbose_name="Sobre tiragem")
     prop = models.BooleanField(default=False, verbose_name="Propriedades")
-    prop_obs = models.TextField(max_length=200, null=True, blank=True,
-                                verbose_name="Observações Propriedades", default="")
-    fc_diam_ini = models.DecimalField(
-        max_digits=10, decimal_places=0, verbose_name="Falha de corte inicio", null=True, blank=True)
-    fc_diam_fim = models.DecimalField(
-        max_digits=10, decimal_places=0, verbose_name="Falha de corte fim", null=True, blank=True)
-    ff_m_ini = models.DecimalField(
-        max_digits=10, decimal_places=0, verbose_name="Falha de filme inicio", null=True, blank=True)
-    ff_m_fim = models.DecimalField(
-        max_digits=10, decimal_places=0, verbose_name="Falha de fimle fim", null=True, blank=True)
-    desp = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Desperdício", null=True, blank=True)
-    tipo_desp = models.CharField(max_length=4, choices=TIPODESP, default=None,
-                                 verbose_name="Tipo de desperdício", null=True, blank=True)
-    para_retrabalho = models.BooleanField(
-        default=False, verbose_name="Para retrabalho")
+    prop_obs = models.TextField(max_length=200, null=True, blank=True, verbose_name="Observações Propriedades", default="")
+    fc_diam_ini = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de corte inicio", null=True, blank=True)
+    fc_diam_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de corte fim", null=True, blank=True)
+    ff_m_ini = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de filme inicio", null=True, blank=True)
+    ff_m_fim = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Falha de fimle fim", null=True, blank=True)
+    desp = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Desperdício", null=True, blank=True)
+    tipo_desp = models.CharField(max_length=4, choices=TIPODESP, default=None, verbose_name="Tipo de desperdício", null=True, blank=True)
+    para_retrabalho = models.BooleanField(default=False, verbose_name="Para retrabalho")
 
     def __str__(self):
         return self.nome
@@ -839,75 +885,47 @@ class EtiquetaPalete(models.Model):
 
 class EtiquetaFinal(models.Model):
     # IMP = (('ARMAZEM_CAB_SQUIX_6.3_200', 'ARMAZEM'))
-    palete = models.ForeignKey(
-        Palete, on_delete=models.CASCADE, verbose_name="Palete")
+    palete = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete")
     palete_nome = models.CharField(verbose_name="Palete nome", max_length=200)
     produto = models.CharField(verbose_name="Produto", max_length=200)
-    largura_bobine = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura")
-    diam_min = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
-    diam_max = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
-    cod_cliente = models.IntegerField(
-        unique=False, verbose_name="Cód. Cliente")
-    cod_cliente_cliente = models.CharField(
-        verbose_name="Cód. Cliente do Cliente", max_length=200, null=True, blank=True)
-    pais = models.CharField(verbose_name="Produido em:",
-                            max_length=200, default="Portugal")
-    poroduzido_por = models.CharField(
-        verbose_name="Produido por:", max_length=200, default="Elastictek")
-    core = models.DecimalField(
-        max_digits=4, decimal_places=1, verbose_name="Core")
-    area = models.DecimalField(
-        max_digits=15, decimal_places=1, verbose_name="Área")
-    comp = models.DecimalField(
-        max_digits=15, decimal_places=2, verbose_name="Comprimento")
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura")
+    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
+    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
+    cod_cliente = models.IntegerField(unique=False, verbose_name="Cód. Cliente")
+    cod_cliente_cliente = models.CharField(verbose_name="Cód. Cliente do Cliente", max_length=200, null=True, blank=True)
+    pais = models.CharField(verbose_name="Produido em:", max_length=200, default="Portugal")
+    poroduzido_por = models.CharField(verbose_name="Produido por:", max_length=200, default="Elastictek")
+    core = models.DecimalField(max_digits=4, decimal_places=1, verbose_name="Core")
+    area = models.DecimalField(max_digits=15, decimal_places=1, verbose_name="Área")
+    comp = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Comprimento")
     prf = models.CharField(verbose_name="Proforma", max_length=200)
-    num_bobines = models.IntegerField(
-        unique=False, verbose_name="Nº de bobines")
+    num_bobines = models.IntegerField(unique=False, verbose_name="Nº de bobines")
     palete_num = models.IntegerField(unique=False, verbose_name="Paleten nº")
-    palete_total = models.IntegerField(
-        unique=False, verbose_name="Paleten total")
-    peso_liquido = models.DecimalField(
-        max_digits=5, decimal_places=2, verbose_name="Peso Líquido")
-    peso_bruto = models.DecimalField(
-        max_digits=5, decimal_places=2, verbose_name="Peso Bruto")
-    data_prod = models.DateField(
-        auto_now_add=False, auto_now=False, verbose_name="Data de produção")
-    data_validade = models.DateField(
-        auto_now_add=False, auto_now=False, verbose_name="Validade")
+    palete_total = models.IntegerField(unique=False, verbose_name="Paleten total")
+    peso_liquido = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso Líquido")
+    peso_bruto = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso Bruto")
+    data_prod = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Data de produção")
+    data_validade = models.DateField(auto_now_add=False, auto_now=False, verbose_name="Validade")
     gsm = models.IntegerField(unique=False, verbose_name="Gramagem")
-    cont = models.PositiveIntegerField(
-        verbose_name="Contador", unique=True, default=0)
-    control = models.PositiveIntegerField(
-        verbose_name="Variável de controlo", unique=False, default=0)
-    gtin = models.CharField(verbose_name="GTIN",
-                            max_length=14, unique=False, default="")
-    sscc = models.CharField(verbose_name="SSCC",
-                            max_length=18, unique=False, default="")
+    cont = models.PositiveIntegerField(verbose_name="Contador", unique=True, default=0)
+    control = models.PositiveIntegerField(verbose_name="Variável de controlo", unique=False, default=0)
+    gtin = models.CharField(verbose_name="GTIN", max_length=14, unique=False, default="")
+    sscc = models.CharField(verbose_name="SSCC", max_length=18, unique=False, default="")
     activa = models.BooleanField(default=True, verbose_name="Activa")
-    impressora = models.CharField(
-        max_length=200, verbose_name="Impressora", null=True, blank=True)
-    num_copias = models.IntegerField(
-        verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    estado_impressao = models.BooleanField(
-        default=False, verbose_name="Imprimir")
-    order_num = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Order Number")
-    turno = models.CharField(max_length=1, null=True,
-                             blank=True, verbose_name="Turno")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False, verbose_name="Imprimir")
+    order_num = models.CharField(max_length=100, null=True, blank=True, verbose_name="Order Number")
+    turno = models.CharField(max_length=1, null=True, blank=True, verbose_name="Turno")
 
     def __str__(self):
         return self.palete_nome
 
 
 class InventarioBobinesDM(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    bobine = models.ForeignKey(
-        Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
+    bobine = models.ForeignKey(Bobine, on_delete=models.PROTECT, verbose_name="Bobine")
     nome = models.CharField(max_length=15, blank=True, null=True)
 
     def __str__(self):
@@ -918,27 +936,18 @@ class InventarioBobinesDM(models.Model):
 
 
 class InventarioPaletesCliente(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    palete = models.ForeignKey(
-        Palete, on_delete=models.PROTECT, verbose_name="Palete")
+    palete = models.ForeignKey(Palete, on_delete=models.PROTECT, verbose_name="Palete")
     nome = models.CharField(max_length=15, blank=True, null=True)
-    artigo = models.ForeignKey(
-        Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
+    artigo = models.ForeignKey(Artigo, on_delete=models.PROTECT, verbose_name="Artigo", null=True, blank=True)
     cliente = models.CharField(max_length=50, blank=True, null=True)
-    comp_total = models.DecimalField(
-        max_digits=15, decimal_places=2, verbose_name="Comprimento Total", null=True, blank=True)
-    area = models.DecimalField(
-        max_digits=15, decimal_places=1, verbose_name="Área", null=True, blank=True)
-    largura_bobine = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Largura", null=True, blank=True)
-    diam_min = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
-    diam_max = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
-    core_bobines = models.CharField(
-        max_length=1, verbose_name="Core das bobines", null=True, blank=True)
+    comp_total = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Comprimento Total", null=True, blank=True)
+    area = models.DecimalField(max_digits=15, decimal_places=1, verbose_name="Área", null=True, blank=True)
+    largura_bobine = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Largura", null=True, blank=True)
+    diam_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro minimo", null=True, blank=True)
+    diam_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Diâmetro máximo", null=True, blank=True)
+    core_bobines = models.CharField(max_length=1, verbose_name="Core das bobines", null=True, blank=True)
 
     def __str__(self):
         return self.nome
@@ -948,13 +957,10 @@ class InventarioPaletesCliente(models.Model):
 
 
 class MovimentosBobines(models.Model):
-    bobine = models.ForeignKey(
-        Bobine, on_delete=models.CASCADE, verbose_name="Bobine")
-    palete = models.ForeignKey(
-        Palete, on_delete=models.CASCADE, verbose_name="Palete", null=True, blank=True)
+    bobine = models.ForeignKey(Bobine, on_delete=models.CASCADE, verbose_name="Bobine")
+    palete = models.ForeignKey(Palete, on_delete=models.CASCADE, verbose_name="Palete", null=True, blank=True)
     timestamp = models.DateTimeField()
-    destino = models.CharField(
-        max_length=200, verbose_name="Destino", null=True, blank=True)
+    destino = models.CharField(max_length=200, verbose_name="Destino", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Movimentos de Bobines"
@@ -962,11 +968,9 @@ class MovimentosBobines(models.Model):
 
 
 class ProdutoGranulado(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
-    produto_granulado = models.CharField(
-        max_length=15, verbose_name="Produto Granulado")
+    produto_granulado = models.CharField(max_length=15, verbose_name="Produto Granulado")
 
     def __str__(self):
         return self.produto_granulado
@@ -978,22 +982,17 @@ class ProdutoGranulado(models.Model):
 
 class Reciclado(models.Model):
     STATUS = (('G', 'G'),  ('R', 'R'), ('NOK', 'NOK'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(verbose_name="Created")
     timestamp_inicio = models.DateTimeField(null=True, blank=True)
     timestamp_edit = models.DateTimeField(verbose_name="Edited")
-    produto_granulado = models.ForeignKey(
-        ProdutoGranulado, on_delete=models.PROTECT, verbose_name="Produto Granulado")
+    produto_granulado = models.ForeignKey(ProdutoGranulado, on_delete=models.PROTECT, verbose_name="Produto Granulado")
     lote = models.CharField(max_length=15, unique=True)
     tara = models.CharField(max_length=5, unique=False)
     num = models.PositiveIntegerField(verbose_name="Número", default=0)
-    estado = models.CharField(
-        max_length=4, choices=STATUS, default='G', verbose_name="Estado")
-    peso = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Peso")
-    obs = models.TextField(max_length=500, null=True,
-                           blank=True, verbose_name="Observações")
+    estado = models.CharField(max_length=4, choices=STATUS, default='G', verbose_name="Estado")
+    peso = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
+    obs = models.TextField(max_length=500, null=True, blank=True, verbose_name="Observações")
 
     def __str__(self):
         return self.lote
@@ -1005,14 +1004,11 @@ class Reciclado(models.Model):
 
 class MovimentoMP(models.Model):
     TIPO = (('Entrada', 'Entrada'), ('NOK', 'NOK'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
     lote = models.CharField(max_length=30, unique=False, verbose_name="Lote")
-    tipo = models.CharField(max_length=7, choices=TIPO,
-                            default='Entrada', verbose_name="Tipo de movimento")
-    motivo = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="Motivo")
+    tipo = models.CharField(max_length=7, choices=TIPO, default='Entrada', verbose_name="Tipo de movimento")
+    motivo = models.TextField(max_length=500, null=True, blank=True, verbose_name="Motivo")
 
     def __str__(self):
         return self.lote
@@ -1024,25 +1020,17 @@ class MovimentoMP(models.Model):
 
 class EtiquetaReciclado(models.Model):
     # IMP = (('ARMAZEM_CAB_SQUIX_6.3_200', 'ARMAZEM'))
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, verbose_name="Username")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     # timestamp       = models.DateTimeField(unique=False, null=True, blank=True)
     inicio = models.DateTimeField()
     fim = models.DateTimeField()
-    reciclado = models.ForeignKey(
-        Reciclado, on_delete=models.PROTECT, verbose_name="Reciclado")
-    lote = models.CharField(max_length=30, unique=True,
-                            verbose_name="Lote de Reciclado")
-    produto_granulado = models.CharField(
-        max_length=20, verbose_name="Produto Granulado")
-    peso = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Peso")
-    impressora = models.CharField(
-        max_length=200, verbose_name="Impressora", null=True, blank=True)
-    num_copias = models.IntegerField(
-        verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
-    estado_impressao = models.BooleanField(
-        default=False, verbose_name="Imprimir")
+    reciclado = models.ForeignKey(Reciclado, on_delete=models.PROTECT, verbose_name="Reciclado")
+    lote = models.CharField(max_length=30, unique=True, verbose_name="Lote de Reciclado")
+    produto_granulado = models.CharField(max_length=20, verbose_name="Produto Granulado")
+    peso = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Peso")
+    impressora = models.CharField(max_length=200, verbose_name="Impressora", null=True, blank=True)
+    num_copias = models.IntegerField(verbose_name="Nº de Cópias", unique=False, null=True, blank=True)
+    estado_impressao = models.BooleanField(default=False, verbose_name="Imprimir")
 
     def __str__(self):
         return self.lote

@@ -8,7 +8,7 @@ from django.views.generic import CreateView
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, View, FormView, UpdateView
 # from .forms import CreateNonwovenManual, SearchBobinagem, PerfilDMForm, SearchPerfil, PerfilLinhaForm, ImprimirEtiquetaFinalPalete, ImprimirEtiquetaPalete, ImprimirEtiquetaBobine, PicagemBobines, PerfilCreateForm, ClassificacaoBobines, LarguraForm, BobinagemCreateForm, BobineStatus, AcompanhamentoDiarioSearchForm, ConfirmReciclarForm, RetrabalhoFormEmendas, PaleteCreateForm, SelecaoPaleteForm, AddPalateStockForm, PaletePesagemForm, RetrabalhoCreateForm, CargaCreateForm, EmendasCreateForm, ClienteCreateForm, UpdateBobineForm, PaleteRetrabalhoForm, OrdenarBobines, ClassificacaoBobines, RetrabalhoForm, EncomendaCreateForm
 from .forms import *
-from .models import Artigo, CoreLargura, LinhaEncomenda, PerfilEmbalamento, ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao, ArtigoNW
+from .models import Cartao, Especificacoes, TrasporteArtigoCliente, Transporte, Mdf, Artigo, Cinta, CoreLargura, Filme, LinhaEncomenda, PaleteEmb, PerfilEmbalamento, ProdutoGranulado, Reciclado, MovimentoMP, EtiquetaReciclado, MovimentosBobines, InventarioBobinesDM, InventarioPaletesCliente, Nonwoven, ConsumoNonwoven, EtiquetaFinal, Largura, Perfil, Bobinagem, Bobine, Palete, Emenda, Cliente, EtiquetaRetrabalho, Encomenda, EtiquetaPalete, ArtigoCliente, Rececao, ArtigoNW
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
@@ -882,17 +882,27 @@ def palete_delete(request, pk):
                     request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.')
             elif obj.ordem != None and obj.carga == None:
                 ordem = OrdemProducao.objects.get(pk=obj.ordem.pk)
-                enc = Encomenda.objects.get(pk=ordem.enc.pk)
-                enc.num_paletes_actual -= 1
-                ordem.num_paletes_produzidas -= 1
-                if ordem.ativa == False and ordem.completa == True:
-                    ordem.ativa = True
-                    ordem.completa = False
-                enc.save()
-                ordem.save()
-                obj.delete()
-                e_p.delete()
-                return redirect('producao:palete_list_all')
+                try:
+                    enc = Encomenda.objects.get(pk=ordem.enc.pk)
+                    enc.num_paletes_actual -= 1
+                    ordem.num_paletes_produzidas -= 1
+                    if ordem.ativa == False and ordem.completa == True:
+                        ordem.ativa = True
+                        ordem.completa = False
+                    enc.save()
+                    ordem.save()
+                    obj.delete()
+                    e_p.delete()
+                    return redirect('producao:palete_list_all')
+                except:
+                    ordem.num_paletes_produzidas -= 1
+                    if ordem.ativa == False and ordem.completa == True:
+                        ordem.ativa = True
+                        ordem.completa = False
+                    ordem.save()
+                    obj.delete()
+                    e_p.delete()
+                    return redirect('producao:palete_list_all')
             elif obj.ordem == None and obj.carga == None:
                 obj.delete()
                 e_p.delete()
@@ -1360,25 +1370,25 @@ def emenda_delete(request, pk):
 @login_required
 def cliente_home(request):
 
-    cliente_list = Cliente.objects.all().order_by('-timestamp')
+    cliente = Cliente.objects.all().order_by('-timestamp')
     template_name = 'cliente/cliente_home.html'
 
-    query = ""
-    if request.GET:
-        query = request.GET.get('q', '')
-        # print(query)
-        cliente_list = Cliente.objects.filter(
-            nome__icontains=query).order_by('-timestamp')
+    # query = ""
+    # if request.GET:
+    #     query = request.GET.get('q', '')
+    #     # print(query)
+    #     cliente_list = Cliente.objects.filter(
+    #         nome__icontains=query).order_by('-timestamp')
 
-    paginator = Paginator(cliente_list, 12)
-    page = request.GET.get('page')
+    # paginator = Paginator(cliente_list, 12)
+    # page = request.GET.get('page')
 
-    try:
-        cliente = paginator.page(page)
-    except PageNotAnInteger:
-        cliente = paginator.page(1)
-    except EmptyPage:
-        cliente = paginator.page(paginator.num_pages)
+    # try:
+    #     cliente = paginator.page(page)
+    # except PageNotAnInteger:
+    #     cliente = paginator.page(1)
+    # except EmptyPage:
+    #     cliente = paginator.page(paginator.num_pages)
 
     context = {
         "cliente": cliente,
@@ -2678,6 +2688,11 @@ def carga_list(request):
     carga_list = Carga.objects.filter(estado='I').order_by('-data')
     template_name = 'carga/carga_list.html'
 
+    for carga in carga_list:
+        num_paletes = Palete.objects.filter(carga=carga).count()
+        if carga.num_paletes_actual != num_paletes:
+            carga.num_paletes_actual = num_paletes
+
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
@@ -2792,6 +2807,15 @@ def carga_create(request):
     }
 
     return render(request, template_name, context)
+
+@login_required
+def carga_reabir(request, pk):
+    carga = get_object_or_404(Carga, pk=pk)
+    if carga.estado == 'C':
+        carga.estado = 'I'
+        carga.save()
+
+    return redirect('producao:carga_detail', pk=pk)
 
 
 @login_required
@@ -3869,10 +3893,9 @@ def perfil_list_v2(request):
     if request.GET:
         query = request.GET.get('q', '')
         # print(query)
-        perfil_list = perfil_list.filter(
-            nome__icontains=query).order_by('-timestamp')
+        perfil_list = perfil_list.filter(nome__icontains=query).order_by('-timestamp')
 
-    paginator = Paginator(perfil_list, 7)
+    paginator = Paginator(perfil_list, 20)
     page = request.GET.get('page')
 
     try:
@@ -4556,7 +4579,29 @@ def cliente_add_artigo(request, pk):
     artigo_cliente = ArtigoCliente.objects.filter(cliente=cliente)
     template_name = 'cliente/cliente_add_artigo.html'
     form = ArtigoClientInsert(request.POST or None)
+    # form_embal = EmbalamentoCreateForm(request.POST or None)
     artigo_valido = True
+    # if form.is_valid() and form_embal.is_valid():
+    #     instance = form.save(commit=False)
+    #     instance_embal = form_embal.save(commit=False)
+    #     instance.user = request.user
+    #     instance_embal.user = request.user
+    #     instance.cliente = cliente
+
+    #     for ac in artigo_cliente:
+    #         if ac.artigo == instance.artigo:
+    #             artigo_valido = False
+    #             break
+
+    #     if artigo_valido == True:
+    #         instance_embal.save()
+    #         instance.embalamento = instance_embal
+    #         instance.save()
+    #         return redirect('producao:cliente_details', pk=cliente.pk)
+    #     else:
+    #         messages.error(request, 'O Artigo ' + instance.artigo.des + ' já está associado ao cliente ' + cliente.nome + '.')
+    #         form = ArtigoClientInsert()
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -4571,13 +4616,13 @@ def cliente_add_artigo(request, pk):
             instance.save()
             return redirect('producao:cliente_details', pk=cliente.pk)
         else:
-            messages.error(request, 'O Artigo ' + instance.artigo.des +
-                           ' já está associado ao cliente ' + cliente.nome + '.')
+            messages.error(request, 'O Artigo ' + instance.artigo.des + ' já está associado ao cliente ' + cliente.nome + '.')
             form = ArtigoClientInsert()
 
     context = {
         "cliente": cliente,
-        "form": form
+        "form": form,
+        # "form_embal": form_embal,
     }
 
     return render(request, template_name, context)
@@ -6246,8 +6291,7 @@ def bobine_edit(request, pk):
         etiqueta.artigo = instance.artigo.des
         etiqueta.produto = instance.designacao_prod
         try:
-            artigo_cliente = ArtigoCliente.objects.get(
-                artigo=instance.artigo, cliente__nome=instance.cliente)
+            artigo_cliente = ArtigoCliente.objects.get(artigo=instance.artigo, cliente__nome=instance.cliente)
             etiqueta.cod_cliente = artigo_cliente.cod_client
             etiqueta.save()
         except:
@@ -6271,8 +6315,7 @@ def carga_carregar(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
     enc = get_object_or_404(Encomenda, pk=carga.enc.pk)
     cliente = enc.cliente
-    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) & ~Q(peso_liquido=0) & Q(carga__isnull=True) | (
-        Q(stock=True) & Q(cliente=cliente)) & Q(carga__isnull=True) & ~Q(peso_liquido=0)).order_by('nome')
+    paletes_enc = Palete.objects.filter(Q(ordem__enc=enc) & ~Q(peso_liquido=0) & Q(carga__isnull=True) | (Q(stock=True) & Q(cliente=cliente)) & Q(carga__isnull=True) & ~Q(peso_liquido=0)).order_by('nome')
     paletes_carga = Palete.objects.filter(carga=carga)
     template_name = 'carga/carga_carregar.html'
 
@@ -6845,3 +6888,382 @@ def load_perfis(request):
         
     
     return render(request, 'retrabalho/dropdown_options_perfis.html', {'perfis': perfis})  
+
+@login_required
+def artigos_list(request):
+    template_name = 'artigo/artigo_list.html'
+    artigos = Artigo.objects.all().order_by('-cod')
+
+    context = {
+        "artigos": artigos
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def artigo_create(request):
+    template_name = 'artigo/artigo_create.html'
+
+    form = ArtigoCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+
+        return redirect('producao:artigos_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def embalamento_home(request):
+    template_name = "embalamento/embalamento_home.html"
+
+    context = {
+
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def paletes_emb_list(request):
+    template_name = 'embalamento/palete_emb_list.html'
+    paletes = PaleteEmb.objects.all().order_by('-cod')
+
+    context = {
+        "paletes": paletes
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def paletes_emb_create(request):
+    template_name = 'embalamento/palete_emb_create.html'
+
+    form = PaleteEmbCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:paletes_emb_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def filmes_list(request):
+    template_name = 'embalamento/filmes_list.html'
+    filmes = Filme.objects.all().order_by('-cod')
+
+    context = {
+        "filmes": filmes
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def filme_create(request):
+    template_name = 'embalamento/filme_create.html'
+
+    form = FilmeCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:filmes_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cintas_list(request):
+    template_name = 'embalamento/cintas_list.html'
+    cintas = Cinta.objects.all().order_by('-cod')
+
+    context = {
+        "cintas": cintas
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cinta_create(request):
+    template_name = 'embalamento/cinta_create.html'
+
+    form = CintaCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:cintas_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+@login_required
+def cintas_list(request):
+    template_name = 'embalamento/cintas_list.html'
+    cintas = Cinta.objects.all().order_by('-cod')
+
+    context = {
+        "cintas": cintas
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cinta_create(request):
+    template_name = 'embalamento/cinta_create.html'
+
+    form = CintaCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:cintas_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cores_list(request):
+    template_name = 'embalamento/cores_list.html'
+    cores = Core.objects.all().order_by('-cod')
+
+    context = {
+        "cores": cores
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def core_create(request):
+    template_name = 'embalamento/core_create.html'
+
+    form = CoreCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:cores_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def mdfs_list(request):
+    template_name = 'embalamento/mdfs_list.html'
+    mdfs = Mdf.objects.all().order_by('-cod')
+
+    context = {
+        "mdfs": mdfs
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def mdf_create(request):
+    template_name = 'embalamento/mdf_create.html'
+
+    form = MdfCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:mdfs_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cartao_list(request):
+    template_name = 'embalamento/cartao_list.html'
+    cartao = Cartao.objects.all().order_by('-cod')
+
+    context = {
+        "cartao": cartao
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def cartao_create(request):
+    template_name = 'embalamento/cartao_create.html'
+
+    form = CartaoCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:cartao_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+    
+@login_required
+def transportes_list(request):
+    template_name = 'transporte/transportes_list.html'
+    transportes = Transporte.objects.all().order_by('-tipo')
+
+    context = {
+        "transportes": transportes
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def transporte_create(request):
+    template_name = 'transporte/transporte_create.html'
+
+    form = TransporteCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+
+        return redirect('producao:transportes_list')
+
+    context = {
+        "form": form
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def transportes_artigo_cliente(request, pk_artigo, pk_cliente):
+    template_name = 'transporte/transporte_artigo_cliente.html'
+    cliente = get_object_or_404(Cliente, pk=pk_cliente)
+    artigo = get_object_or_404(Artigo, pk=pk_artigo)
+    artigo_cliente = ArtigoCliente.objects.get(cliente=cliente, artigo=artigo)
+    transportes = TrasporteArtigoCliente.objects.filter(artigocliente=artigo_cliente)
+
+    context = {
+        "transportes": transportes,
+        "cliente": cliente,
+        "artigo": artigo,
+        "artigo_cliente": artigo_cliente
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def transportes_artigo_cliente_add(request, pk):
+    template_name = 'transporte/transportes_artigo_cliente_add.html'
+    artigo_cliente = get_object_or_404(ArtigoCliente, pk=pk)
+    artigo = get_object_or_404(Artigo, pk=artigo_cliente.artigo.pk)
+    cliente = get_object_or_404(Cliente, pk=artigo_cliente.cliente.pk)
+
+    form = TransporteArtigoClienteAddCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.artigocliente = artigo_cliente
+        instance.save()
+
+        return redirect('producao:transportes_artigo_cliente', pk_artigo=artigo.pk, pk_cliente=cliente.pk)
+
+    context = {
+        "form": form,
+        "artigo": artigo,
+        "cliente": cliente,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def especificacoes_artigo_cliente(request, pk_artigo, pk_cliente):
+    template_name = 'especificacoes/especificacoes_artigo_cliente.html'
+
+    artigo = get_object_or_404(Artigo, pk=pk_artigo)
+    cliente = get_object_or_404(Cliente, pk=pk_cliente)
+    artigo_cliente = ArtigoCliente.objects.get(artigo=artigo, cliente=cliente)
+    especificacoes = Especificacoes.objects.filter(artigo_cliente=artigo_cliente)
+
+
+   
+    context = {
+        "artigo": artigo,
+        "cliente": cliente,
+        "artigo_cliente": artigo_cliente,
+        "especificacoes": especificacoes,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def especificacoes_artigo_cliente_add(request, pk):
+    template_name = 'especificacoes/especificacoes_artigo_cliente_add.html'
+    artigo_cliente = get_object_or_404(ArtigoCliente, pk=pk)
+    artigo = get_object_or_404(Artigo, pk=artigo_cliente.artigo.pk)
+    cliente = get_object_or_404(Cliente, pk=artigo_cliente.cliente.pk)
+
+    form = EspecificacoesArtigoClienteAddCreateForm(request.POST or None)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.artigo_cliente = artigo_cliente
+        instance.save()
+
+        return redirect('producao:especificacoes_artigo_cliente', pk_artigo=artigo.pk, pk_cliente=cliente.pk)
+
+    context = {
+        "form": form,
+        "artigo": artigo,
+        "cliente": cliente,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+def especificacoes_details(request, pk):
+    template_name = 'especificacoes/especificacoes_details.html'
+    especificacoes = get_object_or_404(Especificacoes, pk=pk)
+
+    context = {
+        "especificacoes": especificacoes,
+    }
+
+    return render(request, template_name, context)
+
+    

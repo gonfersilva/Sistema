@@ -2,82 +2,82 @@
 {% load producao_tags %}
 {% block title %}Cliente Detalhes | {{ block.super }}{% endblock %}
 {% block content %}
-<div>
-    <a href="{% url 'producao:clientes' %}"  class="btn_back" role="button">Voltar</a>
-    {% if request.user|has_group:"Logistica Supervisor"%}
-    <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}"  class="btn_create" role="button">Associar Artigo a Cliente</a>
-    {% endif %}
-</div>
-<div class="title_block-list">
-    <h1>Detalhes</h1>
-    <h1>{{ cliente.nome }}</h1>
-    <h2>Limite inferior: {{ cliente.liminf }}</h2>
-    <h2>Limite superior: {{ cliente.limsup }}</h2>
-    <h2>Diâmetro de referência: {{ cliente.diam_ref }}</h2>
+
+
+<div class="container">
+    <a href="{% url 'producao:clientes' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:cliente_add_artigo' pk=cliente.pk %}" class="btn btn-outline-primary" role="button">Associar Artigo a Cliente</a>
+    
 </div>
 <br>
-<div class="title_block-list">
-    <h2>Artigos associados</h2>
-    
-</div>
 <div>
-<table class="content-table">
-    <thead>
-        <tr>
-            <th>Cód. Artigo</th>
-            <th id="designacao">Designação</th>
-            <th>Cód. Cliente</th>
-            <th></th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        {% for ac in artigos_cliente %}
-        <tr>
-            <td>{{ ac.artigo.cod }}</td>
-            <td id="designacao">{{ ac.artigo.des }}</td>
-            {% if not ac.cod_client == None %}
-                <td>{{ ac.cod_client }}</td>
-            {% else %}
-                <td>N/A</td>
-            {% endif %}
-            {% if request.user|has_group:"Logistica Supervisor"%}
-            <td><a href="{% url 'producao:cliente_remover_artigo' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}" role="button" class="btn btn-danger">Remover</a></td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-        
-        
-                
-
-            
-            
+    <h3 class="text-center">Detalhes do Cliente</h3>
 </div>
-<!-- <div class="pagination">
-    {% if fornecedor.has_other_pages %}
-    <div>
-        <span>
-            {% if fornecedor.has_previous %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.previous_page_number }}"><</a>
-            {% endif %}
-    
-            <span>
-                Pág. {{ fornecedor.number }} de {{ fornecedor.paginator.num_pages }}
-            </span>
-    
-            {% if fornecedor.has_next %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.next_page_number }}">></a>
-                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ fornecedor.paginator.num_pages }}">>></a>
-            {% endif %}
-        </span>
+<br>
+<div class="container">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Cliente:</label></div>
+            <div class="col-10">{{ cliente.nome }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Limite Inferior:</label></div>
+            <div class="col-10">{{ cliente.liminf }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Limite Superior:</label></div>
+            <div class="col-10">{{ cliente.limsup }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Diâmetro de referência:</label></div>
+            <div class="col-10">{{ cliente.diam_ref }}</div>
+        </div>
     </div>
-    {% endif %}
-
-</div> -->
-
+    <br>
+          
+            
+        
+    
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scope="col">Cód. Artigo</th>
+                    <th scope="col">Designação</th>
+                    <th scope="col">Cód. Cliente</th>
+                    <th scope="col">Detalhes</th>
+                    {% if request.user|has_group:"Logistica Supervisor"%}
+                    <th scope="col">Especificações</th>
+                    <th scope="col">Transportes</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Remover</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for ac in artigos_cliente %}
+                <tr>                   
+                    <td>{{ ac.artigo.cod }}</td>
+                    <td>{{ ac.artigo.des }}</td>
+                    {% if not ac.cod_client == None %}
+                    <td>{{ ac.cod_client }}</td>
+                    {% else %}
+                    <td>N/A</td>
+                    {% endif %}
+                    <td><a href="#"><i class="fas fa-th-list"></i></a></td>
+                    {% if request.user|has_group:"Logistica Supervisor"%}
+                    <td><a href="{% url 'producao:especificacoes_artigo_cliente' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}"><i class="fas fa-flask"></i></a></td>
+                    <td><a href="{% url 'producao:transportes_artigo_cliente' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}"><i class="fas fa-dolly-flatbed"></i></a></td>
+                    <td><a href="#"><i class="fas fa-edit"></i></a></td>
+                    <td><a href="{% url 'producao:cliente_remover_artigo' pk_cliente=cliente.pk pk_artigo=ac.artigo.pk %}"><i class="fas fa-trash"></i></a></td>
+                    {% endif %}
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
 

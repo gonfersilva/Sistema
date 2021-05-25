@@ -3,7 +3,7 @@
 {% load producao_tags %}
 {% block content %}
 <div>
-    <a href="{% url 'producao:refazer_bobinagem_dm' bobinagem.pk %}"  class="btn_back" role="button">Cancelar Retrabalho</a>
+    <a href="{% url 'producao:refazer_bobinagem_dm' bobinagem.pk %}"  class="btn btn-outline-primary" role="button">Cancelar Retrabalho</a>
 </div>
 <div class="title_block-list">
     <h1>Finalizar Bobinagem  nº {{ bobinagem.num_bobinagem }} de {{ bobinagem.data|date:"d-n-Y" }}</h1>
@@ -14,7 +14,8 @@
         {% csrf_token %}
         <label for="id_fim">Fim</label>{{ form.fim }}
         <label for="id_diam">Diâmetro</label>{{ form.diam }}
-        <input type="submit" value="Validar" id="validate-btn">
+        <br>
+        <input type="submit" value="Validar" class="btn btn-outline-primary" style="height: 50px;">
     </form>
 </div>
 <!-- <div class="container">

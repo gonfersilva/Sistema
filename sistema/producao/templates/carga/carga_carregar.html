@@ -2,17 +2,15 @@
 {% load producao_tags %}
 {% block title %}Carregar carga | {{ block.super }}{% endblock %}
 {% block content %}
-<div>
-    <a href="{% url 'producao:carga_detail' pk=carga.pk %}"  class="btn_back" role="button">Voltar</a>
-    <a href="{% url 'producao:finalizar_carga' pk=carga.pk %}"  class="btn_create" role="button">Finalizar</a>
-    <a href="#"  class="btn_create" role="button">Reset</a>
-</div>
-<div class="title_block-list">
+<div class="container">
+    <a href="{% url 'producao:carga_detail' pk=carga.pk %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    <a href="{% url 'producao:finalizar_carga' pk=carga.pk %}" class="btn btn-outline-primary">Finalizar</a>
     
-    <h1>Carregar carga</h1>
-    <h2>{{ carga }}</h2>
 </div>
-<br>
+<div>
+    <h3 class="text-center">Carregar carga {{ carga }}</h3>
+</div>
+
 <div>
      
     {% for message in messages %}
@@ -35,7 +33,90 @@
 <div class="flex-container">
     <div>Paletes inseridas: {{ carga.num_paletes_actual }} de {{ carga.num_paletes}}</div>
 </div>
-    
+<div class="container">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-6">
+                <div>
+                    <h3 class="text-center">Paletes da encomenda {{ enc }}</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-fixed">
+                        <thead>
+                            <tr>
+                                <th scope="col">Palete</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Ordem</th>
+                                <th scope="col">Core(")</th>
+                                <th scope="col">Largura</th>
+                                <th scope="col">Carga</th>
+                                <th>Inserir</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pal in paletes_enc %}
+                                <tr>
+                                    <td>{{ pal.nome }}</td>
+                                    <td>{{ pal.cliente }}</td>
+                                    {% if pal.ordem == None %}
+                                    <td>s/ Ordem</td>
+                                    {% else %}
+                                    <td>{{ pal.ordem }}</td>
+                                    {% endif %}
+                                    <td>{{ pal.core_bobines }}</td>
+                                    <td>{{ pal.largura_bobines }}</td>
+                                    {% if pal.carga == None %}
+                                    <td>s/ Carga</td>
+                                    {% else %}
+                                    <td>{{ pal.carga }}</td>
+                                    {% endif %}
+                                    <td class="td-icon"><a href="{% url 'producao:add_palete_carga' pk_carga=carga.pk pk_palete=pal.pk %}"><i class="fas fa-arrow-right"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-6">
+                <div>
+                    <h3 class="text-center">Paletes inseridas</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-fixed">
+                        <thead>
+                            <tr>
+                                <th scope="col">Remover</th>
+                                <th scope="col">Palete</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Ordem</th>
+                                <th scope="col">Core(")</th>
+                                <th scope="col">Largura</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pal in paletes_carga %}
+                            <tr>
+                                <td class="td-icon"><a href="{% url 'producao:remove_palete_carga' pk_carga=carga.pk pk_palete=pal.pk %}"><i class="fas fa-arrow-left"></i></a></td>
+                                <td>{{ pal.nome }}</td>
+                                <td>{{ pal.cliente }}</td>
+                                {% if pal.ordem == None %}
+                                <td>s/ Ordem</td>
+                                {% else %}
+                                <td>{{ pal.ordem }}</td>
+                                {% endif %}
+                                <td>{{ pal.core_bobines }}</td>
+                                <td>{{ pal.largura_bobines }}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>       
+    </div>
+</div>
+<!--     
    
     <div class="flex-container">
         <div>
@@ -111,7 +192,7 @@
             </table>
         </div>
         
-    </div>
+    </div> -->
  
     
 

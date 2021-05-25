@@ -2,49 +2,38 @@
 {% load producao_tags %}
 {% block title %}Dados Base{% endblock %}
 {% block content %}
-<div>
-    <a href="{% url 'home' %}" class="btn_back">Voltar</a>
-</div>
-<div class="title_block">
-    <h1>Dados Base</h1>
-</div>
-<div class="menu">
+
+<div class="container">
+    <a href="{% url 'home' %}" class="btn btn-outline-primary" role="button">Voltar</a>
     
-    <div>
-        <a href="{% url 'producao:clientes' %}">Clientes</a>
-    </div>
-    <div>
-        <a href="#">Artigos</a>
-    </div>
-    <div>
-        <a href="#">Embalamento</a>
-    </div>
-    <div>
-        <a href="#">Transporte</a>
-    </div>
-    <div>
-        <a href="">Métodos</a>
-    </div>
-    
-    <!-- <div>
-        <a href="{% url 'producao:artigonw_list' %}">Artigos de Nonwoven</a>
-    </div> -->
-    <!-- <div>
-        <a href="{% url 'producao:inventario_paletes_cliente_list' %}">Inventário de Paletes Good</a>
-    </div>
-    <div>
-        <a href="{% url 'producao:inventario_bobines_list' %}">Inventário de Bobines DM</a>
-    </div> -->
-
-    <!-- <a href="#" class="menu_btn">Fornecedores</a>
-    <a href="#" class="menu_btn">Encomendas</a>
-    <a href="#" class="menu_btn">Perfis de Bobinagens</a>
-    <a href="#" class="menu_btn">Artigos de Nonwoven</a>
-    <a href="#" class="menu_btn">Inventário de Paletes Good</a>
-    <a href="#" class="menu_btn">Inventário de Bobines DM</a> -->
-
 </div>
-
+<div class="container">
+    <div>
+        <h3 class="text-center">Dados Base</h3>
+    </div>
+    <br>
+    <div class="container" id="embalamento-menu">
+        <div class="row mb-2">
+            <div class="col-4">            
+                <a href="{% url 'producao:clientes' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Clientes</h1></a>
+            </div>
+            <div class="col-4 text-center">
+                <a href="{% url 'producao:artigos_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Artigos</h1></a>
+            </div>
+            <!-- <div class="col-4 text-center">
+                <a href="{% url 'producao:embalamento_home' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Embalamento</h1></a>
+            </div> -->
+            <div class="col-4 text-center">
+                <a href="{% url 'producao:transportes_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Transporte</h1></a>
+            </div>
+        </div>
+        <div class="row text-center">
+            
+            
+            
+        </div>
+    </div>
+</div>
 
 
 

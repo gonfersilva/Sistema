@@ -3,7 +3,7 @@
 {% block title %}Picagem de bobines | {{ block.super }}{% endblock %}
 {% block content %}
 <div>
-    <a href="{% url 'producao:palete_list_all' %}"  class="btn_back" role="button">Cancelar</a>
+    <a href="{% url 'producao:palete_list_all' %}"  class="btn btn-outline-primary" role="button">Cancelar</a>
 </div>
 <div class="title">
     <section>
@@ -105,7 +105,7 @@
             <section class="corpo-2-section-2">
                 <p>{{ form.peso_bruto }}</p>
                 <p>{{ form.peso_palete }}</p>
-                <input type="submit" value="Validar" id="validate-btn">
+                <input type="submit" value="Validar" class="btn btn-outline-primary">
             </section>
         </div>
         

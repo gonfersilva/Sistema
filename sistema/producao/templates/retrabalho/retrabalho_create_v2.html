@@ -4,6 +4,62 @@
 
 {% block title %}Retrabalho | {{ block.super }}{% endblock %}
 {% block content %}
+
+<div class="container">
+    <input type="button" value="Voltar" class="btn btn-outline-primary"  onclick="history.back()">
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Bobinagem</h3>
+        <h3 class="text-center">{{ instance.nome }}</h3>
+    </div>
+    <div>
+        {% if messages %}
+            <ul class="messages">
+                <h1 class="erro">ERRO!</h1>
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <br>
+    <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Bobine Original 1:</label></div>
+                <div class="col-3 form-control-sm">{{ form.bobine_1 }}</div>
+                <div class="col-2"><label class="form-label">Metros enrolados 1:</label></div>
+                <div class="col-5 form-control-sm">{{ form.m_bobine_1 }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Bobine Original 2:</label></div>
+                <div class="col-3 form-control-sm">{{ form.bobine_2 }}</div>
+                <div class="col-2"><label class="form-label">Metros enrolados 2:</label></div>
+                <div class="col-5 form-control-sm">{{ form.m_bobine_2 }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Bobine Original 3:</label></div>
+                <div class="col-3 form-control-sm">{{ form.bobine_3 }}</div>
+                <div class="col-2"><label class="form-label">Metros enrolados 3:</label></div>
+                <div class="col-5 form-control-sm">{{ form.m_bobine_3 }}</div>
+            </div>
+            
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+
+
+
+<!-- 
 <div>
     <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
@@ -39,7 +95,7 @@
 </form>
         
     
-    
+     -->
    
 <!--     
    

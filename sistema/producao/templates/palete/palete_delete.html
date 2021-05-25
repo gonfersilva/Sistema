@@ -26,8 +26,8 @@
 {% endif %}
     <form action="." method="POST">
         {% csrf_token %}
-        <a href="{% url 'producao:palete_list_all' %}"  class="btn_back" role="button">Cancelar</a>
-        <input type="submit" value="Confirmar" id="confirm-btn">
+        <a href="{% url 'producao:palete_list_all' %}"  class="btn btn-outline-primary" role="button">Cancelar</a>
+        <input type="submit" value="Confirmar" class="btn btn-outline-primary">
      </form>
 </div>
 {% endblock %}

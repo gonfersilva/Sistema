@@ -1486,3 +1486,76 @@ input[type=number] {
 .core-finl-div {
     margin-right: 10px;
 }
+
+.table-responsive {
+    height: 60vh;
+    overflow-y: auto;
+    
+}
+
+.table-responsive thead th {
+    
+    position: sticky; 
+    top: 0;
+    background-color:white;
+}
+
+.table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+.table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    
+    
+}
+
+.table  tr:nth-of-type(odd) td:first-child {
+    background-color: white;
+  }
+
+.table  tr:nth-of-type(even) td:first-child {
+    background-color: #CCE6FF;
+  }
+
+.table th {
+    font-size: 0.8rem;
+}
+
+.table td {
+    font-size: 0.8rem;
+}
+
+a.btn {
+    font-size: 0.7rem;
+}
+
+.form-label {
+    font-size: 0.8rem;
+}
+
+#id_des {
+    width: 100%;
+}
+
+#id_cod {
+    width: 100%;
+}
+
+#id_gtin {
+    width: 100%;
+}
+
+#embalamento-menu .btn {
+    height: 25vh;
+    width: 100%;
+    font-size: 2rem;
+    vertical-align: middle;
+    
+    
+}
+

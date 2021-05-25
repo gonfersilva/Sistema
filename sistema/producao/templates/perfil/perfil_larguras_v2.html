@@ -2,15 +2,17 @@
 {% load bootstrap3 %}
 {% block title %}Perfil Larguras | {{ block.super }}{% endblock %}
 {% block content %}
-<div>
-  <a href="{% url 'producao:cancel_insert_larguras' pk=perfil.pk %}" class="btn_back" role="button">Cancelar</a>
+<div class="container">
+  <a href="{% url 'producao:cancel_insert_larguras' pk=perfil.pk %}" class="btn btn-outline-primary" role="button">Cancelar</a>
+   
 </div>
+<div>
+  <h3 class="text-center">Atribuir Larguras</h3>
+</div>
+
 <form method="post" id="largurasForm" data-artigos-url="{% url 'producao:load_artigos_cliente' %}">
-  {% csrf_token %} {{ formset.management_form }}
-  <div class="title_block-list">
-    <h1>Atribuir Larguras</h1>
-    <input type="submit" value="Validar" id="validate-btn" />
-  </div>
+  {% csrf_token %} 
+  {{ formset.management_form }}
   {% if messages %}
   <div>
     {% for message in messages %} {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
@@ -29,92 +31,37 @@
     {% endfor %}
   </div>
   {% endif %}
-  <!-- <div class="content-form_larguras">
-        {% for form in formset %}
-        <div class="form_box">
-            <div>{{ forloop.counter }}</div>
+  <div class="container">
+    <div class="table-responsive">
+      <table class="table table-fixed">
+        <thead>
+            <tr>
+              <th scope="col">Nº bobine</th>
+              <th scope="col">Produto</th>
+              <th scope="col">Largura</th>
+              <th scope="col">Gsm</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Artigo</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for form in formset %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
             {% for field in form %}
-                <div class="form_fields">{% bootstrap_field field %}</div>
+            <td>{{ field }}</td>
             {% endfor %}
-        </div>
-        {% endfor %}
-        <div><input type="submit" value="Validar" id="validate-btn"></div>
-    </div> -->
-  <div>
-    <table class="content-table_formset">
-      <thead>
-        <tr>
-          <th>Nº bobine</th>
-          <th>Produto</th>
-          <th>Largura</th>
-          <th>Gsm</th>
-          <th>Cliente</th>
-          <th>Artigo</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for form in formset %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          {% for field in form %}
-          <td>{{ field }}</td>
-          {% endfor %}
-        </tr>
-        {% endfor%}
-      </tbody>
-    </table>
+          </tr>
+          {% endfor%}        
+        </tbody>
+      </table>
+    </div>
+    <div class="row mt-2">
+      <button type="submit" class="btn btn-primary">Validar</button>
+  </div>
   </div>
 </form>
-<!-- <div class="container">
-    <br>
-    <br>
-    <div class="container">
-        <form method="post" id="largurasForm" data-artigos-url="{% url 'producao:load_artigos_cliente' %}">
-          
-            <div class="row">
-                <h1 id="center">Atribir larguras</h1>
-                <br>
-            </div>
-            <div class="row">
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li class="{{ message.tags }}" id="error">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
-            <div class="row">
-                   
-                <div class="col-md-6">
-                    {% csrf_token %}
-                    {{ formset.management_form }}
-                    {% for form in formset %}
-                    <div class="container">  
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <h3 id="center">Bobine nº {{ forloop.counter }}</h3>
-                            </div>
-                            {% for field in form %}
-                            <div class="col-sm-2">
-                                        {% bootstrap_field field %}
-                                    </div>
-                                {% endfor %}
-                            </div>   
-                    </div>  
-                    {% endfor %}
-                        
-                        
-                </div>
-                        
-                        
-                        
-            </form>
-                    
-        </div>
-       
-            
-</div> -->
+
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
   var num_forms = $("#id_form-TOTAL_FORMS").val();

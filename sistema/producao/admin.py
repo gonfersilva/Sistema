@@ -38,6 +38,7 @@ admin.site.register(TipoEmenda)
 admin.site.register(Embalamento)
 admin.site.register(Transporte)
 admin.site.register(TrasporteArtigoCliente)
+admin.site.register(Especificacoes)
 
 
 

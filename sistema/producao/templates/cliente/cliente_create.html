@@ -4,7 +4,7 @@
 
 {% block title %}Criar cliente | {{ block.super }}{% endblock %}
 {% block content %}
-<div>
+<!-- <div>
     <a href="{% url 'producao:clientes' %}"  class="btn_back" role="button">Voltar</a>
 </div>
 {% if request.user|has_group:"Logistica Supervisor"%}
@@ -23,6 +23,50 @@
 </form>
 {% else %}
 <h3>Acesso Restrito</h3>       
-{% endif %} 
+{% endif %}  -->
+
+<div class="container">
+    <a href="{% url 'producao:clientes' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+{% if request.user|has_group:"Logistica Supervisor"%}
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Criar Cliente</h3>
+    </div>
+    <br>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Cód. Cliente:</label></div>
+                <div class="col-3 form-control-sm">{{ form.cod }}</div>
+                <div class="col-2"><label class="form-label">Abreviatura:</label></div>
+                <div class="col-5 form-control-sm">{{ form.abv }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Designação:</label></div>
+                <div class="col-10 form-control-sm">{{ form.nome }}</div>
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Limite Superior:</label></div>
+                <div class="col-3 form-control-sm">{{ form.limsup }}</div>
+                <div class="col-2"><label class="form-label">Limite Inferior:</label></div>
+                <div class="col-3 form-control-sm">{{ form.liminf }}</div>
+                <div class="col-1"><label class="form-label">Diam. Referência:</label></div>
+                <div class="col-1 form-control-sm">{{ form.diam_ref }}</div>
+            </div>
+            
+            <div class="row mt-2">
+                <button type="submit" class="col-12 btn btn-primary">Submit</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+{% else %}
+<h3>Acesso Restrito</h3>       
+{% endif %}
 
 {% endblock %}

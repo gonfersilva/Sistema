@@ -5,6 +5,35 @@
 {% block title %}Produção{% endblock %}
 {% block content %}
 
+
+<div class="container">
+    <a href="{% url 'producao:producao_home' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    
+</div>
+<div class="container">
+    <div>
+        <h3 class="text-center">Reciclado</h3>
+    </div>
+    <br>
+    <div class="container" id="embalamento-menu">
+        <div class="row mb-2">
+            <div class="col-4">            
+                <a href="{% url 'producao:produto_granulado_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Produtos Granulado</h1></a>
+            </div>
+            <div class="col-4 text-center">
+                <a href="{% url 'producao:reciclado_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Reciclado</h1></a>
+            </div>
+            <!-- <div class="col-4 text-center">
+                <a href="{% url 'producao:movimentos_list' %}" class="btn btn-primary btn-lg" role="button"><h1 class="p-3 m-2">Movidmentos MP</h1></a>
+            </div> -->
+        </div>
+       
+    </div>
+</div>
+
+
+<!-- 
+
 <div>
     <a href="{% url 'producao:producao_home' %}" class="btn_back">Voltar</a>
 </div>
@@ -23,7 +52,7 @@
     </div>
     
     
-</div>
+</div> -->
 
 
 {% endblock %}

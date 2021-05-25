@@ -4,6 +4,71 @@
 
 {% block title %}Palete pesagem | {{ block.super }}{% endblock %}
 {% block content %}
+
+<div class="container">
+    <a href="{% url 'producao:paletes_retrabalho' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+</div>
+<div class="container">
+    <div class="container">
+        <h3 class="text-center">Pesagem {{ instance.nome }}</h3>
+    </div>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}" id="error">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if temartigo == False %}
+        <p>As bobines da palete {{ instance.nome }} não têm artigo atribuido. Por favor contacte o Administrador.</p>
+    {% endif%}
+    <br>
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Destino:</label></div>
+            <div class="col-10">{{ instance.destino }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Carga:</label></div>
+            <div class="col-10">{{ instance.carga }}</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2"><label class="form-label">Encomenda:</label></div>
+            <div class="col-10">{{ instance.enc }}</div>
+        </div>
+        
+        
+    </div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Peso Bruto:</label></div>
+                <div class="col-6 form-control-sm">{{ form.peso_bruto }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Peso Palete:</label></div>
+                <div class="col-3 form-control-sm">{{ form.peso_palete }}</div>
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Stock:</label></div>
+                <div class="col-3 form-control-sm">{{ form.stock }}</div>
+                
+            </div>
+            
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submit</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+
+<!-- 
+
 <div>
     <input type="button" value="Voltar" id="confirm-btn" onclick="history.back()">
 </div>
@@ -39,7 +104,7 @@
     <h3><label for="id_peso_palete">Peso Palete</label>{{ form.peso_palete }}</h3>
     <h3><label for="id_stock">Stock</label>{{ form.stock }}</h3>
     <input type="submit" value="Avançar" id="validate-btn">
-</form>
+</form> -->
 
 
 

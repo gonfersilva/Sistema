@@ -54,3 +54,4 @@ class OrdemProducaoEditForm(ModelForm):
         fields = ['res_prod', 'ori_qua']
 
 
+

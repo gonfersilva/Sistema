@@ -3,94 +3,93 @@
 {% block title %}Ordens de Produção | {{ block.super }}{% endblock %}
 {% block content %}
 
-<div>
-    <a href="{% url 'producao:planeamento_home' %}"  class="btn_back" role="button">Voltar</a>
-    {% if request.user|has_group:"Logistica Supervisor"%}
-    <a href="{% url 'planeamento:create_ordem' %}"  class="btn_create" role="button">Nova Ordem de Produção Linha</a>
-    <a href="{% url 'planeamento:create_ordem_dm' %}"  class="btn_create" role="button">Nova Ordem de Produção DM</a>
+
+<div class="container">
+    <a href="{% url 'producao:planeamento_home' %}" class="btn btn-outline-primary" role="button">Voltar</a>
+    {% if request.user|has_group:"Logistica Supervisor" %}
+    <a href="{% url 'planeamento:create_ordem' %}" class="btn btn-outline-primary" role="button">Nova Ordem de Produção Linha</a>
+    <a href="{% url 'planeamento:create_ordem_dm' %}" class="btn btn-outline-primary" role="button">Nova Ordem de Produção DM</a>
     {% endif %}
+    
 </div>
-<div class="title_block-list">
-    <h1>Ordens de Produção</h1>
-</div>
-<div class="form-search">
-    <form action="" method="GET">
-        <input type="text" name="q">
-        <input type="submit" value="Procurar">
-        <a href="{% url 'planeamento:list_ordem' %}">Reset</a>
-    </form>
-</div>
-<div>
-    <table class="content-table">
-        <thead>
-            <tr>
-                <th id="designacao">Ordem de Produção</th>
-                <th>Retrabalho</th>
-                <!-- <th>Nº de paletes a produzir(Tempo real)</th> -->
-                <th>Paletes Produzidas Linha</th>
-                <th>Paletes Produzidas Total</th>
-                <th>Paletes de Stock</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ordem in ordens %}
-            <tr>
-                <td id="designacao"><a href="{% url 'planeamento:details_ordem' pk=ordem.pk %}">{{ ordem.op }}</a></td>
-                {% if ordem.retrabalho == False %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td class="td-icon"><i class="fas fa-check"></i></td>{% endif %}
-                <!-- <td></td> -->
-                <td>{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</td>
-                <td>{{ ordem.num_paletes_stock|add:ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_total }}</td>
-                <td>{{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</td>
-                {% if ordem.ativa == True and ordem.completa == False %} 
-                <td id="estado_good">Em Progresso</td> 
-                {% elif ordem.ativa == False and ordem.completa == False %}
-                <td id="estado_dm">Aguardando Inicio</td>   
-                {% elif ordem.ativa == False and ordem.completa == True %} 
-                <td id="estado_ba">Finalizada</td>                 
-                {% endif %}
-                {% if ordem.ativa == False and ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}
-                <td class="td-icon"><a href="{% url 'planeamento:delete_ordem' pk=ordem.pk %}"><i class="fas fa-trash"></i></a></td>
-
-                {% endif %}
-
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-            
-        
-                
-
-            
-            
-</div>
-<div class="pagination">
-    {% if ordens.has_other_pages %}
+<br>
+<div class="container">
     <div>
-        <span>
-            {% if ordens.has_previous %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page=1"><<</a>
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.previous_page_number }}"><</a>
-            {% endif %}
-    
-            <span>
-                Pág. {{ ordens.number }} de {{ ordens.paginator.num_pages }}
-            </span>
-    
-            {% if ordens.has_next %}
-                <a role="button" class="" href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.next_page_number }}">></a>
-                <a role="button" href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.paginator.num_pages }}">>></a>
-            {% endif %}
-        </span>
+        <h3 class="text-center">Ordens de Produção</h3>
     </div>
-    {% endif %}
-
+    <div>
+        <form action="" method="GET">
+            <input type="text" name="q">
+            <input type="submit" value="Procurar" class="btn btn-primary">
+            <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-outline-primary">Reset</a>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-fixed">
+            <thead>
+                <tr>
+                    <th scops="col">Ordem de Produção</th>
+                    <th scops="col">Retrabalho</th>
+                    <th scops="col">Paletes Produzidas Linha</th>
+                    <th scops="col">Paletes de Stock</th>                
+                    <th scops="col">Paletes Produzidas Total</th>
+                    <th scops="col"></th>
+                    <th scope="col">Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>                   
+                    {% for ordem in ordens %}
+                    <tr>
+                        <td id="designacao"><a href="{% url 'planeamento:details_ordem' pk=ordem.pk %}">{{ ordem.op }}</a></td>
+                        {% if ordem.retrabalho == False %}<td class="td-icon"><i class="fas fa-times"></i></td>{% else %}<td class="td-icon"><i class="fas fa-check"></i></td>{% endif %}
+                        <!-- <td></td> -->
+                        <td>{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</td>
+                        <td>{{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</td>
+                        <td>{{ ordem.num_paletes_stock|add:ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_total }}</td>
+                        {% if ordem.ativa == True and ordem.completa == False %} 
+                        <td id="estado_good">Em Progresso</td> 
+                        {% elif ordem.ativa == False and ordem.completa == False %}
+                        <td id="estado_dm">Aguardando Inicio</td>   
+                        {% elif ordem.ativa == False and ordem.completa == True %} 
+                        <td id="estado_ba">Finalizada</td>                 
+                        {% endif %}
+                        {% if ordem.ativa == False and ordem.completa == False and request.user|has_group:"Logistica Supervisor" %}
+                        <td class="td-icon"><a href="{% url 'planeamento:delete_ordem' pk=ordem.pk %}"><i class="fas fa-trash"></i></a></td>
+        
+                        {% endif %}
+        
+                    </tr>
+                    {% endfor %}
+                    
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+    <div class="container">
+        {% if ordens.has_other_pages %}
+        <div>
+            <span>
+                {% if ordens.has_previous %}
+                    <a href="?{% if query %}q={{query}}&{% endif %}page=1"><i class="fas fa-angle-double-left"></i></a>
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.previous_page_number }}"><i class="fas fa-angle-left"></i></a>
+                {% endif %}
+        
+                <span>
+                    Pág. {{ ordens.number }} de {{ ordens.paginator.num_pages }}
+                </span>
+        
+                {% if ordens.has_next %}
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.next_page_number }}"><i class="fas fa-angle-right"></i></a>
+                    <a href="?{% if query %}q={{query}}&{% endif %}page={{ ordens.paginator.num_pages }}"><i class="fas fa-angle-double-right"></i></a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    
+    </div>
 </div>
-
-
-
 
 
 

@@ -4,7 +4,7 @@
 {% block title %}Editar Bobinagem | {{ block.super }}{% endblock %}
 {% block content %}
 
-{% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
+<!-- {% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
 <div class="container">
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}" class="btn btn-outline-primary" role="button">Voltar</a>
 </div>
@@ -106,7 +106,7 @@
     {% endif %}
 </div>
 {% endif %}
-
+ -->
 
 
 

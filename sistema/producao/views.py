@@ -7266,4 +7266,21 @@ def especificacoes_details(request, pk):
 
     return render(request, template_name, context)
 
+@login_required
+def encomenda_edit(request, pk):
+    template_name = 'encomenda/encomenda_edit.html'
+    enc = get_object_or_404(Encomenda, pk=pk)
+    form = EncomendaEditForm(request.POST or None, instance=enc)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+        instance.user = request.user
+        instance.save()
+        return redirect('producao:encomenda_detail', pk=instance.pk)
+
+    context = {
+        "form": form,
+        "enc": enc
+    }
+    return render(request, template_name, context)
     

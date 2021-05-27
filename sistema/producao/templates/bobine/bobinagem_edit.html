@@ -3,40 +3,40 @@
 {% load producao_tags %}
 {% block title %}Editar Bobinagem | {{ block.super }}{% endblock %}
 {% block content %}
-
-<!-- {% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
+{% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
 <div class="container">
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}" class="btn btn-outline-primary" role="button">Voltar</a>
 </div>
 <div class="container">
     <div class="container">
-        <h3 class="text-center">Editar Bobinagem</h3>
-        <h3 class="text-center">{{ bobinagem.nome }}</h3>
-        <h3>Atenção: Todas as Bobines desta Bobinagem serão editadas no momento da validação.</h3>
-
+        <h3 class="text-center">Editar Bobinagem {{ bobinagem.nome }}</h3>
+        <p class="text-center">Atenção: Todas as Bobines desta Bobinagem serão editadas no momento da validação.</p>
     </div>
     {% if messages %}
-        <div>            
-            {% for message in messages %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                    <div class="error_classificacao">
-                        <p>{{message}} </p>
-                    </div>
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <div class="success_classificacao">
-                        <p>{{message}} </p>
-                    </div>
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                    <div>
-                        <p>{{message}} </p>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+    <div>
+        
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="error_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="success_classificacao">
+                    <p>{{message}} </p>
+                </div>
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div>
+                    <p>{{message}} </p>
+                </div>
+            {% endif %}
+    {% endfor %}
+
+    </div>
     {% endif %}
     <br>
     {% if has_palete == False %}
     <form method="POST" action="" onkeypress="return event.keyCode != 13;">
+        {% csrf_token %}
         <div>
             {% if messages %}
             <ul class="messages">
@@ -46,41 +46,65 @@
             </ul>
             {% endif %}
         </div>
-        {% csrf_token %}
         <div class="container">
             <div class="row mt-2">
                 <div class="col-2"><label class="form-label">Início:</label></div>
-                <div class="col-3 form-control-sm">{{ form.inico }}</div>
+                <div class="col-4 form-control-sm">{{ form.inico }}</div>
                 <div class="col-2"><label class="form-label">Fim:</label></div>
-                <div class="col-5 form-control-sm"></div>
+                <div class="col-4 form-control-sm">{{ form.fim }}</div>
             </div>
+            <br>
             <div class="row mt-2">
-                <div class="col-2"><label class="form-label">Diam:</label></div>
-                <div class="col-3 form-control-sm"></div>
+                <div class="col-2"><label class="form-label">Diâmetro:</label></div>
+                <div class="col-4 form-control-sm">{{ form.diam }}</div>
                 <div class="col-2"><label class="form-label">Comp. Final:</label></div>
-                <div class="col-5 form-control-sm"></div>
+                <div class="col-4 form-control-sm">{{ form.comp }}</div>
             </div>
             <div class="row mt-2">
                 <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
-                <div class="col-3 form-control-sm">{{ form.comp_par }}</div>
+                <div class="col-4 form-control-sm">{{ form.comp_par }}</div>
                 <div class="col-2"><label class="form-label">Tipo Desperdicio:</label></div>
-                <div class="col-5 form-control-sm">{{ form.tipo_desp }}</div>
+                <div class="col-4 form-control-sm">{{ form.tipo_desp }}</div>
             </div>
+            <br>
             <div class="container">
-                <h3 class="text-center">Nonwoven</h3>
+                <h3 class="text-center">Desbobinadora</h3>
             </div>
             <div class="row mt-2">
-                <div class="col-6">Superior</div>
                 <div class="col-6">Inferior</div>
-            </div> 
+                <div class="col-6">Superior</div>
+            </div>            
             <div class="row mt-2">
-                <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
-                <div class="col-3 form-control-sm">{{ form.comp_par }}</div>
-                <div class="col-2"><label class="form-label">Tipo Desperdicio:</label></div>
-                <div class="col-5 form-control-sm">{{ form.tipo_desp }}</div>
-            </div>   
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwinf }}</div>
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwsup }}</div>
+            </div>
             <div class="row mt-2">
-                <button type="submit" class="btn btn-outline-primary">Submit</button>
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwinf }}</div>
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwinf }}</div>
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwsup }}</div>
+            </div>
+            <br>
+            <div class="container">
+                <h3 class="text-center">Observações</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Observações:</label></div>
+                <div class="col-10 form-control-sm">{{ form.obs }}</div>
+                
+            </div>
+            
+                
+            <div class="row mt-2">
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
             </div>
 
         </div>
@@ -88,34 +112,90 @@
     {% else %}
     <form method="POST" action="" onkeypress="return event.keyCode != 13;">
         {% csrf_token %}
+        <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}" id="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         <div class="container">
             <div class="row mt-2">
                 <div class="col-2"><label class="form-label">Início:</label></div>
-                <div class="col-3 form-control-sm"></div>
+                <div class="col-4 form-control-sm">{{ form.inico }}</div>
                 <div class="col-2"><label class="form-label">Fim:</label></div>
-                <div class="col-5 form-control-sm"></div>
+                <div class="col-4 form-control-sm">{{ form.fim }}</div>
+            </div>
+            <br>
+            <p class="text-center">Não é possével alterar as dimensões da bobingem porque uma ou mais bobines já se encontram atribuidas a Paletes para cliente.</p>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Diâmetro:</label></div>
+                <div class="col-4 form-control-sm">N/A</div>
+                <div class="col-2"><label class="form-label">Comp. Final:</label></div>
+                <div class="col-4 form-control-sm">N/A</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Comp. Emenda:</label></div>
+                <div class="col-4 form-control-sm">N/A</div>
+                <div class="col-2"><label class="form-label">Tipo Desperdicio:</label></div>
+                <div class="col-4 form-control-sm">NA</div>
+            </div>
+            <br>
+            <div class="container">
+                <h3 class="text-center">Desbobinadora</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-6">Inferior</div>
+                <div class="col-6">Superior</div>
+            </div>            
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwinf }}</div>
+                <div class="col-2"><label class="form-label">Tipo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.tiponwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwinf }}</div>
+                <div class="col-2"><label class="form-label">Lote:</label></div>
+                <div class="col-4 form-control-sm">{{ form.lotenwsup }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwinf }}</div>
+                <div class="col-2"><label class="form-label">Consumo:</label></div>
+                <div class="col-4 form-control-sm">{{ form.nwsup }}</div>
+            </div>
+            <br>
+            <div class="container">
+                <h3 class="text-center">Observações</h3>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2"><label class="form-label">Observações:</label></div>
+                <div class="col-10 form-control-sm">{{ form_has_palete.obs }}</div>
+                
             </div>
             
                 
             <div class="row mt-2">
-                <button type="submit" class="btn btn-outline-primary">Submit</button>
+                <button type="submit" class="btn btn-outline-primary">Submeter</button>
             </div>
 
         </div>
     </form>
     {% endif %}
+
 </div>
-{% endif %}
- -->
 
 
 
-{% if request.user|has_group:"Produção Supervisor" and bobinagem.perfil.retrabalho == False %}
-<div>
+<!-- <div>
     <a href="{% url 'producao:bobinestatus' pk=bobinagem.pk %}"  class="btn_back" role="button">Voltar</a>
     
-</div>
-<div class="title_block-list">
+</div> -->
+<!-- <div class="title_block-list">
     <h1>Editar Bobinagem</h1>
     <h2>{{ bobinagem.nome }}</h2>
     <h3>Atenção: Todas as Bobines desta Bobinagem serão editadas no momento da validação.</h3>
@@ -140,8 +220,8 @@
     {% endfor %}
 
 </div>
-{% endif %}
-<div>
+{% endif %} -->
+<!-- <div>
     {% if has_palete == False %}
     <form method="POST" action="" onkeypress="return event.keyCode != 13;">
         <div>
@@ -254,7 +334,12 @@
     
     </form>
     {% endif %}
+</div> -->
+{% else %}
+<div class="title_block-list">
+    <h1>Acesso Restrito</h1>
 </div>
+{% endif %}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
     crossorigin="anonymous">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -286,11 +371,7 @@ $(document).ready(function() {
 
 });
 </script>
-{% else %}
-<div class="title_block-list">
-    <h1>Acesso Restrito</h1>
-</div>
-{% endif %}
+
 
 
 

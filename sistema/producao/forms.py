@@ -736,3 +736,8 @@ class EmbalamentoCreateForm(ModelForm):
     class Meta:
         model = Embalamento
         fields = ['paletemb', 'filme', 'cinta', 'core', 'mdf', 'cartao', 'qtd_mdf', 'qtd_cartao']
+
+class EncomendaEditForm(ModelForm):
+    class Meta:
+        model = Encomenda
+        fields = ['prf', 'order_num', 'sqm', 'num_paletes']

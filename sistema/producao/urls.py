@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^encomenda/$', encomenda_list, name='encomenda_list'),
     url(r'^encomenda/create/$', encomenda_create, name='encomenda_create'),
     url(r'^encomenda/(?P<pk>\d+)/', encomenda_detail, name='encomenda_detail'),
+    url(r'^encomenda/edit/(?P<pk>\d+)/', encomenda_edit, name='encomenda_edit'),
     url(r'^carga/$', carga_list, name='carga_list'),
     url(r'^carga/completa/$', carga_list_completa, name='carga_list_completa'),
     url(r'^carga/detail/(?P<pk>\d+)/$', carga_detail, name='carga_detail'),

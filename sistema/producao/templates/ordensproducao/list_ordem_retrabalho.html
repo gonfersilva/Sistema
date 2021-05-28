@@ -15,16 +15,16 @@
 <br>
 <div class="container">
     <div>
-        <h3 class="text-center">Ordens de Produção Linha 1</h3>
+        <h3 class="text-center">Ordens de Produção Retrabalho</h3>
     </div>
     <div>
         <form action="" method="GET">
             <input type="text" name="q">
             <input type="submit" value="Procurar" class="btn btn-primary">
-            <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-outline-primary">Reset</a>
+            <a href="{% url 'planeamento:list_ordem_retrabalho' %}" class="btn btn-outline-primary">Reset</a>
         </form>
         <div>
-            <a href="{% url 'planeamento:list_ordem_retrabalho' %}" class="btn btn-outline-primary" role="button">Ordens de Produção Retrabalho</a>
+            <a href="{% url 'planeamento:list_ordem' %}" class="btn btn-outline-primary" role="button">Ordens de Produção Linha 1</a>
         </div>
     </div>
     <div class="table-responsive">

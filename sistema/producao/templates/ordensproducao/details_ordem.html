@@ -106,9 +106,15 @@
         <div class="row mt-2">
             <div class="col-2"><label class="form-label">Nº de paletes a Produzir:</label></div>
             <div class="col-4">{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</div>
+            <div class="col-2"><label class="form-label">Nº de paletes em stock:</label></div>
+            <div class="col-4">{{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</div>
+            
+        </div>
+        <div class="row mt-2">            
             <div class="col-2"><label class="form-label">Nº de paletes Total:</label></div>
             <div class="col-4">{{ ordem.num_paletes_total }}</div>
         </div>
+        
         <div class="row mt-2">
             <div class="col-2"><label class="form-label">Tipo Palete:</label></div>
             <div class="col-4">{{ ordem.tipo_paletes }}</div>

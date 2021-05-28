@@ -51,7 +51,15 @@ class OrdemProducaoDMCreateForm(ModelForm):
 class OrdemProducaoEditForm(ModelForm):
     class Meta:
         model  = OrdemProducao
-        fields = ['res_prod', 'ori_qua']
+        fields = ['artigo', 'data_prevista_inicio', 'hora_prevista_inicio', 'horas_previstas_producao', 'largura', 'core', 'num_paletes_produzir', 'num_paletes_stock', 'emendas', 'nwsup', 'nwinf', 
+        'tipo_paletes', 'palete_por_palete', 
+         'bobines_por_palete', 'bobines_por_palete_inf', 'enrolamento', 'folha_id', 'freq_amos', 'diam_min', 'diam_max', 'ficha_processo', 'tipo_transporte', 'paletes_camiao', 
+         'altura_max', 'ficha_tecnica', 'of', 'pack_list', 'res_prod', 'ori_qua']
+
+class OrdemProducaoEditIncForm(ModelForm):
+    class Meta:
+        model  = OrdemProducao
+        fields = ['num_paletes_produzir', 'num_paletes_stock', 'ficha_processo', 'ficha_tecnica', 'of', 'pack_list', 'res_prod', 'ori_qua']
 
 
 

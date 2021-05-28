@@ -7,6 +7,7 @@ app_name="planeamento"
 urlpatterns = [
     url(r'^encomendas/$', encomendas_list, name='encomendas_list'),
     url(r'^ordemdeproducao/list/$', list_ordem, name='list_ordem'),
+    url(r'^ordemdeproducao/list-retrabalho/$', list_ordem_retrabalho, name='list_ordem_retrabalho'),
     url(r'^ordemdeproducao/create/$', create_ordem, name='create_ordem'),
     url(r'^ordemdeproducao/edit/(?P<pk>\d+)/$', edit_ordem, name='edit_ordem'),
     url(r'^ordemdeproducao/delete/(?P<pk>\d+)/$', delete_ordem, name='delete_ordem'),

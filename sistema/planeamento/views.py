@@ -188,13 +188,42 @@ def delete_ordem(request, pk):
 
 @login_required
 def list_ordem(request):
-    ordens_list = OrdemProducao.objects.all().order_by('-ativa', 'completa', '-fim')
+    ordens_list = OrdemProducao.objects.filter(retrabalho=False).order_by('-ativa', 'completa', '-fim')
     template_name = 'ordensproducao/list_ordem.html'
     
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
-        ordens_list = OrdemProducao.objects.filter(op__icontains=query).order_by('-ativa', 'completa', '-fim')
+        ordens_list = OrdemProducao.objects.filter(op__icontains=query, retrabalho=False).order_by('-ativa', 'completa', '-fim')
+
+
+    paginator = Paginator(ordens_list, 12)
+    page = request.GET.get('page')
+    
+
+    try:
+        ordens = paginator.page(page)
+    except PageNotAnInteger:
+        ordens = paginator.page(1)
+    except EmptyPage:
+        ordens = paginator.page(paginator.num_pages)
+             
+
+    context = {
+        "ordens": ordens,
+        
+    }
+    return render(request, template_name, context)
+
+@login_required
+def list_ordem_retrabalho(request):
+    ordens_list = OrdemProducao.objects.filter(retrabalho=True).order_by('-ativa', 'completa', '-fim')
+    template_name = 'ordensproducao/list_ordem_retrabalho.html'
+    
+    query = ""
+    if request.GET:
+        query = request.GET.get('q', '')
+        ordens_list = OrdemProducao.objects.filter(op__icontains=query, retrabalho=True).order_by('-ativa', 'completa', '-fim')
 
 
     paginator = Paginator(ordens_list, 12)
@@ -544,17 +573,45 @@ def reabrir_ordem(request, pk):
 def edit_ordem(request, pk):
     ordem = get_object_or_404(OrdemProducao, pk=pk)
     template_name = 'ordensproducao/edit_ordem.html'
+   
     form = OrdemProducaoEditForm(request.POST or None, instance=ordem)
+    form_inc = OrdemProducaoEditIncForm(request.POST or None, instance=ordem)
+
     if request.method == 'POST':
-        form = OrdemProducaoEditForm(request.POST, request.FILES, instance=ordem)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            return redirect('planeamento:details_ordem', pk=ordem.pk)
+        if ordem.completa == False and ordem.ativa == False:
+            form = OrdemProducaoEditForm(request.POST, request.FILES, instance=ordem)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.user = request.user
+                try:
+                    dt = datetime.datetime.combine(instance.data_prevista_inicio, instance.hora_prevista_inicio)
+                    dt += timedelta(hours=instance.horas_previstas_producao)
+                    instance.data_prevista_fim = dt.date()
+                    instance.hora_prevista_fim = dt.time()
+                    instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
+                    instance.save()
+                    return redirect('planeamento:details_ordem', pk=ordem.pk)
+                except:
+                    messages.error(request, 'O formulário de edição tem erros. Por favor verifique a infromação introduzida.') 
+        elif ordem.completa == False and ordem.ativa == True:           
+            form_inc = OrdemProducaoEditIncForm(request.POST, request.FILES, instance=ordem)
+            if form_inc.is_valid():
+                instance = form_inc.save(commit=False)
+                instance.user = request.user
+                try:
+                    instance.num_paletes_total = instance.num_paletes_stock + instance.num_paletes_produzir
+                    instance.save()
+                    return redirect('planeamento:details_ordem', pk=ordem.pk)
+                except:
+                    messages.error(request, 'O formulário de edição tem erros. Por favor verifique a infromação introduzida.') 
+
+                  
+
+            
             
     context = {
        "form": form,
+       "form_inc": form_inc,
        "ordem": ordem
     }
     return render(request, template_name, context)

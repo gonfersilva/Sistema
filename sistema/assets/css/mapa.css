@@ -1559,3 +1559,11 @@ a.btn {
     
 }
 
+#bobine-good {width:15px;  height:20px; background:green; text-align: center;}
+#bobine-r {width:15px;  height:20px; background:red; text-align: center;}
+#bobine-ind {width:15px;  height:20px; background:blue; text-align: center;}
+#bobine-dm {width:15px;  height:20px; background:rgb(219, 168, 26); text-align: center;}
+#bobine-hold {width:15px;  height:20px; background:#b237cc; text-align: center;}
+#bobine-ba {width:15px;  height:20px; background:red; text-align: center;}
+#bobine-lab {width:15px;  height:20px; background: cyan; text-align: center;}
+#bobine-sc {width:15px;  height:20px; background: rgb(149, 255, 0); text-align: center;}

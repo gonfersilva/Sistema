@@ -6508,6 +6508,7 @@ def palete_pesagem_dm(request, pk):
        
     }
     return render(request, template_name, context)
+    
 
 @login_required
 def palete_picagem_v3(request, pk):

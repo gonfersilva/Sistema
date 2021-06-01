@@ -2692,6 +2692,7 @@ def carga_list(request):
         num_paletes = Palete.objects.filter(carga=carga).count()
         if carga.num_paletes_actual != num_paletes:
             carga.num_paletes_actual = num_paletes
+            carga.save()
 
     query = ""
     if request.GET:

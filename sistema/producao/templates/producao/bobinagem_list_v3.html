@@ -10,7 +10,6 @@
     {% if request.user|has_group:"Produção Supervisor" or request.user|has_group:"Produção Operador" %}
     <a href="{% url 'producao:bobinagem_create' %}" class="btn btn-outline-primary" role="button">Criar Bobinagem</a>
     {% endif %}                                                                                                                                                                                                 
-    
 </div>
 <br>
 <div class="container">

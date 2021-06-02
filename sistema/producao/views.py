@@ -38,7 +38,7 @@ from xhtml2pdf import pisa
 from django.conf import settings
 from django.contrib.staticfiles import finders
 import pyodbc
-
+import openpyxl
 
 
 
@@ -873,7 +873,9 @@ def bobinagem_delete(request, pk):
 def palete_delete(request, pk):
     obj = get_object_or_404(Palete, pk=pk)
     bobine = Bobine.objects.filter(palete=obj)
-    e_p = EtiquetaPalete.objects.get(palete=obj)
+    if EtiquetaPalete.objects.get(palete=obj):
+        e_p = EtiquetaPalete.objects.get(palete=obj)
+
     if request.method == "POST":
         num_bobines = Bobine.objects.filter(palete=obj).count()
         if obj.estado == 'G':
@@ -892,7 +894,8 @@ def palete_delete(request, pk):
                     enc.save()
                     ordem.save()
                     obj.delete()
-                    e_p.delete()
+                    if e_p:
+                        e_p.delete()
                     return redirect('producao:palete_list_all')
                 except:
                     ordem.num_paletes_produzidas -= 1
@@ -901,11 +904,13 @@ def palete_delete(request, pk):
                         ordem.completa = False
                     ordem.save()
                     obj.delete()
-                    e_p.delete()
+                    if e_p:
+                        e_p.delete()    
                     return redirect('producao:palete_list_all')
             elif obj.ordem == None and obj.carga == None:
                 obj.delete()
-                e_p.delete()
+                if e_p:
+                    e_p.delete()
                 return redirect('producao:palete_list_all')
         else:
             if num_bobines != 0:
@@ -913,7 +918,8 @@ def palete_delete(request, pk):
                     request, 'A Palete não pode ser apagada porque já lhe foram atribuidas bobines. Para apagar esta palete, é necessário refazer a mesma.')
             else:
                 obj.delete()
-                e_p.delete()
+                if e_p:
+                    e_p.delete()
                 return redirect('producao:paletes_retrabalho')
 
     context = {
@@ -2624,7 +2630,7 @@ def encomenda_list(request):
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
-        encomenda_list = encomenda_list.filter(eef__icontains=query).order_by('-eef')
+        encomenda_list = encomenda_list.filter(Q(eef__icontains=query) | Q(cliente__nome__icontains=query)).order_by('-eef')
 
     paginator = Paginator(encomenda_list, 12)
     page = request.GET.get('page')
@@ -7286,3 +7292,60 @@ def encomenda_edit(request, pk):
     }
     return render(request, template_name, context)
     
+
+@login_required
+def atribuir_destinos(request):
+    template_name = 'producao/atribuir_destinos.html'
+    form = AtribuirDestino(request.POST or None)
+    if "GET" == request.method:
+        return render(request, 'producao/atribuir_destinos.html', {})
+    else:
+        excel_file = request.FILES["excel_file"]
+
+        wb = openpyxl.load_workbook(excel_file)
+        worksheet = wb["Folha1"]
+        print(worksheet)
+        # excel_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row
+        # for row in worksheet.iter_rows():
+        #     row_data = list()
+        #     for cell in row:
+        #         row_data.append(str(cell.value))
+        #     excel_data.append(row_data)
+
+        if form.is_valid():
+            cd = form.cleaned_data            
+            destino = cd.get('destino')
+
+            ws = wb.active
+            first_column = ws['A']
+            bobines = []
+            
+            # Print the contents
+            for x in range(len(first_column)-1): 
+                bobine = Bobine.objects.get(nome=first_column[x].value)
+                bobine.destino = destino
+                bobine.save()
+                
+          
+            
+
+          
+
+        context = {
+            # "excel_data": excel_data, 
+            "destino": destino, 
+            "bobines": bobines, 
+        }
+
+        return render(request, 'producao/atribuir_destinos.html', context)
+
+        
+
+
+
+
+
+
+

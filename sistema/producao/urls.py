@@ -162,6 +162,7 @@ urlpatterns = [
     url(r'^especificacoes/details/(?P<pk>\d+)/$', especificacoes_details, name='especificacoes_details'),
     url(r'^transportes/artgiocliente/add/(?P<pk>\d+)/$', transportes_artigo_cliente_add, name='transportes_artigo_cliente_add'),
     url(r'^especificacoes/add/(?P<pk>\d+)/$', especificacoes_artigo_cliente_add, name='especificacoes_artigo_cliente_add'),
+    url(r'^bobinagem/destinos/$', atribuir_destinos, name='atribuir_destinos'),
     
     
     

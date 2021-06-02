@@ -190,7 +190,7 @@ def delete_ordem(request, pk):
 def list_ordem(request):
     ordens_list = OrdemProducao.objects.filter(retrabalho=False).order_by('-ativa', 'completa', '-fim')
     template_name = 'ordensproducao/list_ordem.html'
-    
+        
     query = ""
     if request.GET:
         query = request.GET.get('q', '')
@@ -251,6 +251,13 @@ def details_ordem(request, pk):
     num_paletes = Palete.objects.filter(ordem=ordem).count()
     template_name = 'ordensproducao/details_ordem.html'
     bobines_para_retrabalho = 0
+    paletes_em_falta = ordem.num_paletes_produzir
+
+    for p in palete:
+        if p.num_bobines_act != 0 and p.nome != None:
+            paletes_em_falta -= 1
+
+    paletes_em_falta += ordem.num_paletes_stock_in
 
     if ordem.retrabalho == True:
         bobines_para_retrabalho = BobinesARetrabalhar.objects.filter(ordem=ordem).order_by('-bobine__palete')
@@ -261,7 +268,8 @@ def details_ordem(request, pk):
         "ordem": ordem,
         "palete":palete,
         "num_paletes": num_paletes,
-        "bobines_para_retrabalho": bobines_para_retrabalho
+        "bobines_para_retrabalho": bobines_para_retrabalho,
+        "paletes_em_falta": paletes_em_falta
         
     }
     return render(request, template_name, context)

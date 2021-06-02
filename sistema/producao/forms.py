@@ -741,3 +741,8 @@ class EncomendaEditForm(ModelForm):
     class Meta:
         model = Encomenda
         fields = ['prf', 'order_num', 'sqm', 'num_paletes']
+
+
+class AtribuirDestino(forms.Form):
+    destino = forms.CharField(max_length=200, required=True)
+    

@@ -926,7 +926,7 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
 	    'NONWOVEN ELASTIC BAND ELA-CARDED 100': 'AC',
 	    'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR': 'AD',
 	    'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT': 'AE',
-	    'ELA-ACE 100 T-HE': 'AF',
+	    'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE': 'AF',
 
     }
 

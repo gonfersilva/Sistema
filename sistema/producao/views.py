@@ -1416,7 +1416,6 @@ def producao_home(request):
 
     return render(request, template_name, context)
 
-
 @login_required
 def planeamento_home(request):
     template_name = 'producao/planeamento_home.html'
@@ -6900,10 +6899,10 @@ def load_perfis(request):
 @login_required
 def artigos_list(request):
     template_name = 'artigo/artigo_list.html'
-    artigos = Artigo.objects.all().order_by('-cod')
+    artigos = Artigo.objects.all().order_by('-cod')    
 
     context = {
-        "artigos": artigos
+        "artigos": artigos,
     }
 
     return render(request, template_name, context)
@@ -7227,8 +7226,6 @@ def especificacoes_artigo_cliente(request, pk_artigo, pk_cliente):
     artigo_cliente = ArtigoCliente.objects.get(artigo=artigo, cliente=cliente)
     especificacoes = Especificacoes.objects.filter(artigo_cliente=artigo_cliente)
 
-
-   
     context = {
         "artigo": artigo,
         "cliente": cliente,
@@ -7296,7 +7293,7 @@ def encomenda_edit(request, pk):
 @login_required
 def atribuir_destinos(request):
     template_name = 'producao/atribuir_destinos.html'
-    form = AtribuirDestino(request.POST or None)
+    # form = AtribuirDestino(request.POST or None)
     if "GET" == request.method:
         return render(request, 'producao/atribuir_destinos.html', {})
     else:
@@ -7304,29 +7301,45 @@ def atribuir_destinos(request):
 
         wb = openpyxl.load_workbook(excel_file)
         worksheet = wb["Folha1"]
-        print(worksheet)
-        # excel_data = list()
+        # print(worksheet)
+        excel_data = list()
         # iterating over the rows and
         # getting value from each cell in row
-        # for row in worksheet.iter_rows():
-        #     row_data = list()
-        #     for cell in row:
-        #         row_data.append(str(cell.value))
-        #     excel_data.append(row_data)
+        for row in worksheet.iter_rows():
+            bobine_row = str(row[0].value)
+            try:
+                bobine = Bobine.objects.get(nome=bobine_row)
+                bobine.destino = row[1].value
+                bobine.obs = row[2].value + ' || ' + bobine.obs
+                bobine.save()
+                row_data = list()                
+                # row_data.append(str(cell.value))
+                row_data.append(bobine.nome)
+                row_data.append(bobine.destino)
+                row_data.append(bobine.obs)
+                excel_data.append(row_data)
+            except:
+                pass
+    
+            # row_data = list()
+            # for cell in row:
+            #     print(cell.value)
+                # row_data.append(str(cell.value))
+                # excel_data.append(row_data)
 
-        if form.is_valid():
-            cd = form.cleaned_data            
-            destino = cd.get('destino')
+        # if form.is_valid():
+        #     cd = form.cleaned_data            
+        # destino = cd.get('destino')
 
-            ws = wb.active
-            first_column = ws['A']
-            bobines = []
+        # ws = wb.active
+        # first_column = ws['A']
+        # bobines = []
             
             # Print the contents
-            for x in range(len(first_column)-1): 
-                bobine = Bobine.objects.get(nome=first_column[x].value)
-                bobine.destino = destino
-                bobine.save()
+            # for x in range(len(first_column)-1): 
+            #     bobine = Bobine.objects.get(nome=first_column[x].value)
+            #     bobine.destino = destino
+            #     bobine.save()
                 
           
             
@@ -7334,9 +7347,9 @@ def atribuir_destinos(request):
           
 
         context = {
-            # "excel_data": excel_data, 
-            "destino": destino, 
-            "bobines": bobines, 
+            "excel_data": excel_data, 
+            # "destino": destino, 
+            # "bobines": bobines, 
         }
 
         return render(request, 'producao/atribuir_destinos.html', context)

@@ -7370,7 +7370,7 @@ def export_packing_list_carga_excel(request, pk):
     for p in paletes:
         bobines = Bobine.objects.filter(palete=p)
         for b in bobines: 
-            worksheet.write(row, col, carga.enc.cliente)
+            worksheet.write(row, col, carga.enc.cliente.nome)
             worksheet.write(row, col + 1, b.palete.carga.carga)
             worksheet.write(row, col + 2, p.carga.enc.prf)
             worksheet.write(row, col + 3, b.palete.nome)

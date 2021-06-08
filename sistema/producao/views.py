@@ -7358,7 +7358,7 @@ def atribuir_destinos(request):
 @login_required
 def export_packing_list_carga_excel(request, pk):
     carga = get_object_or_404(Carga, pk=pk)
-    encomenda = get_object_or_404(Encomenda, pk=carga.encomenda.pk)
+    encomenda = get_object_or_404(Encomenda, pk=carga.enc.pk)
     paletes = Palete.objects.filter(carga=carga)
         
     output = io.BytesIO()

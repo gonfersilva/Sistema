@@ -163,6 +163,7 @@ urlpatterns = [
     url(r'^transportes/artgiocliente/add/(?P<pk>\d+)/$', transportes_artigo_cliente_add, name='transportes_artigo_cliente_add'),
     url(r'^especificacoes/add/(?P<pk>\d+)/$', especificacoes_artigo_cliente_add, name='especificacoes_artigo_cliente_add'),
     url(r'^bobinagem/destinos/$', atribuir_destinos, name='atribuir_destinos'),
+    url(r'^export_packing_list_carga_excel/(?P<pk>\d+)/$', export_packing_list_carga_excel, name='export_packing_list_carga_excel'),
     
     
     

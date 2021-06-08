@@ -7355,9 +7355,53 @@ def atribuir_destinos(request):
         return render(request, 'producao/atribuir_destinos.html', context)
 
         
+@login_required
+def export_packing_list_carga_excel(request, pk):
+    carga = get_object_or_404(Carga, pk=pk)
+    encomenda = get_object_or_404(Encomenda, pk=carga.pk)
+    paletes = Palete.objects.filter(carga=carga)
+        
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
 
+    row = 1
+    col = 0
+    for p in paletes:
+        bobines = Bobine.objects.filter(palete=p)
+        for b in bobines: 
+            worksheet.write(row, col, carga.enc.cliente)
+            worksheet.write(row, col + 1, b.palete.carga.carga)
+            worksheet.write(row, col + 2, p.carga.enc.prf)
+            worksheet.write(row, col + 3, b.palete.nome)
+            worksheet.write(row, col + 4, b.nome)
+            worksheet.write(row, col + 5, b.largura.largura)
+            worksheet.write(row, col + 6, b.area)
+            row += 1
 
+    worksheet.write('A1', 'Client')
+    worksheet.write('B1', 'Carga')
+    worksheet.write('C1', 'PRF')
+    worksheet.write('D1', 'Palete')
+    worksheet.write('E1', 'Bobine')
+    worksheet.write('F1', 'Largura')
+    worksheet.write('G1', 'SQM')
+    
+    
+    workbook.close()
 
+    output.seek(0)
+
+    filename = 'Bobines Originais.xlsx'
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    return response
+    
+   
 
 
 

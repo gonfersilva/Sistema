@@ -7,6 +7,7 @@
 <div class="container">
     <a href="{% url 'producao:carga_list' %}" class="btn btn-outline-primary" role="button">Voltar</a>
     <a href="{% url 'producao:carga_packinglist_details' pk=carga.pk %}" class="btn btn-outline-primary" target="_blank">Packinglist detalhado</a>
+    <a href="{% url 'producao:export_packing_list_carga_excel' pk=carga.pk %}" class="btn btn-outline-primary">Packinglist detalhado EXCEL</a>
     {% if request.user|has_group:"Logistica Supervisor" or request.user|has_group:"Logistica Operador" %}
         {% if carga.estado == 'I' %}
         <a href="{% url 'producao:carga_carregar' pk=carga.pk %}" class="btn btn-outline-primary" role="button">Carregar</a>

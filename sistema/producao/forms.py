@@ -745,4 +745,17 @@ class EncomendaEditForm(ModelForm):
 
 class AtribuirDestino(forms.Form):
     destino = forms.CharField(max_length=200, required=True)
+
+
+class ExportBobinesOriginais(forms.Form):
+    carga = forms.CharField(max_length=200, required=False)
+    prf = forms.CharField(max_length=200, required=False)
+    nwtipo = forms.CharField(max_length=200, required=False)
+    nwlote = forms.CharField(max_length=200, required=False)
+    data_inicio = forms.DateField(required=False)
+    data_fim = forms.DateField(required=False)
+    bobines = forms.FileField(required=False)
+    paletes = forms.FileField(required=False)
+    bobinagens = forms.FileField(required=False)
+
     

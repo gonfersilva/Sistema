@@ -7402,6 +7402,914 @@ def export_packing_list_carga_excel(request, pk):
     return response
     
    
+@login_required
+def export_bobines_originais(request):
+    template_name = 'export/bobines_originais_export.html'
+    form = ExportBobinesOriginais(request.POST, request.FILES)
+    excel_data_bobines = list()
+    excel_data_paletes = list()
+    excel_data_bobinagens = list()
+
+    
+    if form.is_valid() and request.method == 'POST':
+        cd = form.cleaned_data
+        carga = cd.get('carga')
+        prf = cd.get('prf')
+        nwtipo = cd.get('nwtipo')
+        nwlote = cd.get('nwlote')
+        data_inicio = cd.get('data_inicio')
+        data_fim = cd.get('data_fim')
+        bobines = cd.get('bobines')
+        paletes = cd.get('paletes')
+        bobinagens = cd.get('bobinagens')
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+
+        row = 1
+        col = 0
+
+        if carga != '':
+            try:        
+                carga = Carga.objects.get(carga=carga)
+                paletes = Palete.objects.filter(carga=carga)
+                for p in paletes:
+                    bobines = Bobine.objects.filter(palete=p)
+                    for b in bobines:                                                                             
+                        worksheet.write(row, col, carga.enc.cliente.nome)
+                        worksheet.write(row, col + 1, b.palete.carga.carga)
+                        worksheet.write(row, col + 2, b.palete.carga.enc.prf)
+                        worksheet.write(row, col + 3, b.palete.nome)
+                        worksheet.write(row, col + 4, b.bobinagem.nome)
+                        worksheet.write(row, col + 5, b.nome)
+                        worksheet.write(row, col + 6, b.largura.designacao_prod)
+                        worksheet.write(row, col + 7, b.largura.artigo.des)
+                        worksheet.write(row, col + 8, b.largura.largura)
+                        worksheet.write(row, col + 9, b.l_real)
+                        worksheet.write(row, col + 10, b.area)
+                        worksheet.write(row, col + 11, b.con)                            
+                        worksheet.write(row, col + 12, b.descen)                            
+                        worksheet.write(row, col + 13, b.presa)                            
+                        worksheet.write(row, col + 14, b.diam_insuf)                            
+                        worksheet.write(row, col + 15, b.furos)                            
+                        worksheet.write(row, col + 16, b.esp)                            
+                        worksheet.write(row, col + 17, b.troca_nw)                            
+                        worksheet.write(row, col + 18, b.buraco)                            
+                        worksheet.write(row, col + 19, b.nok)                            
+                        worksheet.write(row, col + 20, b.fc)                            
+                        worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 23, b.ff)                            
+                        worksheet.write(row, col + 24, b.ff_m_ini)                            
+                        worksheet.write(row, col + 25, b.ff_m_fim)                            
+                        worksheet.write(row, col + 26, b.fmp)                            
+                        worksheet.write(row, col + 27, b.suj)                            
+                        worksheet.write(row, col + 28, b.car)                            
+                        worksheet.write(row, col + 29, b.lac)                            
+                        worksheet.write(row, col + 30, b.ncore)                            
+                        worksheet.write(row, col + 31, b.sbrt)                            
+                        worksheet.write(row, col + 32, b.prop)                            
+                        worksheet.write(row, col + 33, b.prop_obs)                            
+                        worksheet.write(row, col + 34, b.obs)                            
+                        worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 39, b.obs)                            
+                        worksheet.write(row, col + 40, b.destino)                            
+                        row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            except:
+                messages.error(request, 'A carga inserida não existe.')
+
+        elif prf != '':
+            try:    
+                enc = Encomenda.objects.get(prf=prf)    
+                cargas = Carga.objects.filter(enc=enc)
+                for carga in cargas:
+                    paletes = Palete.objects.filter(carga=carga)
+                    for p in paletes:
+                        bobines = Bobine.objects.filter(palete=p)
+                        for b in bobines:                                                                             
+                            worksheet.write(row, col, carga.enc.cliente.nome)
+                            worksheet.write(row, col + 1, b.palete.carga.carga)
+                            worksheet.write(row, col + 2, b.palete.carga.enc.prf)
+                            worksheet.write(row, col + 3, b.palete.nome)
+                            worksheet.write(row, col + 4, b.bobinagem.nome)
+                            worksheet.write(row, col + 5, b.nome)
+                            worksheet.write(row, col + 6, b.largura.designacao_prod)
+                            worksheet.write(row, col + 7, b.largura.artigo.des)
+                            worksheet.write(row, col + 8, b.largura.largura)
+                            worksheet.write(row, col + 9, b.l_real)
+                            worksheet.write(row, col + 10, b.area)
+                            worksheet.write(row, col + 11, b.con)                            
+                            worksheet.write(row, col + 12, b.descen)                            
+                            worksheet.write(row, col + 13, b.presa)                            
+                            worksheet.write(row, col + 14, b.diam_insuf)                            
+                            worksheet.write(row, col + 15, b.furos)                            
+                            worksheet.write(row, col + 16, b.esp)                            
+                            worksheet.write(row, col + 17, b.troca_nw)                            
+                            worksheet.write(row, col + 18, b.buraco)                            
+                            worksheet.write(row, col + 19, b.nok)                            
+                            worksheet.write(row, col + 20, b.fc)                            
+                            worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                            worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                            worksheet.write(row, col + 23, b.ff)                            
+                            worksheet.write(row, col + 24, b.ff_m_ini)                            
+                            worksheet.write(row, col + 25, b.ff_m_fim)                            
+                            worksheet.write(row, col + 26, b.fmp)                            
+                            worksheet.write(row, col + 27, b.suj)                            
+                            worksheet.write(row, col + 28, b.car)                            
+                            worksheet.write(row, col + 29, b.lac)                            
+                            worksheet.write(row, col + 30, b.ncore)                            
+                            worksheet.write(row, col + 31, b.sbrt)                            
+                            worksheet.write(row, col + 32, b.prop)                            
+                            worksheet.write(row, col + 33, b.prop_obs)                            
+                            worksheet.write(row, col + 34, b.obs)                            
+                            worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                            worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                            worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                            worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                            worksheet.write(row, col + 39, b.obs)                            
+                            worksheet.write(row, col + 40, b.destino)                            
+                            row += 1
+
+                    worksheet.write('A1', 'Cliente')
+                    worksheet.write('B1', 'Carga')
+                    worksheet.write('C1', 'PRF')
+                    worksheet.write('D1', 'Palete')
+                    worksheet.write('E1', 'Bobinagem')
+                    worksheet.write('F1', 'Bobine')
+                    worksheet.write('G1', 'Produto')
+                    worksheet.write('H1', 'Artigo')
+                    worksheet.write('I1', 'Largura')
+                    worksheet.write('J1', 'Largura Real')
+                    worksheet.write('K1', 'SQM')
+                    worksheet.write('L1', 'Cónica')
+                    worksheet.write('M1', 'Descentrada')
+                    worksheet.write('N1', 'Presa')
+                    worksheet.write('O1', 'Diâm Insuficiente')
+                    worksheet.write('P1', 'Furos')
+                    worksheet.write('Q1', 'Espessura')
+                    worksheet.write('R1', 'Troca NW')
+                    worksheet.write('S1', 'Buraco')
+                    worksheet.write('T1', 'NOK')
+                    worksheet.write('U1', 'Falha Corte')
+                    worksheet.write('V1', 'Falha corte inicio')
+                    worksheet.write('W1', 'Falha corte fim')
+                    worksheet.write('X1', 'Falha Filme')
+                    worksheet.write('Y1', 'Falha Filme Inicio')
+                    worksheet.write('Z1', 'Falha Filme Fim')
+                    worksheet.write('AA1', 'Falha Matéria Prima')
+                    worksheet.write('AB1', 'Sujidade')
+                    worksheet.write('AC1', 'Caiu do carro')
+                    worksheet.write('AD1', 'Laçou')
+                    worksheet.write('AE1', 'Não Colou')
+                    worksheet.write('AF1', 'Sobrestiragem')
+                    worksheet.write('AG1', 'Propriedade')
+                    worksheet.write('AH1', 'Observações Propriedade')
+                    worksheet.write('AI1', 'Observações')
+                    worksheet.write('AJ1', 'Tipo de NW Inferior')
+                    worksheet.write('AK1', 'Tipo de NW Superior')
+                    worksheet.write('AL1', 'Lote NW Inferior')
+                    worksheet.write('AM1', 'Lote NW Superior')
+                    worksheet.write('AN1', 'Destino')
+                                
+                    workbook.close()
+
+                    output.seek(0)
+
+                    filename = 'Bobines Originais.xlsx'
+                    response = HttpResponse(
+                        output,
+                        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    )
+                    response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                    
+                    return response
+            except:
+                messages.error(request, 'A prf inserida não existe.')
+                             
+        elif nwlote != '':
+            if Bobinagem.objects.filter(Q(lotenwsup=nwlote) | Q(lotenwinf=nwlote)).exists():  
+                bobinagens_nw = Bobinagem.objects.filter(Q(lotenwsup=nwlote) | Q(lotenwinf=nwlote))
+                for bobinagem in bobinagens_nw:
+                    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+                    for b in bobines:    
+                        if b.palete:
+                            if b.palete.carga:                                 
+                                worksheet.write(row, col, b.palete.carga.enc.cliente.nome)
+                                worksheet.write(row, col + 1, b.palete.carga.carga)
+                                worksheet.write(row, col + 2, b.palete.carga.enc.prf)                                   
+                            worksheet.write(row, col + 3, b.palete.nome)
+                        worksheet.write(row, col + 4, b.bobinagem.nome)
+                        worksheet.write(row, col + 5, b.nome)
+                        worksheet.write(row, col + 6, b.largura.designacao_prod)
+                        worksheet.write(row, col + 7, b.largura.artigo.des)
+                        worksheet.write(row, col + 8, b.largura.largura)
+                        worksheet.write(row, col + 9, b.l_real)
+                        worksheet.write(row, col + 10, b.area)
+                        worksheet.write(row, col + 11, b.con)                            
+                        worksheet.write(row, col + 12, b.descen)                            
+                        worksheet.write(row, col + 13, b.presa)                            
+                        worksheet.write(row, col + 14, b.diam_insuf)                            
+                        worksheet.write(row, col + 15, b.furos)                            
+                        worksheet.write(row, col + 16, b.esp)                            
+                        worksheet.write(row, col + 17, b.troca_nw)                            
+                        worksheet.write(row, col + 18, b.buraco)                            
+                        worksheet.write(row, col + 19, b.nok)                            
+                        worksheet.write(row, col + 20, b.fc)                            
+                        worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 23, b.ff)                            
+                        worksheet.write(row, col + 24, b.ff_m_ini)                            
+                        worksheet.write(row, col + 25, b.ff_m_fim)                            
+                        worksheet.write(row, col + 26, b.fmp)                            
+                        worksheet.write(row, col + 27, b.suj)                            
+                        worksheet.write(row, col + 28, b.car)                            
+                        worksheet.write(row, col + 29, b.lac)                            
+                        worksheet.write(row, col + 30, b.ncore)                            
+                        worksheet.write(row, col + 31, b.sbrt)                            
+                        worksheet.write(row, col + 32, b.prop)                            
+                        worksheet.write(row, col + 33, b.prop_obs)                            
+                        worksheet.write(row, col + 34, b.obs)                            
+                        worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 39, b.obs)                            
+                        worksheet.write(row, col + 40, b.destino)                            
+                        row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            else:
+                messages.error(request, 'O lote de NW inserido não existe.')
+        elif nwtipo != '' and data_inicio != None and data_fim != None:    
+            if Bobinagem.objects.filter(Q(data__gte=data_inicio) & Q(data__lte=data_fim) & (Q(tiponwinf=nwtipo) | Q(tiponwsup=nwtipo))).exists():  
+                bobinagens_nw = Bobinagem.objects.filter(Q(data__gte=data_inicio) & Q(data__lte=data_fim) & (Q(tiponwinf=nwtipo) | Q(tiponwsup=nwtipo)))
+                for bobinagem in bobinagens_nw:
+                    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+                    for b in bobines:    
+                        if b.palete:
+                            if b.palete.carga:                                 
+                                worksheet.write(row, col, b.palete.carga.enc.cliente.nome)
+                                worksheet.write(row, col + 1, b.palete.carga.carga)
+                                worksheet.write(row, col + 2, b.palete.carga.enc.prf)                                   
+                            worksheet.write(row, col + 3, b.palete.nome)
+                        worksheet.write(row, col + 4, b.bobinagem.nome)
+                        worksheet.write(row, col + 5, b.nome)
+                        worksheet.write(row, col + 6, b.largura.designacao_prod)
+                        worksheet.write(row, col + 7, b.largura.artigo.des)
+                        worksheet.write(row, col + 8, b.largura.largura)
+                        worksheet.write(row, col + 9, b.l_real)
+                        worksheet.write(row, col + 10, b.area)
+                        worksheet.write(row, col + 11, b.con)                            
+                        worksheet.write(row, col + 12, b.descen)                            
+                        worksheet.write(row, col + 13, b.presa)                            
+                        worksheet.write(row, col + 14, b.diam_insuf)                            
+                        worksheet.write(row, col + 15, b.furos)                            
+                        worksheet.write(row, col + 16, b.esp)                            
+                        worksheet.write(row, col + 17, b.troca_nw)                            
+                        worksheet.write(row, col + 18, b.buraco)                            
+                        worksheet.write(row, col + 19, b.nok)                            
+                        worksheet.write(row, col + 20, b.fc)                            
+                        worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 23, b.ff)                            
+                        worksheet.write(row, col + 24, b.ff_m_ini)                            
+                        worksheet.write(row, col + 25, b.ff_m_fim)                            
+                        worksheet.write(row, col + 26, b.fmp)                            
+                        worksheet.write(row, col + 27, b.suj)                            
+                        worksheet.write(row, col + 28, b.car)                            
+                        worksheet.write(row, col + 29, b.lac)                            
+                        worksheet.write(row, col + 30, b.ncore)                            
+                        worksheet.write(row, col + 31, b.sbrt)                            
+                        worksheet.write(row, col + 32, b.prop)                            
+                        worksheet.write(row, col + 33, b.prop_obs)                            
+                        worksheet.write(row, col + 34, b.obs)                            
+                        worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 39, b.obs)                            
+                        worksheet.write(row, col + 40, b.destino)                            
+                        row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            else:
+                messages.error(request, 'Por favor verifique o tipo de Nonwoven e datas inseridas(YYYY-MM-DD).')
+        elif data_inicio != None and data_fim != None:
+            if Bobinagem.objects.filter(Q(data__gte=data_inicio) & Q(data__lte=data_fim)).exists():  
+                bobinagens_nw = Bobinagem.objects.filter(Q(data__gte=data_inicio) & Q(data__lte=data_fim))
+                for bobinagem in bobinagens_nw:
+                    bobines = Bobine.objects.filter(bobinagem=bobinagem)
+                    for b in bobines:    
+                        if b.palete:
+                            if b.palete.carga:                                 
+                                worksheet.write(row, col, b.palete.carga.enc.cliente.nome)
+                                worksheet.write(row, col + 1, b.palete.carga.carga)
+                                worksheet.write(row, col + 2, b.palete.carga.enc.prf)                                   
+                            worksheet.write(row, col + 3, b.palete.nome)
+                        worksheet.write(row, col + 4, b.bobinagem.nome)
+                        worksheet.write(row, col + 5, b.nome)
+                        worksheet.write(row, col + 6, b.largura.designacao_prod)
+                        worksheet.write(row, col + 7, b.largura.artigo.des)
+                        worksheet.write(row, col + 8, b.largura.largura)
+                        worksheet.write(row, col + 9, b.l_real)
+                        worksheet.write(row, col + 10, b.area)
+                        worksheet.write(row, col + 11, b.con)                            
+                        worksheet.write(row, col + 12, b.descen)                            
+                        worksheet.write(row, col + 13, b.presa)                            
+                        worksheet.write(row, col + 14, b.diam_insuf)                            
+                        worksheet.write(row, col + 15, b.furos)                            
+                        worksheet.write(row, col + 16, b.esp)                            
+                        worksheet.write(row, col + 17, b.troca_nw)                            
+                        worksheet.write(row, col + 18, b.buraco)                            
+                        worksheet.write(row, col + 19, b.nok)                            
+                        worksheet.write(row, col + 20, b.fc)                            
+                        worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 23, b.ff)                            
+                        worksheet.write(row, col + 24, b.ff_m_ini)                            
+                        worksheet.write(row, col + 25, b.ff_m_fim)                            
+                        worksheet.write(row, col + 26, b.fmp)                            
+                        worksheet.write(row, col + 27, b.suj)                            
+                        worksheet.write(row, col + 28, b.car)                            
+                        worksheet.write(row, col + 29, b.lac)                            
+                        worksheet.write(row, col + 30, b.ncore)                            
+                        worksheet.write(row, col + 31, b.sbrt)                            
+                        worksheet.write(row, col + 32, b.prop)                            
+                        worksheet.write(row, col + 33, b.prop_obs)                            
+                        worksheet.write(row, col + 34, b.obs)                            
+                        worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 39, b.obs)                            
+                        worksheet.write(row, col + 40, b.destino)                            
+                        row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            else:
+                messages.error(request, 'Por favor verifique as datas inseridas(YYYY-MM-DD).') 
+        elif bobines:
+            try:
+                excel_file = request.FILES["bobines"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb["Folha1"]            
+                for r in ws.iter_rows():
+                    bobine_row = str(r[0].value)
+                    if bobine_row != 'None':
+                        excel_data_bobines.append(bobine_row)
+                    else:
+                        break               
+                    
+                for bobine in excel_data_bobines:
+                    b = Bobine.objects.get(nome=bobine)  
+                    if b.palete:
+                        if b.palete.carga:                                 
+                            worksheet.write(row, col, b.palete.carga.enc.cliente.nome)
+                            worksheet.write(row, col + 1, b.palete.carga.carga)
+                            worksheet.write(row, col + 2, b.palete.carga.enc.prf) 
+                        worksheet.write(row, col + 3, b.palete.nome)
+                    worksheet.write(row, col + 4, b.bobinagem.nome)
+                    worksheet.write(row, col + 5, b.nome)
+                    worksheet.write(row, col + 6, b.largura.designacao_prod)
+                    worksheet.write(row, col + 7, b.largura.artigo.des)
+                    worksheet.write(row, col + 8, b.largura.largura)
+                    worksheet.write(row, col + 9, b.l_real)
+                    worksheet.write(row, col + 10, b.area)
+                    worksheet.write(row, col + 11, b.con)                            
+                    worksheet.write(row, col + 12, b.descen)                            
+                    worksheet.write(row, col + 13, b.presa)                            
+                    worksheet.write(row, col + 14, b.diam_insuf)                            
+                    worksheet.write(row, col + 15, b.furos)                            
+                    worksheet.write(row, col + 16, b.esp)                            
+                    worksheet.write(row, col + 17, b.troca_nw)                            
+                    worksheet.write(row, col + 18, b.buraco)                            
+                    worksheet.write(row, col + 19, b.nok)                            
+                    worksheet.write(row, col + 20, b.fc)                            
+                    worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                    worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                    worksheet.write(row, col + 23, b.ff)                            
+                    worksheet.write(row, col + 24, b.ff_m_ini)                            
+                    worksheet.write(row, col + 25, b.ff_m_fim)                            
+                    worksheet.write(row, col + 26, b.fmp)                            
+                    worksheet.write(row, col + 27, b.suj)                            
+                    worksheet.write(row, col + 28, b.car)                            
+                    worksheet.write(row, col + 29, b.lac)                            
+                    worksheet.write(row, col + 30, b.ncore)                            
+                    worksheet.write(row, col + 31, b.sbrt)                            
+                    worksheet.write(row, col + 32, b.prop)                            
+                    worksheet.write(row, col + 33, b.prop_obs)                            
+                    worksheet.write(row, col + 34, b.obs)                            
+                    worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                    worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                    worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                    worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                    worksheet.write(row, col + 39, b.obs)                            
+                    worksheet.write(row, col + 40, b.destino)                            
+                    row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            except:
+                messages.error(request, 'Por favor verifique o ficheiro de Bobines carregado.') 
+        elif paletes:
+            try:
+                excel_file = request.FILES["paletes"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb["Folha1"]            
+                for r in ws.iter_rows():
+                    palete_row = str(r[0].value)
+                    if palete_row != 'None':
+                        excel_data_paletes.append(palete_row)
+                    else:
+                        break               
+                for palete in excel_data_paletes:
+                    p = Palete.objects.get(nome=palete)
+                    bobines = Bobine.objects.filter(palete=p) 
+                    for b in bobines:
+                        if b.palete:
+                            if b.palete.carga:                                 
+                                worksheet.write(row, col, b.palete.carga.enc.cliente.nome)
+                                worksheet.write(row, col + 1, b.palete.carga.carga)
+                                worksheet.write(row, col + 2, b.palete.carga.enc.prf) 
+                            worksheet.write(row, col + 3, b.palete.nome)
+                        worksheet.write(row, col + 4, b.bobinagem.nome)
+                        worksheet.write(row, col + 5, b.nome)
+                        worksheet.write(row, col + 6, b.largura.designacao_prod)
+                        worksheet.write(row, col + 7, b.largura.artigo.des)
+                        worksheet.write(row, col + 8, b.largura.largura)
+                        worksheet.write(row, col + 9, b.l_real)
+                        worksheet.write(row, col + 10, b.area)
+                        worksheet.write(row, col + 11, b.con)                            
+                        worksheet.write(row, col + 12, b.descen)                            
+                        worksheet.write(row, col + 13, b.presa)                            
+                        worksheet.write(row, col + 14, b.diam_insuf)                            
+                        worksheet.write(row, col + 15, b.furos)                            
+                        worksheet.write(row, col + 16, b.esp)                            
+                        worksheet.write(row, col + 17, b.troca_nw)                            
+                        worksheet.write(row, col + 18, b.buraco)                            
+                        worksheet.write(row, col + 19, b.nok)                            
+                        worksheet.write(row, col + 20, b.fc)                            
+                        worksheet.write(row, col + 21, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 22, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 23, b.ff)                            
+                        worksheet.write(row, col + 24, b.ff_m_ini)                            
+                        worksheet.write(row, col + 25, b.ff_m_fim)                            
+                        worksheet.write(row, col + 26, b.fmp)                            
+                        worksheet.write(row, col + 27, b.suj)                            
+                        worksheet.write(row, col + 28, b.car)                            
+                        worksheet.write(row, col + 29, b.lac)                            
+                        worksheet.write(row, col + 30, b.ncore)                            
+                        worksheet.write(row, col + 31, b.sbrt)                            
+                        worksheet.write(row, col + 32, b.prop)                            
+                        worksheet.write(row, col + 33, b.prop_obs)                            
+                        worksheet.write(row, col + 34, b.obs)                            
+                        worksheet.write(row, col + 35, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 36, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 37, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 38, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 39, b.obs)                            
+                        worksheet.write(row, col + 40, b.destino)                            
+                        row += 1
+
+                worksheet.write('A1', 'Cliente')
+                worksheet.write('B1', 'Carga')
+                worksheet.write('C1', 'PRF')
+                worksheet.write('D1', 'Palete')
+                worksheet.write('E1', 'Bobinagem')
+                worksheet.write('F1', 'Bobine')
+                worksheet.write('G1', 'Produto')
+                worksheet.write('H1', 'Artigo')
+                worksheet.write('I1', 'Largura')
+                worksheet.write('J1', 'Largura Real')
+                worksheet.write('K1', 'SQM')
+                worksheet.write('L1', 'Cónica')
+                worksheet.write('M1', 'Descentrada')
+                worksheet.write('N1', 'Presa')
+                worksheet.write('O1', 'Diâm Insuficiente')
+                worksheet.write('P1', 'Furos')
+                worksheet.write('Q1', 'Espessura')
+                worksheet.write('R1', 'Troca NW')
+                worksheet.write('S1', 'Buraco')
+                worksheet.write('T1', 'NOK')
+                worksheet.write('U1', 'Falha Corte')
+                worksheet.write('V1', 'Falha corte inicio')
+                worksheet.write('W1', 'Falha corte fim')
+                worksheet.write('X1', 'Falha Filme')
+                worksheet.write('Y1', 'Falha Filme Inicio')
+                worksheet.write('Z1', 'Falha Filme Fim')
+                worksheet.write('AA1', 'Falha Matéria Prima')
+                worksheet.write('AB1', 'Sujidade')
+                worksheet.write('AC1', 'Caiu do carro')
+                worksheet.write('AD1', 'Laçou')
+                worksheet.write('AE1', 'Não Colou')
+                worksheet.write('AF1', 'Sobrestiragem')
+                worksheet.write('AG1', 'Propriedade')
+                worksheet.write('AH1', 'Observações Propriedade')
+                worksheet.write('AI1', 'Observações')
+                worksheet.write('AJ1', 'Tipo de NW Inferior')
+                worksheet.write('AK1', 'Tipo de NW Superior')
+                worksheet.write('AL1', 'Lote NW Inferior')
+                worksheet.write('AM1', 'Lote NW Superior')
+                worksheet.write('AN1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            except:
+                messages.error(request, 'Por favor verifique o ficheiro de Paletes carregado.') 
+        elif bobinagens:
+            try:
+                excel_file = request.FILES["bobinagens"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb["Folha1"]            
+                for r in ws.iter_rows():
+                    bobinagem_row = str(r[0].value)
+                    if bobinagem_row != 'None':
+                        excel_data_bobinagens.append(bobinagem_row)
+                    else:
+                        break               
+                for bobinagem in excel_data_bobinagens:
+                    bob = Bobinagem.objects.get(nome=bobinagem)
+                    emenda = Emenda.objects.filter(bobinagem=bob)
+                    for e in emenda:
+                        b = Bobine.objects.get(pk=e.bobine.pk)
+                        
+                        worksheet.write(row, col, bob.nome)
+                        worksheet.write(row, col + 1, b.nome)
+                        worksheet.write(row, col + 2, b.largura.designacao_prod)
+                        worksheet.write(row, col + 3, b.largura.artigo.des)
+                        worksheet.write(row, col + 4, b.largura.largura)
+                        worksheet.write(row, col + 5, b.l_real)
+                        worksheet.write(row, col + 6, b.area)
+                        worksheet.write(row, col + 7, b.con)                            
+                        worksheet.write(row, col + 8, b.descen)                            
+                        worksheet.write(row, col + 9, b.presa)                            
+                        worksheet.write(row, col + 10, b.diam_insuf)                            
+                        worksheet.write(row, col + 11, b.furos)                            
+                        worksheet.write(row, col + 12, b.esp)                            
+                        worksheet.write(row, col + 13, b.troca_nw)                            
+                        worksheet.write(row, col + 14, b.buraco)                            
+                        worksheet.write(row, col + 15, b.nok)                            
+                        worksheet.write(row, col + 16, b.fc)                            
+                        worksheet.write(row, col + 17, b.fc_diam_ini)                            
+                        worksheet.write(row, col + 18, b.fc_diam_fim)                            
+                        worksheet.write(row, col + 19, b.ff)                            
+                        worksheet.write(row, col + 20, b.ff_m_ini)                            
+                        worksheet.write(row, col + 21, b.ff_m_fim)                            
+                        worksheet.write(row, col + 22, b.fmp)                            
+                        worksheet.write(row, col + 23, b.suj)                            
+                        worksheet.write(row, col + 24, b.car)                            
+                        worksheet.write(row, col + 25, b.lac)                            
+                        worksheet.write(row, col + 26, b.ncore)                            
+                        worksheet.write(row, col + 27, b.sbrt)                            
+                        worksheet.write(row, col + 28, b.prop)                            
+                        worksheet.write(row, col + 29, b.prop_obs)                            
+                        worksheet.write(row, col + 30, b.obs)                            
+                        worksheet.write(row, col + 31, b.bobinagem.tiponwinf)                            
+                        worksheet.write(row, col + 32, b.bobinagem.tiponwsup)                            
+                        worksheet.write(row, col + 33, b.bobinagem.lotenwinf)                            
+                        worksheet.write(row, col + 34, b.bobinagem.lotenwsup)                            
+                        worksheet.write(row, col + 35, b.destino)                            
+                        row += 1
+
+                
+                worksheet.write('A1', 'Bobinagem Final')
+                worksheet.write('B1', 'Bobine Original')
+                worksheet.write('C1', 'Produto')
+                worksheet.write('D1', 'Artigo')
+                worksheet.write('E1', 'Largura')
+                worksheet.write('F1', 'Largura Real')
+                worksheet.write('G1', 'SQM')
+                worksheet.write('H1', 'Cónica')
+                worksheet.write('I1', 'Descentrada')
+                worksheet.write('J1', 'Presa')
+                worksheet.write('K1', 'Diâm Insuficiente')
+                worksheet.write('L1', 'Furos')
+                worksheet.write('M1', 'Espessura')
+                worksheet.write('N1', 'Troca NW')
+                worksheet.write('O1', 'Buraco')
+                worksheet.write('P1', 'NOK')
+                worksheet.write('Q1', 'Falha Corte')
+                worksheet.write('R1', 'Falha corte inicio')
+                worksheet.write('S1', 'Falha corte fim')
+                worksheet.write('T1', 'Falha Filme')
+                worksheet.write('U1', 'Falha Filme Inicio')
+                worksheet.write('V1', 'Falha Filme Fim')
+                worksheet.write('W1', 'Falha Matéria Prima')
+                worksheet.write('X1', 'Sujidade')
+                worksheet.write('Y1', 'Caiu do carro')
+                worksheet.write('Z1', 'Laçou')
+                worksheet.write('AA1', 'Não Colou')
+                worksheet.write('AB1', 'Sobrestiragem')
+                worksheet.write('AC1', 'Propriedade')
+                worksheet.write('AD1', 'Observações Propriedade')
+                worksheet.write('AE1', 'Observações')
+                worksheet.write('AF1', 'Tipo de NW Inferior')
+                worksheet.write('AG1', 'Tipo de NW Superior')
+                worksheet.write('AH1', 'Lote NW Inferior')
+                worksheet.write('AI1', 'Lote NW Superior')
+                worksheet.write('AJ1', 'Destino')
+                            
+                workbook.close()
+
+                output.seek(0)
+
+                filename = 'Bobines Originais.xlsx'
+                response = HttpResponse(
+                    output,
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename       
+                
+                return response
+            except:
+                messages.error(request, 'Por favor verifique o ficheiro de Bobinagens carregado.')          
+        
+        
+        
+        
+        
+
+    context = {
+        "form": form,
+        
+    }
+
+    return render(request, template_name, context)
 
 
 

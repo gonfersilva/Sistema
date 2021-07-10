@@ -199,7 +199,9 @@ class Perfil(models.Model):
                 ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE'),
-                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED')
+                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED'),
+                ('NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE'),
+                ('NONWOVEN ELASTIC BAND ELA-CARDED 80 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 80 HE')
         )
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -276,7 +278,9 @@ class Artigo(models.Model):
                 ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'), 
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'), 
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE'),
-                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED')
+                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED'),
+                ('NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE'),
+                ('NONWOVEN ELASTIC BAND ELA-CARDED 80 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 80 HE')
             )                                                                                                                                                                                      
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)
@@ -352,7 +356,9 @@ class Largura(models.Model):
                 ('NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR', 'NONWOVEN ELASTIC BAND 100 HE NON WOVEN STRETCH EAR'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HT'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE'),
-                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED')
+                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED'),
+                ('NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE'),
+                ('NONWOVEN ELASTIC BAND ELA-CARDED 80 HE', 'NONWOVEN ELASTIC BAND ELA-CARDED 80 HE')
     )
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, verbose_name="Largura")
     num_bobine = models.PositiveIntegerField(verbose_name="Bobine nº")

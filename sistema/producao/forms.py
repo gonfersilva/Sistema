@@ -584,7 +584,7 @@ class BobineEditForm(ModelForm):
             'NORTE EM AÇÃO (SAOM - Serviços de Assistência)', 'NORTE EM AÇÃO (SAOM - Serviços de Assistência)'),
         ('Hospital Garcia de Orta', 'Hospital Garcia de Orta'), ('Napco Consumer Products Co.',
                                                                  'Napco Consumer Products Co.'), ('National Paper Company Ltd.', 'National Paper Company Ltd.'),
-        ('SANITA CONSUMER PRODUCTS S.A.E.', 'SANITA CONSUMER PRODUCTS S.A.E.'), ('BV Trading SA', 'BV Trading SA'), ('Seni S.A.', 'Seni S.A.'))
+        ('SANITA CONSUMER PRODUCTS S.A.E.', 'SANITA CONSUMER PRODUCTS S.A.E.'), ('BV Trading SA', 'BV Trading SA'), ('Seni S.A.', 'Seni S.A.'), ('Elastictek', 'Elastictek'))
     cliente = forms.CharField(
         max_length=100, required=True, widget=forms.Select(choices=CLIENTE))
 

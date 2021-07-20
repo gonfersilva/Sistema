@@ -629,7 +629,8 @@ class BobineEditForm(ModelForm):
                 ('BV Trading SA', 'BV Trading SA'), 
                 ('Seni S.A.', 'Seni S.A.'),
                 ('Elastictek', 'Elastictek'),
-                ('Pesquisuave, LDA', 'Pesquisuave, LDA')
+                ('Pesquisuave, LDA', 'Pesquisuave, LDA'),
+                ('CAN HYGIENE', 'CAN HYGIENE')
         )
     cliente = forms.CharField(
         max_length=100, required=True, widget=forms.Select(choices=CLIENTE))

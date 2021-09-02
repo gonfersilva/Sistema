@@ -546,12 +546,14 @@ def update_etiqueta_final(pk):
     elif core_bobines == '6':
         core_bobines = 152.6
 
-    data_inicial = palete.carga.data
+    #data_inicial = palete.carga.data
+    data_init = None
     for b in bobines:
-        if b.bobinagem.data < data_inicial:
-            data_inicial = b.bobinagem.data
+        if  data_init == None or b.bobinagem.data < data_init:
+            data_init = b.bobinagem.data
+    data_prod = data_init
+    #data_prod = data_inicial
     
-    data_prod = data_inicial
     data_validade = data_prod + datetime.timedelta(days=356)
 
     gsm = bobine_1.largura.gsm
@@ -674,12 +676,14 @@ def gerar_etiqueta_final(pk):
     elif core_bobines == '6':
         core_bobines = 152.6
 
-    data_inicial = palete.carga.data
+    #data_inicial = palete.carga.data
+    data_init = None
     for b in bobines:
-        if b.bobinagem.data < data_inicial:
-            data_inicial = b.bobinagem.data
-    
-    data_prod = data_inicial
+        if  data_init == None or b.bobinagem.data < data_init:
+            data_init = b.bobinagem.data
+    data_prod = data_init
+    #data_prod = data_inicial
+
     data_validade = data_prod + datetime.timedelta(days=356)
 
     gsm = bobine_1.largura.gsm

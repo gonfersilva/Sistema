@@ -49,7 +49,7 @@
                         <!-- <td></td> -->
                         <td>{{ ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_produzir }}</td>
                         <td>{{ ordem.num_paletes_stock_in }} / {{ ordem.num_paletes_stock }}</td>
-                        <td>{{ ordem.num_paletes_stock|add:ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_total }}</td>
+                        <td>{{ ordem.num_paletes_stock_in|add:ordem.num_paletes_produzidas }} / {{ ordem.num_paletes_total }}</td>
                         {% if ordem.ativa == True and ordem.completa == False %} 
                         <td id="estado_good">Em Progresso</td> 
                         {% elif ordem.ativa == False and ordem.completa == False %}

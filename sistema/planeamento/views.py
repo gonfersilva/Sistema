@@ -560,13 +560,16 @@ def load_encomendas(request):
 def finalizar_ordem(request, pk):
     ordem = get_object_or_404(OrdemProducao, pk=pk)
     ordem.fim = datetime.datetime.now()
-    ordem.num_paletes_total = ordem.num_paletes_produzidas + ordem.num_paletes_stock_in
-    ordem.num_paletes_stock = ordem.num_paletes_stock_in
-    ordem.num_paletes_produzir = ordem.num_paletes_produzidas
-    ordem.ativa = False
-    ordem.completa = True
-    ordem.save()
-    return redirect('planeamento:details_ordem', pk=ordem.pk)
+    if ordem.num_paletes_produzidas < ordem.num_paletes_produzir or ordem.num_paletes_stock_in < ordem.num_paletes_stock:
+        messages.error(request, 'Numero de paletes insuficiente!')
+    else:
+        #ordem.num_paletes_total = ordem.num_paletes_produzidas + ordem.num_paletes_stock_in
+        #ordem.num_paletes_stock = ordem.num_paletes_stock_in
+        #ordem.num_paletes_produzir = ordem.num_paletes_produzidas
+        ordem.ativa = False
+        ordem.completa = True
+        ordem.save()
+        return redirect('planeamento:details_ordem', pk=ordem.pk)
 
 @login_required
 def reabrir_ordem(request, pk):

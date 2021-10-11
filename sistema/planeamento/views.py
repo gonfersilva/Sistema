@@ -189,6 +189,11 @@ def delete_ordem(request, pk):
 
 @login_required
 def list_ordem(request):
+    ordem = OrdemProducao.objects.filter(ativa = 1, completa = 0)
+    for ordem in ordem:
+            ordem.num_paletes_produzidas = Palete.objects.filter(ordem=ordem, ordem_original_stock = 0, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
+            ordem.num_paletes_stock_in = Palete.objects.filter(ordem=ordem, ordem_original_stock = 1, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
+            ordem.save()            
     ordens_list = OrdemProducao.objects.filter(retrabalho=False).order_by('-ativa', 'completa', '-fim')
     template_name = 'ordensproducao/list_ordem.html'
         
@@ -252,6 +257,7 @@ def details_ordem(request, pk):
     num_paletes = Palete.objects.filter(ordem=ordem).count()
     ordem.num_paletes_produzidas = Palete.objects.filter(ordem=ordem, ordem_original_stock = 0, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
     ordem.num_paletes_stock_in = Palete.objects.filter(ordem=ordem, ordem_original_stock = 1, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
+    ordem.save()
     template_name = 'ordensproducao/details_ordem.html'
     bobines_para_retrabalho = 0
     paletes_em_falta = ordem.num_paletes_produzir - ordem.num_paletes_produzidas

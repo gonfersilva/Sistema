@@ -27,7 +27,8 @@
             <div class="ordem-finalizada"><h2>Ordem Finalizada</h2></div>
             {% elif ordem.ativa == True and ordem.completa == False %}
             <div class="ordem-ativa"><h2>Em Progresso</h2> {% if request.user|has_group:"Logistica Supervisor" %}<a href="{% url 'planeamento:ordem_cancelar' pk=ordem.pk %}"  class="cancelar-ordem" role="button">Cancelar</a>{% endif %}</div>
-            <div class="container"><h1>Faltam produzir em linha {{ paletes_em_falta }} paletes</h1></div>
+            <div class="container"><h1>Faltam produzir em linha <u>{{ paletes_em_falta }}</u> paletes.</h1></div>
+            <div class="container"><h1>Faltam adicionar <u>{{ paletes_em_falta_stock }}</u> paletes de stock.</h1></div>
             {% elif ordem.ativa == False and ordem.completa == False %}
             <div class="ordem-aguardar"><h2>Aguardando Início</h2> {% if request.user|has_group:"Produção Supervisor" %}<a href="{% url 'planeamento:ordem_iniciar' pk=ordem.pk %}"  class="iniciar-ordem" role="button">Iniciar</a>{% endif %}</div>
             {% endif %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import F
 from .forms import *
 from .models import *
 from django.contrib.auth.models import User
@@ -249,15 +250,12 @@ def details_ordem(request, pk):
     ordem = OrdemProducao.objects.get(pk=pk)
     palete = Palete.objects.filter(ordem=ordem)
     num_paletes = Palete.objects.filter(ordem=ordem).count()
+    ordem.num_paletes_produzidas = Palete.objects.filter(ordem=ordem, ordem_original_stock = 0, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
+    ordem.num_paletes_stock_in = Palete.objects.filter(ordem=ordem, ordem_original_stock = 1, nome__isnull=False).exclude(ordem=ordem, num_bobines__gt=F('num_bobines_act')).count()
     template_name = 'ordensproducao/details_ordem.html'
     bobines_para_retrabalho = 0
-    paletes_em_falta = ordem.num_paletes_produzir
-
-    for p in palete:
-        if p.num_bobines_act != 0 and p.nome != None:
-            paletes_em_falta -= 1
-
-    paletes_em_falta += ordem.num_paletes_stock_in
+    paletes_em_falta = ordem.num_paletes_produzir - ordem.num_paletes_produzidas
+    paletes_em_falta_stock = ordem.num_paletes_stock - ordem.num_paletes_stock_in
 
     if ordem.retrabalho == True:
         bobines_para_retrabalho = BobinesARetrabalhar.objects.filter(ordem=ordem).order_by('-bobine__palete')
@@ -269,7 +267,8 @@ def details_ordem(request, pk):
         "palete":palete,
         "num_paletes": num_paletes,
         "bobines_para_retrabalho": bobines_para_retrabalho,
-        "paletes_em_falta": paletes_em_falta
+        "paletes_em_falta": paletes_em_falta,
+        "paletes_em_falta_stock": paletes_em_falta_stock 
         
     }
     return render(request, template_name, context)

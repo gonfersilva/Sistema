@@ -281,7 +281,8 @@ class Artigo(models.Model):
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE'),
-                ('NONWOVEN ELASTIC BAND ELA-CARDED 80', 'NONWOVEN ELASTIC BAND ELA-CARDED 80')
+                ('NONWOVEN ELASTIC BAND ELA-CARDED 80', 'NONWOVEN ELASTIC BAND ELA-CARDED 80'),
+                ('	NW Elastic Bands ELA-ACE 100 HE (L) PUNCTURED Amostra', '	NW Elastic Bands ELA-ACE 100 HE (L) PUNCTURED Amostra')
             )                                                                                                                                                                                      
     cod = models.CharField(verbose_name="Cód. Artigo", max_length=18, unique=True)
     des = models.CharField(verbose_name="Descrição artigo", max_length=200, unique=True)

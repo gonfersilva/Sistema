@@ -4126,7 +4126,7 @@ def perfil_larguras_v2(request, pk):
                 artigos.append(artigo)
                 artigo_obj = Artigo.objects.get(id=artigo.id)
 
-                if artigo_obj.cod == 'EEEEFTACPAAR000181' or 'EEEEFTACPAAR000042':
+                if artigo_obj.cod == 'EEEEFTACPAAR000181' or 'EEEEFTACPAAR000042' or 'EEEEFTACPAAR000228':
                     pass
                 elif designacao_prod != artigo_obj.produto or gsm != artigo_obj.gsm or largura != artigo_obj.lar:
                     valid = False

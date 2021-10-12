@@ -934,7 +934,8 @@ def create_perfil_token(num_bobines, produto, core, larguras, produtos, gsms, re
         'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED': 'AG',
         'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE': 'AH',
         'NONWOVEN ELASTIC BAND ELA-CARDED 80': 'AI',
-        'Nonwoven Elastic Band ELA-ACE Amostra': 'AJ'
+        'Nonwoven Elastic Band ELA-ACE Amostra': 'AJ',
+        'NW Elastic Bands ELA-ACE 100 HE (L) PUNCTURED Amostra': 'AK'
 
     }
 

@@ -402,7 +402,8 @@ class SearchPerfil(forms.Form):
                 ('NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)', 'NONWOVEN ELASTIC BANDS ELA-ACE 100 HE(D)'),
                 ('FRONTAL TAPE 48', 'FRONTAL TAPE 48'),
                 ('CAR PROTECTION SHEET 57', 'CAR PROTECTION SHEET 57'),
-                ('ELASTIC FILM', 'ELASTIC FILM')
+                ('ELASTIC FILM', 'ELASTIC FILM'),
+                ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED')
                 )
     nome = forms.CharField(label="Produto", max_length=200,
                            required=False, widget=forms.Select(choices=PRODUTO))

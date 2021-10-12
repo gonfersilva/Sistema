@@ -201,7 +201,8 @@ class Perfil(models.Model):
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 100 T-HE'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED', 'NONWOVEN ELASTIC BAND ELA-ACE 100 HE(L) PUNCTURED'),
                 ('NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE', 'NONWOVEN ELASTIC BAND ELA-ACE 95 T-HE'),
-                ('NONWOVEN ELASTIC BAND ELA-CARDED 80', 'NONWOVEN ELASTIC BAND ELA-CARDED 80')
+                ('NONWOVEN ELASTIC BAND ELA-CARDED 80', 'NONWOVEN ELASTIC BAND ELA-CARDED 80'),
+                ('	NW Elastic Bands ELA-ACE 100 HE (L) PUNCTURED Amostra', '	NW Elastic Bands ELA-ACE 100 HE (L) PUNCTURED Amostra')
         )
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Username")
     timestamp = models.DateTimeField(auto_now_add=True)
